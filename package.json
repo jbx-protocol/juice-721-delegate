@@ -1,0 +1,23 @@
+{
+  "name": "@jbx-protocol/juice-",
+  "bugs": {
+    "url": "https://github.com/jbx-protocol/juice-/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbx-protocol/juice-"
+  },
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^2.4.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "solhint": "^3.3.6",
+    "solhint-plugin-prettier": "^0.0.5"
+  },
+  "scripts": {
+    "pretty": "prettier --write \"./**/*.{js,jsx,json,sol}\"",
+    "deploy-rinkeby": "source .env && forge script DeployRinkeby --rpc-url $RINKEBY_RPC_PROVIDER_URL --broadcast --mnemonic-paths mnemonic.txt --verify --etherscan-api-key $ETHERSCAN_API_KEY --sender $SENDER_ADDRESS",
+    "deploy-mainnet": "source .env && forge script DeployMainnet --rpc-url $MAINNET_RPC_PROVIDER_URL --broadcast --mnemonic-paths mnemonic.txt --verify --etherscan-api-key $ETHERSCAN_API_KEY --sender $SENDER_ADDRESS"
+  }
+}
