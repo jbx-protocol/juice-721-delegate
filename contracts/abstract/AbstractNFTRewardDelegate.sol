@@ -15,9 +15,9 @@ import '@jbx-protocol/contracts-v2/contracts/structs/JBDidRedeemData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBRedeemParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/INFTRewardDataSourceDelegate.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IToken721UriResolver.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/ITokenSupplyDetails.sol';
+import '../interfaces/INFTRewardDataSourceDelegate.sol';
+import '../interfaces/IToken721UriResolver.sol';
+import '../interfaces/ITokenSupplyDetails.sol';
 
 /**
   @title Juicebox data source delegate that offers project contributors NFTs.

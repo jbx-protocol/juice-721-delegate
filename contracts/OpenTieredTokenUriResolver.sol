@@ -3,7 +3,7 @@ pragma solidity 0.8.6;
 
 import '@openzeppelin/contracts/utils/Strings.sol';
 
-import '../interfaces/IToken721UriResolver.sol';
+import './interfaces/IToken721UriResolver.sol';
 
 contract OpenTieredTokenUriResolver is IToken721UriResolver {
   using Strings for uint256;
