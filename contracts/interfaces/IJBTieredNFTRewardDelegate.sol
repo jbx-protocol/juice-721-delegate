@@ -14,11 +14,17 @@ interface IJBTieredNFTRewardDelegate is ITokenSupplyDetails {
     address caller
   );
 
+  event Burn(uint256 indexed tokenId, address owner, address caller);
+
   function tiers() external view returns (JBNFTRewardTier[] memory);
 
   function contributionToken() external view returns (address);
 
   function tierSupply(uint256 _tierNumber) external view returns (uint256);
 
+  function tierNumberOfToken(uint256 _tokenId) external view returns (uint256);
+
   function mint(address _beneficiary, uint256 _value) external returns (uint256 tokenId);
+
+  function burn(address _owner, uint256 _tokenId) external;
 }

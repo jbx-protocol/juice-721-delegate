@@ -53,6 +53,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
   */
   mapping(uint256 => uint256) public override tierSupply;
 
+  //*********************************************************************//
+  // ------------------------- external views -------------------------- //
+  //*********************************************************************//
+
   /** 
     @notice 
     The reward tiers.
@@ -121,13 +125,57 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @return Either 1 if the owner has the token, or 0 if it does not.
   */
   function ownerTokenBalance(address _owner, uint256 _tokenId)
-    public
+    external
     view
     override
     returns (uint256)
   {
     return _ownerOf[_tokenId] == _owner ? 1 : 0;
   }
+
+  //*********************************************************************//
+  // -------------------------- public views --------------------------- //
+  //*********************************************************************//
+
+  /** 
+    @notice
+    The tier number of the provided token ID. 
+
+    @dev
+    Tier's are 1 indexed from the `tiers` array, meaning the 0th element of the array is tier 1.
+
+    @param _tokenId The ID of the token to get the tier number of. 
+
+    @return The tier number of the specified token ID.
+  */
+  function tierNumberOfToken(uint256 _tokenId) public view override returns (uint256) {
+    // Keep a reference to the number of tiers.
+    uint256 _numTiers = _tiers.length;
+
+    // Keep a reference to the tier being iterated on.
+    JBNFTRewardTier memory _tier;
+
+    for (uint256 _i; _i < _numTiers; ) {
+      // Set the tier being iterated on.
+      _tier = _tiers[_i];
+
+      // If the token ID is less than the tier's cieling and greater than this tier's starting, and greater than the previous tier's ceiling, it's in this tier.
+      if (
+        _tier.idCeiling > _tokenId && _tier.idCeiling - _tier.initialAllowance <= _tokenId
+        // 1 indexed, meaning the 0th element of the array is tier 1.
+      ) return _i + 1;
+
+      unchecked {
+        ++_i;
+      }
+    }
+
+    return 0;
+  }
+
+  //*********************************************************************//
+  // -------------------------- constructor ---------------------------- //
+  //*********************************************************************//
 
   /**
     @param _projectId The ID of the project for which this NFT should be minted in response to payments made. 
@@ -204,6 +252,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     }
   }
 
+  //*********************************************************************//
+  // ---------------------- external transactions ---------------------- //
+  //*********************************************************************//
+
   /** 
     @notice
     Mint a token within the tier for the provided value.
@@ -224,7 +276,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     uint256 _tierNumber;
 
     // Keep a reference to the token ID.
-    (tokenId, _tierNumber) = _getTokenInfo(_value);
+    (tokenId, _tierNumber) = _generateTokenId(_value);
 
     // Make sure there's a token ID.
     if (tokenId == 0) revert NOT_AVAILABLE();
@@ -235,6 +287,39 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
     emit Mint(tokenId, _tierNumber, _beneficiary, _value, msg.sender);
   }
+
+  /** 
+    @notice
+    Burns a token ID from an account.
+
+    @dev
+    Only a project owner can burn tokens.
+
+    @param _owner The address that owns the token being burned.
+    @param _tokenId The ID of the token to burn.
+  */
+  function burn(address _owner, uint256 _tokenId) external override onlyOwner {
+    if (_ownerOf[_tokenId] != _owner) revert INCORRECT_OWNER();
+
+    // The token to which the token ID belongs.
+    uint256 _tierNumber = tierNumberOfToken(_tokenId);
+
+    // Burn the token and decrease the supply.
+    _burn(_tokenId);
+    tierSupply[_tierNumber] -= 1;
+
+    // Add to the remaining allowance.
+    unchecked {
+      // The tier number is 1 indexed.
+      ++_tiers[_tierNumber - 1].remainingAllowance;
+    }
+
+    emit Burn(_tokenId, _owner, msg.sender);
+  }
+
+  //*********************************************************************//
+  // ------------------------ internal functions ----------------------- //
+  //*********************************************************************//
 
   /**
     @notice 
@@ -251,7 +336,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     if (_contribution.token != contributionToken) return;
 
     // Keep a reference to the token ID.
-    (uint256 _tokenId, uint256 _tierNumber) = _getTokenInfo(_contribution.value);
+    (uint256 _tokenId, uint256 _tierNumber) = _generateTokenId(_contribution.value);
 
     // Make sure there's a token ID.
     if (_tokenId == 0) revert NOT_AVAILABLE();
@@ -272,7 +357,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @return tokenId The ID of the token.
     @return tierNumber The tier number.
   */
-  function _getTokenInfo(uint256 _amount) internal returns (uint256 tokenId, uint256 tierNumber) {
+  function _generateTokenId(uint256 _amount)
+    internal
+    returns (uint256 tokenId, uint256 tierNumber)
+  {
     // Keep a reference to the number of tiers.
     uint256 _numTiers = _tiers.length;
 
