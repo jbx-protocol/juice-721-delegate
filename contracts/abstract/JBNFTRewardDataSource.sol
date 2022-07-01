@@ -47,7 +47,7 @@ abstract contract JBNFTRewardDataSource is
 
   /** 
     @notice
-    The address that should be calling calling the data source.
+    The address that should be calling the data source methods.
   */
   address internal _expectedCaller;
 
