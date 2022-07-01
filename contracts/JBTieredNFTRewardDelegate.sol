@@ -5,7 +5,7 @@ import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredNFTRewardDelegate.sol';
 
 /**
-  @title 
+  @title
   JBTieredLimitedNFTRewardDataSource
 
   @notice
@@ -218,8 +218,8 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     contributionToken = _contributionToken;
 
     // Make sure the tiers were delivered in order.
-    if (_tiers.length != 0) {
-      _tiers.push(_tiers[0]);
+    if (__tiers.length != 0) {
+      _tiers.push(__tiers[0]);
 
       // Get a reference to the number of tiers.
       uint256 _numTiers = __tiers.length;
@@ -229,7 +229,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
       for (uint256 _i = 1; _i < _numTiers; ) {
         // Set the tier being iterated on.
-        _tier = _tiers[_i];
+        _tier = __tiers[_i];
 
         // Make sure the tier's contribution floor is greater than the previous contribution floor.
         if (_tier.contributionFloor <= __tiers[_i - 1].contributionFloor)
@@ -283,7 +283,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_beneficiary, tokenId);
-    tierSupply[_tierNumber] += 1;
+
+    unchecked {
+      ++tierSupply[_tierNumber];
+    }
 
     emit Mint(tokenId, _tierNumber, _beneficiary, _value, msg.sender);
   }
@@ -306,10 +309,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
     // Burn the token and decrease the supply.
     _burn(_tokenId);
-    tierSupply[_tierNumber] -= 1;
 
     // Add to the remaining allowance.
     unchecked {
+      --tierSupply[_tierNumber];
       // The tier number is 1 indexed.
       ++_tiers[_tierNumber - 1].remainingAllowance;
     }
@@ -339,7 +342,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_data.beneficiary, _tokenId);
-    tierSupply[_tierNumber] += 1;
+
+    unchecked {
+      ++tierSupply[_tierNumber];
+    }
 
     emit Mint(_tokenId, _tierNumber, _data.beneficiary, _data.amount.value, msg.sender);
   }
