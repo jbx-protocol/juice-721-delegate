@@ -21,7 +21,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
   //*********************************************************************//
   error INVALID_PRICE_SORT_ORDER(uint256);
   error INVALID_ID_SORT_ORDER(uint256);
-  error SOLD_OUT();
+  error NOT_AVAILABLE();
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -204,14 +204,44 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     }
   }
 
+  /** 
+    @notice
+    Mint a token within the tier for the provided value.
+
+    @dev
+    Only a project owner can mint tokens.
+
+    @param _beneficiary The address that should receive to token.
+    @param _value The value to mint a token based on.
+  */
+  function mint(address _beneficiary, uint256 _value)
+    external
+    override
+    onlyOwner
+    returns (uint256 tokenId)
+  {
+    // Get a reference to the tier number.
+    uint256 _tierNumber;
+
+    // Keep a reference to the token ID.
+    (tokenId, _tierNumber) = _getTokenInfo(_value);
+
+    // Make sure there's a token ID.
+    if (tokenId == 0) revert NOT_AVAILABLE();
+
+    // If there's a token to mint, do so and increment the tier supply.
+    _mint(_beneficiary, tokenId);
+    tierSupply[_tierNumber] += 1;
+  }
+
   /**
     @notice 
     Mints a token for a given contribution to the beneficiary.
 
-    @param _account The address sending the contribution.
+    @param _beneficiary The address sending the contribution.
     @param _contribution The contribution amount.
    */
-  function _processContribution(address _account, JBTokenAmount calldata _contribution)
+  function _processContribution(address _beneficiary, JBTokenAmount calldata _contribution)
     internal
     override
   {
@@ -221,11 +251,12 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     // Keep a reference to the token ID.
     (uint256 _tokenId, uint256 _tierNumber) = _getTokenInfo(_contribution.value);
 
+    // Make sure there's a token ID.
+    if (_tokenId == 0) revert NOT_AVAILABLE();
+
     // If there's a token to mint, do so and increment the tier supply.
-    if (_tokenId != 0) {
-      _mint(_account, _tokenId);
-      tierSupply[_tierNumber] += 1;
-    }
+    _mint(_beneficiary, _tokenId);
+    tierSupply[_tierNumber] += 1;
   }
 
   /** 

@@ -286,7 +286,7 @@ abstract contract JBNFTRewardDataSource is
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  function _processContribution(address account, JBTokenAmount calldata contribution)
+  function _processContribution(address _beneficiary, JBTokenAmount calldata _contribution)
     internal
     virtual;
 }
