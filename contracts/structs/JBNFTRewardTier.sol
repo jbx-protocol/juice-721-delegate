@@ -15,8 +15,8 @@ pragma solidity 0.8.6;
   @member initialAllowance The initial `remainingAllowance` value when the tier was set.
 */
 struct JBNFTRewardTier {
-  uint256 contributionFloor;
-  uint256 idCeiling;
-  uint256 remainingAllowance;
-  uint256 initialAllowance;
+  uint128 contributionFloor;
+  uint32 idCeiling;
+  uint32 remainingAllowance;
+  uint32 initialAllowance;
 }
