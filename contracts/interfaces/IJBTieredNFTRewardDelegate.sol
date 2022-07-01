@@ -10,7 +10,5 @@ interface IJBTieredNFTRewardDelegate is ITokenSupplyDetails {
 
   function contributionToken() external view returns (address);
 
-  function maxSupply() external view returns (uint256);
-
   function tierSupply(uint256 _tierNumber) external view returns (uint256);
 }

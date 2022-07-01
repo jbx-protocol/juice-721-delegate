@@ -43,12 +43,6 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
   */
   address public immutable override contributionToken;
 
-  /**
-    @notice
-    The maximum number of tokens all
-  */
-  uint256 public immutable override maxSupply;
-
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -147,7 +141,6 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @param _owner The address that should own this contract.
     @param _contributionToken The token that contributions are expected to be in terms of.
     @param __tiers The tiers according to which token distribution will be made. 
-    @param _maxSupply A global maximum supply of tokens across all tiers.
   */
   constructor(
     uint256 _projectId,
@@ -160,8 +153,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     address _expectedCaller,
     address _owner,
     address _contributionToken,
-    JBNFTRewardTier[] memory __tiers,
-    uint256 _maxSupply
+    JBNFTRewardTier[] memory __tiers
   )
     JBNFTRewardDataSource(
       _projectId,
@@ -176,7 +168,6 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     )
   {
     contributionToken = _contributionToken;
-    maxSupply = _maxSupply;
 
     // Make sure the tiers were delivered in order.
     if (_tiers.length != 0) {
