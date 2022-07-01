@@ -206,8 +206,8 @@ abstract contract JBNFTRewardDataSource is
       _data.projectId != projectId
     ) revert INVALID_PAYMENT_EVENT();
 
-    // Do any validation work.
-    _processContribution(_data.beneficiary, _data.amount);
+    // Process the contribution.
+    _processContribution(_data);
 
     // Forward the recieved weight and memo, and don't use a delegate.
     return (_data.weight, _data.memo, IJBPayDelegate(address(0)));
@@ -289,7 +289,5 @@ abstract contract JBNFTRewardDataSource is
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  function _processContribution(address _beneficiary, JBTokenAmount calldata _contribution)
-    internal
-    virtual;
+  function _processContribution(JBPayParamsData calldata _data) internal virtual;
 }

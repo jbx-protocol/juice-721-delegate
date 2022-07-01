@@ -325,27 +325,23 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @notice 
     Mints a token for a given contribution to the beneficiary.
 
-    @param _beneficiary The address sending the contribution.
-    @param _contribution The contribution amount.
-   */
-  function _processContribution(address _beneficiary, JBTokenAmount calldata _contribution)
-    internal
-    override
-  {
+    @param _data The Juicebox standard project contribution data.
+  */
+  function _processContribution(JBPayParamsData calldata _data) internal override {
     // Make the contribution is being made in the expected token.
-    if (_contribution.token != contributionToken) return;
+    if (_data.amount.token != contributionToken) return;
 
     // Keep a reference to the token ID.
-    (uint256 _tokenId, uint256 _tierNumber) = _generateTokenId(_contribution.value);
+    (uint256 _tokenId, uint256 _tierNumber) = _generateTokenId(_data.amount.value);
 
     // Make sure there's a token ID.
     if (_tokenId == 0) revert NOT_AVAILABLE();
 
     // If there's a token to mint, do so and increment the tier supply.
-    _mint(_beneficiary, _tokenId);
+    _mint(_data.beneficiary, _tokenId);
     tierSupply[_tierNumber] += 1;
 
-    emit Mint(_tokenId, _tierNumber, _beneficiary, _contribution.value, msg.sender);
+    emit Mint(_tokenId, _tierNumber, _data.beneficiary, _data.amount.value, msg.sender);
   }
 
   /** 
