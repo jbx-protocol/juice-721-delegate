@@ -20,8 +20,6 @@ interface IJBTieredNFTRewardDelegate is ITokenSupplyDetails {
 
   function contributionToken() external view returns (address);
 
-  function tierSupply(uint256 _tierNumber) external view returns (uint256);
-
   function tierNumberOfToken(uint256 _tokenId) external view returns (uint256);
 
   function mint(address _beneficiary, uint256 _value) external returns (uint256 tokenId);

@@ -44,16 +44,6 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
   address public immutable override contributionToken;
 
   //*********************************************************************//
-  // --------------------- public stored properties -------------------- //
-  //*********************************************************************//
-
-  /**
-    @notice 
-    Current supply of tokens minted in each tier.
-  */
-  mapping(uint256 => uint256) public override tierSupply;
-
-  //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
 
@@ -284,10 +274,6 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_beneficiary, tokenId);
 
-    unchecked {
-      ++tierSupply[_tierNumber];
-    }
-
     emit Mint(tokenId, _tierNumber, _beneficiary, _value, msg.sender);
   }
 
@@ -312,7 +298,6 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
     // Add to the remaining allowance.
     unchecked {
-      --tierSupply[_tierNumber];
       // The tier number is 1 indexed.
       ++_tiers[_tierNumber - 1].remainingAllowance;
     }
@@ -342,10 +327,6 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_data.beneficiary, _tokenId);
-
-    unchecked {
-      ++tierSupply[_tierNumber];
-    }
 
     emit Mint(_tokenId, _tierNumber, _data.beneficiary, _data.amount.value, msg.sender);
   }
