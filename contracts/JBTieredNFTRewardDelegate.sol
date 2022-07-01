@@ -226,7 +226,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
           revert INVALID_PRICE_SORT_ORDER(_i);
 
         // Make sure the tiers' ID ranges don't collide.
-        if (_tier.idCeiling - _tier.remainingAllowance <= __tiers[_i - 1].idCeiling)
+        if (_tier.idCeiling - _tier.remainingAllowance < __tiers[_i - 1].idCeiling)
           revert INVALID_ID_SORT_ORDER(_i);
 
         // Set the initial allowance to be the remaining allowance.
