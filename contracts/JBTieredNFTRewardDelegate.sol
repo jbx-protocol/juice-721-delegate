@@ -337,13 +337,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
     @param _amount The amount of the contribution.
 
-    @return tokenId The ID of the token.
-    @return tierNumber The tier number.
+    @return The ID of the token.
+    @return The tier number.
   */
-  function _generateTokenId(uint256 _amount)
-    internal
-    returns (uint256 tokenId, uint256 tierNumber)
-  {
+  function _generateTokenId(uint256 _amount) internal returns (uint256, uint256) {
     // Keep a reference to the number of tiers.
     uint256 _numTiers = _tiers.length;
 
@@ -361,23 +358,23 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
         _tier.remainingAllowance != 0
       ) {
         // The token ID incrementally increases until the id cieling.
-        tokenId = _tier.idCeiling - _tier.remainingAllowance;
+        uint256 _tokenId = _tier.idCeiling - _tier.remainingAllowance;
 
         // Decrement the reminaing allowance of tokens for this tier.
         unchecked {
           --_tiers[_i].remainingAllowance;
         }
 
-        // The the tier being returned, which is the 1 indexed position in the tiers array.
-        tierNumber = _i + 1;
-
         // Break out of the for loop since we've found the right tier.
-        return (tokenId, tierNumber);
+        // The the tier being returned, which is the 1 indexed position in the tiers array.
+        return (_tokenId, _i + 1);
       }
 
       unchecked {
         ++_i;
       }
     }
+
+    return (0, 0);
   }
 }
