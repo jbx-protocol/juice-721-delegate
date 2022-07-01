@@ -22,7 +22,7 @@ import '../interfaces/ITokenSupplyDetails.sol';
   @dev 
   This PayDelegate and RedeemDelegate implementation will simply pass through the weight and reclaimAmount it is called with.
  */
-abstract contract NFTRewardDataSource is
+abstract contract JBNFTRewardDataSource is
   ERC721Rari,
   Ownable,
   INFTRewardDataSource,
