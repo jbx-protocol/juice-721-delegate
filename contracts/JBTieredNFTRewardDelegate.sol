@@ -232,6 +232,8 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_beneficiary, tokenId);
     tierSupply[_tierNumber] += 1;
+
+    emit Mint(tokenId, _tierNumber, _beneficiary, _value, msg.sender);
   }
 
   /**
@@ -257,6 +259,8 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_beneficiary, _tokenId);
     tierSupply[_tierNumber] += 1;
+
+    emit Mint(_tokenId, _tierNumber, _beneficiary, _contribution.value, msg.sender);
   }
 
   /** 

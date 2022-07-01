@@ -21,7 +21,7 @@ import '../interfaces/ITokenSupplyDetails.sol';
 
   @dev 
   This PayDelegate and RedeemDelegate implementation will simply pass through the weight and reclaimAmount it is called with.
- */
+*/
 abstract contract JBNFTRewardDataSource is
   ERC721Rari,
   Ownable,
@@ -40,6 +40,10 @@ abstract contract JBNFTRewardDataSource is
   error SUPPLY_EXHAUSTED();
   error NON_TRANSFERRABLE();
   error INVALID_REQUEST(string);
+
+  //*********************************************************************//
+  // --------------------- internal stored properties ------------------ //
+  //*********************************************************************//
 
   /** 
     @notice
@@ -108,9 +112,8 @@ abstract contract JBNFTRewardDataSource is
     returns (bool)
   {
     return
+      _interfaceId == type(INFTRewardDataSource).interfaceId ||
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
-      _interfaceId == type(IJBPayDelegate).interfaceId ||
-      _interfaceId == type(IJBRedemptionDelegate).interfaceId ||
       super.supportsInterface(_interfaceId); // check with rari-ERC721
   }
 

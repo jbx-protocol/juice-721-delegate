@@ -6,6 +6,14 @@ import './ITokenSupplyDetails.sol';
 import './../structs/JBNFTRewardTier.sol';
 
 interface IJBTieredNFTRewardDelegate is ITokenSupplyDetails {
+  event Mint(
+    uint256 indexed tokenId,
+    uint256 indexed tier,
+    address indexed beneficiary,
+    uint256 value,
+    address caller
+  );
+
   function tiers() external view returns (JBNFTRewardTier[] memory);
 
   function contributionToken() external view returns (address);
