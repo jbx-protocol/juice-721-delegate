@@ -183,6 +183,41 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
+  function testJBTieredNFTRewardDelegate_totalSupply_returnsCorrectTotalSuuply() external {
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IToken721UriResolver(mockTokenUriResolver),
+        baseUri,
+        contractUri,
+        mockTerminalAddress,
+        owner,
+        mockContributionToken,
+        tiers
+      );
+
+    uint256 supply;
+
+    // Different remaining allowance to simulate different tiers minted in the same time
+    for (uint256 i = 0; i < tiers.length; i++) {
+      _delegate.setTier(
+        i,
+        JBNFTRewardTier({
+          contributionFloor: uint128(i * 10),
+          idCeiling: uint48((i + 1) * 100),
+          remainingAllowance: uint40(i * 10),
+          initialAllowance: uint40(100)
+        })
+      );
+
+      supply += 100 - (i * 10);
+    }
+
+    assertEq(_delegate.totalSupply(), supply);
+  }
+
   function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber(uint8 tokenId)
     external
   {
@@ -195,39 +230,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
     else assertEq(delegate.tierNumberOfToken(tokenId), 0);
   }
 
-  function testJBTieredNFTRewardDelegate_totalSupply_returnsCorrectTotalSuuply() external {
-    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IToken721UriResolver(mockTokenUriResolver),
-      baseUri,
-      contractUri,
-      mockTerminalAddress,
-      owner,
-      mockContributionToken,
-      tiers
-    );
+  function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 valueSent) external {
+    // First tier floor is 10 and last tier is 1000
+    vm.assume(valueSent >= 20 && valueSent <= 2000);
 
-    uint256 supply;
+    vm.prank(owner);
+    delegate.mint(caller, valueSent);
 
-    // Different remaining allowance to simulate different tiers minted in the same time
-    for (uint256 i = 0; i < tiers.length; i++) {
-        _delegate.setTier(
-            i,
-            JBNFTRewardTier({
-                contributionFloor: uint128(i * 10),
-                idCeiling: uint48((i+1) * 100),
-                remainingAllowance: uint40(i * 10),
-                initialAllowance: uint40(100)
-            })
-        );
-
-        supply += 100 - (i*10);
-    }
-
-    assertEq(_delegate.totalSupply(), supply);
+    assertEq(delegate.totalOwnerBalance(caller), 1);
   }
 
   // Internal helpers
