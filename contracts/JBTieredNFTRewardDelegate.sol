@@ -19,6 +19,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
+
   error INVALID_PRICE_SORT_ORDER(uint256);
   error INVALID_ID_SORT_ORDER(uint256);
   error NOT_AVAILABLE();

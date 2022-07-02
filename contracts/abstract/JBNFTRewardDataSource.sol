@@ -33,6 +33,7 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
+
   error INVALID_PAYMENT_EVENT();
   error INCORRECT_OWNER();
   error INVALID_ADDRESS();
