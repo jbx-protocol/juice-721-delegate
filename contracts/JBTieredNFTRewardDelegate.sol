@@ -23,6 +23,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
   error INVALID_PRICE_SORT_ORDER(uint256);
   error INVALID_ID_SORT_ORDER(uint256);
   error NOT_AVAILABLE();
+  error INVALID_IDS();
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -222,7 +223,10 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
       _tier = __tiers[_i];
 
       // Make sure the tiers were delivered in order.
-      if (_i != 0) {
+      if (_i == 0) {
+        // Make sure there is room for all of the first tier's IDs.
+        if (_tier.remainingAllowance >= _tier.idCeiling) revert INVALID_IDS();
+      } else {
         // Make sure the tier's contribution floor is greater than the previous contribution floor.
         if (_tier.contributionFloor <= __tiers[_i - 1].contributionFloor)
           revert INVALID_PRICE_SORT_ORDER(_i);
