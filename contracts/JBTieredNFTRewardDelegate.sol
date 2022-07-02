@@ -218,22 +218,21 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
+    uint256 _totalAllowance;
     for (uint256 _i; _i < _numTiers; ) {
       // Set the tier being iterated on.
       _tier = __tiers[_i];
 
-      // Make sure the tiers were delivered in order.
-      if (_i == 0) {
-        // Make sure there is room for all of the first tier's IDs.
-        if (_tier.remainingAllowance >= _tier.idCeiling) revert INVALID_IDS();
-      } else {
+      // Make sure the ID ceilings line up with the allowances
+      _totalAllowance += _tier.remainingAllowance;
+      if(_totalAllowance != _tier.idCeiling){
+        revert INVALID_ID_SORT_ORDER(_i);
+      }
+
+      if(_i != 0){
         // Make sure the tier's contribution floor is greater than the previous contribution floor.
         if (_tier.contributionFloor <= __tiers[_i - 1].contributionFloor)
           revert INVALID_PRICE_SORT_ORDER(_i);
-
-        // Make sure the tiers' ID ranges don't collide.
-        if (_tier.idCeiling - _tier.remainingAllowance < __tiers[_i - 1].idCeiling)
-          revert INVALID_ID_SORT_ORDER(_i);
       }
 
       // Set the initial allowance to be the remaining allowance.
@@ -364,12 +363,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
         _tier.remainingAllowance != 0
       ) {
         // The token ID incrementally increases until the id cieling.
-        uint256 _tokenId = _tier.idCeiling - _tier.remainingAllowance;
-
-        // Decrement the reminaing allowance of tokens for this tier.
-        unchecked {
-          --_tiers[_i].remainingAllowance;
-        }
+        uint256 _tokenId = _tier.idCeiling - --_tier.remainingAllowance;
 
         // Break out of the for loop since we've found the right tier.
         // The the tier being returned, which is the 1 indexed position in the tiers array.

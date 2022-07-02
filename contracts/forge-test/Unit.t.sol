@@ -67,7 +67,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.assume(nbTiers < 20);
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
-    for (uint256 i; i < nbTiers; i++) {
+    for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
@@ -111,7 +111,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.assume(errorIndex + 1 < nbTiers); // We'll create an error between i and i+1
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
-    for (uint256 i; i < nbTiers; i++) {
+    for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
@@ -153,7 +153,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.assume(errorIndex + 1 < nbTiers); // We'll create an error between i and i+1
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
-    for (uint256 i; i < nbTiers; i++) {
+    for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
@@ -166,7 +166,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < nbTiers; i++) emit log_uint(_tiers[i].contributionFloor);
 
-    vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER(uint256)', errorIndex + 1));
+    vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER(uint256)', errorIndex));
 
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
@@ -201,7 +201,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 supply;
 
     // Different remaining allowance to simulate different tiers minted in the same time
-    for (uint256 i = 0; i < tiers.length; i++) {
+    for (uint256 i = 1; i < tiers.length; i++) {
       _delegate.setTier(
         i,
         JBNFTRewardTier({
