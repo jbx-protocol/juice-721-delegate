@@ -208,20 +208,21 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
   {
     contributionToken = _contributionToken;
 
-    // Make sure the tiers were delivered in order.
-    if (__tiers.length != 0) {
-      _tiers.push(__tiers[0]);
+    // Get a reference to the number of tiers.
+    uint256 _numTiers = __tiers.length;
 
-      // Get a reference to the number of tiers.
-      uint256 _numTiers = __tiers.length;
+    // Nothing to check if there are no tiers.
+    if (_numTiers == 0) return;
 
-      // Keep a reference to the tier being iterated on.
-      JBNFTRewardTier memory _tier;
+    // Keep a reference to the tier being iterated on.
+    JBNFTRewardTier memory _tier;
 
-      for (uint256 _i = 1; _i < _numTiers; ) {
-        // Set the tier being iterated on.
-        _tier = __tiers[_i];
+    for (uint256 _i = 0; _i < _numTiers; ) {
+      // Set the tier being iterated on.
+      _tier = __tiers[_i];
 
+      // Make sure the tiers were delivered in order.
+      if (_i > 0) {
         // Make sure the tier's contribution floor is greater than the previous contribution floor.
         if (_tier.contributionFloor <= __tiers[_i - 1].contributionFloor)
           revert INVALID_PRICE_SORT_ORDER(_i);
@@ -229,16 +230,16 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
         // Make sure the tiers' ID ranges don't collide.
         if (_tier.idCeiling - _tier.remainingAllowance < __tiers[_i - 1].idCeiling)
           revert INVALID_ID_SORT_ORDER(_i);
+      }
 
-        // Set the initial allowance to be the remaining allowance.
-        _tier.initialAllowance = _tier.remainingAllowance;
+      // Set the initial allowance to be the remaining allowance.
+      _tier.initialAllowance = _tier.remainingAllowance;
 
-        // Add the tier.
-        _tiers.push(_tier);
+      // Add the tier.
+      _tiers.push(_tier);
 
-        unchecked {
-          ++_i;
-        }
+      unchecked {
+        ++_i;
       }
     }
   }
