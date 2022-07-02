@@ -35,7 +35,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.etch(mockContributionToken, new bytes(0x69));
         vm.etch(mockTerminalAddress, new bytes(0x69));
 
-        for(uint256 i=1; i < 10; i++) {
+        for(uint256 i=1; i <= 10; i++) {
             tiers.push(JBNFTRewardTier({
                 contributionFloor: uint128(i*10),
                 idCeiling: uint48((i*100)),
@@ -87,7 +87,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _tiers
         );
 
+        assertEq(_delegate.projectId(), projectId);
+        assertEq(address(_delegate.directory()), mockJBDirectory);
+        assertEq(_delegate.name(), name);
+        assertEq(_delegate.symbol(), symbol);
+        assertEq(address(_delegate.tokenUriResolver()), mockTokenUriResolver);
+        assertEq(_delegate.baseUri(), baseUri);
+        assertEq(_delegate.contractUri(), contractUri);
+        assertEq(_delegate.owner(), owner);
         assertEq(_delegate.contributionToken(), mockContributionToken);
+        assertEq(_delegate.tiers(), _tiers);
     }
 
     function testJBTieredNFTRewardDelegate_revertDeploymentIfPriceTiersNonSorted(uint8 nbTiers, uint8 errorIndex) public {
@@ -161,4 +170,28 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _tiers
         );
     }
+
+    function testJBTieredNFTRewardDelegate_returnsCorrectTierNumber(uint8 tokenId) external {
+        // Tiers are from 1 to 10, with 100 token per tier
+
+        // If in an existing tier, should return it
+        if(tokenId <= 10 * 100) assertEq(delegate.tierNumberOfToken(tokenId), (tokenId / 100) + 1);
+        // If outside of existing tiers, should return 0&@@
+        else assertEq(delegate.tierNumberOfToken(tokenId), 0);
+    }
+
+// Internal helpers
+
+// JBNFTRewardTier Array comparison
+    function assertEq(JBNFTRewardTier[] memory first, JBNFTRewardTier[] memory second) private {
+        assertEq(first.length, second.length);
+
+        for(uint256 i; i < first.length; i++) {
+            assertEq(first[i].contributionFloor, second[i].contributionFloor);
+            assertEq(first[i].idCeiling, second[i].idCeiling);
+            assertEq(first[i].remainingAllowance, second[i].remainingAllowance);
+            assertEq(first[i].initialAllowance, second[i].initialAllowance);
+        }
+    }
+
 }
