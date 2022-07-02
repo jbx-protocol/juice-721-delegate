@@ -222,7 +222,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
       _tier = __tiers[_i];
 
       // Make sure the tiers were delivered in order.
-      if (_i > 0) {
+      if (_i != 0) {
         // Make sure the tier's contribution floor is greater than the previous contribution floor.
         if (_tier.contributionFloor <= __tiers[_i - 1].contributionFloor)
           revert INVALID_PRICE_SORT_ORDER(_i);
