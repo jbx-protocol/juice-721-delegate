@@ -7,7 +7,7 @@ import 'forge-std/Test.sol';
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
 
-  address caller = address(69420);
+  address beneficiary = address(69420);
   address owner = address(42069);
   address mockJBDirectory = address(1);
   address mockTokenUriResolver = address(2);
@@ -37,7 +37,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
 
   function setUp() public {
-    vm.label(caller, 'caller');
+    vm.label(beneficiary, 'beneficiary');
     vm.label(owner, 'owner');
     vm.label(mockJBDirectory, 'mockJBDirectory');
     vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
@@ -75,7 +75,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_deploy_deployIfTiersSorted(uint8 nbTiers) public {
+  function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {
     vm.assume(nbTiers < 20);
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
@@ -114,7 +114,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.tiers(), _tiers);
   }
 
-  function testJBTieredNFTRewardDelegate_deployer_revertDeploymentIfPriceTiersNonSorted(
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfPriceTiersNonSorted(
     uint8 nbTiers,
     uint8 errorIndex
   ) public {
@@ -156,7 +156,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_deployer_revertDeploymentIfIdCeilingsNonSorted(
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfIdCeilingsNonSorted(
     uint8 nbTiers,
     uint8 errorIndex
   ) public {
@@ -249,63 +249,104 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 theoreticalTokenId = valueSent <= 100
         ? (((( uint256(valueSent) / 10) - 1) * 100) + 1)
         : 901;
-    
+
     uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
 
     // Check: correct event
     vm.expectEmit(true, true, true, true, address(delegate));
-    emit Mint(theoreticalTokenId, theoreticalTiers, caller, valueSent, owner);
+    emit Mint(theoreticalTokenId, theoreticalTiers, beneficiary, valueSent, owner);
 
     // Actual call
     vm.prank(owner);
-    uint256 tokenId = delegate.mint(caller, valueSent);
+    uint256 tokenId = delegate.mint(beneficiary, valueSent);
 
-    // // Check: allowance left - tiers are 1-indexed
-    // assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance - 1);
+    // Check: allowance left - tiers are 1-indexed
+    assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance - 1);
 
     // Check: tokenId?
     assertEq(tokenId, theoreticalTokenId);
 
     // Check: beneficiary balance
-    assertEq(delegate.totalOwnerBalance(caller), 1);
+    assertEq(delegate.totalOwnerBalance(beneficiary), 1);
   }
 
   function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft(uint8 valueSent) external {
+    vm.assume(valueSent >= 10);
+    uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
+  
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IToken721UriResolver(mockTokenUriResolver),
+        baseUri,
+        contractUri,
+        mockTerminalAddress,
+        owner,
+        mockContributionToken,
+        tiers
+    );
+
+    _delegate.setTier(
+        theoreticalTiers - 1,
+        JBNFTRewardTier({
+          contributionFloor: uint128(theoreticalTiers * 10),
+          idCeiling: uint48(theoreticalTiers * 100),
+          remainingAllowance: 0,
+          initialAllowance: uint40(100)
+        })
+    );
+
+    vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
+    vm.prank(owner);
+    _delegate.mint(beneficiary, valueSent);
   }
 
-  function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner(uint8 valueSent) external {
+  function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner(address caller) external {
+    vm.assume(caller != owner);
+
+    vm.prank(caller);
+    vm.expectRevert(abi.encodePacked('Ownable: caller is not the owner'));
+    delegate.mint(beneficiary, 100);
   }
 
   function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint8 valueSent) external {
     // First tier floor is 10 and last tier is 1000
     vm.assume(valueSent >= 10 && valueSent <= 2000);
     vm.prank(owner);
-    uint256 tokenId = delegate.mint(caller, valueSent);
+    uint256 tokenId = delegate.mint(beneficiary, valueSent);
     uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
 
     // Check: correct event
     vm.expectEmit(true, false, false, true, address(delegate));
-    emit Burn(tokenId, caller, owner);
+    emit Burn(tokenId, beneficiary, owner);
 
     // Actual call
     vm.prank(owner);
-    delegate.burn(caller, tokenId);
+    delegate.burn(beneficiary, tokenId);
 
-    // // Check: allowance left - back to the original one (tiers are 1-indexed)
-    // assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance);
+    // Check: allowance left - back to the original one (tiers are 1-indexed)
+    assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance);
 
     // Check: beneficiary balance
-    assertEq(delegate.totalOwnerBalance(caller), 0);
+    assertEq(delegate.totalOwnerBalance(beneficiary), 0);
   }
 
-function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(uint8 valueSent) external {
+function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address caller) external {
+    vm.assume(caller != owner);
+    vm.prank(owner);
+    uint256 tokenId = delegate.mint(beneficiary, 100);
 
-    
+    vm.prank(caller);
+    vm.expectRevert(abi.encodePacked('Ownable: caller is not the owner'));
+    delegate.burn(beneficiary, tokenId);
   }
 
-function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotOwnerd(uint8 valueSent) external {
-
-
+function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting(uint256 _tokenId) external {
+    vm.prank(owner);
+    vm.expectRevert(abi.encodePacked('NOT_MINTED'));
+    delegate.burn(beneficiary, _tokenId);
 }
 
   // Internal helpers
