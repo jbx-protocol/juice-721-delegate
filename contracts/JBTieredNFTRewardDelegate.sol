@@ -225,11 +225,11 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
 
       // Make sure the ID ceilings line up with the allowances
       _totalAllowance += _tier.remainingAllowance;
-      if(_totalAllowance != _tier.idCeiling){
+      if (_totalAllowance != _tier.idCeiling) {
         revert INVALID_ID_SORT_ORDER(_i);
       }
 
-      if(_i != 0){
+      if (_i != 0) {
         // Make sure the tier's contribution floor is greater than the previous contribution floor.
         if (_tier.contributionFloor <= __tiers[_i - 1].contributionFloor)
           revert INVALID_PRICE_SORT_ORDER(_i);
@@ -344,7 +344,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @return The ID of the token.
     @return The tier number.
   */
-  function _generateTokenId(uint256 _amount) internal view returns (uint256, uint256) {
+  function _generateTokenId(uint256 _amount) internal returns (uint256, uint256) {
     // Keep a reference to the number of tiers.
     uint256 _numTiers = _tiers.length;
 
@@ -362,7 +362,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
         _tier.remainingAllowance != 0
       ) {
         // The token ID incrementally increases until the id cieling.
-        uint256 _tokenId = _tier.idCeiling - --_tier.remainingAllowance;
+        uint256 _tokenId = _tier.idCeiling - --_tiers[_i].remainingAllowance;
 
         // Break out of the for loop since we've found the right tier.
         // The the tier being returned, which is the 1 indexed position in the tiers array.
