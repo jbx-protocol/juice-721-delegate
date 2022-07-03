@@ -344,7 +344,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @return The ID of the token.
     @return The tier number.
   */
-  function _generateTokenId(uint256 _amount) internal returns (uint256, uint256) {
+  function _generateTokenId(uint256 _amount) internal view returns (uint256, uint256) {
     // Keep a reference to the number of tiers.
     uint256 _numTiers = _tiers.length;
 
