@@ -327,7 +327,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     (uint256 _tokenId, uint256 _tierNumber) = _generateTokenId(_data.amount.value);
 
     // Make sure there's a token ID.
-    if (_tokenId == 0) revert NOT_AVAILABLE();
+    if (_tokenId == 0) return;
 
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_data.beneficiary, _tokenId);

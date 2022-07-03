@@ -8,7 +8,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   address beneficiary = address(69420);
   address owner = address(42069);
-  address mockJBDirectory = address(1);
+  address mockJBDirectory = address(100);
   address mockTokenUriResolver = address(2);
   address mockContributionToken = address(3);
   address mockTerminalAddress = address(4);
@@ -193,7 +193,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_totalSupply_returnsCorrectTotalSuuply() external {
+  function testJBTieredNFTRewardDelegate_totalSupply_returnsCorrectTotalSupply() external {
     ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -353,6 +353,107 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(owner);
     vm.expectRevert(abi.encodePacked('NOT_MINTED'));
     delegate.burn(beneficiary, _tokenId);
+  }
+
+  // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
+  function testJBTieredNFTRewardDelegate_payParams_doesNotRevertOnAmountBelowContributionFloor()
+  external
+  {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    uint256 _totalSupplyBeforePay = delegate.totalSupply();
+
+    // The calldata is correct but the 'msg.sender' is not the '_expectedCaller'
+    vm.prank(mockTerminalAddress);
+    delegate.payParams(
+      JBPayParamsData(
+        IJBPaymentTerminal(mockTerminalAddress),
+        msg.sender,
+        JBTokenAmount(
+            mockContributionToken,
+            tiers[0].contributionFloor - 1, // 1 wei below the minimum amount
+            0,
+            0
+          ),
+        projectId,
+        0,
+        msg.sender,
+        0,
+        0,
+        "",
+        new bytes(0)
+      )
+    );
+
+    // Make sure no new NFT was minted
+    assertEq(_totalSupplyBeforePay, delegate.totalSupply());
+  }
+
+  function testJBTieredNFTRewardDelegate_payParams_revertIfNotTerminalOfProjectId(address _terminal)
+    external
+  {
+    vm.assume(_terminal != mockTerminalAddress);
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, _terminal),
+      abi.encode(false)
+    );
+
+    // The caller is the _expectedCaller however the terminal in the calldata is not correct
+    vm.prank(mockTerminalAddress);
+    vm.expectRevert(abi.encodeWithSignature('INVALID_PAYMENT_EVENT()'));
+    delegate.payParams(
+      JBPayParamsData(
+        IJBPaymentTerminal(_terminal),
+        msg.sender,
+        JBTokenAmount(address(0), 0, 0, 0),
+        projectId,
+        0,
+        msg.sender,
+        0,
+        0,
+        "",
+        new bytes(0)
+      )
+    );
+  }
+
+  function testJBTieredNFTRewardDelegate_payParams_revertIfCallerNotExpectedCaller(address _terminal)
+  external
+  {
+    vm.assume(_terminal != mockTerminalAddress);
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    // The calldata is correct but the 'msg.sender' is not the '_expectedCaller'
+    vm.prank(_terminal);
+    vm.expectRevert(abi.encodeWithSignature('INVALID_PAYMENT_EVENT()'));
+    delegate.payParams(
+      JBPayParamsData(
+        IJBPaymentTerminal(mockTerminalAddress),
+        msg.sender,
+        JBTokenAmount(address(0), 0, 0, 0),
+        projectId,
+        0,
+        msg.sender,
+        0,
+        0,
+        "",
+        new bytes(0)
+      )
+    );
   }
 
   // Internal helpers
