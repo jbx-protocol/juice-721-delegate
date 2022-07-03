@@ -42,7 +42,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBNFTRewardTier({
           contributionFloor: uint128(i * 10),
           idCeiling: uint48((i * 100)),
-          remainingAllowance: uint40(99),
+          remainingAllowance: uint40(100),
           initialAllowance: uint40(100)
         })
       );
@@ -71,7 +71,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48( i * 100),
-        remainingAllowance: uint40(99),
+        remainingAllowance: uint40(100),
         initialAllowance: uint40(100)
       });
     }
@@ -115,7 +115,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
-        remainingAllowance: uint40(99),
+        remainingAllowance: uint40(100),
         initialAllowance: uint40(100)
       });
     }
@@ -157,7 +157,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
-        remainingAllowance: uint40(99),
+        remainingAllowance: uint40(100),
         initialAllowance: uint40(100)
       });
     }
