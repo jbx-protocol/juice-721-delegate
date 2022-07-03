@@ -1,4 +1,3 @@
-
 pragma solidity 0.8.6;
 import '../JBTieredNFTRewardDelegate.sol';
 import '../interfaces/IJBTieredNFTRewardDelegate.sol';
@@ -25,7 +24,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   JBTieredLimitedNFTRewardDataSource delegate;
 
-    event Mint(
+  event Mint(
     uint256 indexed tokenId,
     uint256 indexed tier,
     address indexed beneficiary,
@@ -34,7 +33,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
   );
 
   event Burn(uint256 indexed tokenId, address owner, address caller);
-
 
   function setUp() public {
     vm.label(beneficiary, 'beneficiary');
@@ -247,8 +245,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.assume(valueSent >= 10 && valueSent <= 2000);
 
     uint256 theoreticalTokenId = valueSent <= 100
-        ? (((( uint256(valueSent) / 10) - 1) * 100) + 1)
-        : 901;
+      ? ((((uint256(valueSent) / 10) - 1) * 100) + 1)
+      : 901;
 
     uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
 
@@ -261,7 +259,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 tokenId = delegate.mint(beneficiary, valueSent);
 
     // Check: allowance left - tiers are 1-indexed
-    assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance - 1);
+    assertEq(
+      delegate.tiers()[theoreticalTiers - 1].remainingAllowance,
+      tiers[theoreticalTiers - 1].remainingAllowance - 1
+    );
 
     // Check: tokenId?
     assertEq(tokenId, theoreticalTokenId);
@@ -273,7 +274,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft(uint8 valueSent) external {
     vm.assume(valueSent >= 10);
     uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
-  
+
     ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -286,16 +287,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         owner,
         mockContributionToken,
         tiers
-    );
+      );
 
     _delegate.setTier(
-        theoreticalTiers - 1,
-        JBNFTRewardTier({
-          contributionFloor: uint128(theoreticalTiers * 10),
-          idCeiling: uint48(theoreticalTiers * 100),
-          remainingAllowance: 0,
-          initialAllowance: uint40(100)
-        })
+      theoreticalTiers - 1,
+      JBNFTRewardTier({
+        contributionFloor: uint128(theoreticalTiers * 10),
+        idCeiling: uint48(theoreticalTiers * 100),
+        remainingAllowance: 0,
+        initialAllowance: uint40(100)
+      })
     );
 
     vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
@@ -327,13 +328,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.burn(beneficiary, tokenId);
 
     // Check: allowance left - back to the original one (tiers are 1-indexed)
-    assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance);
+    assertEq(
+      delegate.tiers()[theoreticalTiers - 1].remainingAllowance,
+      tiers[theoreticalTiers - 1].remainingAllowance
+    );
 
     // Check: beneficiary balance
     assertEq(delegate.totalOwnerBalance(beneficiary), 0);
   }
 
-function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address caller) external {
+  function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address caller) external {
     vm.assume(caller != owner);
     vm.prank(owner);
     uint256 tokenId = delegate.mint(beneficiary, 100);
@@ -343,11 +347,13 @@ function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address cal
     delegate.burn(beneficiary, tokenId);
   }
 
-function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting(uint256 _tokenId) external {
+  function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting(uint256 _tokenId)
+    external
+  {
     vm.prank(owner);
     vm.expectRevert(abi.encodePacked('NOT_MINTED'));
     delegate.burn(beneficiary, _tokenId);
-}
+  }
 
   // Internal helpers
 
