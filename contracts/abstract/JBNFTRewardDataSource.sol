@@ -49,7 +49,7 @@ abstract contract JBNFTRewardDataSource is
     @notice
     The address that should be calling the data source methods.
   */
-  address internal _expectedCaller;
+  address internal immutable _expectedCaller;
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //

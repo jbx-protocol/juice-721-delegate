@@ -293,7 +293,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @param _tokenId The ID of the token to burn.
   */
   function burn(address _owner, uint256 _tokenId) external override onlyOwner {
-    // _burn alredy has the incorrect owner check
+    // _burn already has the incorrect owner check
     // The token to which the token ID belongs.
     uint256 _tierNumber = tierNumberOfToken(_tokenId);
 
@@ -361,12 +361,14 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
         (_i == _numTiers - 1 || _tiers[_i + 1].contributionFloor > _amount) &&
         _tier.remainingAllowance != 0
       ) {
-        // The token ID incrementally increases until the id cieling.
-        uint256 _tokenId = _tier.idCeiling - --_tiers[_i].remainingAllowance;
+        unchecked{
+          // The token ID incrementally increases until the id ceiling.
+          uint256 _tokenId = _tier.idCeiling - --_tiers[_i].remainingAllowance;
 
-        // Break out of the for loop since we've found the right tier.
-        // The the tier being returned, which is the 1 indexed position in the tiers array.
-        return (_tokenId, _i + 1);
+          // Break out of the for loop since we've found the right tier.
+          // The the tier being returned, which is the 1 indexed position in the tiers array.
+          return (_tokenId, _i + 1);
+        }
       }
 
       unchecked {
