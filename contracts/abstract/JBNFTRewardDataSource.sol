@@ -35,7 +35,6 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
 
   error INVALID_PAYMENT_EVENT();
-  error INCORRECT_OWNER();
   error INVALID_ADDRESS();
   error INVALID_TOKEN();
   error SUPPLY_EXHAUSTED();

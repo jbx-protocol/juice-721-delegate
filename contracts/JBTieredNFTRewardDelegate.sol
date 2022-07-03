@@ -293,8 +293,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     @param _tokenId The ID of the token to burn.
   */
   function burn(address _owner, uint256 _tokenId) external override onlyOwner {
-    if (_ownerOf[_tokenId] != _owner) revert INCORRECT_OWNER();
-
+    // _burn alredy has the incorrect owner check
     // The token to which the token ID belongs.
     uint256 _tierNumber = tierNumberOfToken(_tokenId);
 
