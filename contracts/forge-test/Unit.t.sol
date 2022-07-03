@@ -42,7 +42,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBNFTRewardTier({
           contributionFloor: uint128(i * 10),
           idCeiling: uint48((i * 100)),
-          remainingAllowance: uint40(100),
+          remainingAllowance: uint40(99),
           initialAllowance: uint40(100)
         })
       );
@@ -70,8 +70,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
-        idCeiling: uint48(i * 100),
-        remainingAllowance: uint40(100),
+        idCeiling: uint48( i * 100),
+        remainingAllowance: uint40(99),
         initialAllowance: uint40(100)
       });
     }
@@ -115,7 +115,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
-        remainingAllowance: uint40(100),
+        remainingAllowance: uint40(99),
         initialAllowance: uint40(100)
       });
     }
@@ -157,7 +157,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
-        remainingAllowance: uint40(100),
+        remainingAllowance: uint40(99),
         initialAllowance: uint40(100)
       });
     }
@@ -232,12 +232,37 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 valueSent) external {
     // First tier floor is 10 and last tier is 1000
-    vm.assume(valueSent >= 20 && valueSent <= 2000);
+    vm.assume(valueSent >= 10 && valueSent <= 2000);
 
     vm.prank(owner);
     delegate.mint(caller, valueSent);
 
+    // todo check event
+
     assertEq(delegate.totalOwnerBalance(caller), 1);
+  }
+
+  function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft(uint8 valueSent) external {
+  }
+
+  function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner(uint8 valueSent) external {
+  }
+
+  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint8 valueSent) external {
+
+// check new balance
+// check new remaining allowance
+// check event
+  }
+
+function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(uint8 valueSent) external {
+
+    
+  }
+
+    function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotOwnerd(uint8 valueSent) external {
+
+    
   }
 
   // Internal helpers
