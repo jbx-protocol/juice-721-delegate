@@ -1,6 +1,7 @@
-pragma solidity 0.8.6;
 
+pragma solidity 0.8.6;
 import '../JBTieredNFTRewardDelegate.sol';
+import '../interfaces/IJBTieredNFTRewardDelegate.sol';
 import 'forge-std/Test.sol';
 
 contract TestJBTieredNFTRewardDelegate is Test {
@@ -23,6 +24,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
   JBNFTRewardTier[] tiers;
 
   JBTieredLimitedNFTRewardDataSource delegate;
+
+    event Mint(
+    uint256 indexed tokenId,
+    uint256 indexed tier,
+    address indexed beneficiary,
+    uint256 value,
+    address caller
+  );
+
+  event Burn(uint256 indexed tokenId, address owner, address caller);
+
 
   function setUp() public {
     vm.label(caller, 'caller');
@@ -70,7 +82,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
-        idCeiling: uint48( i * 100),
+        idCeiling: uint48(i * 100),
         remainingAllowance: uint40(100),
         initialAllowance: uint40(100)
       });
@@ -234,11 +246,27 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // First tier floor is 10 and last tier is 1000
     vm.assume(valueSent >= 10 && valueSent <= 2000);
 
+    uint256 theoreticalTokenId = valueSent <= 100
+        ? (((( uint256(valueSent) / 10) - 1) * 100) + 1)
+        : 901;
+    
+    uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
+
+    // Check: correct event
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit Mint(theoreticalTokenId, theoreticalTiers, caller, valueSent, owner);
+
+    // Actual call
     vm.prank(owner);
-    delegate.mint(caller, valueSent);
+    uint256 tokenId = delegate.mint(caller, valueSent);
 
-    // todo check event
+    // // Check: allowance left - tiers are 1-indexed
+    // assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance - 1);
 
+    // Check: tokenId?
+    assertEq(tokenId, theoreticalTokenId);
+
+    // Check: beneficiary balance
     assertEq(delegate.totalOwnerBalance(caller), 1);
   }
 
@@ -249,10 +277,25 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint8 valueSent) external {
+    // First tier floor is 10 and last tier is 1000
+    vm.assume(valueSent >= 10 && valueSent <= 2000);
+    vm.prank(owner);
+    uint256 tokenId = delegate.mint(caller, valueSent);
+    uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
 
-// check new balance
-// check new remaining allowance
-// check event
+    // Check: correct event
+    vm.expectEmit(true, false, false, true, address(delegate));
+    emit Burn(tokenId, caller, owner);
+
+    // Actual call
+    vm.prank(owner);
+    delegate.burn(caller, tokenId);
+
+    // // Check: allowance left - back to the original one (tiers are 1-indexed)
+    // assertEq(delegate.tiers()[theoreticalTiers-1].remainingAllowance, tiers[theoreticalTiers-1].remainingAllowance);
+
+    // Check: beneficiary balance
+    assertEq(delegate.totalOwnerBalance(caller), 0);
   }
 
 function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(uint8 valueSent) external {
@@ -260,10 +303,10 @@ function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(uint8 value
     
   }
 
-    function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotOwnerd(uint8 valueSent) external {
+function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotOwnerd(uint8 valueSent) external {
 
-    
-  }
+
+}
 
   // Internal helpers
 
