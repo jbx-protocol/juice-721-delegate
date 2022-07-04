@@ -349,7 +349,7 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     uint256 _numTiers = _tiers.length;
 
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier memory _tier;
+    JBNFTRewardTier storage _tier;
 
     for (uint256 _i; _i < _numTiers; ) {
       // Set the tier being iterated on.
