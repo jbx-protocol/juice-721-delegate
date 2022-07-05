@@ -6,6 +6,8 @@ import '../structs/JBDeployTieredNFTRewardDataSourceData.sol';
 import '../structs/JBLauchFundingCyclesData.sol';
 
 interface IJBTieredLimitedNFTRewardDataSourceProjectDeployer {
+  function controller() external view returns (IJBController);
+
   function launchProject(
     address _owner,
     JBProjectMetadata memory _projectMetadata,

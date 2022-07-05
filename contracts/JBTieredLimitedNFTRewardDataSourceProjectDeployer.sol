@@ -11,15 +11,30 @@ import './interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
 contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
   IJBTieredLimitedNFTRewardDataSourceProjectDeployer
 {
+  //*********************************************************************//
+  // --------------- public immutable stored properties ---------------- //
+  //*********************************************************************//
+
   /** 
     @notice
     The controller with which new projects should be deployed. 
   */
-  IJBController public controller;
+  IJBController public immutable override controller;
 
+  //*********************************************************************//
+  // -------------------------- constructor ---------------------------- //
+  //*********************************************************************//
+
+  /** 
+    @param _controller The controller with which new projects should be deployed. 
+  */
   constructor(IJBController _controller) {
     controller = _controller;
   }
+
+  //*********************************************************************//
+  // ---------------------- external transactions ---------------------- //
+  //*********************************************************************//
 
   /** 
     @notice 
@@ -53,6 +68,10 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     // Launch funding cycles for the project.
     _launchFundingCycles(projectId, _launchFundingCyclesData);
   }
+
+  //*********************************************************************//
+  // ------------------------ internal functions ----------------------- //
+  //*********************************************************************//
 
   /** 
     @notice
