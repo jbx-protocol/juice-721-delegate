@@ -394,6 +394,59 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
+  function testJBTieredNFTRewardDelegate_payParams_revertIfAllowanceRunsOut()
+  external
+  {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    uint256 _supplyLeft = tiers[0].initialAllowance;
+    while(true){
+      uint256 _totalSupplyBeforePay = delegate.totalSupply();
+
+      // If there is no supply left this should revert
+      if(_supplyLeft == 0){
+        vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
+      }
+
+      // Perform the pay
+      vm.prank(mockTerminalAddress);
+      delegate.payParams(
+        JBPayParamsData(
+          IJBPaymentTerminal(mockTerminalAddress),
+          msg.sender,
+          JBTokenAmount(
+            mockContributionToken,
+            tiers[0].contributionFloor,
+            0,
+            0
+          ),
+          projectId,
+          0,
+          msg.sender,
+          0,
+          0,
+          "",
+          new bytes(0)
+        )
+      );
+
+      // Make sure if there was no supply left there was no NFT minted
+      if(_supplyLeft == 0){
+        assertEq(delegate.totalSupply(), _totalSupplyBeforePay);
+        break;
+      }else{
+        assertEq(delegate.totalSupply(), _totalSupplyBeforePay + 1);
+      }
+
+      --_supplyLeft;
+    }
+  }
+
   function testJBTieredNFTRewardDelegate_payParams_revertIfNotTerminalOfProjectId(address _terminal)
     external
   {
