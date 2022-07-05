@@ -17,10 +17,10 @@ import '../interfaces/ITokenSupplyDetails.sol';
   NFTRewardDataSourceDelegate
 
   @notice 
-  Juicebox data source delegate that offers project contributors NFTs.
+  Data source that offers project contributors NFTs.
 
   @dev 
-  This PayDelegate and RedeemDelegate implementation will simply pass through the weight and reclaimAmount it is called with.
+  This JBFundingCycleDataSource implementation will simply through the weight, reclaimAmount, and memos they are called with.
 */
 abstract contract JBNFTRewardDataSource is
   ERC721Rari,
