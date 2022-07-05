@@ -1,6 +1,6 @@
 pragma solidity 0.8.6;
-import '../JBTieredNFTRewardDelegate.sol';
-import '../interfaces/IJBTieredNFTRewardDelegate.sol';
+import '../JBTieredLimitedNFTRewardDataSource.sol';
+import '../interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import 'forge-std/Test.sol';
 
 contract TestJBTieredNFTRewardDelegate is Test {

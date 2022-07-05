@@ -5,7 +5,7 @@ import './IToken721UriResolver.sol';
 import './ITokenSupplyDetails.sol';
 import './../structs/JBNFTRewardTier.sol';
 
-interface IJBTieredNFTRewardDelegate is ITokenSupplyDetails {
+interface IJBTieredLimitedNFTRewardDataSource is ITokenSupplyDetails {
   event Mint(
     uint256 indexed tokenId,
     uint256 indexed tier,

@@ -2,7 +2,7 @@
 pragma solidity 0.8.6;
 
 import './abstract/JBNFTRewardDataSource.sol';
-import './interfaces/IJBTieredNFTRewardDelegate.sol';
+import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 
 /**
   @title
@@ -15,7 +15,7 @@ import './interfaces/IJBTieredNFTRewardDelegate.sol';
   This contract allows project creators to reward contributors with NFTs. 
   Intended use is to incentivize initial project support by minting a limited number of NFTs to the first N contributors among various price tiers.
 */
-contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredNFTRewardDelegate {
+contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredLimitedNFTRewardDataSource {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
