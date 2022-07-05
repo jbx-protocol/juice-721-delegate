@@ -327,7 +327,12 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
     (uint256 _tokenId, uint256 _tierNumber) = _generateTokenId(_data.amount.value);
 
     // Make sure there's a token ID.
-    if (_tokenId == 0) return;
+    if (_tokenId == 0)
+      if (_tierNumber > 0)
+        // If there's no token ID but there is a tier, the tier must have sold out.
+        revert NOT_AVAILABLE();
+      // If there is no tier, accept the payment normally without minting.
+      else return;
 
     // If there's a token to mint, do so and increment the tier supply.
     _mint(_data.beneficiary, _tokenId);
@@ -358,10 +363,12 @@ contract JBTieredLimitedNFTRewardDataSource is JBNFTRewardDataSource, IJBTieredN
       // If the contribution value is at least as much as the floor
       if (
         _tier.contributionFloor <= _amount &&
-        (_i == _numTiers - 1 || _tiers[_i + 1].contributionFloor > _amount) &&
-        _tier.remainingAllowance != 0
+        (_i == _numTiers - 1 || _tiers[_i + 1].contributionFloor > _amount)
       ) {
-        unchecked{
+        // If there's none remaining, return an ID of zero alongside the appropriate tier.
+        if (_tier.remainingAllowance == 0) return (0, _i + 1);
+
+        unchecked {
           // The token ID incrementally increases until the id ceiling.
           uint256 _tokenId = _tier.idCeiling - --_tiers[_i].remainingAllowance;
 
