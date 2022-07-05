@@ -7,7 +7,9 @@ import './JBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
 
 /**
- */
+  @notice
+  Deploys a project with a tiered limited NFT reward data source attached.
+*/
 contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
   IJBTieredLimitedNFTRewardDataSourceProjectDeployer
 {
