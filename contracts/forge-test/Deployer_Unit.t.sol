@@ -57,31 +57,30 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
 
-    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
-
-    // for (uint256 i = 1; i <= 10; i++) {
-    //   _tiers[i] = 
-    //     JBNFTRewardTier({
-    //       contributionFloor: uint128(i * 10),
-    //       idCeiling: uint48((i * 100)),
-    //       remainingAllowance: uint40(100),
-    //       initialAllowance: uint40(100)
-    //     })
-    //   ;
-    // }
-
-   NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
-      directory: IJBDirectory(mockJBDirectory),
-      name: name,
-      symbol: symbol,
-      tokenUriResolver: IToken721UriResolver(mockTokenUriResolver),
-      baseUri: baseUri,
-      contractUri: contractUri,
-      expectedCaller: mockTerminalAddress,
-      owner: owner,
-      contributionToken: mockContributionToken,
-      tiers: tiers
-    });
+    for (uint256 i = 1; i <= 10; i++) {
+      tiers.push( 
+        JBNFTRewardTier({
+          contributionFloor: uint128(i * 10),
+          idCeiling: uint48((i * 100)),
+          remainingAllowance: uint40(100),
+          initialAllowance: uint40(100)
+        })
+      )
+      ;
+    }
+  
+  NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
+    directory: IJBDirectory(mockJBDirectory),
+    name: name,
+    symbol: symbol,
+    tokenUriResolver: IToken721UriResolver(mockTokenUriResolver),
+    baseUri: baseUri,
+    contractUri: contractUri,
+    expectedCaller: mockTerminalAddress,
+    owner: owner,
+    contributionToken: mockContributionToken,
+    tiers: tiers
+  });
 
   projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
 
@@ -127,7 +126,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
   }
 
   function testLaunchProjectFor_launchProject() external {
-    deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData);
+    //deployer.launchProjectFor(owner, _NFTRewardDeployerData, launchProjectData);
   }
 
 }
