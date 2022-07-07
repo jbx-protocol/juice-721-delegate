@@ -69,10 +69,22 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     assertEq(previousProjectId, _projectId - 1);
   }
 
+  function testLaunchProjectFor_shouldLaunchProject_nonFuzzed() external {
+    (JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData, JBLaunchProjectData memory launchProjectData) = createData();
+
+    vm.mockCall(mockJBController, abi.encodeWithSelector(IJBController.projects.selector), abi.encode(mockJBProjects));
+    vm.mockCall(mockJBProjects, abi.encodeWithSelector(IJBProjects.count.selector), abi.encode(5));
+
+    vm.mockCall(mockJBController, abi.encodeWithSelector(IJBController.launchProjectFor.selector), abi.encode(true));
+
+    uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData);
+
+    assertEq(_projectId, 6);
+  }
 
   // -- internal helpers --
 
-  function createData() internal returns(JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData, JBLaunchProjectData memory launchProjectData) {
+  function createData() internal view returns(JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData, JBLaunchProjectData memory launchProjectData) {
     JBProjectMetadata memory projectMetadata;
     JBFundingCycleData memory data;
     JBFundingCycleMetadata memory metadata;

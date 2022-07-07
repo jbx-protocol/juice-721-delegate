@@ -1,7 +1,9 @@
 pragma solidity 0.8.6;
+
 import '../JBTieredLimitedNFTRewardDataSource.sol';
 import '../interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import 'forge-std/Test.sol';
+
 
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
@@ -47,11 +49,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
 
+    // Create 10 tiers, each with 100 tokens available to mint
     for (uint256 i = 1; i <= 10; i++) {
       tiers.push(
         JBNFTRewardTier({
           contributionFloor: uint128(i * 10),
-          idCeiling: uint48((i * 100)),
+          idCeiling: uint48(i * 100),
           remainingAllowance: uint40(100),
           initialAllowance: uint40(100)
         })
@@ -74,8 +77,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {
-    vm.assume(nbTiers < 20);
+    // Avoid slowing down tests too much by limiting to 30 tiers max
+    vm.assume(nbTiers < 30);
 
+    // Create new tiers array
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
@@ -100,6 +105,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers
     );
 
+    // Check: delegate has correct parameters?
     assertEq(_delegate.projectId(), projectId);
     assertEq(address(_delegate.directory()), mockJBDirectory);
     assertEq(_delegate.name(), name);
@@ -112,14 +118,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.tiers(), _tiers);
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfPriceTiersNonSorted(
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfTiersNonSorted(
     uint8 nbTiers,
     uint8 errorIndex
   ) public {
     vm.assume(nbTiers < 20);
     vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
-    vm.assume(errorIndex + 1 < nbTiers); // We'll create an error between i and i+1
+    vm.assume(errorIndex + 1 < nbTiers); // We'll create an error by inverting tiers[i] and [i+1] floor prices
 
+    // Generate new tiers array
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
@@ -130,15 +137,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
     }
 
+    // Swap the contribution floors
     (_tiers[errorIndex].contributionFloor, _tiers[errorIndex + 1].contributionFloor) = (
       _tiers[errorIndex + 1].contributionFloor,
       _tiers[errorIndex].contributionFloor
     );
 
-    for (uint256 i; i < nbTiers; i++) emit log_uint(_tiers[i].contributionFloor);
-
+    // Expect the error at i+1 (as the floor is now smaller than i)
     vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER(uint256)', errorIndex + 1));
-
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -159,10 +165,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint8 errorIndex
   ) public {
     vm.assume(nbTiers < 20);
-    vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
-    vm.assume(errorIndex + 1 < nbTiers); // We'll create an error between i and i+1
+    vm.assume(errorIndex < nbTiers); // We'll create an error in tier index i
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
+
+    // Populate new tiers
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
@@ -172,12 +179,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
     }
 
+    // idCeiling is now greater than the allowance cumulative sum, meaning there is an ordering issue
+    // (more allowance than possible token id's)
     _tiers[errorIndex].idCeiling++;
 
-    for (uint256 i; i < nbTiers; i++) emit log_uint(_tiers[i].contributionFloor);
-
     vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER(uint256)', errorIndex));
-
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -236,7 +242,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // If in an existing tier, should return it
     if (tokenId <= 10 * 100)
       assertEq(delegate.tierNumberOfToken(tokenId), (tokenId / 100) + 1);
-      // If outside of existing tiers, should return 0&@@
+      // If outside of existing tiers, should return 0
     else assertEq(delegate.tierNumberOfToken(tokenId), 0);
   }
 
@@ -289,6 +295,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers
       );
 
+    // Set the remaining allowance of the last tier at 0
     _delegate.setTier(
       theoreticalTiers - 1,
       JBNFTRewardTier({
@@ -517,6 +524,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 }
 
+
+// ForTest to manually set a tier at a given tiers index
 contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardDataSource {
   constructor(
     uint256 _projectId,
