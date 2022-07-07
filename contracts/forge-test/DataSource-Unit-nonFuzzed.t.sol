@@ -113,9 +113,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.tiers(), _tiers);
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfPriceTiersNonSorted(
-  ) public {
-        uint256 nbTiers = 15;
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfPriceTiersNonSorted()
+    public
+  {
+    uint256 nbTiers = 15;
     uint256 errorIndex = 6;
     vm.assume(nbTiers < 20);
     vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
@@ -155,9 +156,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfIdCeilingsNonSorted(
-  ) public {
-            uint256 nbTiers = 15;
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfIdCeilingsNonSorted()
+    public
+  {
+    uint256 nbTiers = 15;
     uint256 errorIndex = 6;
     vm.assume(nbTiers < 20);
     vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
@@ -229,10 +231,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.totalSupply(), supply);
   }
 
-  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber()
-    external
-  {
-
+  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber() external {
     uint256 tokenId = 56;
     // Tiers are from 1 to 10, with 100 token per tier
 
@@ -276,7 +275,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft() external {
-        uint256 valueSent = 500;
+    uint256 valueSent = 500;
     vm.assume(valueSent >= 10);
     uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
 
@@ -345,7 +344,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner() external {
-        address caller = address(123456);
+    address caller = address(123456);
 
     vm.assume(caller != owner);
     vm.prank(owner);
@@ -356,9 +355,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.burn(beneficiary, tokenId);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting()
-    external
-  {
+  function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting() external {
     uint256 _tokenId = 123;
     vm.prank(owner);
     vm.expectRevert(abi.encodePacked('NOT_MINTED'));
@@ -367,7 +364,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
   function testJBTieredNFTRewardDelegate_payParams_doesNotRevertOnAmountBelowContributionFloor()
-  external
+    external
   {
     // Mock the directory call
     vm.mockCall(
@@ -385,17 +382,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBPaymentTerminal(mockTerminalAddress),
         msg.sender,
         JBTokenAmount(
-            mockContributionToken,
-            tiers[0].contributionFloor - 1, // 1 wei below the minimum amount
-            0,
-            0
-          ),
+          mockContributionToken,
+          tiers[0].contributionFloor - 1, // 1 wei below the minimum amount
+          0,
+          0
+        ),
         projectId,
         0,
         msg.sender,
         0,
         0,
-        "",
+        '',
         new bytes(0)
       )
     );
@@ -404,10 +401,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
-  function testJBTieredNFTRewardDelegate_payParams_revertIfNotTerminalOfProjectId()
-    external
-  {
-
+  function testJBTieredNFTRewardDelegate_payParams_revertIfNotTerminalOfProjectId() external {
     address _terminal = address(6969);
     vm.assume(_terminal != mockTerminalAddress);
 
@@ -431,16 +425,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         0,
         0,
-        "",
+        '',
         new bytes(0)
       )
     );
   }
 
-  function testJBTieredNFTRewardDelegate_payParams_revertIfCallerNotExpectedCaller()
-  external
-  {
-        address _terminal = address(6969);
+  function testJBTieredNFTRewardDelegate_payParams_revertIfCallerNotExpectedCaller() external {
+    address _terminal = address(6969);
     vm.assume(_terminal != mockTerminalAddress);
 
     // Mock the directory call
@@ -463,7 +455,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         0,
         0,
-        "",
+        '',
         new bytes(0)
       )
     );

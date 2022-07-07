@@ -357,7 +357,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
   function testJBTieredNFTRewardDelegate_payParams_doesNotRevertOnAmountBelowContributionFloor()
-  external
+    external
   {
     // Mock the directory call
     vm.mockCall(
@@ -375,17 +375,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBPaymentTerminal(mockTerminalAddress),
         msg.sender,
         JBTokenAmount(
-            mockContributionToken,
-            tiers[0].contributionFloor - 1, // 1 wei below the minimum amount
-            0,
-            0
-          ),
+          mockContributionToken,
+          tiers[0].contributionFloor - 1, // 1 wei below the minimum amount
+          0,
+          0
+        ),
         projectId,
         0,
         msg.sender,
         0,
         0,
-        "",
+        '',
         new bytes(0)
       )
     );
@@ -394,9 +394,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
-  function testJBTieredNFTRewardDelegate_payParams_revertIfAllowanceRunsOut()
-  external
-  {
+  function testJBTieredNFTRewardDelegate_payParams_revertIfAllowanceRunsOut() external {
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -405,11 +403,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     uint256 _supplyLeft = tiers[0].initialAllowance;
-    while(true){
+    while (true) {
       uint256 _totalSupplyBeforePay = delegate.totalSupply();
 
       // If there is no supply left this should revert
-      if(_supplyLeft == 0){
+      if (_supplyLeft == 0) {
         vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
       }
 
@@ -419,27 +417,22 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBPayParamsData(
           IJBPaymentTerminal(mockTerminalAddress),
           msg.sender,
-          JBTokenAmount(
-            mockContributionToken,
-            tiers[0].contributionFloor,
-            0,
-            0
-          ),
+          JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
           projectId,
           0,
           msg.sender,
           0,
           0,
-          "",
+          '',
           new bytes(0)
         )
       );
 
       // Make sure if there was no supply left there was no NFT minted
-      if(_supplyLeft == 0){
+      if (_supplyLeft == 0) {
         assertEq(delegate.totalSupply(), _totalSupplyBeforePay);
         break;
-      }else{
+      } else {
         assertEq(delegate.totalSupply(), _totalSupplyBeforePay + 1);
       }
 
@@ -472,15 +465,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         0,
         0,
-        "",
+        '',
         new bytes(0)
       )
     );
   }
 
-  function testJBTieredNFTRewardDelegate_payParams_revertIfCallerNotExpectedCaller(address _terminal)
-  external
-  {
+  function testJBTieredNFTRewardDelegate_payParams_revertIfCallerNotExpectedCaller(
+    address _terminal
+  ) external {
     vm.assume(_terminal != mockTerminalAddress);
 
     // Mock the directory call
@@ -503,7 +496,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         0,
         0,
-        "",
+        '',
         new bytes(0)
       )
     );
