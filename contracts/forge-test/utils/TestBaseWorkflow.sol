@@ -67,8 +67,6 @@ contract TestBaseWorkflow is Test {
 
   AccessJBLib internal _accessJBLib;
 
-  uint256 internal _projectId;
-
   //*********************************************************************//
   // --------------------------- test setup ---------------------------- //
   //*********************************************************************//
@@ -85,7 +83,7 @@ contract TestBaseWorkflow is Test {
     _jbPrices = new JBPrices(_projectOwner);
     vm.label(address(_jbPrices), 'JBPrices');
 
-    address contractAtNoncePlusOne = addressFrom(address(this), 13);
+    address contractAtNoncePlusOne = addressFrom(address(this), 5);
 
     _jbFundingCycleStore = new JBFundingCycleStore(IJBDirectory(contractAtNoncePlusOne));
     vm.label(address(_jbFundingCycleStore), 'JBFundingCycleStore');
@@ -140,7 +138,7 @@ contract TestBaseWorkflow is Test {
 
     _terminals.push(_jbETHPaymentTerminal);
 
-        _projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
+    _projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
 
     _data = JBFundingCycleData({
       duration: 14,

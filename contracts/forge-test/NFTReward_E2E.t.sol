@@ -22,17 +22,41 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     deployer = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(IJBController(_jbController));
   }
 
-  function deployAndLaunchProject() external {
+  function testDeployAndLaunchProject() external {
     (JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData, JBLaunchProjectData memory launchProjectData) = createData();
     uint256 projectId = deployer.launchProjectFor(_projectOwner, NFTRewardDeployerData, launchProjectData);
 
     assertEq(projectId, 1);
   }
 
+  function testMintOnPay() external {
+    (JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData, JBLaunchProjectData memory launchProjectData) = createData();
+    uint256 projectId = deployer.launchProjectFor(_projectOwner, NFTRewardDeployerData, launchProjectData);
+
+    _jbETHPaymentTerminal.pay{value: 100}(
+      projectId,
+      100,
+      address(0),
+      _beneficiary,
+      /* _minReturnedTokens */
+      0,
+      /* _preferClaimedTokens */
+      false,
+      /* _memo */
+      'Take my money!',
+      /* _delegateMetadata */
+      new bytes(0)
+    );
+
+    assertEq(projectId, 1);
+  }
+
+  // ----- internal helpers ------
+
   function createData() internal view returns(JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData, JBLaunchProjectData memory launchProjectData) {
     JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](10);
 
-    for (uint256 i; i <= 5; i++) {
+    for (uint256 i; i < 10; i++) {
       tiers[i] =
         JBNFTRewardTier({
           contributionFloor: uint128( (i+1) * 10),
