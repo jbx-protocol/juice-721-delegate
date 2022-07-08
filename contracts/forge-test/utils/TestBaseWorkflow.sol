@@ -151,7 +151,7 @@ contract TestBaseWorkflow is Test {
       global: JBGlobalFundingCycleMetadata({allowSetTerminals: false, allowSetController: false}),
       reservedRate: 5000,
       redemptionRate: 5000, //50%
-      ballotRedemptionRate: 0,
+      ballotRedemptionRate: 5000,
       pausePay: false,
       pauseDistributions: false,
       pauseRedeem: false,
@@ -162,8 +162,8 @@ contract TestBaseWorkflow is Test {
       allowControllerMigration: false,
       holdFees: false,
       useTotalOverflowForRedemptions: false,
-      useDataSourceForPay: false,
-      useDataSourceForRedeem: false,
+      useDataSourceForPay: true,
+      useDataSourceForRedeem: true,
       dataSource: address(0)
     });
 
