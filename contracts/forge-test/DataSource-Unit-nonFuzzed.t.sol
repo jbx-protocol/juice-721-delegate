@@ -1,7 +1,4 @@
-
-
 // This is only for Forge coverage purpose (skipping the fuzzed tests) and should reflect Datasour-Unit.t.sol
-
 
 pragma solidity 0.8.6;
 import '../JBTieredLimitedNFTRewardDataSource.sol';
@@ -68,7 +65,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -97,7 +94,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -151,7 +148,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -191,7 +188,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -207,7 +204,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        IToken721UriResolver(mockTokenUriResolver),
+        IJBTokenUriResolver(mockTokenUriResolver),
         baseUri,
         contractUri,
         mockTerminalAddress,
@@ -289,7 +286,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        IToken721UriResolver(mockTokenUriResolver),
+        IJBTokenUriResolver(mockTokenUriResolver),
         baseUri,
         contractUri,
         mockTerminalAddress,
@@ -487,7 +484,7 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    IToken721UriResolver _tokenUriResolver,
+    IJBTokenUriResolver _tokenUriResolver,
     string memory _baseUri,
     string memory _contractUri,
     address _expectedCaller,

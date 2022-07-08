@@ -190,7 +190,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    IToken721UriResolver _tokenUriResolver,
+    IJBTokenUriResolver _tokenUriResolver,
     string memory _baseUri,
     string memory _contractUri,
     address _expectedCaller,

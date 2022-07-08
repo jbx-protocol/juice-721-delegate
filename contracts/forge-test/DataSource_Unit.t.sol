@@ -4,7 +4,6 @@ import '../JBTieredLimitedNFTRewardDataSource.sol';
 import '../interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import 'forge-std/Test.sol';
 
-
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
 
@@ -66,7 +65,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -96,7 +95,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -150,7 +149,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -189,7 +188,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
       mockTerminalAddress,
@@ -205,7 +204,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        IToken721UriResolver(mockTokenUriResolver),
+        IJBTokenUriResolver(mockTokenUriResolver),
         baseUri,
         contractUri,
         mockTerminalAddress,
@@ -286,7 +285,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        IToken721UriResolver(mockTokenUriResolver),
+        IJBTokenUriResolver(mockTokenUriResolver),
         baseUri,
         contractUri,
         mockTerminalAddress,
@@ -524,7 +523,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 }
 
-
 // ForTest to manually set a tier at a given tiers index
 contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardDataSource {
   constructor(
@@ -532,7 +530,7 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    IToken721UriResolver _tokenUriResolver,
+    IJBTokenUriResolver _tokenUriResolver,
     string memory _baseUri,
     string memory _contractUri,
     address _expectedCaller,

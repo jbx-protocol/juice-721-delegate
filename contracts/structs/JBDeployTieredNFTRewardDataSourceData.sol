@@ -2,7 +2,7 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol';
-import './../interfaces/IToken721UriResolver.sol';
+import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
 import './JBNFTRewardTier.sol';
 
 /**
@@ -21,7 +21,7 @@ struct JBDeployTieredNFTRewardDataSourceData {
   IJBDirectory directory;
   string name;
   string symbol;
-  IToken721UriResolver tokenUriResolver;
+  IJBTokenUriResolver tokenUriResolver;
   string baseUri;
   string contractUri;
   address expectedCaller;

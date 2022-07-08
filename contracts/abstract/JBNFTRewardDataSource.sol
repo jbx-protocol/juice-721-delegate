@@ -8,25 +8,35 @@ import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPayme
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
 import {ERC721 as ERC721Rari} from '@rari-capital/solmate/src/tokens/ERC721.sol';
-import '../interfaces/INFTRewardDataSource.sol';
-import '../interfaces/IToken721UriResolver.sol';
+import '../interfaces/IJBNFTRewardDataSource.sol';
 import '../interfaces/ITokenSupplyDetails.sol';
 
 /**
   @title 
-  NFTRewardDataSourceDelegate
+  JBNFTRewardDataSource
 
   @notice 
   Data source that offers project contributors NFTs.
 
   @dev 
   This JBFundingCycleDataSource implementation will simply through the weight, reclaimAmount, and memos they are called with.
+
+  @dev
+  Adheres to -
+  IJBNFTRewardDataSource: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
+  IJBFundingCycleDataSource: Allows this data source to be attached to a funding cycle to have its methods called during regular protocol operations.
+
+  @dev
+  Inherits from -
+  todo
+  ERC721Votes: A checkpointable standard definition for non-fungible tokens (NFTs).
+  Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
 abstract contract JBNFTRewardDataSource is
+  IJBNFTRewardDataSource,
+  IJBFundingCycleDataSource,
   ERC721Rari,
-  Ownable,
-  INFTRewardDataSource,
-  IJBFundingCycleDataSource
+  Ownable
 {
   using Strings for uint256;
 
@@ -35,11 +45,6 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
 
   error INVALID_PAYMENT_EVENT();
-  error INVALID_ADDRESS();
-  error INVALID_TOKEN();
-  error SUPPLY_EXHAUSTED();
-  error NON_TRANSFERRABLE();
-  error INVALID_REQUEST(string);
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -75,7 +80,7 @@ abstract contract JBNFTRewardDataSource is
     @notice
     Custom token URI resolver, superceeds base URI.
   */
-  IToken721UriResolver public override tokenUriResolver;
+  IJBTokenUriResolver public override tokenUriResolver;
 
   /**
     @notice
@@ -88,7 +93,7 @@ abstract contract JBNFTRewardDataSource is
 
   /**
     @notice
-    Contract opensea-style metadata uri.
+    Contract metadata uri.
   */
   string public override contractUri;
 
@@ -112,7 +117,7 @@ abstract contract JBNFTRewardDataSource is
     returns (bool)
   {
     return
-      _interfaceId == type(INFTRewardDataSource).interfaceId ||
+      _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
       super.supportsInterface(_interfaceId); // check with rari-ERC721
   }
@@ -130,7 +135,7 @@ abstract contract JBNFTRewardDataSource is
     if (_ownerOf[_tokenId] == address(0)) return '';
 
     // If a token URI resolver is provided, use it to resolve the token URI.
-    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.tokenURI(_tokenId);
+    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
     // Append the token ID to the base URI.
     return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, _tokenId.toString())) : '';
@@ -148,15 +153,15 @@ abstract contract JBNFTRewardDataSource is
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _baseUri The token's base URI, to be used if a URI resolver is not provided. 
     @param _contractUri A URI where contract metadata can be found. 
-    @param __expectedCaller The address that should be calling calling the data source.
-    @param _owner The address that should own this contract.
+    @param __expectedCaller The address that should be  calling the data source.
+    @param _owner The address that will own this contract.
   */
   constructor(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    IToken721UriResolver _tokenUriResolver,
+    IJBTokenUriResolver _tokenUriResolver,
     string memory _baseUri,
     string memory _contractUri,
     address __expectedCaller,
@@ -278,7 +283,7 @@ abstract contract JBNFTRewardDataSource is
 
     @param _tokenUriResolver The new base URI.
   */
-  function setTokenUriResolver(IToken721UriResolver _tokenUriResolver) external override onlyOwner {
+  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external override onlyOwner {
     // Store the new value.
     tokenUriResolver = _tokenUriResolver;
 
