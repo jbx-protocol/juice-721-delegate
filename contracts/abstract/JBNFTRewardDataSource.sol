@@ -4,6 +4,7 @@ pragma solidity 0.8.6;
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
@@ -24,7 +25,8 @@ import '../interfaces/ITokenSupplyDetails.sol';
   @dev
   Adheres to -
   IJBNFTRewardDataSource: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
-  IJBFundingCycleDataSource: Allows this data source to be attached to a funding cycle to have its methods called during regular protocol operations.
+  IJBFundingCycleDataSource: Allows this contract to be attached to a funding cycle to have its methods called during regular protocol operations.
+  IJBPayDelegate: Allows this contract to receive callbacks when a project receives a payment.
 
   @dev
   Inherits from -
@@ -35,6 +37,7 @@ import '../interfaces/ITokenSupplyDetails.sol';
 abstract contract JBNFTRewardDataSource is
   IJBNFTRewardDataSource,
   IJBFundingCycleDataSource,
+  IJBPayDelegate,
   ERC721Rari,
   Ownable
 {
@@ -141,6 +144,57 @@ abstract contract JBNFTRewardDataSource is
     return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, _tokenId.toString())) : '';
   }
 
+  /**
+    @notice 
+    Part of IJBFundingCycleDataSource, this function gets called when the project receives a payment. It will set itself as the delegate to get a callback from the terminal.
+
+    @dev 
+    This function will revert if the contract calling it is not the store of one of the project's terminals. 
+
+    @param _data The Juicebox standard project contribution data.
+
+    @return weight The weight that tokens should get minted in accordance to 
+    @return memo The memo that should be forwarded to the event.
+    @return delegate A delegate to call once the payment has taken place.
+  */
+  function payParams(JBPayParamsData calldata _data)
+    external
+    view
+    override
+    returns (
+      uint256 weight,
+      string memory memo,
+      IJBPayDelegate delegate
+    )
+  {
+    // Forward the recieved weight and memo, and use this contract as a pay delegate.
+    return (_data.weight, _data.memo, IJBPayDelegate(address(this)));
+  }
+
+  /**
+    @notice 
+    Part of IJBFundingCycleDataSource, this function gets called when a project's token holders redeem. It will return the standard properties.
+
+    @param _data The Juicebox standard project redemption data.
+
+    @return reclaimAmount The amount that should be reclaimed from the treasury.
+    @return memo The memo that should be forwarded to the event.
+    @return delegate A delegate to call once the redemption has taken place.
+  */
+  function redeemParams(JBRedeemParamsData calldata _data)
+    external
+    pure
+    override
+    returns (
+      uint256 reclaimAmount,
+      string memory memo,
+      IJBRedemptionDelegate delegate
+    )
+  {
+    // Return the default values.
+    return (_data.reclaimAmount.value, _data.memo, IJBRedemptionDelegate(address(0)));
+  }
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
@@ -184,62 +238,22 @@ abstract contract JBNFTRewardDataSource is
 
   /**
     @notice 
-    Part of IJBFundingCycleDataSource, this function gets called when the project receives a payment. It will mint an NFT to the contributor (_data.beneficiary) if conditions are met.
+    Part of IJBPayDelegate, this function gets called when the project receives a payment. It will mint an NFT to the contributor (_data.beneficiary) if conditions are met.
 
     @dev 
-    This function will revert if the contract calling it is not the store of one of the project's terminals. 
+    This function will revert if the contract calling is not one of the project's terminals. 
 
     @param _data The Juicebox standard project contribution data.
-
-    @return weight The weight that tokens should get minted in accordance to 
-    @return memo The memo that should be forwarded to the event.
-    @return delegate A delegate to call once the payment has taken place.
   */
-  function payParams(JBPayParamsData calldata _data)
-    external
-    override
-    returns (
-      uint256 weight,
-      string memory memo,
-      IJBPayDelegate delegate
-    )
-  {
-    // Make sure the caller is expected, and the call is being made on behalf of an interaction with the correct project.
+  function didPay(JBDidPayData calldata _data) external override {
+    // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
-      !directory.isTerminalOf(projectId, _data.terminal) ||
-      msg.sender != _expectedCaller ||
+      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
       _data.projectId != projectId
     ) revert INVALID_PAYMENT_EVENT();
 
     // Process the contribution.
     _processContribution(_data);
-
-    // Forward the recieved weight and memo, and don't use a delegate.
-    return (_data.weight, _data.memo, IJBPayDelegate(address(0)));
-  }
-
-  /**
-    @notice 
-    Part of IJBFundingCycleDataSource, this function gets called when a project's token holders redeem. It will return the standard properties.
-
-    @param _data The Juicebox standard project redemption data.
-
-    @return reclaimAmount The amount that should be reclaimed from the treasury.
-    @return memo The memo that should be forwarded to the event.
-    @return delegate A delegate to call once the redemption has taken place.
-  */
-  function redeemParams(JBRedeemParamsData calldata _data)
-    external
-    pure
-    override
-    returns (
-      uint256 reclaimAmount,
-      string memory memo,
-      IJBRedemptionDelegate delegate
-    )
-  {
-    // Return the default values.
-    return (_data.reclaimAmount.value, _data.memo, IJBRedemptionDelegate(address(0)));
   }
 
   /**
@@ -294,5 +308,5 @@ abstract contract JBNFTRewardDataSource is
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  function _processContribution(JBPayParamsData calldata _data) internal virtual;
+  function _processContribution(JBDidPayData calldata _data) internal virtual;
 }
