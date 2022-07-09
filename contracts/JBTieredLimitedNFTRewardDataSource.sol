@@ -180,7 +180,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _baseUri The token's base URI, to be used if a URI resolver is not provided. 
     @param _contractUri A URI where contract metadata can be found. 
-    @param _expectedCaller The address that should be calling calling the data source.
     @param _owner The address that should own this contract.
     @param _contributionToken The token that contributions are expected to be in terms of.
     @param __tiers The tiers according to which token distribution will be made. 
@@ -190,10 +189,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    IToken721UriResolver _tokenUriResolver,
+    IJBTokenUriResolver _tokenUriResolver,
     string memory _baseUri,
     string memory _contractUri,
-    address _expectedCaller,
     address _owner,
     address _contributionToken,
     JBNFTRewardTier[] memory __tiers
@@ -206,7 +204,6 @@ contract JBTieredLimitedNFTRewardDataSource is
       _tokenUriResolver,
       _baseUri,
       _contractUri,
-      _expectedCaller,
       _owner
     )
   {
@@ -322,7 +319,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _data The Juicebox standard project contribution data.
   */
-  function _processContribution(JBPayParamsData calldata _data) internal override {
+  function _processContribution(JBDidPayData calldata _data) internal override {
     // Make the contribution is being made in the expected token.
     if (_data.amount.token != contributionToken) return;
 

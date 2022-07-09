@@ -42,7 +42,7 @@ It is necessary to pass the tier configuration into the constructor sorted by co
 
 ### Unbounded Tiers
 
-Another, simpler and gas-cheaper example of a price resolver is `OpenTieredNFTRewardDelegate`, this contract comes with its own token URI resolver as well: `OpenTieredTokenUriResolver`. It is necessary to use them together or to implement another `IToken721UriResolver`. `OpenTieredNFTRewardDelegate` is a leaner version that removes caps and range limits. This reduces storage and call gas costs. Tier configuration might look like this:
+Another, simpler and gas-cheaper example of a price resolver is `OpenTieredNFTRewardDelegate`, this contract comes with its own token URI resolver as well: `OpenTieredTokenUriResolver`. It is necessary to use them together or to implement another `IJBTokenUriResolver`. `OpenTieredNFTRewardDelegate` is a leaner version that removes caps and range limits. This reduces storage and call gas costs. Tier configuration might look like this:
 
 ```js
 [

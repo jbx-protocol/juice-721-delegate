@@ -1,9 +1,5 @@
-
-
-// This is only for Forge coverage purpose (skipping the fuzzed tests) and should reflect Datasour-Unit.t.sol
-
-
 pragma solidity 0.8.6;
+
 import '../JBTieredLimitedNFTRewardDataSource.sol';
 import '../interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import 'forge-std/Test.sol';
@@ -14,9 +10,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
   address beneficiary = address(69420);
   address owner = address(42069);
   address mockJBDirectory = address(100);
-  address mockTokenUriResolver = address(2);
-  address mockContributionToken = address(3);
-  address mockTerminalAddress = address(4);
+  address mockTokenUriResolver = address(102);
+  address mockContributionToken = address(103);
+  address mockTerminalAddress = address(104);
 
   uint256 projectId = 69;
 
@@ -52,11 +48,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
 
+    // Create 10 tiers, each with 100 tokens available to mint
     for (uint256 i = 1; i <= 10; i++) {
       tiers.push(
         JBNFTRewardTier({
           contributionFloor: uint128(i * 10),
-          idCeiling: uint48((i * 100)),
+          idCeiling: uint48(i * 100),
           remainingAllowance: uint40(100),
           initialAllowance: uint40(100)
         })
@@ -68,20 +65,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       tiers
     );
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted() public {
-    uint256 nbTiers = 10;
-    vm.assume(nbTiers < 20);
+  function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {
+    // Avoid slowing down tests too much by limiting to 30 tiers max
+    vm.assume(nbTiers < 30);
 
+    // Create new tiers array
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
@@ -97,15 +94,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       _tiers
     );
 
+    // Check: delegate has correct parameters?
     assertEq(_delegate.projectId(), projectId);
     assertEq(address(_delegate.directory()), mockJBDirectory);
     assertEq(_delegate.name(), name);
@@ -118,15 +115,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.tiers(), _tiers);
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfPriceTiersNonSorted()
-    public
-  {
-    uint256 nbTiers = 15;
-    uint256 errorIndex = 6;
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfTiersNonSorted(
+    uint8 nbTiers,
+    uint8 errorIndex
+  ) public {
     vm.assume(nbTiers < 20);
     vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
-    vm.assume(errorIndex + 1 < nbTiers); // We'll create an error between i and i+1
+    vm.assume(errorIndex + 1 < nbTiers); // We'll create an error by inverting tiers[i] and [i+1] floor prices
 
+    // Generate new tiers array
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
@@ -137,40 +134,38 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
     }
 
+    // Swap the contribution floors
     (_tiers[errorIndex].contributionFloor, _tiers[errorIndex + 1].contributionFloor) = (
       _tiers[errorIndex + 1].contributionFloor,
       _tiers[errorIndex].contributionFloor
     );
 
-    for (uint256 i; i < nbTiers; i++) emit log_uint(_tiers[i].contributionFloor);
-
+    // Expect the error at i+1 (as the floor is now smaller than i)
     vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER(uint256)', errorIndex + 1));
-
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       _tiers
     );
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfIdCeilingsNonSorted()
-    public
-  {
-    uint256 nbTiers = 15;
-    uint256 errorIndex = 6;
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfIdCeilingsNonSorted(
+    uint8 nbTiers,
+    uint8 errorIndex
+  ) public {
     vm.assume(nbTiers < 20);
-    vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
-    vm.assume(errorIndex + 1 < nbTiers); // We'll create an error between i and i+1
+    vm.assume(errorIndex < nbTiers); // We'll create an error in tier index i
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
+
+    // Populate new tiers
     for (uint256 i = 1; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
@@ -180,21 +175,19 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
     }
 
+    // idCeiling is now greater than the allowance cumulative sum, meaning there is an ordering issue
+    // (more allowance than possible token id's)
     _tiers[errorIndex].idCeiling++;
 
-    for (uint256 i; i < nbTiers; i++) emit log_uint(_tiers[i].contributionFloor);
-
     vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER(uint256)', errorIndex));
-
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      IToken721UriResolver(mockTokenUriResolver),
+      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       _tiers
@@ -207,7 +200,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        IToken721UriResolver(mockTokenUriResolver),
+        IJBTokenUriResolver(mockTokenUriResolver),
         baseUri,
         contractUri,
         mockTerminalAddress,
@@ -236,19 +229,19 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.totalSupply(), supply);
   }
 
-  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber() external {
-    uint256 tokenId = 56;
+  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber(uint8 tokenId)
+    external
+  {
     // Tiers are from 1 to 10, with 100 token per tier
 
     // If in an existing tier, should return it
     if (tokenId <= 10 * 100)
       assertEq(delegate.tierNumberOfToken(tokenId), (tokenId / 100) + 1);
-      // If outside of existing tiers, should return 0&@@
+      // If outside of existing tiers, should return 0
     else assertEq(delegate.tierNumberOfToken(tokenId), 0);
   }
 
-  function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner() external {
-    uint256 valueSent = 500;
+  function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 valueSent) external {
     // First tier floor is 10 and last tier is 1000
     vm.assume(valueSent >= 10 && valueSent <= 2000);
 
@@ -279,8 +272,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.totalOwnerBalance(beneficiary), 1);
   }
 
-  function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft() external {
-    uint256 valueSent = 500;
+  function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft(uint8 valueSent) external {
     vm.assume(valueSent >= 10);
     uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
 
@@ -289,7 +281,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        IToken721UriResolver(mockTokenUriResolver),
+        IJBTokenUriResolver(mockTokenUriResolver),
         baseUri,
         contractUri,
         mockTerminalAddress,
@@ -298,6 +290,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers
       );
 
+    // Set the remaining allowance of the last tier at 0
     _delegate.setTier(
       theoreticalTiers - 1,
       JBNFTRewardTier({
@@ -313,8 +306,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _delegate.mint(beneficiary, valueSent);
   }
 
-  function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner() external {
-    address caller = address(123456);
+  function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner(address caller) external {
     vm.assume(caller != owner);
 
     vm.prank(caller);
@@ -322,8 +314,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.mint(beneficiary, 100);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner() external {
-    uint256 valueSent = 500;
+  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint8 valueSent) external {
     // First tier floor is 10 and last tier is 1000
     vm.assume(valueSent >= 10 && valueSent <= 2000);
     vm.prank(owner);
@@ -348,9 +339,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.totalOwnerBalance(beneficiary), 0);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner() external {
-    address caller = address(123456);
-
+  function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address caller) external {
     vm.assume(caller != owner);
     vm.prank(owner);
     uint256 tokenId = delegate.mint(beneficiary, 100);
@@ -360,15 +349,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.burn(beneficiary, tokenId);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting() external {
-    uint256 _tokenId = 123;
+  function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting(uint256 _tokenId)
+    external
+  {
     vm.prank(owner);
     vm.expectRevert(abi.encodePacked('NOT_MINTED'));
     delegate.burn(beneficiary, _tokenId);
   }
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
-  function testJBTieredNFTRewardDelegate_payParams_doesNotRevertOnAmountBelowContributionFloor()
+  function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloor()
     external
   {
     // Mock the directory call
@@ -382,21 +372,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // The calldata is correct but the 'msg.sender' is not the '_expectedCaller'
     vm.prank(mockTerminalAddress);
-    delegate.payParams(
-      JBPayParamsData(
-        IJBPaymentTerminal(mockTerminalAddress),
+    delegate.didPay(
+      JBDidPayData(
         msg.sender,
-        JBTokenAmount(
-          mockContributionToken,
-          tiers[0].contributionFloor - 1, // 1 wei below the minimum amount
-          0,
-          0
-        ),
         projectId,
         0,
+        JBTokenAmount(mockContributionToken, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
+        0,
         msg.sender,
-        0,
-        0,
+        false,
         '',
         new bytes(0)
       )
@@ -406,8 +390,54 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
-  function testJBTieredNFTRewardDelegate_payParams_revertIfNotTerminalOfProjectId() external {
-    address _terminal = address(6969);
+  function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOut() external {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    uint256 _supplyLeft = tiers[0].initialAllowance;
+    while (true) {
+      uint256 _totalSupplyBeforePay = delegate.totalSupply();
+
+      // If there is no supply left this should revert
+      if (_supplyLeft == 0) {
+        vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
+      }
+
+      // Perform the pay
+      vm.prank(mockTerminalAddress);
+      delegate.didPay(
+        JBDidPayData(
+          msg.sender,
+          projectId,
+          0,
+          JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
+          0,
+          msg.sender,
+          false,
+          '',
+          new bytes(0)
+        )
+      );
+
+      // Make sure if there was no supply left there was no NFT minted
+      if (_supplyLeft == 0) {
+        assertEq(delegate.totalSupply(), _totalSupplyBeforePay);
+        break;
+      } else {
+        assertEq(delegate.totalSupply(), _totalSupplyBeforePay + 1);
+      }
+
+      --_supplyLeft;
+    }
+  }
+
+  function testJBTieredNFTRewardDelegate_didPay_revertIfCallerIsNotATerminalOfProjectId(
+    address _terminal
+  ) external {
     vm.assume(_terminal != mockTerminalAddress);
 
     // Mock the directory call
@@ -418,48 +448,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     // The caller is the _expectedCaller however the terminal in the calldata is not correct
-    vm.prank(mockTerminalAddress);
-    vm.expectRevert(abi.encodeWithSignature('INVALID_PAYMENT_EVENT()'));
-    delegate.payParams(
-      JBPayParamsData(
-        IJBPaymentTerminal(_terminal),
-        msg.sender,
-        JBTokenAmount(address(0), 0, 0, 0),
-        projectId,
-        0,
-        msg.sender,
-        0,
-        0,
-        '',
-        new bytes(0)
-      )
-    );
-  }
-
-  function testJBTieredNFTRewardDelegate_payParams_revertIfCallerNotExpectedCaller() external {
-    address _terminal = address(6969);
-    vm.assume(_terminal != mockTerminalAddress);
-
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
-
-    // The calldata is correct but the 'msg.sender' is not the '_expectedCaller'
     vm.prank(_terminal);
     vm.expectRevert(abi.encodeWithSignature('INVALID_PAYMENT_EVENT()'));
-    delegate.payParams(
-      JBPayParamsData(
-        IJBPaymentTerminal(mockTerminalAddress),
+    delegate.didPay(
+      JBDidPayData(
         msg.sender,
-        JBTokenAmount(address(0), 0, 0, 0),
         projectId,
         0,
+        JBTokenAmount(address(0), 0, 0, 0),
+        0,
         msg.sender,
-        0,
-        0,
+        false,
         '',
         new bytes(0)
       )
@@ -481,13 +480,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 }
 
+// ForTest to manually set a tier at a given tiers index
 contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardDataSource {
   constructor(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    IToken721UriResolver _tokenUriResolver,
+    IJBTokenUriResolver _tokenUriResolver,
     string memory _baseUri,
     string memory _contractUri,
     address _expectedCaller,
@@ -503,7 +503,6 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _tokenUriResolver,
       _baseUri,
       _contractUri,
-      _expectedCaller,
       _owner,
       _contributionToken,
       __tiers
