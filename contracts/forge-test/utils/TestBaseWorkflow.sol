@@ -26,9 +26,12 @@ import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBRedeemParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBSplit.sol';
+
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBToken.sol';
+
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBOperations.sol';
+import '@jbx-protocol/contracts-v2/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 
 import '@paulrberg/contracts/math/PRBMath.sol';
 
@@ -46,6 +49,7 @@ contract TestBaseWorkflow is Test {
 
   address internal _projectOwner = address(123);
   address internal _beneficiary = address(69420);
+  address internal _caller = address(696969);
 
   JBOperatorStore internal _jbOperatorStore;
   JBProjects internal _jbProjects;
@@ -67,8 +71,6 @@ contract TestBaseWorkflow is Test {
 
   AccessJBLib internal _accessJBLib;
 
-  uint256 internal _projectId;
-
   //*********************************************************************//
   // --------------------------- test setup ---------------------------- //
   //*********************************************************************//
@@ -85,7 +87,7 @@ contract TestBaseWorkflow is Test {
     _jbPrices = new JBPrices(_projectOwner);
     vm.label(address(_jbPrices), 'JBPrices');
 
-    address contractAtNoncePlusOne = addressFrom(address(this), 13);
+    address contractAtNoncePlusOne = addressFrom(address(this), 5);
 
     _jbFundingCycleStore = new JBFundingCycleStore(IJBDirectory(contractAtNoncePlusOne));
     vm.label(address(_jbFundingCycleStore), 'JBFundingCycleStore');
@@ -140,7 +142,7 @@ contract TestBaseWorkflow is Test {
 
     _terminals.push(_jbETHPaymentTerminal);
 
-        _projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
+    _projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
 
     _data = JBFundingCycleData({
       duration: 14,
@@ -153,7 +155,7 @@ contract TestBaseWorkflow is Test {
       global: JBGlobalFundingCycleMetadata({allowSetTerminals: false, allowSetController: false}),
       reservedRate: 5000,
       redemptionRate: 5000, //50%
-      ballotRedemptionRate: 0,
+      ballotRedemptionRate: 5000,
       pausePay: false,
       pauseDistributions: false,
       pauseRedeem: false,
@@ -164,17 +166,19 @@ contract TestBaseWorkflow is Test {
       allowControllerMigration: false,
       holdFees: false,
       useTotalOverflowForRedemptions: false,
-      useDataSourceForPay: false,
-      useDataSourceForRedeem: false,
+      useDataSourceForPay: true,
+      useDataSourceForRedeem: true,
       dataSource: address(0)
     });
 
     // ---- general setup ----
     vm.deal(_beneficiary, 100 ether);
     vm.deal(_projectOwner, 100 ether);
+    vm.deal(_caller, 100 ether);
 
     vm.label(_projectOwner, 'projectOwner');
     vm.label(_beneficiary, 'beneficiary');
+    vm.label(_caller, 'caller');
   }
 
   //https://ethereum.stackexchange.com/questions/24248/how-to-calculate-an-ethereum-contracts-address-during-its-creation-using-the-so
