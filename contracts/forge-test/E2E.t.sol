@@ -125,7 +125,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       baseUri: baseUri,
       contractUri: contractUri,
-      expectedCaller: address(_jbPaymentTerminalStore),
       owner: _projectOwner,
       contributionToken: _accessJBLib.ETHToken(),
       tiers: tiers

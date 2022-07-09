@@ -68,7 +68,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       tiers
@@ -98,7 +97,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       _tiers
@@ -152,7 +150,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       _tiers
@@ -191,7 +188,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
       contractUri,
-      mockTerminalAddress,
       owner,
       mockContributionToken,
       _tiers
@@ -507,7 +503,6 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _tokenUriResolver,
       _baseUri,
       _contractUri,
-      _expectedCaller,
       _owner,
       _contributionToken,
       __tiers

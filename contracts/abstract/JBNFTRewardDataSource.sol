@@ -50,16 +50,6 @@ abstract contract JBNFTRewardDataSource is
   error INVALID_PAYMENT_EVENT();
 
   //*********************************************************************//
-  // --------------------- internal stored properties ------------------ //
-  //*********************************************************************//
-
-  /** 
-    @notice
-    The address that should be calling the data source methods.
-  */
-  address internal immutable _expectedCaller;
-
-  //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
 
@@ -207,7 +197,6 @@ abstract contract JBNFTRewardDataSource is
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _baseUri The token's base URI, to be used if a URI resolver is not provided. 
     @param _contractUri A URI where contract metadata can be found. 
-    @param __expectedCaller The address that should be  calling the data source.
     @param _owner The address that will own this contract.
   */
   constructor(
@@ -218,7 +207,6 @@ abstract contract JBNFTRewardDataSource is
     IJBTokenUriResolver _tokenUriResolver,
     string memory _baseUri,
     string memory _contractUri,
-    address __expectedCaller,
     address _owner
   ) ERC721Rari(_name, _symbol) {
     projectId = _projectId;
@@ -226,7 +214,6 @@ abstract contract JBNFTRewardDataSource is
     baseUri = _baseUri;
     tokenUriResolver = _tokenUriResolver;
     contractUri = _contractUri;
-    _expectedCaller = __expectedCaller;
 
     // Transfer the ownership to the specified address.
     if (_owner != address(0)) _transferOwnership(_owner);
@@ -248,7 +235,7 @@ abstract contract JBNFTRewardDataSource is
   function didPay(JBDidPayData calldata _data) external override {
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
-      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
+      !(directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender))) ||
       _data.projectId != projectId
     ) revert INVALID_PAYMENT_EVENT();
 

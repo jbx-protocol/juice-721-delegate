@@ -139,7 +139,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
       baseUri: baseUri,
       contractUri: contractUri,
-      expectedCaller: mockTerminalAddress,
       owner: owner,
       contributionToken: mockContributionToken,
       tiers: tiers
