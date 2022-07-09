@@ -1,13 +1,24 @@
 pragma solidity 0.8.6;
 
+import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
+
 import '../JBTieredLimitedNFTRewardDataSource.sol';
 import '../JBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
 import './utils/TestBaseWorkflow.sol';
-
 import '../interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 
 contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
-  using stdStorage for StdStorage;
+  using JBFundingCycleMetadataResolver for JBFundingCycle;
+
+  event Mint(
+    uint256 indexed tokenId,
+    uint256 indexed tier,
+    address indexed beneficiary,
+    uint256 value,
+    address caller
+  );
+
+  event Burn(uint256 indexed tokenId, address owner, address caller);
 
   string name = 'NAME';
   string symbol = 'SYM';
@@ -29,11 +40,30 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(projectId, 1);
   }
 
-  function testMintOnPay() external {
+  function testMintOnPay(uint256 valueSent) external {
+    vm.assume(valueSent >= 10 && valueSent < 2000 );
+
+    uint256 theoreticalTokenId = valueSent <= 100
+      ? ((((uint256(valueSent) / 10) - 1) * 10) + 1)
+      : 91;
+
+    uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
+
     (JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData, JBLaunchProjectData memory launchProjectData) = createData();
     uint256 projectId = deployer.launchProjectFor(_projectOwner, NFTRewardDeployerData, launchProjectData);
 
-    _jbETHPaymentTerminal.pay{value: 100}(
+    // Check: correct tier and id?
+    vm.expectEmit(true, true, true, true);
+    emit Mint(
+      theoreticalTokenId,
+      theoreticalTiers,
+      _beneficiary,
+      valueSent,
+      address(_jbPaymentTerminalStore) // msg.sender
+    );
+
+    vm.prank(_caller);
+    _jbETHPaymentTerminal.pay{value: valueSent}(
       projectId,
       100,
       address(0),
@@ -48,7 +78,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       new bytes(0)
     );
 
-    assertEq(projectId, 1);
+    // Check: NFT actually received?
+    address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
   }
 
   // ----- internal helpers ------
