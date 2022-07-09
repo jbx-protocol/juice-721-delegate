@@ -362,7 +362,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
-  function testJBTieredNFTRewardDelegate_payParams_doesNotRevertOnAmountBelowContributionFloor()
+  function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloor()
     external
   {
     // Mock the directory call
@@ -376,21 +376,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // The calldata is correct but the 'msg.sender' is not the '_expectedCaller'
     vm.prank(mockTerminalAddress);
-    delegate.payParams(
-      JBPayParamsData(
-        IJBPaymentTerminal(mockTerminalAddress),
+    delegate.didPay(
+      JBDidPayData(
         msg.sender,
-        JBTokenAmount(
-          mockContributionToken,
-          tiers[0].contributionFloor - 1, // 1 wei below the minimum amount
-          0,
-          0
-        ),
         projectId,
         0,
+        JBTokenAmount(mockContributionToken, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
+        0,
         msg.sender,
-        0,
-        0,
+        false,
         '',
         new bytes(0)
       )
@@ -400,7 +394,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
-  function testJBTieredNFTRewardDelegate_payParams_revertIfAllowanceRunsOut() external {
+  function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOut() external {
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -419,16 +413,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       // Perform the pay
       vm.prank(mockTerminalAddress);
-      delegate.payParams(
-        JBPayParamsData(
-          IJBPaymentTerminal(mockTerminalAddress),
+      delegate.didPay(
+        JBDidPayData(
           msg.sender,
-          JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
           projectId,
           0,
+          JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
+          0,
           msg.sender,
-          0,
-          0,
+          false,
           '',
           new bytes(0)
         )
@@ -446,9 +439,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
-  function testJBTieredNFTRewardDelegate_payParams_revertIfNotTerminalOfProjectId(address _terminal)
-    external
-  {
+  function testJBTieredNFTRewardDelegate_didPay_revertIfCallerIsNotATerminalOfProjectId(
+    address _terminal
+  ) external {
     vm.assume(_terminal != mockTerminalAddress);
 
     // Mock the directory call
@@ -459,49 +452,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     // The caller is the _expectedCaller however the terminal in the calldata is not correct
-    vm.prank(mockTerminalAddress);
-    vm.expectRevert(abi.encodeWithSignature('INVALID_PAYMENT_EVENT()'));
-    delegate.payParams(
-      JBPayParamsData(
-        IJBPaymentTerminal(_terminal),
-        msg.sender,
-        JBTokenAmount(address(0), 0, 0, 0),
-        projectId,
-        0,
-        msg.sender,
-        0,
-        0,
-        '',
-        new bytes(0)
-      )
-    );
-  }
-
-  function testJBTieredNFTRewardDelegate_payParams_revertIfCallerNotExpectedCaller(
-    address _terminal
-  ) external {
-    vm.assume(_terminal != mockTerminalAddress);
-
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
-
-    // The calldata is correct but the 'msg.sender' is not the '_expectedCaller'
     vm.prank(_terminal);
     vm.expectRevert(abi.encodeWithSignature('INVALID_PAYMENT_EVENT()'));
-    delegate.payParams(
-      JBPayParamsData(
-        IJBPaymentTerminal(mockTerminalAddress),
+    delegate.didPay(
+      JBDidPayData(
         msg.sender,
-        JBTokenAmount(address(0), 0, 0, 0),
         projectId,
         0,
+        JBTokenAmount(address(0), 0, 0, 0),
+        0,
         msg.sender,
-        0,
-        0,
+        false,
         '',
         new bytes(0)
       )
