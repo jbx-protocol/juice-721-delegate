@@ -3,7 +3,6 @@ pragma solidity 0.8.6;
 
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
-import './JBTokenUriResolver.sol';
 
 /**
   @title
@@ -38,6 +37,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     The reward tiers. 
   */
   JBNFTRewardTier[] internal _tiers;
+  string[] tokenTieredUris;
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -167,6 +167,17 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     return 0;
+  }
+
+  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+    // A token without an owner doesn't have a URI.
+    if (_ownerOf[_tokenId] == address(0)) return '';
+
+    // If a token URI resolver is provided, use it to resolve the token URI.
+    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
+
+    // The baseUri is added to the JBNFTRewardTier for each tier.
+    return _tiers[tierNumberOfToken(_tokenId) - 1].baseUri;
   }
 
   //*********************************************************************//

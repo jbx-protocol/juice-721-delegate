@@ -21,6 +21,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
+  string[] baseUris = ['http://www.null.com/0'];
+
   JBNFTRewardTier[] tiers;
 
   JBTieredLimitedNFTRewardDataSource delegate;
@@ -55,7 +57,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           contributionFloor: uint128(i * 10),
           idCeiling: uint48(i * 100),
           remainingAllowance: uint40(100),
-          initialAllowance: uint40(100)
+          initialAllowance: uint40(100),
+          baseUri: baseUris[0]
         })
       );
     }
@@ -85,7 +88,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
         remainingAllowance: uint40(100),
-        initialAllowance: uint40(100)
+        initialAllowance: uint40(100),
+        baseUri: baseUris[0]
       });
     }
 
@@ -130,7 +134,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
         remainingAllowance: uint40(100),
-        initialAllowance: uint40(100)
+        initialAllowance: uint40(100),
+        baseUri: baseUris[0]
       });
     }
 
@@ -171,7 +176,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         idCeiling: uint48(i * 100),
         remainingAllowance: uint40(100),
-        initialAllowance: uint40(100)
+        initialAllowance: uint40(100),
+        baseUri: baseUris[0]
       });
     }
 
@@ -219,7 +225,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           contributionFloor: uint128(i * 10),
           idCeiling: uint48((i + 1) * 100),
           remainingAllowance: uint40(i * 10),
-          initialAllowance: uint40(100)
+          initialAllowance: uint40(100),
+          baseUri: baseUris[0]
         })
       );
 
@@ -297,7 +304,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(theoreticalTiers * 10),
         idCeiling: uint48(theoreticalTiers * 100),
         remainingAllowance: 0,
-        initialAllowance: uint40(100)
+        initialAllowance: uint40(100),
+        baseUri: baseUris[0]
       })
     );
 
