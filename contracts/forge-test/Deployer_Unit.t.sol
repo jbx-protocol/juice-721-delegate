@@ -27,6 +27,19 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
   string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
+  string [] baseUris = [
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0', 
+    'http://www.null.com/0'
+    ];
+
   string fcMemo = 'meemoo';
 
   JBTieredLimitedNFTRewardDataSourceProjectDeployer deployer;
@@ -128,7 +141,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
         contributionFloor: uint128((i + 1) * 10),
         idCeiling: uint48((i + 1) * 100),
         remainingAllowance: uint40(100),
-        initialAllowance: uint40(100)
+        initialAllowance: uint40(100),
+        baseUri: baseUris[i]
       });
     }
 

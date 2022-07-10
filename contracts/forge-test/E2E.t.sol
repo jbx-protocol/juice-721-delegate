@@ -24,6 +24,18 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   string symbol = 'SYM';
   string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
+  string[] baseUris = [
+    'http://www.null.com/0',
+    'http://www.null.com/1',
+    'http://www.null.com/2',
+    'http://www.null.com/3',
+    'http://www.null.com/4',
+    'http://www.null.com/5',
+    'http://www.null.com/6',
+    'http://www.null.com/7',
+    'http://www.null.com/8',
+    'http://www.null.com/9'
+  ];
 
   JBTieredLimitedNFTRewardDataSourceProjectDeployer deployer;
 
@@ -114,7 +126,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         contributionFloor: uint128((i + 1) * 10),
         idCeiling: uint48((i + 1) * 10),
         remainingAllowance: uint40(10),
-        initialAllowance: uint40(10)
+        initialAllowance: uint40(10),
+        baseUri: baseUris[i]
       });
     }
 

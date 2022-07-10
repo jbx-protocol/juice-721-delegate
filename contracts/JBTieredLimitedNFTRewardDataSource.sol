@@ -168,6 +168,28 @@ contract JBTieredLimitedNFTRewardDataSource is
     return 0;
   }
 
+  /** 
+    @notice
+    TokenURI of the provided token ID.
+
+    @dev
+    Defer to the tokenUriResolver, if set, otherwise, use the tokenUri set with the tier.
+
+    @param _tokenId The ID of the token to get the tier tokenUri for. 
+
+    @return The baseUri corresponding with the tier or the tokenUriResolver Uri.
+  */
+  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+    // A token without an owner doesn't have a URI.
+    if (_ownerOf[_tokenId] == address(0)) return '';
+
+    // If a token URI resolver is provided, use it to resolve the token URI.
+    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
+
+    // The baseUri is added to the JBNFTRewardTier for each tier.
+    return _tiers[tierNumberOfToken(_tokenId) - 1].baseUri;
+  }
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
