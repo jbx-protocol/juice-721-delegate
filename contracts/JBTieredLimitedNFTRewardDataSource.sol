@@ -3,6 +3,7 @@ pragma solidity 0.8.6;
 
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
+import './JBTokenUriResolver.sol';
 
 /**
   @title

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import './interfaces/IJBTokenUriResolver.sol';
+import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
 import './structs/JBNFTRewardTier.sol';
 
 /**
@@ -13,6 +13,7 @@ import './structs/JBNFTRewardTier.sol';
 
   @notice 
   This contract allows for setting the TokenURI for each tier. 
+  Removing the need to generate individual tokenUri for each supply index, and mapping each tier to a single tokenUri.
   Intended use is to incentivize initial project support by minting a limited number of NFTs to the first N contributors among various price tiers.
 */
 contract JBTokenUriResolver is IJBTokenUriResolver {
@@ -24,16 +25,21 @@ contract JBTokenUriResolver is IJBTokenUriResolver {
   //*********************************************************************//
 
   /** 
-    @notice
-    The tokenURI function which returns the Uri of a token.
+    @notice The tokenURI function which returns the Uri of a token.
     
     @param _tokenId The ID of the token to get the tier number of. 
 
     @return The tokenUri of the token by tier.
   */
+  function getUri(uint256 _tokenId) public view override returns (string memory) {
+    return tokenUris[tierNumberOfToken(_tokenId)];
+  }
+
+  /*
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
     return tokenUris[tierNumberOfToken(_tokenId)];
   }
+  */
 
   /**    
     @param _tokenUris An array of tokenUris.    
@@ -60,8 +66,7 @@ contract JBTokenUriResolver is IJBTokenUriResolver {
     @notice
     The tier number of the provided token ID. 
 
-    @dev
-    Tier's are 1 indexed from the `tiers` array, meaning the 0th element of the array is tier 1.
+    @dev Tier's are 1 indexed from the `tiers` array, meaning the 0th element of the array is tier 1.
 
     @param _tokenId The ID of the token to get the tier number of. 
 

@@ -21,17 +21,17 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
   string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
-  string tokenUris = [
-    'https://null.com/token1',
-    'https://null.com/token2',
-    'https://null.com/token3',
-    'https://null.com/token4',
-    'https://null.com/token5',
-    'https://null.com/token6',
-    'https://null.com/token7',
-    'https://null.com/token8',
-    'https://null.com/token9',
-    'https://null.com/token10'
+  string[] tokenUris = [
+    'https://www.null.com/token1',
+    'https://www.null.com/token2',
+    'https://www.null.com/token3',
+    'https://www.null.com/token4',
+    'https://www.null.com/token5',
+    'https://www.null.com/token6',
+    'https://www.null.com/token7',
+    'https://www.null.com/token8',
+    'https://www.null.com/token9',
+    'https://www.null.com/token10'
   ];
 
   JBNFTRewardTier[] tiers;
@@ -102,6 +102,7 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
       });
     }
 
+    JBTokenUriResolver tokenUriResolver = new JBTokenUriResolver(tiers, tokenUris);
     JBTieredLimitedNFTRewardDataSource _delegate = new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -125,6 +126,8 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
     assertEq(_delegate.owner(), owner);
     assertEq(_delegate.contributionToken(), mockContributionToken);
     assertEq(_delegate.tiers(), _tiers);
+
+    assertEq(_delegate.tokenURI(0), tokenUris[0]);
   }
 
   function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfTiersNonSorted(
@@ -151,6 +154,8 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
       _tiers[errorIndex + 1].contributionFloor,
       _tiers[errorIndex].contributionFloor
     );
+
+    JBTokenUriResolver tokenUriResolver = new JBTokenUriResolver(tiers, tokenUris);
 
     // Expect the error at i+1 (as the floor is now smaller than i)
     vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER(uint256)', errorIndex + 1));
@@ -187,6 +192,7 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
       });
     }
 
+    JBTokenUriResolver tokenUriResolver = new JBTokenUriResolver(tiers, tokenUris);
     // idCeiling is now greater than the allowance cumulative sum, meaning there is an ordering issue
     // (more allowance than possible token id's)
     _tiers[errorIndex].idCeiling++;
@@ -207,6 +213,7 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_totalSupply_returnsCorrectTotalSupply() external {
+    JBTokenUriResolver tokenUriResolver = new JBTokenUriResolver(tiers, tokenUris);
     ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -245,7 +252,6 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
     external
   {
     // Tiers are from 1 to 10, with 100 token per tier
-
     // If in an existing tier, should return it
     if (tokenId <= 10 * 100)
       assertEq(delegate.tierNumberOfToken(tokenId), (tokenId / 100) + 1);
@@ -288,6 +294,7 @@ contract TestJBTieredUriResolverNFTRewardDelegate is Test {
     vm.assume(valueSent >= 10);
     uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
 
+    JBTokenUriResolver tokenUriResolver = new JBTokenUriResolver(tiers, tokenUris);
     ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
         projectId,
         IJBDirectory(mockJBDirectory),

@@ -3,6 +3,7 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
+import './JBTokenUriResolver.sol';
 import './JBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
 
