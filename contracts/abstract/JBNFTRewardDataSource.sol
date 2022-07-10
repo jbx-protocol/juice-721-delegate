@@ -91,48 +91,8 @@ abstract contract JBNFTRewardDataSource is
   string public override contractUri;
 
   //*********************************************************************//
-  // -------------------------- public views --------------------------- //
+  // ------------------------- external views -------------------------- //
   //*********************************************************************//
-
-  /**
-    @notice
-    Indicates if this contract adheres to the specified interface.
-
-    @dev 
-    See {IERC165-supportsInterface}.
-
-    @param _interfaceId The ID of the interface to check for adherance to.
-  */
-  function supportsInterface(bytes4 _interfaceId)
-    public
-    view
-    override(ERC721Rari, IERC165)
-    returns (bool)
-  {
-    return
-      _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
-      _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
-      super.supportsInterface(_interfaceId); // check with rari-ERC721
-  }
-
-  /**
-    @notice 
-    Returns the URI where the ERC-721 standard JSON of a token is hosted.
-
-    @param _tokenId The ID of the token to get a URI of.
-
-    @return The token URI to use for the provided `_tokenId`.
-  */
-  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
-    // A token without an owner doesn't have a URI.
-    if (_ownerOf[_tokenId] == address(0)) return '';
-
-    // If a token URI resolver is provided, use it to resolve the token URI.
-    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
-
-    // Append the token ID to the base URI.
-    return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, _tokenId.toString())) : '';
-  }
 
   /**
     @notice 
@@ -186,6 +146,51 @@ abstract contract JBNFTRewardDataSource is
   }
 
   //*********************************************************************//
+  // -------------------------- public views --------------------------- //
+  //*********************************************************************//
+
+  /**
+    @notice 
+    Returns the URI where the ERC-721 standard JSON of a token is hosted.
+
+    @param _tokenId The ID of the token to get a URI of.
+
+    @return The token URI to use for the provided `_tokenId`.
+  */
+  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+    // A token without an owner doesn't have a URI.
+    if (_ownerOf[_tokenId] == address(0)) return '';
+
+    // If a token URI resolver is provided, use it to resolve the token URI.
+    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
+
+    // Append the token ID to the base URI.
+    return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, _tokenId.toString())) : '';
+  }
+
+  /**
+    @notice
+    Indicates if this contract adheres to the specified interface.
+
+    @dev 
+    See {IERC165-supportsInterface}.
+
+    @param _interfaceId The ID of the interface to check for adherance to.
+  */
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(ERC721Rari, IERC165)
+    returns (bool)
+  {
+    return
+      _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
+      _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
+      _interfaceId == type(IJBPayDelegate).interfaceId ||
+      super.supportsInterface(_interfaceId); // check with rari-ERC721
+  }
+
+  //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
@@ -235,7 +240,7 @@ abstract contract JBNFTRewardDataSource is
   function didPay(JBDidPayData calldata _data) external override {
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
-      !(directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender))) ||
+      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
       _data.projectId != projectId
     ) revert INVALID_PAYMENT_EVENT();
 

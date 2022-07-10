@@ -141,7 +141,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     // Expect the error at i+1 (as the floor is now smaller than i)
-    vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER(uint256)', errorIndex + 1));
+    vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER()'));
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -179,7 +179,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // (more allowance than possible token id's)
     _tiers[errorIndex].idCeiling++;
 
-    vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER(uint256)', errorIndex));
+    vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER()'));
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
