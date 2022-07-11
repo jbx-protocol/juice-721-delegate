@@ -61,6 +61,23 @@ contract JBTieredLimitedNFTRewardDataSource is
   //*********************************************************************//
 
   /** 
+    @notice
+    Gets an array of all the tiers' base URIs. 
+
+    @returns allTiers All the tiers.
+  */
+  function allTiers() external view override returns (JBNFTRewardTier[] memory allTiers) {
+    // Loop through each tier.
+    for (uint256 _i = 0; _i < numberOfTiers; ) {
+      // Set the tier.
+      allTiers[_i] = tiers[_i + 1];
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /** 
     @notice 
     The total supply of issued NFTs from all tiers.
 

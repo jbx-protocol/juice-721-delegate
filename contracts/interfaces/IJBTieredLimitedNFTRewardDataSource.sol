@@ -21,6 +21,8 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
 
+  function allTiers() external view returns (JBNFTRewardTier[] memory tiers);
+
   function mint(
     address _beneficiary,
     uint256 _tierId,
