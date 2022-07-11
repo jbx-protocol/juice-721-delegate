@@ -18,7 +18,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string baseUri = 'http://www.null.com';
+  string tokenUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
   string[] baseUris = [
@@ -67,7 +67,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128((i + 1) * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        baseUri: baseUris[i]
+        tokenUri: baseUris[i]
       })
       );
     }
@@ -78,7 +78,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri,
+      tokenUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -97,7 +97,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        baseUri: baseUris[i]
+        tokenUri: baseUris[i]
       });
     }
 
@@ -107,7 +107,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri,
+      tokenUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -120,7 +120,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.name(), name);
     assertEq(_delegate.symbol(), symbol);
     assertEq(address(_delegate.tokenUriResolver()), mockTokenUriResolver);
-    assertEq(_delegate.baseUri(), baseUri);
     assertEq(_delegate.contractUri(), contractUri);
     assertEq(_delegate.owner(), owner);
     assertEq(_delegate.contributionToken(), mockContributionToken);
@@ -142,7 +141,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        baseUri: baseUris[0]
+        tokenUri: baseUris[0]
       });
     }
 
@@ -160,7 +159,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri,
+      tokenUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -183,7 +182,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        baseUri: baseUris[0]
+        tokenUri: baseUris[0]
       });
     }
 
@@ -198,7 +197,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri,
+      tokenUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -213,7 +212,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         name,
         symbol,
         IJBTokenUriResolver(mockTokenUriResolver),
-        baseUri,
+        tokenUri,
         contractUri,
         mockTerminalAddress,
         owner,
@@ -231,7 +230,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           contributionFloor: uint128(i * 10),
           remainingQuantity: uint40(i * 10),
           initialQuantity: uint40(100),
-          baseUri: baseUris[0]
+          tokenUri: baseUris[0]
         })
       );
 
@@ -276,13 +275,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft(uint32 _tierId, uint224 _tokenNumber) external {
+    vm.assume(_tierId > 0);
     ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
         projectId,
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
         IJBTokenUriResolver(mockTokenUriResolver),
-        baseUri,
+        tokenUri,
         contractUri,
         mockTerminalAddress,
         owner,
@@ -297,7 +297,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(_tierId * 10),
         remainingQuantity: 0,
         initialQuantity: uint40(100),
-        baseUri: baseUris[0]
+        tokenUri: baseUris[0]
       })
     );
 
@@ -314,7 +314,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.mint(beneficiary, _tierId, _tokenNumber);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint32 _tierId, uint224 _tokenNumber) external {
+  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner() external {
+    //vm.assume(_tierId > 0 && _tierId < 10);
+    //vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
+
+    uint256 _tierId = 1;
+    uint256 _tokenNumber = 101;
+
     vm.prank(owner);
     uint256 tokenId = delegate.mint(beneficiary, _tierId, _tokenNumber);
 

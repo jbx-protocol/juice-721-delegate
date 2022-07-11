@@ -22,7 +22,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string baseUri = 'http://www.null.com';
+  string tokenUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
   string[] baseUris = [
     'http://www.null.com/0',
@@ -66,7 +66,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       ? ((((uint256(valueSent) / 10) - 1) * 10) + 1)
       : 91;
 
-    uint256 theoreticalTiers = valueSent <= 100 ? (valueSent / 10) : 10;
+    uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
 
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
@@ -82,11 +82,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     vm.expectEmit(true, true, true, true);
     emit Mint(
       theoreticalTokenId,
-      theoreticalTiers,
+      highestTier,
       _beneficiary,
       valueSent,
       address(_jbETHPaymentTerminal) // msg.sender
     );
+
+      
 
     vm.prank(_caller);
     _jbETHPaymentTerminal.pay{value: valueSent}(
@@ -126,7 +128,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         contributionFloor: uint128((i + 1) * 10),
         remainingQuantity: uint40(10),
         initialQuantity: uint40(10),
-        baseUri: baseUris[i]
+        tokenUri: baseUris[i]
       });
     }
 
@@ -136,7 +138,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
-      baseUri: baseUri,
+      tokenUri: tokenUri,
       contractUri: contractUri,
       owner: _projectOwner,
       contributionToken: _accessJBLib.ETHToken(),

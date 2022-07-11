@@ -24,7 +24,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string baseUri = 'http://www.null.com';
+  string tokenUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
   string [] baseUris = [
@@ -141,7 +141,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
         contributionFloor: uint128((i + 1) * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        baseUri: baseUris[i]
+        tokenUri: baseUris[i]
       });
     }
 
@@ -150,7 +150,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri: baseUri,
+      tokenUri: tokenUri,
       contractUri: contractUri,
       owner: owner,
       contributionToken: mockContributionToken,
