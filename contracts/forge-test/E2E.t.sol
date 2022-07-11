@@ -12,9 +12,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   event Mint(
     uint256 indexed tokenId,
-    uint256 indexed tier,
+    uint256 indexed tierId,
     address indexed beneficiary,
-    uint256 value,
+    uint256 totalAmountContributed,
+    uint256 numRewards,
     address caller
   );
 
@@ -85,10 +86,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       highestTier,
       _beneficiary,
       valueSent,
+      1,
       address(_jbETHPaymentTerminal) // msg.sender
     );
-
-      
 
     vm.prank(_caller);
     _jbETHPaymentTerminal.pay{value: valueSent}(
