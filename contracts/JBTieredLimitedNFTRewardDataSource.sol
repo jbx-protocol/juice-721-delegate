@@ -62,15 +62,15 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   /** 
     @notice
-    Gets an array of all the tiers' base URIs. 
+    Gets an array of all the tiers. 
 
-    @return allTiers All the tiers.
+    @return all All the tiers tiers.
   */
-  function allTiers() external view override returns (JBNFTRewardTier[] memory allTiers) {
+  function allTiers() external view override returns (JBNFTRewardTier[] memory all) {
     // Loop through each tier.
     for (uint256 _i = 0; _i < numberOfTiers; ) {
       // Set the tier.
-      allTiers[_i] = tiers[_i + 1];
+      all[_i] = tiers[_i + 1];
       unchecked {
         ++_i;
       }
@@ -160,11 +160,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     TokenURI of the provided token ID.
 
     @dev
-    Defer to the tokenUriResolver, if set, otherwise, use the tokenUri set with the tier.
+    Defer to the tokenUriResolver if set, otherwise, use the tokenUri set with the tier.
 
     @param _tokenId The ID of the token to get the tier tokenUri for. 
 
-    @return The baseUri corresponding with the tier or the tokenUriResolver Uri.
+    @return The token URI corresponding with the tier or the tokenUriResolver URI.
   */
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
     // A token without an owner doesn't have a URI.
@@ -173,8 +173,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     // If a token URI resolver is provided, use it to resolve the token URI.
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
-    // The baseUri is added to the JBNFTRewardTier for each tier.
-    return tiers[tierIdOfToken(_tokenId)].baseUri;
+    // Return the token URI for the token's tier.
+    return tiers[tierIdOfToken(_tokenId)].tokenUri;
   }
 
   //*********************************************************************//
@@ -217,7 +217,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     )
   {
     contributionToken = _contributionToken;
+
+    // Get a reference to the number of tiers.
     uint256 _numberOfTiers = _tiers.length;
+
     numberOfTiers = _numberOfTiers;
 
     // Keep a reference to the tier being iterated on.
@@ -324,6 +327,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;
 
+    // Keep a reference to the tier being iterated on.
+    JBNFTRewardTier storage _tier;
+
     for (uint256 _i; _i < _numRewards; ) {
       // Tier IDs are in chuncks of 32 bits starting in bit 40.
       _tierId = uint256(uint32(_bytesToUint(_data.metadata) << (40 + 32 * _i)));
@@ -332,7 +338,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       if (_tierId == 0) continue;
 
       // Keep a reference to the tier being iterated on.
-      JBNFTRewardTier storage _tier = tiers[_tierId];
+      _tier = tiers[_tierId];
 
       // Make sure the provided tier exists.
       if (_tier.initialQuantity == 0) revert INVALID_TIER();
@@ -373,6 +379,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
     internal
+    pure
     returns (uint256 tokenId)
   {
     // The tier ID in the first 32 bits.
