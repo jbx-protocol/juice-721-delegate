@@ -146,7 +146,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       contractUri: contractUri,
       owner: _projectOwner,
       contributionToken: _accessJBLib.ETHToken(),
-      tiers: tiers
+      tiers: tiers,
+      shouldMintByDefault: false
     });
 
     launchProjectData = JBLaunchProjectData({

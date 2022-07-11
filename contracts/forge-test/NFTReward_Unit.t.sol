@@ -82,7 +82,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       owner,
       mockContributionToken,
-      tiers
+      tiers,
+      false // _shouldMintByDefault
     );
   }
 
@@ -110,7 +111,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       owner,
       mockContributionToken,
-      _tiers
+      _tiers,
+      false // _shouldMintByDefault
     );
 
     // Check: delegate has correct parameters?
@@ -162,7 +164,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       owner,
       mockContributionToken,
-      _tiers
+      _tiers,
+      false // _shouldMintByDefault
     );
   }
 
@@ -178,7 +181,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         mockTerminalAddress,
         owner,
         mockContributionToken,
-        tiers
+        tiers,
+        false // _shouldMintByDefault
       );
 
     uint256 supply;
@@ -440,7 +444,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     address _expectedCaller,
     address _owner,
     address _contributionToken,
-    JBNFTRewardTier[] memory __tiers
+    JBNFTRewardTier[] memory __tiers,
+    bool _shouldMintByDefault
   )
     JBTieredLimitedNFTRewardDataSource(
       _projectId,
@@ -452,7 +457,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _contractUri,
       _owner,
       _contributionToken,
-      __tiers
+      __tiers,
+      _shouldMintByDefault
     )
   {}
 
