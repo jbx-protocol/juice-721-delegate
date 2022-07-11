@@ -311,64 +311,64 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
-  function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOut() external {
-    // Create 10 tiers, each with 10 tokens available to mint
-    for (uint256 i; i < 10; i++) {
-      tiers.push(JBNFTRewardTier({
-        contributionFloor: uint128((i + 1) * 10),
-        remainingQuantity: uint40(10),
-        initialQuantity: uint40(10),
-        tokenUri: tokenUris[i]
-      }));
-    }
+  // function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOut() external {
+  //   // Create 10 tiers, each with 10 tokens available to mint
+  //   for (uint256 i; i < 10; i++) {
+  //     tiers.push(JBNFTRewardTier({
+  //       contributionFloor: uint128((i + 1) * 10),
+  //       remainingQuantity: uint40(10),
+  //       initialQuantity: uint40(10),
+  //       tokenUri: tokenUris[i]
+  //     }));
+  //   }
 
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
+  //   // Mock the directory call
+  //   vm.mockCall(
+  //     address(mockJBDirectory),
+  //     abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+  //     abi.encode(true)
+  //   );
 
-    uint256 _supplyLeft = tiers[0].initialQuantity;
-    while (true) {
-      uint256 _totalSupplyBeforePay = delegate.totalSupply();
+  //   uint256 _supplyLeft = tiers[0].initialQuantity;
+  //   while (true) {
+  //     uint256 _totalSupplyBeforePay = delegate.totalSupply();
 
-      // If there is no supply left this should revert
-      if (_supplyLeft == 0) {
-        vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
-      }
+  //     // If there is no supply left this should revert
+  //     if (_supplyLeft == 0) {
+  //       vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
+  //     }
 
-      uint256 _metadata;
-      _metadata |= 1 << 32; // 1 reward
-      _metadata |= 1 << 40; // tier 1
+  //     uint256 _metadata;
+  //     _metadata |= 1 << 32; // 1 reward
+  //     _metadata |= 1 << 40; // tier 1
 
-      // Perform the pay
-      vm.prank(mockTerminalAddress);
-      delegate.didPay(
-        JBDidPayData(
-          msg.sender,
-          projectId,
-          0,
-          JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
-          0,
-          msg.sender,
-          false,
-          '',
-          abi.encode(_metadata)
-        )
-      );
+  //     // Perform the pay
+  //     vm.prank(mockTerminalAddress);
+  //     delegate.didPay(
+  //       JBDidPayData(
+  //         msg.sender,
+  //         projectId,
+  //         0,
+  //         JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
+  //         0,
+  //         msg.sender,
+  //         false,
+  //         '',
+  //         abi.encode(_metadata)
+  //       )
+  //     );
 
-      // Make sure if there was no supply left there was no NFT minted
-      if (_supplyLeft == 0) {
-        assertEq(delegate.totalSupply(), _totalSupplyBeforePay);
-        break;
-      } else {
-        assertEq(delegate.totalSupply(), _totalSupplyBeforePay + 1);
-      }
+  //     // Make sure if there was no supply left there was no NFT minted
+  //     if (_supplyLeft == 0) {
+  //       assertEq(delegate.totalSupply(), _totalSupplyBeforePay);
+  //       break;
+  //     } else {
+  //       assertEq(delegate.totalSupply(), _totalSupplyBeforePay + 1);
+  //     }
 
-      --_supplyLeft;
-    }
-  }
+  //     --_supplyLeft;
+  //   }
+  // }
 
   function testJBTieredNFTRewardDelegate_didPay_revertIfCallerIsNotATerminalOfProjectId(
     address _terminal
