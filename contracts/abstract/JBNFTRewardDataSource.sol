@@ -3,14 +3,13 @@ pragma solidity 0.8.6;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
-import {ERC721 as ERC721Rari} from '@rari-capital/solmate/src/tokens/ERC721.sol';
 import '../interfaces/IJBNFTRewardDataSource.sol';
-import '../interfaces/ITokenSupplyDetails.sol';
 
 /**
   @title 
@@ -38,7 +37,7 @@ abstract contract JBNFTRewardDataSource is
   IJBNFTRewardDataSource,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
-  ERC721Rari,
+  ERC721Votes,
   Ownable
 {
   using Strings for uint256;
@@ -157,9 +156,9 @@ abstract contract JBNFTRewardDataSource is
 
     @return The token URI to use for the provided `_tokenId`.
   */
-  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+  function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
     // A token without an owner doesn't have a URI.
-    if (_ownerOf[_tokenId] == address(0)) return '';
+    if (ownerOf(_tokenId) == address(0)) return '';
 
     // If a token URI resolver is provided, use it to resolve the token URI.
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
@@ -180,7 +179,7 @@ abstract contract JBNFTRewardDataSource is
   function supportsInterface(bytes4 _interfaceId)
     public
     view
-    override(ERC721Rari, IERC165)
+    override(ERC721, IERC165)
     returns (bool)
   {
     return
@@ -213,7 +212,7 @@ abstract contract JBNFTRewardDataSource is
     string memory _baseUri,
     string memory _contractUri,
     address _owner
-  ) ERC721Rari(_name, _symbol) {
+  ) ERC721(_name, _symbol) EIP712(_name, '1') {
     projectId = _projectId;
     directory = _directory;
     baseUri = _baseUri;

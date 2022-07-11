@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import './ITokenSupplyDetails.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
 
-interface IJBNFTRewardDataSource is ITokenSupplyDetails {
+interface IJBNFTRewardDataSource {
   event SetContractUri(string indexed contractUri, address caller);
 
   event SetBaseUri(string indexed baseUri, address caller);

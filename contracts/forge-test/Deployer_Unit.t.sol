@@ -24,7 +24,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string baseUri = 'http://www.null.com';
+  string tokenUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
   string [] baseUris = [
@@ -139,10 +139,9 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     for (uint256 i; i < 10; i++) {
       tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128((i + 1) * 10),
-        idCeiling: uint48((i + 1) * 100),
-        remainingAllowance: uint40(100),
-        initialAllowance: uint40(100),
-        baseUri: baseUris[i]
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        tokenUri: baseUris[i]
       });
     }
 
@@ -151,7 +150,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri: baseUri,
+      baseUri: tokenUri,
       contractUri: contractUri,
       owner: owner,
       contributionToken: mockContributionToken,
