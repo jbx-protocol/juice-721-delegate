@@ -64,7 +64,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     Gets an array of all the tiers' base URIs. 
 
-    @returns allTiers All the tiers.
+    @return allTiers All the tiers.
   */
   function allTiers() external view override returns (JBNFTRewardTier[] memory allTiers) {
     // Loop through each tier.
@@ -217,12 +217,13 @@ contract JBTieredLimitedNFTRewardDataSource is
     )
   {
     contributionToken = _contributionToken;
-    numberOfTiers = _tiers.length;
+    uint256 _numberOfTiers = _tiers.length;
+    numberOfTiers = _numberOfTiers;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
-    for (uint256 _i; _i < numberOfTiers; ) {
+    for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier being iterated on.
       _tier = _tiers[_i];
 

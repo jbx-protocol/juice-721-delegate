@@ -124,12 +124,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     for (uint256 i; i < 10; i++) {
       tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128((i + 1) * 10),
-        idCeiling: uint48((i + 1) * 10),
-        remainingAllowance: uint40(10),
-        initialAllowance: uint40(10),
+        remainingQuantity: uint40(10),
+        initialQuantity: uint40(10),
         baseUri: baseUris[i]
       });
     }
+
 
     NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
       directory: _jbDirectory,
