@@ -13,10 +13,12 @@ pragma solidity 0.8.6;
   @member idCeiling The highest token ID in this tier.
   @member remainingAllowance Remaining number of tokens in this tier. Together with idCeiling this enables for consecutive, increasing token ids to be issued to contributors.
   @member initialAllowance The initial `remainingAllowance` value when the tier was set.
+  @member baseUri The tokenUri for the tier.
 */
 struct JBNFTRewardTier {
   uint128 contributionFloor;
   uint48 idCeiling;
   uint40 remainingAllowance;
   uint40 initialAllowance;
+  string baseUri;
 }
