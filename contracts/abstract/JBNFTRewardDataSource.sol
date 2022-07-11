@@ -157,7 +157,7 @@ abstract contract JBNFTRewardDataSource is
 
     @return The token URI to use for the provided `_tokenId`.
   */
-  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+  function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
     // A token without an owner doesn't have a URI.
     if (_ownerOf[_tokenId] == address(0)) return '';
 

@@ -7,7 +7,7 @@ import './../structs/JBNFTRewardTier.sol';
 interface IJBTieredLimitedNFTRewardDataSource is ITokenSupplyDetails {
   event Mint(
     uint256 indexed tokenId,
-    uint256 indexed tier,
+    uint256 indexed tierId,
     address indexed beneficiary,
     uint256 value,
     address caller
@@ -19,7 +19,9 @@ interface IJBTieredLimitedNFTRewardDataSource is ITokenSupplyDetails {
 
   function contributionToken() external view returns (address);
 
-  function tierNumberOfToken(uint256 _tokenId) external view returns (uint256);
+  function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
+
+  function pricePaidForToken(uint256 _tokenId) external view returns (uint256);
 
   function mint(address _beneficiary, uint256 _value) external returns (uint256 tokenId);
 

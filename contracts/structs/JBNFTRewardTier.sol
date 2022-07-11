@@ -17,8 +17,7 @@ pragma solidity 0.8.6;
 */
 struct JBNFTRewardTier {
   uint128 contributionFloor;
-  uint48 idCeiling;
-  uint40 remainingAllowance;
-  uint40 initialAllowance;
+  uint64 remainingQuantity;
+  uint64 initialQuantity;
   string baseUri;
 }

@@ -183,7 +183,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // idCeiling is now greater than the allowance cumulative sum, meaning there is an ordering issue
     // (more allowance than possible token id's)
-    _tiers[errorIndex].idCeiling++;
+    // _tiers[errorIndex].idCeiling++;
 
     vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER()'));
     new JBTieredLimitedNFTRewardDataSource(
@@ -243,9 +243,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // If in an existing tier, should return it
     if (tokenId <= 10 * 100)
-      assertEq(delegate.tierNumberOfToken(tokenId), (tokenId / 100) + 1);
+      assertEq(delegate.tierIdOfToken(tokenId), (tokenId / 100) + 1);
       // If outside of existing tiers, should return 0
-    else assertEq(delegate.tierNumberOfToken(tokenId), 0);
+    else assertEq(delegate.tierIdOfToken(tokenId), 0);
   }
 
   function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 valueSent) external {
@@ -268,8 +268,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: allowance left - tiers are 1-indexed
     assertEq(
-      delegate.tiers()[theoreticalTiers - 1].remainingAllowance,
-      tiers[theoreticalTiers - 1].remainingAllowance - 1
+      delegate.tiers()[theoreticalTiers - 1].remainingQuantity,
+      tiers[theoreticalTiers - 1].remainingQuantity - 1
     );
 
     // Check: tokenId?
@@ -339,8 +339,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: allowance left - back to the original one (tiers are 1-indexed)
     assertEq(
-      delegate.tiers()[theoreticalTiers - 1].remainingAllowance,
-      tiers[theoreticalTiers - 1].remainingAllowance
+      delegate.tiers()[theoreticalTiers - 1].remainingQuantity,
+      tiers[theoreticalTiers - 1].remainingQuantity
     );
 
     // Check: beneficiary balance
@@ -406,7 +406,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    uint256 _supplyLeft = tiers[0].initialAllowance;
+    uint256 _supplyLeft = tiers[0].initialQuantity;
     while (true) {
       uint256 _totalSupplyBeforePay = delegate.totalSupply();
 
@@ -481,9 +481,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < first.length; i++) {
       assertEq(first[i].contributionFloor, second[i].contributionFloor);
-      assertEq(first[i].idCeiling, second[i].idCeiling);
-      assertEq(first[i].remainingAllowance, second[i].remainingAllowance);
-      assertEq(first[i].initialAllowance, second[i].initialAllowance);
+      // assertEq(first[i].idCeiling, second[i].idCeiling);
+      assertEq(first[i].remainingQuantity, second[i].remainingQuantity);
+      assertEq(first[i].initialQuantity, second[i].initialQuantity);
     }
   }
 }
