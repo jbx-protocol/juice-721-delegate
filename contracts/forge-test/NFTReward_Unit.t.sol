@@ -201,16 +201,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.totalSupply(), supply);
   }
 
-  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber(uint8 tokenId)
+  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber(uint8 _tierId, uint8 _tokenNumber)
     external
   {
-    // Tiers are from 1 to 10, with 100 token per tier
+    vm.assume(_tierId > 0 && _tokenNumber > 0);
+    uint256 tokenId = _generateTokenId(_tierId, _tokenNumber);
 
-    // If in an existing tier, should return it
-    if (tokenId <= 10 * 100)
-      assertEq(delegate.tierIdOfToken(tokenId), (tokenId / 100) + 1);
-      // If outside of existing tiers, should return 0
-    else assertEq(delegate.tierIdOfToken(tokenId), 0);
+    assertEq(delegate.tierIdOfToken(tokenId), _tierId);
   }
 
   function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 _tierId, uint8 _tokenNumber) external {
@@ -230,38 +227,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: beneficiary balance
     assertEq(delegate.totalOwnerBalance(beneficiary), 1);
-  }
-
-  function testJBTieredNFTRewardDelegate_mint_revertIfNoAllowanceLeft(uint32 _tierId, uint224 _tokenNumber) external {
-    vm.assume(_tierId > 0);
-    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBTokenUriResolver(mockTokenUriResolver),
-        baseUri,
-        contractUri,
-        mockTerminalAddress,
-        owner,
-        mockContributionToken,
-        tiers
-      );
-
-    // Set the remaining allowance of the last tier at 0
-    _delegate.setTier(
-      _tierId - 1,
-      JBNFTRewardTier({
-        contributionFloor: uint128(_tierId * 10),
-        remainingQuantity: 0,
-        initialQuantity: uint40(100),
-        tokenUri: tokenUris[0]
-      })
-    );
-
-    vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
-    vm.prank(owner);
-    _delegate.mint(beneficiary, _tierId, _tokenNumber);
   }
 
   function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner(address caller, uint32 _tierId, uint224 _tokenNumber) external {
