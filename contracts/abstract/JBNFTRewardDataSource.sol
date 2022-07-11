@@ -10,7 +10,6 @@ import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
 import {ERC721 as ERC721Rari} from '@rari-capital/solmate/src/tokens/ERC721.sol';
 import '../interfaces/IJBNFTRewardDataSource.sol';
-import '../interfaces/ITokenSupplyDetails.sol';
 
 /**
   @title 

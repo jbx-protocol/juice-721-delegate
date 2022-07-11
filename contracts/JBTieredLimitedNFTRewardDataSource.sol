@@ -23,22 +23,12 @@ contract JBTieredLimitedNFTRewardDataSource is
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
-  error NOT_AVAILABLE();
   error INSUFFICIENT_AMOUNT();
   error OUT();
   error INVALID_TIER();
   error INVALID_PRICE_SORT_ORDER();
   error NO_QUANTITY();
-
-  //*********************************************************************//
-  // --------------------- internal stored properties ------------------ //
-  //*********************************************************************//
-
-  /** 
-    @notice
-    The reward tiers. 
-  */
-  JBNFTRewardTier[] internal _tiers;
+  error NOT_AVAILABLE();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -50,98 +40,19 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   address public immutable override contributionToken;
 
-  //*********************************************************************//
-  // ------------------------- external views -------------------------- //
-  //*********************************************************************//
-
   /** 
-    @notice 
-    The reward tiers.
-
-    @return The tiers. 
+    @notice
+    The total number of tiers there are. 
   */
-  function tiers() external view override returns (JBNFTRewardTier[] memory) {
-    return _tiers;
-  }
-
-  /** 
-    @notice 
-    The total supply of issued NFTs from all tiers.
-
-    @return supply The total number of NFTs between all tiers.
-  */
-  function totalSupply() external view override returns (uint256 supply) {
-    // Keep a reference to the number of tiers.
-    uint256 _numTiers = _tiers.length;
-
-    // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier memory _tier;
-
-    for (uint256 _i; _i < _numTiers; ) {
-      // Set the tier being iterated on.
-      _tier = _tiers[_i];
-
-      // Increment the total supply with the amount used already.
-      supply += _tier.initialQuantity - _tier.remainingQuantity;
-
-      unchecked {
-        ++_i;
-      }
-    }
-  }
-
-  /** 
-    @notice 
-    The total number of tokens with the given ID.
-
-    @return Either 1 if the token has been minted, or 0 if it hasnt.
-  */
-  function tokenSupply(uint256 _tokenId) external view override returns (uint256) {
-    return _ownerOf[_tokenId] != address(0) ? 1 : 0;
-  }
-
-  /** 
-    @notice 
-    The total number of tokens owned by the given owner. 
-
-    @param _owner The address to check the balance of.
-
-    @return The number of tokens owners by the owner.
-  */
-  function totalOwnerBalance(address _owner) external view override returns (uint256) {
-    return _balanceOf[_owner];
-  }
-
-  /** 
-    @notice 
-    The total number of tokens with the given ID owned by the given owner. 
-
-    @param _owner The address to check the balance of.
-    @param _tokenId The ID of the token to check the owner's balance of.
-
-    @return Either 1 if the owner has the token, or 0 if it does not.
-  */
-  function ownerTokenBalance(address _owner, uint256 _tokenId)
-    external
-    view
-    override
-    returns (uint256)
-  {
-    return _ownerOf[_tokenId] == _owner ? 1 : 0;
-  }
+  uint256 public immutable override numberOfTiers;
 
   /** 
     @notice
-    The amount paid for the provided token ID. 
+    The reward tiers. 
 
-    @param _tokenId The ID of the token to get the price paid for. 
-
-    @return The price paid for the specified token ID, as a fixed point number with 18 decimals.
+    _tierId The incremental ID of the tier. Ordered by contribution floor, starting with 1.
   */
-  function pricePaidForToken(uint256 _tokenId) public view override returns (uint256) {
-    // The price is in the last 160 bits.
-    return uint256(uint96(_tokenId));
-  }
+  mapping(uint256 => JBNFTRewardTier) public tiers;
 
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
@@ -182,7 +93,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
     // The baseUri is added to the JBNFTRewardTier for each tier.
-    return _tiers[tierIdOfToken(_tokenId)].baseUri;
+    return tiers[tierIdOfToken(_tokenId)].baseUri;
   }
 
   //*********************************************************************//
@@ -199,7 +110,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
     @param _contributionToken The token that contributions are expected to be in terms of.
-    @param __tiers The tiers according to which token distribution will be made. 
+    @param _tiers The tiers according to which token distribution will be made. 
   */
   constructor(
     uint256 _projectId,
@@ -211,7 +122,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _contractUri,
     address _owner,
     address _contributionToken,
-    JBNFTRewardTier[] memory __tiers
+    JBNFTRewardTier[] memory _tiers
   )
     JBNFTRewardDataSource(
       _projectId,
@@ -225,29 +136,27 @@ contract JBTieredLimitedNFTRewardDataSource is
     )
   {
     contributionToken = _contributionToken;
+    numberOfTiers = _tiers.length;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
-    // Keep a reference to the number of tiers.
-    uint256 _numTiers = __tiers.length;
-
-    for (uint256 _i; _i < _numTiers; ) {
+    for (uint256 _i; _i < numberOfTiers; ) {
       // Set the tier being iterated on.
-      _tier = __tiers[_i];
+      _tier = _tiers[_i];
 
       // Make sure there is some quantity.
       if (_tier.remainingQuantity == 0) revert NO_QUANTITY();
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
-      if (_i != 0 && _tier.contributionFloor < __tiers[_i - 1].contributionFloor)
+      if (_i != 0 && _tier.contributionFloor < _tiers[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
       // Set the initial quantity to be the remaining quantity.
       _tier.initialQuantity = _tier.remainingQuantity;
 
       // Add the tier with the iterative ID.
-      _tiers[_i] = _tier;
+      tiers[_i + 1] = _tier;
 
       unchecked {
         ++_i;
@@ -268,23 +177,23 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _beneficiary The address that should receive to token.
     @param _tierId The ID of the tier to mint within.
+    @param _tokenNumber The token number to use for the mint, which cannot be a token number within the tier's initial quantity.
   */
-  function mint(address _beneficiary, uint256 _tierId)
-    external
-    override
-    onlyOwner
-    returns (uint256 tokenId)
-  {
-    // Keep a reference to the token ID.
-    tokenId = _generateTokenId(type(uint256).max, _tierId, false);
+  function mint(
+    address _beneficiary,
+    uint256 _tierId,
+    uint256 _tokenNumber
+  ) external override onlyOwner returns (uint256 tokenId) {
+    // Make sure the token number is greater than the tier's initial quantity.
+    if (_tokenNumber <= tiers[_tierId].initialQuantity) revert NOT_AVAILABLE();
 
-    // Make sure there's a token ID.
-    if (tokenId == 0) revert NOT_AVAILABLE();
+    // Keep a reference to the token ID.
+    tokenId = _generateTokenId(_tierId, _tokenNumber);
 
     // Mint it.
     _mint(_beneficiary, tokenId);
 
-    emit Mint(tokenId, _tierId, _beneficiary, type(uint256).max, msg.sender);
+    emit Mint(tokenId, _tierId, _beneficiary, 0, 1, msg.sender);
   }
 
   /** 
@@ -312,64 +221,83 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice 
     Mints a token for a given contribution to the beneficiary.
 
+    @dev
+    `_data.metadata` should include the number of rewards being requested in bits 32-39.
+
     @param _data The Juicebox standard project contribution data.
   */
   function _processContribution(JBDidPayData calldata _data) internal override {
     // Make the contribution is being made in the expected token.
     if (_data.amount.token != contributionToken) return;
 
-    // Tier ID is in bits 32-63.
-    uint256 _tierId = uint256(uint32(_bytesToUint(_data.metadata) << 32));
+    // Keep a reference to the number of rewards being processed. Skip the first 32 bits which are used by the JB protocol.
+    uint256 _numRewards = uint256(uint8(_bytesToUint(_data.metadata) << 32));
 
-    // If no tier specified, accept the funds without minting anything.
-    if (_tierId == 0) return;
+    // Keep a reference to the value remaining.
+    uint256 _remainingValue = _data.amount.value;
 
-    // Keep a reference to the token ID.
-    uint256 _tokenId = _generateTokenId(_data.amount.value, _tierId, true);
+    // Keep a reference to the tier ID being iterated on.
+    uint256 _tierId;
 
-    // If there's a token to mint, do so and increment the tier supply.
-    _mint(_data.beneficiary, _tokenId);
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
 
-    emit Mint(_tokenId, _tierId, _data.beneficiary, _data.amount.value, msg.sender);
+    for (uint256 _i; _i < _numRewards; ) {
+      // Tier IDs are in chuncks of 32 bits starting in bit 40.
+      _tierId = uint256(uint32(_bytesToUint(_data.metadata) << (40 + 32 * _i)));
+
+      // If no tier specified, accept the funds without minting anything.
+      if (_tierId == 0) continue;
+
+      // Keep a reference to the tier being iterated on.
+      JBNFTRewardTier storage _tier = tiers[_tierId];
+
+      // Make sure the provided tier exists.
+      if (_tier.initialQuantity == 0) revert INVALID_TIER();
+
+      // Make sure the amount meets the tier's contribution floor.
+      if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
+
+      // Make sure there are enough units available.
+      if (_tier.remainingQuantity == 0) revert OUT();
+
+      unchecked {
+        // Keep a reference to the token ID.
+        _tokenId = _generateTokenId(_tierId, _tier.initialQuantity - --_tier.remainingQuantity);
+
+        // Decrement the remaining value.
+        _remainingValue = _remainingValue - _tier.contributionFloor;
+      }
+
+      // If there's a token to mint, do so and increment the tier supply.
+      _mint(_data.beneficiary, _tokenId);
+
+      emit Mint(_tokenId, _tierId, _data.beneficiary, _data.amount.value, _numRewards, msg.sender);
+
+      unchecked {
+        ++_i;
+      }
+    }
   }
 
   /** 
     @notice
     Finds the token ID and tier given a contribution amount. 
 
-    @param _amount The amount of the contribution.
     @param _tierId The ID of the tier to generate an ID for.
-    @param _enforceMaxQuantity Whether the token's max quantity should be respected.
+    @param _tokenNumber The number of the token in the tier.
 
     @return tokenId The ID of the token.
   */
-  function _generateTokenId(
-    uint256 _amount,
-    uint256 _tierId,
-    bool _enforceMaxQuantity
-  ) internal returns (uint256 tokenId) {
-    // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier storage _tier = _tiers[_tierId];
-
-    // Make sure the provided tier exists.
-    if (_tier.initialQuantity == 0) revert INVALID_TIER();
-
-    // Make sure the amount meets the tier's contribution floor.
-    if (_tier.contributionFloor > _amount) revert INSUFFICIENT_AMOUNT();
-
-    // Make sure there are enough units available.
-    if (_enforceMaxQuantity && _tier.remainingQuantity == 0) revert OUT();
-
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
+    internal
+    returns (uint256 tokenId)
+  {
     // The tier ID in the first 32 bits.
     tokenId = _tierId;
 
-    unchecked {
-      // The token ID incrementally increases in bits 32-95.
-      tokenId |= (_tier.initialQuantity - --_tier.remainingQuantity) << 32;
-    }
-
-    // The amount paid can take up the rest.
-    tokenId |= _amount << 96;
+    // The token number in the rest.
+    tokenId |= _tokenNumber << 32;
   }
 
   // From https://ethereum.stackexchange.com/questions/51229/how-to-convert-bytes-to-uint-in-solidity

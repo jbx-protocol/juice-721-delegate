@@ -518,6 +518,6 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
   {}
 
   function setTier(uint256 index, JBNFTRewardTier calldata newTier) public {
-    _tiers[index] = newTier;
+    tiers[index] = newTier;
   }
 }
