@@ -66,15 +66,12 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return All the tiers tiers.
   */
-  function allTiers() external view override returns (JBNFTRewardTier[] memory) {
-    // Get a reference to the number of tiers.
-    uint256 _numberOfTiers = numberOfTiers;
-
+  function allTiers() external view override returns (JBNFTRewardTier[] memory _tiers) {
     // Initialize an array with the appropriate length.
-    JBNFTRewardTier[] _tiers = new JBNFTRewardTier[](_numberOfTiers);
+    _tiers = new JBNFTRewardTier[](numberOfTiers);
 
     // Loop through each tier.
-    for (uint256 _i = 0; _i < _numberOfTiers; ) {
+    for (uint256 _i = 0; _i < numberOfTiers; ) {
       // Add the 1-indexed tier to the array.
       _tiers[_i] = tiers[_i + 1];
       unchecked {
