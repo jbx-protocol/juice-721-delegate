@@ -3,6 +3,7 @@ pragma solidity 0.8.6;
 
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
+import './interfaces/ITokenSupplyDetails.sol';
 
 /**
   @title
@@ -17,7 +18,8 @@ import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 */
 contract JBTieredLimitedNFTRewardDataSource is
   JBNFTRewardDataSource,
-  IJBTieredLimitedNFTRewardDataSource
+  IJBTieredLimitedNFTRewardDataSource,
+  ITokenSupplyDetails
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -53,6 +55,68 @@ contract JBTieredLimitedNFTRewardDataSource is
     _tierId The incremental ID of the tier. Ordered by contribution floor, starting with 1.
   */
   mapping(uint256 => JBNFTRewardTier) public tiers;
+
+  //*********************************************************************//
+  // ------------------------- external views -------------------------- //
+  //*********************************************************************//
+
+  /** 
+    @notice 
+    The total supply of issued NFTs from all tiers.
+
+    @return supply The total number of NFTs between all tiers.
+  */
+  function totalSupply() external view override returns (uint256 supply) {
+    // Keep a reference to the tier being iterated on.
+    JBNFTRewardTier memory _tier;
+
+    for (uint256 _i; _i < numberOfTiers; ) {
+      // Set the tier being iterated on.
+      _tier = tiers[_i];
+
+      // Increment the total supply with the amount used already.
+      supply += _tier.initialQuantity - _tier.remainingQuantity;
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /** 
+    @notice 
+    The total number of tokens with the given ID.
+    @return Either 1 if the token has been minted, or 0 if it hasnt.
+  */
+  function tokenSupply(uint256 _tokenId) external view override returns (uint256) {
+    return _ownerOf[_tokenId] != address(0) ? 1 : 0;
+  }
+
+  /** 
+    @notice 
+    The total number of tokens owned by the given owner. 
+    @param _owner The address to check the balance of.
+    @return The number of tokens owners by the owner.
+  */
+  function totalOwnerBalance(address _owner) external view override returns (uint256) {
+    return _balanceOf[_owner];
+  }
+
+  /** 
+    @notice 
+    The total number of tokens with the given ID owned by the given owner. 
+    @param _owner The address to check the balance of.
+    @param _tokenId The ID of the token to check the owner's balance of.
+    @return Either 1 if the owner has the token, or 0 if it does not.
+  */
+  function ownerTokenBalance(address _owner, uint256 _tokenId)
+    external
+    view
+    override
+    returns (uint256)
+  {
+    return _ownerOf[_tokenId] == _owner ? 1 : 0;
+  }
 
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
