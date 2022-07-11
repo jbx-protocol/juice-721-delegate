@@ -15,6 +15,7 @@ import './JBNFTRewardTier.sol';
   @member owner The address that should own this contract.
   @member contributionToken The token that contributions are expected to be in terms of.
   @member tiers The tiers according to which token distribution will be made. 
+  @memver shouldMintByDefault A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
 */
 struct JBDeployTieredNFTRewardDataSourceData {
   IJBDirectory directory;
@@ -26,4 +27,5 @@ struct JBDeployTieredNFTRewardDataSourceData {
   address owner;
   address contributionToken;
   JBNFTRewardTier[] tiers;
+  bool shouldMintByDefault;
 }
