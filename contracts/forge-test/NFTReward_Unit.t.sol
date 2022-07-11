@@ -21,7 +21,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
   string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
-  string[] baseUris = ['http://www.null.com/0'];
+  string[] baseUris = [
+    'http://www.null.com/1',
+    'http://www.null.com/2',
+    'http://www.null.com/3',
+    'http://www.null.com/4',
+    'http://www.null.com/5',
+    'http://www.null.com/6',
+    'http://www.null.com/7',
+    'http://www.null.com/8',
+    'http://www.null.com/9',
+    'http://www.null.com/10'
+  ];
 
   JBNFTRewardTier[] tiers;
 
@@ -52,12 +63,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Create 10 tiers, each with 100 tokens available to mint
     for (uint256 i; i < 10; i++) {
-      tiers[i] = JBNFTRewardTier({
+      tiers.push(JBNFTRewardTier({
         contributionFloor: uint128((i + 1) * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
         baseUri: baseUris[i]
-      });
+      })
+      );
     }
 
     delegate = new JBTieredLimitedNFTRewardDataSource(
