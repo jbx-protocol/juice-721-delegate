@@ -40,9 +40,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   event Mint(
     uint256 indexed tokenId,
-    uint256 indexed tier,
+    uint256 indexed tierId,
     address indexed beneficiary,
-    uint256 value,
+    uint256 totalAmountContributed,
+    uint256 numRewards,
     address caller
   );
 
@@ -68,8 +69,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
         tokenUri: tokenUris[i]
-      })
-      );
+      }));
     }
 
     delegate = new JBTieredLimitedNFTRewardDataSource(
@@ -87,13 +87,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {
-    // Avoid slowing down tests too much by limiting to 30 tiers max
-    vm.assume(nbTiers < 30);
+    vm.assume(nbTiers < 10);
 
     // Create new tiers array
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
     for (uint256 i; i < nbTiers; i++) {
-      tiers[i] = JBNFTRewardTier({
+      _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
@@ -134,9 +133,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
     vm.assume(errorIndex + 1 < nbTiers); // We'll create an error by inverting tiers[i] and [i+1] floor prices
 
-    // Generate new tiers array
+    // Create new tiers array
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
-    for (uint256 i = 1; i < nbTiers; i++) {
+    for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JBNFTRewardTier({
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
@@ -153,44 +152,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Expect the error at i+1 (as the floor is now smaller than i)
     vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER()'));
-    new JBTieredLimitedNFTRewardDataSource(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri,
-      contractUri,
-      owner,
-      mockContributionToken,
-      _tiers
-    );
-  }
-
-  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfIdCeilingsNonSorted(
-    uint8 nbTiers,
-    uint8 errorIndex
-  ) public {
-    vm.assume(nbTiers < 20);
-    vm.assume(errorIndex < nbTiers); // We'll create an error in tier index i
-
-    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
-
-    // Populate new tiers
-    for (uint256 i = 1; i < nbTiers; i++) {
-      _tiers[i] = JBNFTRewardTier({
-        contributionFloor: uint128(i * 10),
-        remainingQuantity: uint40(100),
-        initialQuantity: uint40(100),
-        tokenUri: tokenUris[0]
-      });
-    }
-
-    // idCeiling is now greater than the allowance cumulative sum, meaning there is an ordering issue
-    // (more allowance than possible token id's)
-    // _tiers[errorIndex].idCeiling++;
-
-    vm.expectRevert(abi.encodeWithSignature('INVALID_ID_SORT_ORDER()'));
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -252,20 +213,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
     else assertEq(delegate.tierIdOfToken(tokenId), 0);
   }
 
-  function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 valueSent, uint32 _tierId, uint224 _tokenNumber) external {
+  function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 _tierId, uint8 _tokenNumber) external {
+    vm.assume(_tierId > 0 && _tierId < 10);
+    vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
+    
     // Check: correct event
     vm.expectEmit(true, true, true, true, address(delegate));
-    emit Mint(_generateTokenId(_tierId, _tokenNumber), _tierId, beneficiary, valueSent, owner);
+    emit Mint(_generateTokenId(_tierId, _tokenNumber), _tierId, beneficiary, 0, 1, owner);
 
     // Actual call
     vm.prank(owner);
     uint256 tokenId = delegate.mint(beneficiary, _tierId, _tokenNumber);
-
-    // Check: allowance left - tiers are 1-indexed
-    assertEq(
-      delegate.allTiers()[_tierId - 1].remainingQuantity,
-      tiers[_tierId - 1].remainingQuantity - 1
-    );
 
     // Check: tokenId?
     assertEq(tokenId, _generateTokenId(_tierId, _tokenNumber));
@@ -314,12 +272,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.mint(beneficiary, _tierId, _tokenNumber);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner() external {
-    //vm.assume(_tierId > 0 && _tierId < 10);
-    //vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
-
-    uint256 _tierId = 1;
-    uint256 _tokenNumber = 101;
+  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint8 _tierId, uint8 _tokenNumber) external {
+    vm.assume(_tierId > 0 && _tierId < 10);
+    vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
 
     vm.prank(owner);
     uint256 tokenId = delegate.mint(beneficiary, _tierId, _tokenNumber);
@@ -342,23 +297,21 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.totalOwnerBalance(beneficiary), 0);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address caller) external {
+  function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address caller, uint8 _tierId, uint8 _tokenNumber) external {
     vm.assume(caller != owner);
+    vm.assume(_tierId > 0 && _tierId < 10);
+    vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
+
     vm.prank(owner);
-    uint256 tokenId = delegate.mint(beneficiary, 1, 1);
+    uint256 tokenId = delegate.mint(beneficiary, _tierId, _tokenNumber);
 
     vm.prank(caller);
     vm.expectRevert(abi.encodePacked('Ownable: caller is not the owner'));
-    delegate.burn(beneficiary, tokenId);
+    delegate.burn(beneficiary, _generateTokenId(_tierId, _tokenNumber));
   }
 
-  function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting(uint256 _tokenId)
-    external
-  {
-    vm.prank(owner);
-    vm.expectRevert(abi.encodePacked('NOT_MINTED'));
-    delegate.burn(beneficiary, _tokenId);
-  }
+  // Part of ERC721 now:
+  //function testJBTieredNFTRewardDelegate_burn_revertIfTokenIsNotExisting(uint256 _tokenId);
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
   function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloor()
@@ -394,6 +347,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOut() external {
+    // Create 10 tiers, each with 10 tokens available to mint
+    for (uint256 i; i < 10; i++) {
+      tiers.push(JBNFTRewardTier({
+        contributionFloor: uint128((i + 1) * 10),
+        remainingQuantity: uint40(10),
+        initialQuantity: uint40(10),
+        tokenUri: tokenUris[i]
+      }));
+    }
+
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -410,6 +373,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
       }
 
+      uint256 _metadata;
+      _metadata |= 1 << 32; // 1 reward
+      _metadata |= 1 << 40; // tier 1
+
       // Perform the pay
       vm.prank(mockTerminalAddress);
       delegate.didPay(
@@ -422,7 +389,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           msg.sender,
           false,
           '',
-          new bytes(0)
+          abi.encode(_metadata)
         )
       );
 
