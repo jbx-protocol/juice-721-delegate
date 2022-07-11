@@ -64,7 +64,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     Gets an array of all the tiers. 
 
-    @return All the tiers tiers.
+    @return _tiers All the tiers tiers.
   */
   function allTiers() external view override returns (JBNFTRewardTier[] memory _tiers) {
     // Initialize an array with the appropriate length.

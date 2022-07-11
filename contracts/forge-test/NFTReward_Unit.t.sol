@@ -18,10 +18,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string tokenUri = 'http://www.null.com';
+  string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
-  string[] baseUris = [
+  string[] tokenUris = [
     'http://www.null.com/1',
     'http://www.null.com/2',
     'http://www.null.com/3',
@@ -67,7 +67,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128((i + 1) * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        tokenUri: baseUris[i]
+        tokenUri: tokenUris[i]
       })
       );
     }
@@ -78,7 +78,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      tokenUri,
+      baseUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -97,7 +97,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        tokenUri: baseUris[i]
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -107,7 +107,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      tokenUri,
+      baseUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -141,7 +141,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        tokenUri: baseUris[0]
+        tokenUri: tokenUris[0]
       });
     }
 
@@ -159,7 +159,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      tokenUri,
+      baseUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -182,7 +182,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(i * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
-        tokenUri: baseUris[0]
+        tokenUri: tokenUris[0]
       });
     }
 
@@ -197,7 +197,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       name,
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
-      tokenUri,
+      baseUri,
       contractUri,
       owner,
       mockContributionToken,
@@ -212,7 +212,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         name,
         symbol,
         IJBTokenUriResolver(mockTokenUriResolver),
-        tokenUri,
+        baseUri,
         contractUri,
         mockTerminalAddress,
         owner,
@@ -230,7 +230,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           contributionFloor: uint128(i * 10),
           remainingQuantity: uint40(i * 10),
           initialQuantity: uint40(100),
-          tokenUri: baseUris[0]
+          tokenUri: tokenUris[0]
         })
       );
 
@@ -282,7 +282,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         name,
         symbol,
         IJBTokenUriResolver(mockTokenUriResolver),
-        tokenUri,
+        baseUri,
         contractUri,
         mockTerminalAddress,
         owner,
@@ -297,7 +297,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contributionFloor: uint128(_tierId * 10),
         remainingQuantity: 0,
         initialQuantity: uint40(100),
-        tokenUri: baseUris[0]
+        tokenUri: tokenUris[0]
       })
     );
 

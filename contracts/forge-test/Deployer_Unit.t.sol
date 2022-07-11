@@ -150,7 +150,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
-      tokenUri: tokenUri,
+      baseUri: tokenUri,
       contractUri: contractUri,
       owner: owner,
       contributionToken: mockContributionToken,
