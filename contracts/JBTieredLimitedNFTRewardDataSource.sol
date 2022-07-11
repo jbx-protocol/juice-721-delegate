@@ -89,7 +89,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return Either 1 if the token has been minted, or 0 if it hasnt.
   */
   function tokenSupply(uint256 _tokenId) external view override returns (uint256) {
-    return _ownerOf[_tokenId] != address(0) ? 1 : 0;
+    return ownerOf(_tokenId) != address(0) ? 1 : 0;
   }
 
   /** 
@@ -99,7 +99,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return The number of tokens owners by the owner.
   */
   function totalOwnerBalance(address _owner) external view override returns (uint256) {
-    return _balanceOf[_owner];
+    return balanceOf(_owner);
   }
 
   /** 
@@ -115,7 +115,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     override
     returns (uint256)
   {
-    return _ownerOf[_tokenId] == _owner ? 1 : 0;
+    return ownerOf(_tokenId) == _owner ? 1 : 0;
   }
 
   //*********************************************************************//
@@ -151,7 +151,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
     // A token without an owner doesn't have a URI.
-    if (_ownerOf[_tokenId] == address(0)) return '';
+    if (ownerOf(_tokenId) == address(0)) return '';
 
     // If a token URI resolver is provided, use it to resolve the token URI.
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
