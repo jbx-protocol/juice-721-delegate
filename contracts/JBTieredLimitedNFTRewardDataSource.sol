@@ -23,10 +23,9 @@ contract JBTieredLimitedNFTRewardDataSource is
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
-  error INVALID_PRICE_SORT_ORDER(uint256);
-  error INVALID_ID_SORT_ORDER(uint256);
+  error INVALID_PRICE_SORT_ORDER();
+  error INVALID_ID_SORT_ORDER();
   error NOT_AVAILABLE();
-  error INVALID_IDS();
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -248,13 +247,13 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Make sure the ID ceilings line up with the allowances
       _totalAllowance += _tier.remainingAllowance;
       if (_totalAllowance != _tier.idCeiling) {
-        revert INVALID_ID_SORT_ORDER(_i);
+        revert INVALID_ID_SORT_ORDER();
       }
 
       if (_i != 0) {
         // Make sure the tier's contribution floor is greater than the previous contribution floor.
         if (_tier.contributionFloor <= __tiers[_i - 1].contributionFloor)
-          revert INVALID_PRICE_SORT_ORDER(_i);
+          revert INVALID_PRICE_SORT_ORDER();
       }
 
       // Set the initial allowance to be the remaining allowance.
