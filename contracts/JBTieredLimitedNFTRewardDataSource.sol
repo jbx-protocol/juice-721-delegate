@@ -297,7 +297,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tokenId The ID of the token to burn.
   */
   function burn(address _owner, uint256 _tokenId) external override onlyOwner {
-    // Burn the token and decrease the supply.
+    // Burn the token.
     _burn(_tokenId);
 
     emit Burn(_tokenId, _owner, msg.sender);
