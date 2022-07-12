@@ -154,7 +154,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       contractUri: contractUri,
       owner: owner,
       contributionToken: mockContributionToken,
-      tiers: tiers
+      tiers: tiers,
+      shouldMintByDefault: false
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});

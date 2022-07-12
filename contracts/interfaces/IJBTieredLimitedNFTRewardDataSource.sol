@@ -15,9 +15,11 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   event Burn(uint256 indexed tokenId, address owner, address caller);
 
+  function contributionToken() external view returns (address);
+
   function numberOfTiers() external view returns (uint256);
 
-  function contributionToken() external view returns (address);
+  function shouldMintByDefault() external view returns (bool);
 
   function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
 

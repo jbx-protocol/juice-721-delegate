@@ -133,7 +133,8 @@ contract RinkebyLaunchProjectFor is Script {
       contractUri: contractUri,
       owner: _projectOwner,
       contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
-      tiers: tiers
+      tiers: tiers,
+      shouldMintByDefault: false
     });
 
     launchProjectData = JBLaunchProjectData({
