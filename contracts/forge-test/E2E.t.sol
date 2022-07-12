@@ -63,10 +63,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
    function testMintOnPay(uint16 valueSent) external {
      vm.assume(valueSent >= 10 && valueSent < 2000);
 
-     uint256 theoreticalTokenId = valueSent <= 100
-       ? ((((uint256(valueSent) / 10) - 1) * 10) + 1)
-       : 91;
-
      uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
 
      (
@@ -80,10 +76,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
      );
 
      // Check: correct tier and id?
-     // TODO: Enable checking the TokenId in the `expectEmit`
-     vm.expectEmit(false, true, true, true);
+     vm.expectEmit(true, true, true, true);
      emit Mint(
-       theoreticalTokenId,
+       _generateTokenId(highestTier, 1),
        highestTier,
        _beneficiary,
        valueSent,
@@ -116,10 +111,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
      // Check: NFT actually received?
      address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
+     assertEq(IERC721(NFTRewardDataSource).ownerOf(_generateTokenId(highestTier, 1)), _beneficiary);
    }
 
   // ----- internal helpers ------
 
+  // Create launchProjectFor(..) payload
   function createData()
     internal
     view
@@ -163,5 +160,17 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       terminals: _terminals,
       memo: ''
     });
+  }
+
+  // Generate tokenId's based on token number and tier
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
+    internal
+    returns (uint256 tokenId)
+  {
+    // The tier ID in the first 8 bits.
+    tokenId = _tierId;
+
+    // The token number in the rest.
+    tokenId |= _tokenNumber << 8;
   }
 }
