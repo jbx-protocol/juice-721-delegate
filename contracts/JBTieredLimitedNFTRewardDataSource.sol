@@ -161,9 +161,9 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return The tier number of the specified token ID.
   */
-  function tierIdOfToken(uint256 _tokenId) public view override returns (uint256) {
-    // The tier ID is in the first 32 bytes.
-    return uint256(uint32(_tokenId));
+  function tierIdOfToken(uint256 _tokenId) public pure override returns (uint256) {
+    // The tier ID is in the first 8 bytes.
+    return uint256(uint8(_tokenId));
   }
 
   /** 
@@ -321,7 +321,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     Mints a token for a given contribution to the beneficiary.
 
     @dev
-    `_data.metadata` should include the number of rewards being requested in bits 32-39.
+    `_data.metadata` should include the reward tiers being requested in increments of 8 bits starting at bits 32.
 
     @param _data The Juicebox standard project contribution data.
   */
@@ -330,9 +330,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (_data.amount.token != contributionToken) return;
 
     // Check if the metadata is filled with the needed information
-    if (_data.metadata.length > 32){
+    if (_data.metadata.length > 32) {
       // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
-      (,uint8[] memory _decodedMetadata) = abi.decode(_data.metadata, (bytes32, uint8[]));
+      (, uint8[] memory _decodedMetadata) = abi.decode(_data.metadata, (bytes32, uint8[]));
 
       // Mint rewards if they were specified. If there are no rewards but a default NFT should be minted, do so.
       if (_decodedMetadata.length != 0)
@@ -340,8 +340,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Fallback for if we were not able to mint using the metadata
-    if(shouldMintByDefault)
-      return _mintBestAvailableTier(_data.amount.value, _data.beneficiary);
+    if (shouldMintByDefault) return _mintBestAvailableTier(_data.amount.value, _data.beneficiary);
   }
 
   /** 
@@ -404,11 +403,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _mintsLength = _mintTiers.length;
 
     for (uint256 _i; _i < _mintsLength; ) {
-      // Tier IDs are in chuncks of 32 bits starting in bit 40.
+      // Get a reference to the tier being iterated on.
       _tierId = _mintTiers[_i];
 
       // If no tier specified, accept the funds without minting anything.
-      if (_tierId == 0){
+      if (_tierId == 0) {
         unchecked {
           ++_i;
         }
@@ -479,11 +478,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     pure
     returns (uint256 tokenId)
   {
-    // The tier ID in the first 32 bits.
+    // The tier ID in the first 8 bits.
     tokenId = _tierId;
 
     // The token number in the rest.
-    tokenId |= _tokenNumber << 32;
+    tokenId |= _tokenNumber << 8;
   }
 
   // From https://ethereum.stackexchange.com/questions/51229/how-to-convert-bytes-to-uint-in-solidity

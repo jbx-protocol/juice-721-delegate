@@ -64,12 +64,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Create 10 tiers, each with 100 tokens available to mint
     for (uint256 i; i < 10; i++) {
-      tiers.push(JBNFTRewardTier({
-        contributionFloor: uint128((i + 1) * 10),
-        remainingQuantity: uint40(100),
-        initialQuantity: uint40(100),
-        tokenUri: tokenUris[i]
-      }));
+      tiers.push(
+        JBNFTRewardTier({
+          contributionFloor: uint128((i + 1) * 10),
+          remainingQuantity: uint40(100),
+          initialQuantity: uint40(100),
+          tokenUri: tokenUris[i]
+        })
+      );
     }
 
     delegate = new JBTieredLimitedNFTRewardDataSource(
@@ -171,18 +173,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_totalSupply_returnsCorrectTotalSupply() external {
     ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBTokenUriResolver(mockTokenUriResolver),
-        baseUri,
-        contractUri,
-        owner,
-        mockContributionToken,
-        tiers,
-        false // _shouldMintByDefault
-      );
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      baseUri,
+      contractUri,
+      owner,
+      mockContributionToken,
+      tiers,
+      false // _shouldMintByDefault
+    );
 
     uint256 supply;
 
@@ -204,19 +206,22 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.totalSupply(), supply);
   }
 
-  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber(uint8 _tierId, uint8 _tokenNumber)
-    external
-  {
+  function testJBTieredNFTRewardDelegate_tierNumberOfToken_returnsCorrectTierNumber(
+    uint8 _tierId,
+    uint8 _tokenNumber
+  ) external {
     vm.assume(_tierId > 0 && _tokenNumber > 0);
     uint256 tokenId = _generateTokenId(_tierId, _tokenNumber);
 
     assertEq(delegate.tierIdOfToken(tokenId), _tierId);
   }
 
-  function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 _tierId, uint8 _tokenNumber) external {
+  function testJBTieredNFTRewardDelegate_mint_mintIfCallerIsOwner(uint8 _tierId, uint8 _tokenNumber)
+    external
+  {
     vm.assume(_tierId > 0 && _tierId < 10);
     vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
-    
+
     // Check: correct event
     vm.expectEmit(true, true, true, true, address(delegate));
     emit Mint(_generateTokenId(_tierId, _tokenNumber), _tierId, beneficiary, 0, 1, owner);
@@ -232,7 +237,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.totalOwnerBalance(beneficiary), 1);
   }
 
-  function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner(address caller, uint32 _tierId, uint224 _tokenNumber) external {
+  function testJBTieredNFTRewardDelegate_mint_revertIfCallerIsNotOwner(
+    address caller,
+    uint32 _tierId,
+    uint224 _tokenNumber
+  ) external {
     vm.assume(caller != owner);
 
     vm.prank(caller);
@@ -240,7 +249,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.mint(beneficiary, _tierId, _tokenNumber);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint8 _tierId, uint8 _tokenNumber) external {
+  function testJBTieredNFTRewardDelegate_burn_burnIfCallerIsOwner(uint8 _tierId, uint8 _tokenNumber)
+    external
+  {
     vm.assume(_tierId > 0 && _tierId < 10);
     vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
 
@@ -265,7 +276,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.totalOwnerBalance(beneficiary), 0);
   }
 
-  function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(address caller, uint8 _tierId, uint8 _tokenNumber) external {
+  function testJBTieredNFTRewardDelegate_burn_revertIfCallerIsNotOwner(
+    address caller,
+    uint8 _tierId,
+    uint8 _tokenNumber
+  ) external {
     vm.assume(caller != owner);
     vm.assume(_tierId > 0 && _tierId < 10);
     vm.assume(_tokenNumber > tiers[_tierId].initialQuantity);
@@ -422,11 +437,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     internal
     returns (uint256 tokenId)
   {
-    // The tier ID in the first 32 bits.
+    // The tier ID in the first 8 bits.
     tokenId = _tierId;
 
     // The token number in the rest.
-    tokenId |= _tokenNumber << 32;
+    tokenId |= _tokenNumber << 8;
   }
 }
 
