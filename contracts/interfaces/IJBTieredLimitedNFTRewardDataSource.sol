@@ -17,7 +17,7 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function contributionToken() external view returns (address);
 
-  function numTiers() external view returns (uint256);
+  function numberOfTiers() external view returns (uint256);
 
   function shouldMintByDefault() external view returns (bool);
 

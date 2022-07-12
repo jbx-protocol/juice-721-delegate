@@ -46,7 +46,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     The total number of tiers there are. 
   */
-  uint256 public immutable override numTiers;
+  uint256 public immutable override numberOfTiers;
 
   /** 
     @notice
@@ -74,10 +74,10 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function allTiers() external view override returns (JBNFTRewardTier[] memory _tiers) {
     // Initialize an array with the appropriate length.
-    _tiers = new JBNFTRewardTier[](numTiers);
+    _tiers = new JBNFTRewardTier[](numberOfTiers);
 
     // Loop through each tier.
-    for (uint256 _i; _i < numTiers; ) {
+    for (uint256 _i; _i < numberOfTiers; ) {
       // Add the 1-indexed tier to the array.
       _tiers[_i] = tiers[_i + 1];
       unchecked {
@@ -98,7 +98,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
-    for (uint256 _i; _i < numTiers; ) {
+    for (uint256 _i; _i < numberOfTiers; ) {
       // Set the tier being iterated on.
       _tier = tiers[_i];
 
@@ -233,14 +233,14 @@ contract JBTieredLimitedNFTRewardDataSource is
     shouldMintByDefault = _shouldMintByDefault;
 
     // Get a reference to the number of tiers.
-    uint256 _numTiers = _tiers.length;
+    uint256 _numberOfTiers = _tiers.length;
 
-    numTiers = _numTiers;
+    numberOfTiers = _numberOfTiers;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
-    for (uint256 _i; _i < _numTiers; ) {
+    for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier being iterated on.
       _tier = _tiers[_i];
 
@@ -352,13 +352,13 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function _mintBestAvailableTier(uint256 _amount, address _beneficiary) internal {
     // Keep a reference to the number of tiers.
-    uint256 _numTiers = numTiers;
+    uint256 _numberOfTiers = numberOfTiers;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier storage _tier;
 
     // Loop through each tier. Go from most valuable tier to least valuable.
-    for (uint256 _i = _numTiers; _i != 0; ) {
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Set the tier being iterated on. Tier's are 1 indexed.
       _tier = tiers[_i];
 
