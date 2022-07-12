@@ -50,7 +50,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
-    ) = createData();
+    ) = createData(false);
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -60,7 +60,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(projectId, 1);
   }
 
-   function testMintOnPay(uint16 valueSent) external {
+   function testMintOnPayIfOneTierIsPassed(uint16 valueSent) external {
      vm.assume(valueSent >= 10 && valueSent < 2000);
 
      uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
@@ -68,12 +68,18 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
      (
        JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
        JBLaunchProjectData memory launchProjectData
-     ) = createData();
+     ) = createData(false);
      uint256 projectId = deployer.launchProjectFor(
        _projectOwner,
        NFTRewardDeployerData,
        launchProjectData
      );
+
+     uint8[] memory rawMetadata = new uint8[](1);
+     rawMetadata[0] = uint8(highestTier); // reward tier
+
+     // Encode it to metadata
+     bytes memory metadata = abi.encode(bytes32(0), rawMetadata);
 
      // Check: correct tier and id?
      vm.expectEmit(true, true, true, true);
@@ -85,12 +91,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
        1,
        address(_jbETHPaymentTerminal) // msg.sender
      );
-
-     uint8[] memory rawMetadata = new uint8[](1);
-     rawMetadata[0] = uint8(highestTier); // reward tier
-
-     // Encode it to metadata
-     bytes memory metadata = abi.encode(bytes32(0), rawMetadata);
 
      vm.prank(_caller);
      _jbETHPaymentTerminal.pay{value: valueSent}(
@@ -114,10 +114,68 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
      assertEq(IERC721(NFTRewardDataSource).ownerOf(_generateTokenId(highestTier, 1)), _beneficiary);
    }
 
+   function testMintOnPayIfMultipleTiersArePassed() external {
+
+     (
+       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+       JBLaunchProjectData memory launchProjectData
+     ) = createData(false);
+     uint256 projectId = deployer.launchProjectFor(
+       _projectOwner,
+       NFTRewardDeployerData,
+       launchProjectData
+     );
+
+     uint256 _amountNeeded = (50*60) / 2;
+
+     uint8[] memory rawMetadata = new uint8[](5);
+
+     // Mint one per tier for the first 5 tiers
+     for(uint i = 0; i < 5; i++) {
+      rawMetadata[i] = uint8(i+1); // Not the tier 0
+
+      // Check: correct tiers and ids?
+      vm.expectEmit(true, true, true, true);
+      emit Mint(
+        _generateTokenId(i+1, 1),
+        i+1,
+        _beneficiary,
+        _amountNeeded,
+        5,
+        address(_jbETHPaymentTerminal) // msg.sender
+      );
+     }
+
+      // Encode it to metadata
+      bytes memory metadata = abi.encode(bytes32(0), rawMetadata);
+
+     vm.prank(_caller);
+     _jbETHPaymentTerminal.pay{value: _amountNeeded}(
+       projectId,
+       100,
+       address(0),
+       _beneficiary,
+       /* _minReturnedTokens */
+       0,
+       /* _preferClaimedTokens */
+       false,
+       /* _memo */
+       'Take my money!',
+       /* _delegateMetadata */
+       metadata
+     );
+
+     // Check: NFT actually received?
+     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+     assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 5);
+
+     //assertEq(IERC721(NFTRewardDataSource).ownerOf(_generateTokenId(highestTier, 1)), _beneficiary);
+   }
+
   // ----- internal helpers ------
 
   // Create launchProjectFor(..) payload
-  function createData()
+  function createData(bool _shouldMintByDefault)
     internal
     view
     returns (
@@ -147,7 +205,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       owner: _projectOwner,
       contributionToken: _accessJBLib.ETHToken(),
       tiers: tiers,
-      shouldMintByDefault: false
+      shouldMintByDefault: _shouldMintByDefault
     });
 
     launchProjectData = JBLaunchProjectData({
