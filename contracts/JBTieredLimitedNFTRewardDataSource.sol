@@ -326,16 +326,22 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _data The Juicebox standard project contribution data.
   */
   function _processContribution(JBDidPayData calldata _data) internal override {
-    // Make the contribution is being made in the expected token.
+    // Make sure the contribution is being made in the expected token.
     if (_data.amount.token != contributionToken) return;
 
-    // Keep a reference to the number of rewards being processed. Skip the first 32 bits which are used by the JB protocol.
-    uint256 _numRewards = uint256(uint8(_bytesToUint(_data.metadata) << 32));
+    // Check if the metadata is filled with the needed information
+    if (_data.metadata.length > 32){
+      // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+      (,uint8[] memory _decodedMetadata) = abi.decode(_data.metadata, (bytes32, uint8[]));
 
-    // Mint rewards if they were specified. If there are no rewards but a default NFT should be minted, do so.
-    if (_numRewards > 0)
-      _mintAll(_data.amount.value, _numRewards, _data.metadata, _data.beneficiary);
-    else if (shouldMintByDefault) _mintBestAvailableTier(_data.amount.value, _data.beneficiary);
+      // Mint rewards if they were specified. If there are no rewards but a default NFT should be minted, do so.
+      if (_decodedMetadata.length != 0)
+        return _mintAll(_data.amount.value, _decodedMetadata, _data.beneficiary);
+    }
+
+    // Fallback for if we were not able to mint using the metadata
+    if(shouldMintByDefault)
+      return _mintBestAvailableTier(_data.amount.value, _data.beneficiary);
   }
 
   /** 
@@ -378,14 +384,12 @@ contract JBTieredLimitedNFTRewardDataSource is
     Mints a token in all provided tiers.
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
-    @param _numRewards The number of rewards to try minting.
-    @param _tierMetadata The metadata that containts inteded reward tier inforamation.
+    @param _mintTiers An array of tierIds that the user wants to mint
     @param _beneficiary The address to mint for.
   */
   function _mintAll(
     uint256 _amount,
-    uint256 _numRewards,
-    bytes memory _tierMetadata,
+    uint8[] memory _mintTiers,
     address _beneficiary
   ) internal {
     // Keep a reference to the amount remaining.
@@ -397,12 +401,19 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Keep a reference to the tier ID being iterated on.
     uint256 _tierId;
 
-    for (uint256 _i; _i < _numRewards; ) {
+    uint256 _mintsLength = _mintTiers.length;
+
+    for (uint256 _i; _i < _mintsLength; ) {
       // Tier IDs are in chuncks of 32 bits starting in bit 40.
-      _tierId = uint256(uint32(_bytesToUint(_tierMetadata) << (40 + 32 * _i)));
+      _tierId = _mintTiers[_i];
 
       // If no tier specified, accept the funds without minting anything.
-      if (_tierId == 0) continue;
+      if (_tierId == 0){
+        unchecked {
+          ++_i;
+        }
+        continue;
+      }
 
       // Keep a reference to the tier being iterated on.
       _tier = tiers[_tierId];
@@ -419,7 +430,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Decrement the remaining value.
       _remainingValue = _remainingValue - _tier.contributionFloor;
 
-      emit Mint(_tokenId, _tierId, _beneficiary, _amount, _numRewards, msg.sender);
+      emit Mint(_tokenId, _tierId, _beneficiary, _amount, _mintsLength, msg.sender);
 
       unchecked {
         ++_i;
