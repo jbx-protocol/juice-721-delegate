@@ -77,7 +77,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     _tiers = new JBNFTRewardTier[](numTiers);
 
     // Loop through each tier.
-    for (uint256 _i = 0; _i < numTiers; ) {
+    for (uint256 _i; _i < numTiers; ) {
       // Add the 1-indexed tier to the array.
       _tiers[_i] = tiers[_i + 1];
       unchecked {
@@ -162,7 +162,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return The tier number of the specified token ID.
   */
   function tierIdOfToken(uint256 _tokenId) public pure override returns (uint256) {
-    // The tier ID is in the first 8 bytes.
+    // The tier ID is in the first 8 bits.
     return uint256(uint8(_tokenId));
   }
 
