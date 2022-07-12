@@ -172,6 +172,57 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
      //assertEq(IERC721(NFTRewardDataSource).ownerOf(_generateTokenId(highestTier, 1)), _beneficiary);
    }
 
+ function testMintOnPayUsingFallbackTiers(uint8 valueSent) external {
+    vm.assume(valueSent >= 10 && valueSent < 2000);
+
+    uint256 theoreticalTokenId = valueSent <= 100
+      ? ((((uint256(valueSent) / 10) - 1) * 10) + 1)
+      : 91;
+
+    uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
+
+    (
+      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBLaunchProjectData memory launchProjectData
+    ) = createData(true);
+    uint256 projectId = deployer.launchProjectFor(
+      _projectOwner,
+      NFTRewardDeployerData,
+      launchProjectData
+    );
+
+    // Check: correct tier and id?
+    vm.expectEmit(true, true, true, true);
+    emit Mint(
+      _generateTokenId(highestTier, 1),
+      highestTier,
+      _beneficiary,
+      valueSent,
+      0,
+      address(_jbETHPaymentTerminal) // msg.sender
+    );
+
+    vm.prank(_caller);
+    _jbETHPaymentTerminal.pay{value: valueSent}(
+      projectId,
+      100,
+      address(0),
+      _beneficiary,
+      /* _minReturnedTokens */
+      0,
+      /* _preferClaimedTokens */
+      false,
+      /* _memo */
+      'Take my money!',
+      /* _delegateMetadata */
+      new bytes(0)
+    );
+
+    // Check: NFT actually received?
+    address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
+  }
+
   // ----- internal helpers ------
 
   // Create launchProjectFor(..) payload
