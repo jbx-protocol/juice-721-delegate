@@ -404,7 +404,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Mint the tokens.
       uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
 
-      emit MintReserves(_tokenId, _tierId, _beneficiary, msg.sender);
+      emit MintReservedToken(_tokenId, _tierId, _beneficiary, msg.sender);
 
       unchecked {
         ++_i;

@@ -13,7 +13,7 @@ interface IJBTieredLimitedNFTRewardDataSource {
     address caller
   );
 
-  event MintReserves(
+  event MintReservedToken(
     uint256 indexed tokenId,
     uint256 indexed tierId,
     address indexed beneficiary,
