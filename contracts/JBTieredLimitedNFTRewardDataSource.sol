@@ -548,29 +548,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     _mint(_beneficiary, tokenId);
   }
 
-  /**
-    @dev Requires override. Calls super.
-  */
-  function _afterTokenTransfer(
-    address _from,
-    address _to,
-    uint256 _tokenId
-  ) internal virtual override(ERC721Votes, ERC721) {
-    return super._afterTokenTransfer(_from, _to, _tokenId);
-  }
-
-  /** 
-    @notice
-    Only call the inherited routine which tracks voting units if the contract is set to compute voting units. 
-  */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal virtual override(ERC721, ERC721Enumerable) {
-    return super._beforeTokenTransfer(from, to, tokenId);
-  }
-
   /** 
     @notice
     The number of reserved tokens that can currently be minted within the tier. 
