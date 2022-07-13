@@ -554,7 +554,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Increment the tier balance for the beneficiary.
-    tierBalanceOf[_beneficiary][_tierId] += 1;
+    ++tierBalanceOf[_beneficiary][_tierId];
 
     // Mint the token.
     _mint(_beneficiary, tokenId);
@@ -585,7 +585,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     // Round up.
     if (_numberOfNonReservesMinted - _tier.reservedRate * _numberReservedTokensMintable > 0)
-      _numberReservedTokensMintable += 1;
+      ++_numberReservedTokensMintable;
 
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - numberOfReservesMintedFor[_tierId];
