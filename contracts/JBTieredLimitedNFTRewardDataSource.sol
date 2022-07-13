@@ -2,6 +2,7 @@
 pragma solidity 0.8.6;
 
 import './abstract/JBNFTRewardDataSource.sol';
+import './abstract/ERC721Enumerable.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
 
@@ -17,9 +18,10 @@ import './interfaces/ITokenSupplyDetails.sol';
   Intended use is to incentivize initial project support by minting a limited number of NFTs to the first N contributors among various price tiers.
 */
 contract JBTieredLimitedNFTRewardDataSource is
-  JBNFTRewardDataSource,
   IJBTieredLimitedNFTRewardDataSource,
-  ITokenSupplyDetails
+  ITokenSupplyDetails,
+  JBNFTRewardDataSource,
+  ERC721Enumerable
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -56,6 +58,15 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   /** 
     @notice
+    A flag indicating if this contract should be suitable for determining voting units per token.
+
+    @dev
+    This increases the cost of each mint.
+  */
+  bool public immutable override trackVotingUnits;
+
+  /** 
+    @notice
     The reward tiers. 
 
     _tierId The incremental ID of the tier. Ordered by contribution floor, starting with 1.
@@ -84,8 +95,6 @@ contract JBTieredLimitedNFTRewardDataSource is
         ++_i;
       }
     }
-
-    return _tiers;
   }
 
   /** 
@@ -94,7 +103,12 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return supply The total number of NFTs between all tiers.
   */
-  function totalSupply() external view override returns (uint256 supply) {
+  function totalSupply()
+    external
+    view
+    override(IERC721Enumerable, ITokenSupplyDetails)
+    returns (uint256 supply)
+  {
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
@@ -188,6 +202,27 @@ contract JBTieredLimitedNFTRewardDataSource is
     return tiers[tierIdOfToken(_tokenId)].tokenUri;
   }
 
+  /**
+    @notice
+    Indicates if this contract adheres to the specified interface.
+
+    @dev 
+    See {IERC165-supportsInterface}.
+
+    @param _interfaceId The ID of the interface to check for adherance to.
+  */
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(ERC721Enumerable, JBNFTRewardDataSource)
+    returns (bool)
+  {
+    return
+      _interfaceId == type(IJBTieredLimitedNFTRewardDataSource).interfaceId ||
+      _interfaceId == type(ITokenSupplyDetails).interfaceId ||
+      super.supportsInterface(_interfaceId);
+  }
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
@@ -198,7 +233,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-    @param _baseUri The token's base URI, to be used if a URI resolver is not provided. 
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
     @param _contributionToken The token that contributions are expected to be in terms of.
@@ -211,7 +245,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _name,
     string memory _symbol,
     IJBTokenUriResolver _tokenUriResolver,
-    string memory _baseUri,
     string memory _contractUri,
     address _owner,
     address _contributionToken,
@@ -224,7 +257,6 @@ contract JBTieredLimitedNFTRewardDataSource is
       _name,
       _symbol,
       _tokenUriResolver,
-      _baseUri,
       _contractUri,
       _owner
     )
@@ -236,6 +268,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _numberOfTiers = _tiers.length;
 
     numberOfTiers = _numberOfTiers;
+
+    // If a tier includes voting units, flag this contract to keep track of voting units.
+    bool _trackVotingUnits;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
@@ -251,6 +286,8 @@ contract JBTieredLimitedNFTRewardDataSource is
       if (_i != 0 && _tier.contributionFloor < _tiers[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
+      if (_tier.votingUnits != 0 && !_trackVotingUnits) _trackVotingUnits = true;
+
       // Set the initial quantity to be the remaining quantity.
       _tier.initialQuantity = _tier.remainingQuantity;
 
@@ -261,6 +298,8 @@ contract JBTieredLimitedNFTRewardDataSource is
         ++_i;
       }
     }
+
+    trackVotingUnits = _trackVotingUnits;
   }
 
   //*********************************************************************//
@@ -406,30 +445,25 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Get a reference to the tier being iterated on.
       _tierId = _mintTiers[_i];
 
-      // If no tier specified, accept the funds without minting anything.
-      if (_tierId == 0) {
-        unchecked {
-          ++_i;
-        }
-        continue;
+      // If a tier specified, accept the funds and mint.
+      if (_tierId != 0) {
+        // Keep a reference to the tier being iterated on.
+        _tier = tiers[_tierId];
+
+        // Make sure the provided tier exists.
+        if (_tier.initialQuantity == 0) revert INVALID_TIER();
+
+        // Make sure the amount meets the tier's contribution floor.
+        if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
+
+        // Mint the tokens.
+        uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
+
+        // Decrement the remaining value.
+        _remainingValue = _remainingValue - _tier.contributionFloor;
+
+        emit Mint(_tokenId, _tierId, _beneficiary, _amount, _mintsLength, msg.sender);
       }
-
-      // Keep a reference to the tier being iterated on.
-      _tier = tiers[_tierId];
-
-      // Make sure the provided tier exists.
-      if (_tier.initialQuantity == 0) revert INVALID_TIER();
-
-      // Make sure the amount meets the tier's contribution floor.
-      if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
-
-      // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
-
-      // Decrement the remaining value.
-      _remainingValue = _remainingValue - _tier.contributionFloor;
-
-      emit Mint(_tokenId, _tierId, _beneficiary, _amount, _mintsLength, msg.sender);
 
       unchecked {
         ++_i;
@@ -485,9 +519,65 @@ contract JBTieredLimitedNFTRewardDataSource is
     tokenId |= _tokenNumber << 8;
   }
 
-  // From https://ethereum.stackexchange.com/questions/51229/how-to-convert-bytes-to-uint-in-solidity
-  function _bytesToUint(bytes memory _bytes) internal pure returns (uint256 number) {
-    for (uint256 _i; _i < _bytes.length; _i++)
-      number = number + uint256(uint8(_bytes[_i])) * (2**(8 * (_bytes.length - (_i + 1))));
+  /**
+    @notice
+    The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
+
+    @param _account The account to get voting units for.
+
+    @return units The voting units for the account.
+  */
+  function _getVotingUnits(address _account)
+    internal
+    view
+    virtual
+    override
+    returns (uint256 units)
+  {
+    // If voting units aren't computed, return 0.
+    if (!trackVotingUnits) return 0;
+
+    // Loop through all NFTs owned by the _account.
+    for (uint256 _i; _i < balanceOf(_account); _i++) {
+      // Get the token being iterated on owned by the account.
+      uint256 _tokenId = tokenOfOwnerByIndex(_account, _i);
+
+      // Get a reference to the tier the token belongs to.
+      JBNFTRewardTier memory _tier = tiers[tierIdOfToken(_tokenId)];
+
+      // Add the tier's weight.
+      units += _tier.votingUnits;
+    }
+  }
+
+  /**
+    @dev Requires override. Calls super.
+  */
+  function _afterTokenTransfer(
+    address _from,
+    address _to,
+    uint256 _tokenId
+  ) internal virtual override(ERC721Votes, ERC721) {
+    return super._afterTokenTransfer(_from, _to, _tokenId);
+  }
+
+  /** 
+    @notice
+    Only call the inherited routine which tracks voting units if the contract is set to compute voting units. 
+  */
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256 tokenId
+  ) internal virtual override(ERC721, ERC721Enumerable) {
+    if (trackVotingUnits) return super._beforeTokenTransfer(from, to, tokenId);
+  }
+
+  /**
+    @dev Requires override. Returns empty.
+  */
+  function tokenByIndex(uint256 _index) external view override returns (uint256) {
+    _index; //unused.
+    return 0;
   }
 }

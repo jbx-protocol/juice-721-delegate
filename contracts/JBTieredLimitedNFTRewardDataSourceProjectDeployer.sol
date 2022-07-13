@@ -94,7 +94,6 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
           _deployTieredNFTRewardDataSourceData.name,
           _deployTieredNFTRewardDataSourceData.symbol,
           _deployTieredNFTRewardDataSourceData.tokenUriResolver,
-          _deployTieredNFTRewardDataSourceData.baseUri,
           _deployTieredNFTRewardDataSourceData.contractUri,
           _deployTieredNFTRewardDataSourceData.owner,
           _deployTieredNFTRewardDataSourceData.contributionToken,

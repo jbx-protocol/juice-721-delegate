@@ -76,15 +76,6 @@ abstract contract JBNFTRewardDataSource is
 
   /**
     @notice
-    The base URI to use for tokens if a URI resolver isn't provided. 
-
-    @dev 
-    The token ID will be concatenated onto the base URI to form the token URI.
-  */
-  string public override baseUri;
-
-  /**
-    @notice
     Contract metadata uri.
   */
   string public override contractUri;
@@ -149,25 +140,6 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
 
   /**
-    @notice 
-    Returns the URI where the ERC-721 standard JSON of a token is hosted.
-
-    @param _tokenId The ID of the token to get a URI of.
-
-    @return The token URI to use for the provided `_tokenId`.
-  */
-  function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
-    // A token without an owner doesn't have a URI.
-    if (ownerOf(_tokenId) == address(0)) return '';
-
-    // If a token URI resolver is provided, use it to resolve the token URI.
-    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
-
-    // Append the token ID to the base URI.
-    return bytes(baseUri).length > 0 ? string(abi.encodePacked(baseUri, _tokenId.toString())) : '';
-  }
-
-  /**
     @notice
     Indicates if this contract adheres to the specified interface.
 
@@ -179,6 +151,7 @@ abstract contract JBNFTRewardDataSource is
   function supportsInterface(bytes4 _interfaceId)
     public
     view
+    virtual
     override(ERC721, IERC165)
     returns (bool)
   {
@@ -186,7 +159,7 @@ abstract contract JBNFTRewardDataSource is
       _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
       _interfaceId == type(IJBPayDelegate).interfaceId ||
-      super.supportsInterface(_interfaceId); // check with rari-ERC721
+      super.supportsInterface(_interfaceId);
   }
 
   //*********************************************************************//
@@ -199,7 +172,6 @@ abstract contract JBNFTRewardDataSource is
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-    @param _baseUri The token's base URI, to be used if a URI resolver is not provided. 
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that will own this contract.
   */
@@ -209,13 +181,11 @@ abstract contract JBNFTRewardDataSource is
     string memory _name,
     string memory _symbol,
     IJBTokenUriResolver _tokenUriResolver,
-    string memory _baseUri,
     string memory _contractUri,
     address _owner
   ) ERC721(_name, _symbol) EIP712(_name, '1') {
     projectId = _projectId;
     directory = _directory;
-    baseUri = _baseUri;
     tokenUriResolver = _tokenUriResolver;
     contractUri = _contractUri;
 
@@ -261,22 +231,6 @@ abstract contract JBNFTRewardDataSource is
     contractUri = _contractUri;
 
     emit SetContractUri(_contractUri, msg.sender);
-  }
-
-  /**
-    @notice
-    Set a base token URI.
-
-    @dev
-    Only the contract's owner can set the base URI.
-
-    @param _baseUri The new base URI.
-  */
-  function setBaseUri(string calldata _baseUri) external override onlyOwner {
-    // Store the new value.
-    baseUri = _baseUri;
-
-    emit SetBaseUri(_baseUri, msg.sender);
   }
 
   /**

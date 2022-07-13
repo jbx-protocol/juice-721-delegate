@@ -10,7 +10,6 @@ import './JBNFTRewardTier.sol';
   @member name The name of the token.
   @member symbol The symbol that the token should be represented by.
   @member tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-  @member baseUri The token's base URI, to be used if a URI resolver is not provided. 
   @member contractUri A URI where contract metadata can be found. 
   @member owner The address that should own this contract.
   @member contributionToken The token that contributions are expected to be in terms of.
@@ -22,7 +21,6 @@ struct JBDeployTieredNFTRewardDataSourceData {
   string name;
   string symbol;
   IJBTokenUriResolver tokenUriResolver;
-  string baseUri;
   string contractUri;
   address owner;
   address contributionToken;
