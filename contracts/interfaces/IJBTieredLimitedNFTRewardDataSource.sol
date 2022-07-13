@@ -32,13 +32,15 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function numberOfReservesMintedFor(uint256 _tierId) external view returns (uint256);
 
+  function getVotingUnits(address _account) external view returns (uint256 units);
+
   function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
 
   function allTiers() external view returns (JBNFTRewardTier[] memory tiers);
 
   function mintReservesFor(
+    address _beneficiary,
     uint256 _tierId,
-    uint256 _count,
-    address _beneficiary
+    uint256 _count
   ) external returns (uint256 tokenId);
 }

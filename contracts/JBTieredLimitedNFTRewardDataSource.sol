@@ -212,6 +212,18 @@ contract JBTieredLimitedNFTRewardDataSource is
     return _numberOfReservedTokensOutstandingFor(_tierId, _tier);
   }
 
+  /**
+    @notice
+    The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
+
+    @param _account The account to get voting units for.
+
+    @return units The voting units for the account.
+  */
+  function getVotingUnits(address _account) external view virtual override returns (uint256 units) {
+    return _getVotingUnits(_account);
+  }
+
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
@@ -358,14 +370,14 @@ contract JBTieredLimitedNFTRewardDataSource is
     @dev
     Only a project owner can mint tokens.
 
+    @param _beneficiary The address that should receive to token.
     @param _tierId The ID of the tier to mint within.
     @param _count The number of reserved tokens to mint. 
-    @param _beneficiary The address that should receive to token.
   */
   function mintReservesFor(
+    address _beneficiary,
     uint256 _tierId,
-    uint256 _count,
-    address _beneficiary
+    uint256 _count
   ) external override onlyOwner returns (uint256 tokenId) {
     // Get a reference to the tier.
     JBNFTRewardTier memory _tier = tiers[_tierId];
