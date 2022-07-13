@@ -621,12 +621,4 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (trackVotingUnits[tierIdOfToken(_tokenId)])
       return super._beforeTokenTransfer(from, to, tokenId);
   }
-
-  /**
-    @dev Requires override. Returns empty.
-  */
-  function tokenByIndex(uint256 _index) external view override returns (uint256) {
-    _index; //unused.
-    return 0;
-  }
 }
