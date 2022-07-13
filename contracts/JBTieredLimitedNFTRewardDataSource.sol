@@ -364,8 +364,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Keep a reference to the token ID.
     tokenId = _generateTokenId(_tierId, _tokenNumber);
 
-    // Mint it.
-    _mint(_beneficiary, tokenId, _tierId);
+    // Increment the tier balance for the beneficiary.
+    balanceInTierOf[_tierId][_beneficiary] += 1;
+
+    // Mint the token.
+    _mint(_beneficiary, tokenId);
 
     emit Mint(tokenId, _tierId, _beneficiary, 0, 1, msg.sender);
   }
@@ -530,28 +533,11 @@ contract JBTieredLimitedNFTRewardDataSource is
       tokenId = _generateTokenId(_tierId, _tier.initialQuantity - --_tier.remainingQuantity);
     }
 
-    // Mint the token.
-    _mint(_beneficiary, tokenId, _tierId);
-  }
-
-  /** 
-    @notice
-    Mints a token and increments the beneficiary's balance.
-
-    @param _tierId The ID of the tier to mint within.
-    @param _tier The tier structure to mint for.
-    @param _beneficiary The address to mint for.
-  */
-  function _mint(
-    address _beneficiary,
-    uint256 _tokenId,
-    uint256 _tierId
-  ) internal virtual {
     // Increment the tier balance for the beneficiary.
     balanceInTierOf[_tierId][_beneficiary] += 1;
 
     // Mint the token.
-    _mint(_beneficiary, _tokenId);
+    _mint(_beneficiary, tokenId);
   }
 
   /** 
