@@ -62,8 +62,10 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @dev
     This increases the cost of each mint.
+
+    _tierId The ID of the tier to track voting units for.
   */
-  bool public immutable override trackVotingUnits;
+  mapping(uint256 => bool) public immutable override trackVotingUnits;
 
   /** 
     @notice
@@ -72,6 +74,15 @@ contract JBTieredLimitedNFTRewardDataSource is
     _tierId The incremental ID of the tier. Ordered by contribution floor, starting with 1.
   */
   mapping(uint256 => JBNFTRewardTier) public tiers;
+
+  /** 
+    @notice
+    Each account's balance within a specific tier.
+
+    _account The address to get a balance for. 
+    _tierId The ID of the tier to get a balance within.
+  */
+  mapping(address => mapping(uint256 => uint256)) public balanceInTier;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -130,7 +141,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     The total number of tokens with the given ID.
     @return Either 1 if the token has been minted, or 0 if it hasnt.
   */
-  function tokenSupply(uint256 _tokenId) external view override returns (uint256) {
+  function tokenSupplyOf(uint256 _tokenId) external view override returns (uint256) {
     return ownerOf(_tokenId) != address(0) ? 1 : 0;
   }
 
@@ -140,7 +151,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _owner The address to check the balance of.
     @return The number of tokens owners by the owner.
   */
-  function totalOwnerBalance(address _owner) external view override returns (uint256) {
+  function totalOwnerBalanceOf(address _owner) external view override returns (uint256) {
     return balanceOf(_owner);
   }
 
@@ -151,13 +162,36 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tokenId The ID of the token to check the owner's balance of.
     @return Either 1 if the owner has the token, or 0 if it does not.
   */
-  function ownerTokenBalance(address _owner, uint256 _tokenId)
+  function ownerTokenBalanceOf(address _owner, uint256 _tokenId)
     external
     view
     override
     returns (uint256)
   {
     return ownerOf(_tokenId) == _owner ? 1 : 0;
+  }
+
+  /** 
+    @notice 
+    The total number of tokens owned by the given owner. 
+
+    @param _owner The address to check the balance of.
+
+    @return balance The number of tokens owners by the owner accross all tiers.
+  */
+  function balanceOf(address _owner) external view override returns (uint256 balance) {
+    // Keep a reference to the number of tiers.
+    uint256 _numberOfTiers = numberOfTiers;
+
+    // Loop through all tiers.
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+      // Get a reference to the account's balance in this tier.
+      balance += balanceInTier[_owner][_i];
+
+      unchecked {
+        --_i;
+      }
+    }
   }
 
   //*********************************************************************//
@@ -269,9 +303,6 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     numberOfTiers = _numberOfTiers;
 
-    // If a tier includes voting units, flag this contract to keep track of voting units.
-    bool _trackVotingUnits;
-
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
@@ -286,7 +317,8 @@ contract JBTieredLimitedNFTRewardDataSource is
       if (_i != 0 && _tier.contributionFloor < _tiers[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
-      if (_tier.votingUnits != 0 && !_trackVotingUnits) _trackVotingUnits = true;
+      // If the tier has voting units, set the tier to track aggregate voting units.
+      if (_tier.votingUnits != 0) trackVotingUnits[_i + 1] = true;
 
       // Set the initial quantity to be the remaining quantity.
       _tier.initialQuantity = _tier.remainingQuantity;
@@ -329,7 +361,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     tokenId = _generateTokenId(_tierId, _tokenNumber);
 
     // Mint it.
-    _mint(_beneficiary, tokenId);
+    _mint(_beneficiary, tokenId, _tierId);
 
     emit Mint(tokenId, _tierId, _beneficiary, 0, 1, msg.sender);
   }
@@ -495,7 +527,27 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Mint the token.
-    _mint(_beneficiary, tokenId);
+    _mint(_beneficiary, tokenId, _tierId);
+  }
+
+  /** 
+    @notice
+    Mints a token and increments the beneficiary's balance.
+
+    @param _tierId The ID of the tier to mint within.
+    @param _tier The tier structure to mint for.
+    @param _beneficiary The address to mint for.
+  */
+  function _mint(
+    address _beneficiary,
+    uint256 _tokenId,
+    uint256 _tierId
+  ) internal virtual {
+    // Increment the tier balance for the beneficiary.
+    balanceInTier[_tierId][_beneficiary] += 1;
+
+    // Mint the token.
+    _mint(_beneficiary, _tokenId);
   }
 
   /** 
@@ -534,19 +586,25 @@ contract JBTieredLimitedNFTRewardDataSource is
     override
     returns (uint256 units)
   {
-    // If voting units aren't computed, return 0.
-    if (!trackVotingUnits) return 0;
+    // Keep a reference to the number of tiers.
+    uint256 _numberOfTiers = numberOfTiers;
 
-    // Loop through all NFTs owned by the _account.
-    for (uint256 _i; _i < balanceOf(_account); _i++) {
-      // Get the token being iterated on owned by the account.
-      uint256 _tokenId = tokenOfOwnerByIndex(_account, _i);
+    // Loop through all tiers.
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+      // Get a reference to the account's balance in this tier.
+      uint256 _balance = balanceInTier[_account][_i];
 
-      // Get a reference to the tier the token belongs to.
-      JBNFTRewardTier memory _tier = tiers[tierIdOfToken(_tokenId)];
+      if (_balance != 0) {
+        // Get a reference to the tier the token belongs to.
+        JBNFTRewardTier memory _tier = tiers[_i];
 
-      // Add the tier's weight.
-      units += _tier.votingUnits;
+        // Add the tier's voting units.
+        units += _balance * _tier.votingUnits;
+      }
+
+      unchecked {
+        --_i;
+      }
     }
   }
 
@@ -570,7 +628,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     address to,
     uint256 tokenId
   ) internal virtual override(ERC721, ERC721Enumerable) {
-    if (trackVotingUnits) return super._beforeTokenTransfer(from, to, tokenId);
+    if (trackVotingUnits[tierIdOfToken(_tokenId)])
+      return super._beforeTokenTransfer(from, to, tokenId);
   }
 
   /**

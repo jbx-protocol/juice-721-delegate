@@ -3,12 +3,12 @@ pragma solidity 0.8.6;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Strings.sol';
-import '@openzeppelin/contracts/token/ERC721/extensions/draft-ERC721Votes.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
+import './ERC721Votes.sol';
 import '../interfaces/IJBNFTRewardDataSource.sol';
 
 /**

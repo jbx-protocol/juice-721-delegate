@@ -21,7 +21,7 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function shouldMintByDefault() external view returns (bool);
 
-  function trackVotingUnits() external view returns (bool);
+  function trackVotingUnits(uint256 _tierId) external view returns (bool);
 
   function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
 
