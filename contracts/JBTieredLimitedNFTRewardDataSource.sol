@@ -389,11 +389,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     JBNFTRewardTier memory _tier = tiers[_tierId];
 
     // Get a reference to the number of reserved tokens mintable for the tier.
-    uint256 _numberOfReservedTokensOutstandingFor = _numberOfReservedTokensOutstandingFor(_tier);
+    uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(_tier);
 
     // Can't mint more reserves than expected.
-    if (_count + numberOfReservesMintedFor[_tierId] > _numberReservedAllowed)
-      revert INSUFFICIENT_RESERVES();
+    if (_count > _numberOfReservedTokensOutstanding) revert INSUFFICIENT_RESERVES();
 
     // Increment the number of reserved tokens minted.
     numberOfReservesMintedFor[_tierId] += _count;
@@ -600,15 +599,22 @@ contract JBTieredLimitedNFTRewardDataSource is
     internal
     view
     override
-    returns (uint256 numberReservedTokensOutstanding)
+    returns (uint256)
   {
-    // Get a reference to the number of tiers already minted.
-    uint256 _numberMinted = _tier.initialQuantity - _tier.remainingQuantity;
+    // Get a reference to the number of tokens already minted in the tier, not counting reserves.
+    uint256 _numberOfNonReservesMinted = _tier.initialQuantity -
+      _tier.remainingQuantity -
+      numberOfReservesMintedFor[_tierId];
 
-    numberReservedTokensOutstanding = _numberMinted / _tier.reservedRate;
+    // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
+    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _tier.reservedRate;
+
     // Round up.
-    if (_numberMinted - _tier.reservedRate * _numberReservedAllowed > 0)
-      numberReservedTokensOutstanding += 1;
+    if (_numberOfNonReservesMinted - _tier.reservedRate * _numberReservedAllowed > 0)
+      _numberReservedTokensMintable += 1;
+
+    // Return the difference between the amount mintable and the amount already minted.
+    return _numberReservedTokensMintable - numberOfReservesMintedFor[_tierId];
   }
 
   /** 
