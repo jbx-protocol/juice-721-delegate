@@ -87,7 +87,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     _account The address to get a balance for. 
     _tierId The ID of the tier to get a balance within.
   */
-  mapping(address => mapping(uint256 => uint256)) public override balanceInTierOf;
+  mapping(address => mapping(uint256 => uint256)) public override tierBalanceOf;
 
   /**
     @notice 
@@ -199,7 +199,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Loop through all tiers.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
-      balance += balanceInTierOf[_owner][_i];
+      balance += tierBalanceOf[_owner][_i];
 
       unchecked {
         --_i;
@@ -558,10 +558,57 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Increment the tier balance for the beneficiary.
-    balanceInTierOf[_tierId][_beneficiary] += 1;
+    tierBalanceOf[_beneficiary][_tierId] += 1;
 
     // Mint the token.
     _mint(_beneficiary, tokenId);
+  }
+
+  /**
+    @dev Requires override. Calls super.
+  */
+  function _afterTokenTransfer(
+    address _from,
+    address _to,
+    uint256 _tokenId
+  ) internal virtual override(ERC721Votes, ERC721) {
+    return super._afterTokenTransfer(_from, _to, _tokenId);
+  }
+
+  /** 
+    @notice
+    Only call the inherited routine which tracks voting units if the contract is set to compute voting units. 
+  */
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256 tokenId
+  ) internal virtual override(ERC721, ERC721Enumerable) {
+    if (trackVotingUnits[tierIdOfToken(_tokenId)])
+      return super._beforeTokenTransfer(from, to, tokenId);
+  }
+
+  /** 
+    @notice
+    The number of reserved tokens that can currently be minted within the tier. 
+
+    @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
+
+    @return numberReservedTokensOutstanding The outstanding number of reserved tokens within the tier.
+  */
+  function _numberOfReservedTokensOutstandingFor(JBNFTRewardTier memory _tier)
+    internal
+    view
+    override
+    returns (uint256 numberReservedTokensOutstanding)
+  {
+    // Get a reference to the number of tiers already minted.
+    uint256 _numberMinted = _tier.initialQuantity - _tier.remainingQuantity;
+
+    numberReservedTokensOutstanding = _numberMinted / _tier.reservedRate;
+    // Round up.
+    if (_numberMinted - _tier.reservedRate * _numberReservedAllowed > 0)
+      numberReservedTokensOutstanding += 1;
   }
 
   /** 
@@ -606,7 +653,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Loop through all tiers.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
-      uint256 _balance = balanceInTierOf[_account][_i];
+      uint256 _balance = tierBalanceOf[_account][_i];
 
       if (_balance != 0) {
         // Get a reference to the tier the token belongs to.
@@ -620,51 +667,5 @@ contract JBTieredLimitedNFTRewardDataSource is
         --_i;
       }
     }
-  }
-
-  /**
-    @dev Requires override. Calls super.
-  */
-  function _afterTokenTransfer(
-    address _from,
-    address _to,
-    uint256 _tokenId
-  ) internal virtual override(ERC721Votes, ERC721) {
-    return super._afterTokenTransfer(_from, _to, _tokenId);
-  }
-
-  /** 
-    @notice
-    Only call the inherited routine which tracks voting units if the contract is set to compute voting units. 
-  */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal virtual override(ERC721, ERC721Enumerable) {
-    if (trackVotingUnits[tierIdOfToken(_tokenId)])
-      return super._beforeTokenTransfer(from, to, tokenId);
-  }
-
-  /** 
-    @notice
-    The number of reserved tokens that can currently be minted within the tier. 
-
-    @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
-
-    @return numberReservedTokensOutstanding The outstanding number of reserved tokens within the tier.
-  */
-  function _numberOfReservedTokensOutstandingFor(JBNFTRewardTier memory _tier)
-    internal
-    override
-    returns (uint256 numberReservedTokensOutstanding)
-  {
-    // Get a reference to the number of tiers already minted.
-    uint256 _numberMinted = _tier.initialQuantity - _tier.remainingQuantity;
-
-    numberReservedTokensOutstanding = _numberMinted / _tier.reservedRate;
-    // Round up.
-    if (_numberMinted - _tier.reservedRate * _numberReservedAllowed > 0)
-      numberReservedTokensOutstanding += 1;
   }
 }
