@@ -222,7 +222,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   {
     // Get a reference to the tier.
     JBNFTRewardTier memory _tier = tiers[_tierId];
-    return _numberOfReservedTokensOutstandingFor(_tier);
+    return _numberOfReservedTokensOutstandingFor(_tierId, _tier);
   }
 
   //*********************************************************************//
@@ -389,7 +389,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     JBNFTRewardTier memory _tier = tiers[_tierId];
 
     // Get a reference to the number of reserved tokens mintable for the tier.
-    uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(_tier);
+    uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
+      _tierId,
+      _tier
+    );
 
     // Can't mint more reserves than expected.
     if (_count > _numberOfReservedTokensOutstanding) revert INSUFFICIENT_RESERVES();
@@ -462,7 +465,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Mint if the contribution value is at least as much as the floor, there's sufficient supply.
       if (
         _tier.contributionFloor <= _amount &&
-        (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_tier)) != 0
+        (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_i, _tier)) != 0
       ) {
         // Mint the tokens.
         uint256 _tokenId = _mintForTier(_i, _tier, _beneficiary);
@@ -518,7 +521,7 @@ contract JBTieredLimitedNFTRewardDataSource is
         if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
 
         // Make sure there are enough units available.
-        if (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_tier) == 0)
+        if (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_tierId, _tier) == 0)
           revert OUT();
 
         // Mint the tokens.
@@ -592,10 +595,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     The number of reserved tokens that can currently be minted within the tier. 
 
     @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
+    @param _tier The tier structure to get a number of reserved tokens outstanding.
 
     @return numberReservedTokensOutstanding The outstanding number of reserved tokens within the tier.
   */
-  function _numberOfReservedTokensOutstandingFor(JBNFTRewardTier memory _tier)
+  function _numberOfReservedTokensOutstandingFor(uint256 _tierId, JBNFTRewardTier memory _tier)
     internal
     view
     override
