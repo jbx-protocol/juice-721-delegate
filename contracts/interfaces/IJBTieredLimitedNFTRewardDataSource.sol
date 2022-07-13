@@ -23,6 +23,8 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function trackVotingUnits(uint256 _tierId) external view returns (bool);
 
+  function balanceInTierOf(address _account, uint256 _tier) external view returns (uint256);
+
   function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
 
   function allTiers() external view returns (JBNFTRewardTier[] memory tiers);

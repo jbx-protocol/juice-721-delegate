@@ -67,6 +67,10 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   mapping(uint256 => bool) public immutable override trackVotingUnits;
 
+  //*********************************************************************//
+  // --------------------- public stored properties -------------------- //
+  //*********************************************************************//
+
   /** 
     @notice
     The reward tiers. 
@@ -82,7 +86,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     _account The address to get a balance for. 
     _tierId The ID of the tier to get a balance within.
   */
-  mapping(address => mapping(uint256 => uint256)) public balanceInTier;
+  mapping(address => mapping(uint256 => uint256)) public override balanceInTierOf;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -186,7 +190,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Loop through all tiers.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
-      balance += balanceInTier[_owner][_i];
+      balance += balanceInTierOf[_owner][_i];
 
       unchecked {
         --_i;
@@ -544,7 +548,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _tierId
   ) internal virtual {
     // Increment the tier balance for the beneficiary.
-    balanceInTier[_tierId][_beneficiary] += 1;
+    balanceInTierOf[_tierId][_beneficiary] += 1;
 
     // Mint the token.
     _mint(_beneficiary, _tokenId);
@@ -592,7 +596,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Loop through all tiers.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
-      uint256 _balance = balanceInTier[_account][_i];
+      uint256 _balance = balanceInTierOf[_account][_i];
 
       if (_balance != 0) {
         // Get a reference to the tier the token belongs to.
