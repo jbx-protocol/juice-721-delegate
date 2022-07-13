@@ -57,17 +57,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   bool public immutable override shouldMintByDefault;
 
-  /** 
-    @notice
-    A flag indicating if this contract should be suitable for determining voting units per token.
-
-    @dev
-    This increases the cost of each mint.
-
-    _tierId The ID of the tier to track voting units for.
-  */
-  mapping(uint256 => bool) public immutable override trackVotingUnits;
-
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -348,9 +337,6 @@ contract JBTieredLimitedNFTRewardDataSource is
       if (_i != 0 && _tier.contributionFloor < _tiers[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
-      // If the tier has voting units, set the tier to track aggregate voting units.
-      if (_tier.votingUnits != 0) trackVotingUnits[_i + 1] = true;
-
       // Set the initial quantity to be the remaining quantity.
       _tier.initialQuantity = _tier.remainingQuantity;
 
@@ -361,8 +347,6 @@ contract JBTieredLimitedNFTRewardDataSource is
         ++_i;
       }
     }
-
-    trackVotingUnits = _trackVotingUnits;
   }
 
   //*********************************************************************//
@@ -586,7 +570,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     address to,
     uint256 tokenId
   ) internal virtual override(ERC721, ERC721Enumerable) {
-    if (trackVotingUnits[tierIdOfToken(_tokenId)])
+    if (tiers[tierIdOfToken(_tokenId)].votingUnits != 0)
       return super._beforeTokenTransfer(from, to, tokenId);
   }
 
