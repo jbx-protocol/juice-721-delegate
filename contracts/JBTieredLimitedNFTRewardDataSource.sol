@@ -2,7 +2,6 @@
 pragma solidity 0.8.6;
 
 import './abstract/JBNFTRewardDataSource.sol';
-import './abstract/ERC721Enumerable.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
 
@@ -20,8 +19,7 @@ import './interfaces/ITokenSupplyDetails.sol';
 contract JBTieredLimitedNFTRewardDataSource is
   IJBTieredLimitedNFTRewardDataSource,
   ITokenSupplyDetails,
-  JBNFTRewardDataSource,
-  ERC721Enumerable
+  JBNFTRewardDataSource
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -570,8 +568,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     address to,
     uint256 tokenId
   ) internal virtual override(ERC721, ERC721Enumerable) {
-    if (tiers[tierIdOfToken(_tokenId)].votingUnits != 0)
-      return super._beforeTokenTransfer(from, to, tokenId);
+    return super._beforeTokenTransfer(from, to, tokenId);
   }
 
   /** 
