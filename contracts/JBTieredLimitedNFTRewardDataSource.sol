@@ -29,6 +29,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   error INSUFFICIENT_AMOUNT();
   error OUT();
+  error INSUFFICIENT_RESERVES();
   error INVALID_TIER();
   error INVALID_PRICE_SORT_ORDER();
   error NO_QUANTITY();
@@ -87,6 +88,14 @@ contract JBTieredLimitedNFTRewardDataSource is
     _tierId The ID of the tier to get a balance within.
   */
   mapping(address => mapping(uint256 => uint256)) public override balanceInTierOf;
+
+  /**
+    @notice 
+    The number of reserved tokens that have been minted for each tier. 
+
+    _tierId The ID of the tier to get a minted reserved token count for.
+   */
+  mapping(uint256 => uint256) public override numberOfReservesMintedFor;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -196,6 +205,24 @@ contract JBTieredLimitedNFTRewardDataSource is
         --_i;
       }
     }
+  }
+
+  /** 
+    @notice
+    The number of reserved tokens that can currently be minted within the tier. 
+
+    @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
+
+    @return The outstanding number of reserved tokens within the tier.
+  */
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId)
+    external
+    override
+    returns (uint256)
+  {
+    // Get a reference to the tier.
+    JBNFTRewardTier memory _tier = tiers[_tierId];
+    return _numberOfReservedTokensOutstandingFor(_tier);
   }
 
   //*********************************************************************//
@@ -349,45 +376,38 @@ contract JBTieredLimitedNFTRewardDataSource is
     @dev
     Only a project owner can mint tokens.
 
-    @param _beneficiary The address that should receive to token.
     @param _tierId The ID of the tier to mint within.
-    @param _tokenNumber The token number to use for the mint, which cannot be a token number within the tier's initial quantity.
+    @param _count The number of reserved tokens to mint. 
+    @param _beneficiary The address that should receive to token.
   */
-  function mint(
-    address _beneficiary,
+  function mintReservesFor(
     uint256 _tierId,
-    uint256 _tokenNumber
+    uint256 _count,
+    address _beneficiary
   ) external override onlyOwner returns (uint256 tokenId) {
-    // Make sure the token number is greater than the tier's initial quantity.
-    if (_tokenNumber <= tiers[_tierId].initialQuantity) revert NOT_AVAILABLE();
+    // Get a reference to the tier.
+    JBNFTRewardTier memory _tier = tiers[_tierId];
 
-    // Keep a reference to the token ID.
-    tokenId = _generateTokenId(_tierId, _tokenNumber);
+    // Get a reference to the number of reserved tokens mintable for the tier.
+    uint256 _numberOfReservedTokensOutstandingFor = _numberOfReservedTokensOutstandingFor(_tier);
 
-    // Increment the tier balance for the beneficiary.
-    balanceInTierOf[_tierId][_beneficiary] += 1;
+    // Can't mint more reserves than expected.
+    if (_count + numberOfReservesMintedFor[_tierId] > _numberReservedAllowed)
+      revert INSUFFICIENT_RESERVES();
 
-    // Mint the token.
-    _mint(_beneficiary, tokenId);
+    // Increment the number of reserved tokens minted.
+    numberOfReservesMintedFor[_tierId] += _count;
 
-    emit Mint(tokenId, _tierId, _beneficiary, 0, 1, msg.sender);
-  }
+    for (uint256 _i; _i < _count; ) {
+      // Mint the tokens.
+      uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
 
-  /** 
-    @notice
-    Burns a token ID from an account.
+      emit MintReserves(_tokenId, _tierId, _beneficiary, msg.sender);
 
-    @dev
-    Only a project owner can burn tokens.
-
-    @param _owner The address that owns the token being burned.
-    @param _tokenId The ID of the token to burn.
-  */
-  function burn(address _owner, uint256 _tokenId) external override onlyOwner {
-    // Burn the token.
-    _burn(_tokenId);
-
-    emit Burn(_tokenId, _owner, msg.sender);
+      unchecked {
+        ++_i;
+      }
+    }
   }
 
   //*********************************************************************//
@@ -441,7 +461,10 @@ contract JBTieredLimitedNFTRewardDataSource is
       _tier = tiers[_i];
 
       // Mint if the contribution value is at least as much as the floor, there's sufficient supply.
-      if (_tier.contributionFloor <= _amount && _tier.remainingQuantity != 0) {
+      if (
+        _tier.contributionFloor <= _amount &&
+        (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_tier)) != 0
+      ) {
         // Mint the tokens.
         uint256 _tokenId = _mintForTier(_i, _tier, _beneficiary);
 
@@ -495,6 +518,10 @@ contract JBTieredLimitedNFTRewardDataSource is
         // Make sure the amount meets the tier's contribution floor.
         if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
 
+        // Make sure there are enough units available.
+        if (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_tier) == 0)
+          revert OUT();
+
         // Mint the tokens.
         uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
 
@@ -525,9 +552,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     JBNFTRewardTier storage _tier,
     address _beneficiary
   ) internal returns (uint256 tokenId) {
-    // Make sure there are enough units available.
-    if (_tier.remainingQuantity == 0) revert OUT();
-
     unchecked {
       // Keep a reference to the token ID.
       tokenId = _generateTokenId(_tierId, _tier.initialQuantity - --_tier.remainingQuantity);
@@ -620,5 +644,27 @@ contract JBTieredLimitedNFTRewardDataSource is
   ) internal virtual override(ERC721, ERC721Enumerable) {
     if (trackVotingUnits[tierIdOfToken(_tokenId)])
       return super._beforeTokenTransfer(from, to, tokenId);
+  }
+
+  /** 
+    @notice
+    The number of reserved tokens that can currently be minted within the tier. 
+
+    @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
+
+    @return numberReservedTokensOutstanding The outstanding number of reserved tokens within the tier.
+  */
+  function _numberOfReservedTokensOutstandingFor(JBNFTRewardTier memory _tier)
+    internal
+    override
+    returns (uint256 numberReservedTokensOutstanding)
+  {
+    // Get a reference to the number of tiers already minted.
+    uint256 _numberMinted = _tier.initialQuantity - _tier.remainingQuantity;
+
+    numberReservedTokensOutstanding = _numberMinted / _tier.reservedRate;
+    // Round up.
+    if (_numberMinted - _tier.reservedRate * _numberReservedAllowed > 0)
+      numberReservedTokensOutstanding += 1;
   }
 }
