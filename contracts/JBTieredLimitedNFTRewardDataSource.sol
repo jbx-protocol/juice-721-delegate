@@ -117,7 +117,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   function totalSupply()
     external
     view
-    override(IERC721Enumerable, ITokenSupplyDetails)
+    override
     returns (uint256 supply)
   {
     // Keep a reference to the tier being iterated on.
@@ -179,7 +179,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return balance The number of tokens owners by the owner accross all tiers.
   */
-  function balanceOf(address _owner) external view override returns (uint256 balance) {
+  function balanceOf(address _owner) public view override returns (uint256 balance) {
     // Keep a reference to the number of tiers.
     uint256 _numberOfTiers = numberOfTiers;
 
@@ -278,7 +278,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   function supportsInterface(bytes4 _interfaceId)
     public
     view
-    override(ERC721Enumerable, JBNFTRewardDataSource)
+    override(ERC721Votes, JBNFTRewardDataSource)
     returns (bool)
   {
     return
