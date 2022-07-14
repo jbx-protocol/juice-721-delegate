@@ -241,6 +241,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         contributionFloor: uint128((i + 1) * 10),
         remainingQuantity: uint40(10),
         initialQuantity: uint40(10),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
         tokenUri: baseUris[i]
       });
     }
@@ -251,7 +253,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
-      baseUri: tokenUri,
       contractUri: contractUri,
       owner: _projectOwner,
       contributionToken: _accessJBLib.ETHToken(),

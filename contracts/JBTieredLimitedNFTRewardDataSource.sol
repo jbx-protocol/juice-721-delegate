@@ -204,7 +204,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function numberOfReservedTokensOutstandingFor(uint256 _tierId)
     external
-    override
     returns (uint256)
   {
     // Get a reference to the tier.
@@ -278,7 +277,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   function supportsInterface(bytes4 _interfaceId)
     public
     view
-    override(ERC721Votes, JBNFTRewardDataSource)
+    override
     returns (bool)
   {
     return
@@ -380,7 +379,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _count
   ) external override onlyOwner returns (uint256 tokenId) {
     // Get a reference to the tier.
-    JBNFTRewardTier memory _tier = tiers[_tierId];
+    JBNFTRewardTier storage _tier = tiers[_tierId];
 
     // Get a reference to the number of reserved tokens mintable for the tier.
     uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
@@ -572,7 +571,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   function _numberOfReservedTokensOutstandingFor(uint256 _tierId, JBNFTRewardTier memory _tier)
     internal
     view
-    override
     returns (uint256)
   {
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.

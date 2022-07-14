@@ -129,7 +129,6 @@ contract RinkebyLaunchProjectFor is Script {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
-      baseUri: baseUri,
       contractUri: contractUri,
       owner: _projectOwner,
       contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
+
 import '@jbx-protocol/contracts-v2/contracts/JBController.sol';
 import '@jbx-protocol/contracts-v2/contracts/JBDirectory.sol';
 import '@jbx-protocol/contracts-v2/contracts/JBETHPaymentTerminal.sol';
@@ -8,7 +9,7 @@ import '@jbx-protocol/contracts-v2/contracts/JBSingleTokenPaymentTerminalStore.s
 import '@jbx-protocol/contracts-v2/contracts/JBFundingCycleStore.sol';
 import '@jbx-protocol/contracts-v2/contracts/JBOperatorStore.sol';
 import '@jbx-protocol/contracts-v2/contracts/JBPrices.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBProjects.sol';
+import {JBProjects} from '@jbx-protocol/contracts-v2/contracts/JBProjects.sol';
 import '@jbx-protocol/contracts-v2/contracts/JBSplitsStore.sol';
 import '@jbx-protocol/contracts-v2/contracts/JBToken.sol';
 import '@jbx-protocol/contracts-v2/contracts/JBTokenStore.sol';
