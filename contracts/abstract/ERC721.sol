@@ -64,7 +64,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   /**
     @dev Balance tracking to be overriden by childs
   */
-  function balanceOf(address owner) external virtual override view returns (uint256 balance) {return 0;}
+  function balanceOf(address owner) external view virtual override returns (uint256 balance) {
+    owner;
+    return 0;
+  }
 
   /**
    * @dev See {IERC721-ownerOf}.

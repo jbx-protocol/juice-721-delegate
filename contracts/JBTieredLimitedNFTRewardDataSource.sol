@@ -95,15 +95,19 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return _tiers All the tiers tiers.
   */
   function allTiers() external view override returns (JBNFTRewardTier[] memory _tiers) {
+    // Keep a reference to the number of tiers in stack.
+    uint256 _numberOfTiers = numberOfTiers;
+
     // Initialize an array with the appropriate length.
-    _tiers = new JBNFTRewardTier[](numberOfTiers);
+    _tiers = new JBNFTRewardTier[](_numberOfTiers);
 
     // Loop through each tier.
-    for (uint256 _i; _i < numberOfTiers; ) {
-      // Add the 1-indexed tier to the array.
-      _tiers[_i] = tiers[_i + 1];
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+      // Add the tier to the array.
+      _tiers[_i - 1] = tiers[_i];
+
       unchecked {
-        ++_i;
+        --_i;
       }
     }
   }
@@ -116,17 +120,20 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function totalSupply() external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier memory _tier;
+    JBNFTRewardTier storage _tier;
 
-    for (uint256 _i; _i < numberOfTiers; ) {
+    // Keep a reference to the number of tiers in stack.
+    uint256 _numberOfTiers = numberOfTiers;
+
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Set the tier being iterated on.
-      _tier = tiers[_i + 1];
+      _tier = tiers[_i];
 
       // Increment the total supply with the amount used already.
       supply += _tier.initialQuantity - _tier.remainingQuantity;
 
       unchecked {
-        ++_i;
+        --_i;
       }
     }
   }
@@ -175,7 +182,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return balance The number of tokens owners by the owner accross all tiers.
   */
   function balanceOf(address _owner) public view override returns (uint256 balance) {
-    // Keep a reference to the number of tiers.
+    // Keep a reference to the number of tiers in stack.
     uint256 _numberOfTiers = numberOfTiers;
 
     // Loop through all tiers.
@@ -197,7 +204,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return The outstanding number of reserved tokens within the tier.
   */
-  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external returns (uint256) {
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256) {
     // Get a reference to the tier.
     JBNFTRewardTier memory _tier = tiers[_tierId];
     return _numberOfReservedTokensOutstandingFor(_tierId, _tier);
@@ -364,7 +371,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     address _beneficiary,
     uint256 _tierId,
     uint256 _count
-  ) external override onlyOwner returns (uint256 tokenId) {
+  ) external override onlyOwner {
     // Get a reference to the tier.
     JBNFTRewardTier storage _tier = tiers[_tierId];
 

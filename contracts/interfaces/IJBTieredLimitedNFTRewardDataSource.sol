@@ -42,5 +42,5 @@ interface IJBTieredLimitedNFTRewardDataSource {
     address _beneficiary,
     uint256 _tierId,
     uint256 _count
-  ) external returns (uint256 tokenId);
+  ) external;
 }
