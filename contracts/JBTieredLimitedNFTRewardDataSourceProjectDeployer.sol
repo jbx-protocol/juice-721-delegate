@@ -60,7 +60,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     projectId = controller.projects().count() + 1;
 
     // Deploy the data source contract.
-    address _dataSourceAddress = _deployDataSource(projectId, _deployTieredNFTRewardDataSourceData);
+    address _dataSourceAddress = deployDataSource(projectId, _deployTieredNFTRewardDataSourceData);
 
     // Set the data source address as the data source of the provided metadata.
     _launchProjectData.metadata.dataSource = _dataSourceAddress;
@@ -82,10 +82,10 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
 
     @return The address of the newly deployed data source.
   */
-  function _deployDataSource(
+  function deployDataSource(
     uint256 _projectId,
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) internal returns (address) {
+  ) public override returns (address) {
     return
       address(
         new JBTieredLimitedNFTRewardDataSource(

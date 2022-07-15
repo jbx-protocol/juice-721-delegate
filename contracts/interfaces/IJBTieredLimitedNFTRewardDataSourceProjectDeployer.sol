@@ -14,4 +14,9 @@ interface IJBTieredLimitedNFTRewardDataSourceProjectDeployer {
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData,
     JBLaunchProjectData memory _launchProjectData
   ) external returns (uint256 projectId);
+
+  function deployDataSource(
+    uint256 _projectId,
+    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
+  ) external returns (address dataSource);
 }
