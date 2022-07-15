@@ -114,18 +114,13 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return supply The total number of NFTs between all tiers.
   */
-  function totalSupply()
-    external
-    view
-    override
-    returns (uint256 supply)
-  {
+  function totalSupply() external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier memory _tier;
 
     for (uint256 _i; _i < numberOfTiers; ) {
       // Set the tier being iterated on.
-      _tier = tiers[_i];
+      _tier = tiers[_i + 1];
 
       // Increment the total supply with the amount used already.
       supply += _tier.initialQuantity - _tier.remainingQuantity;
@@ -202,10 +197,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return The outstanding number of reserved tokens within the tier.
   */
-  function numberOfReservedTokensOutstandingFor(uint256 _tierId)
-    external
-    returns (uint256)
-  {
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external returns (uint256) {
     // Get a reference to the tier.
     JBNFTRewardTier memory _tier = tiers[_tierId];
     return _numberOfReservedTokensOutstandingFor(_tierId, _tier);
@@ -274,12 +266,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _interfaceId The ID of the interface to check for adherance to.
   */
-  function supportsInterface(bytes4 _interfaceId)
-    public
-    view
-    override
-    returns (bool)
-  {
+  function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
     return
       _interfaceId == type(IJBTieredLimitedNFTRewardDataSource).interfaceId ||
       _interfaceId == type(ITokenSupplyDetails).interfaceId ||
