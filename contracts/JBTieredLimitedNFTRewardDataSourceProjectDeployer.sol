@@ -86,8 +86,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     uint256 _projectId,
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
   ) public override returns (address) {
-    return
-      address(
+      address newDatasource = address(
         new JBTieredLimitedNFTRewardDataSource(
           _projectId,
           _deployTieredNFTRewardDataSourceData.directory,
@@ -101,6 +100,8 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
           _deployTieredNFTRewardDataSourceData.shouldMintByDefault
         )
       );
+
+      emit DatasourceDeployed(_projectId, newDatasource);
   }
 
   /** 

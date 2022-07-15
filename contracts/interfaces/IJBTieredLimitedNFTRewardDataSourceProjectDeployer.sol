@@ -7,6 +7,8 @@ import '../structs/JBDeployTieredNFTRewardDataSourceData.sol';
 import '../structs/JBLaunchProjectData.sol';
 
 interface IJBTieredLimitedNFTRewardDataSourceProjectDeployer {
+  event DatasourceDeployed(uint256 indexed projectId, address newDatasource);
+
   function controller() external view returns (IJBController);
 
   function launchProjectFor(
