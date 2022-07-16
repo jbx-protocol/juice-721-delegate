@@ -205,9 +205,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return The outstanding number of reserved tokens within the tier.
   */
   function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256) {
-    // Get a reference to the tier.
-    JBNFTRewardTier memory _tier = tiers[_tierId];
-    return _numberOfReservedTokensOutstandingFor(_tierId, _tier);
+    return _numberOfReservedTokensOutstandingFor(_tierId, tiers[_tierId);
   }
 
   /**
