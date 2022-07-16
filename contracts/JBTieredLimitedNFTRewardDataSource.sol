@@ -565,23 +565,20 @@ contract JBTieredLimitedNFTRewardDataSource is
     view
     returns (uint256)
   {
-    // Keep reserved token in stack
-    uint256 reservedMinted = numberOfReservesMintedFor[_tierId];
-
     // Invalid tier?
     if (_tier.initialQuantity == 0) return 0;
+
+    // Keep reserved token in stack
+    uint256 reservedMinted = numberOfReservesMintedFor[_tierId];
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
     uint256 _numberOfNonReservesMinted = _tier.initialQuantity -
       _tier.remainingQuantity -
       reservedMinted;
 
-    // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
-    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _tier.reservedRate;
-
-    // Round up.
-    if (_numberOfNonReservesMinted - _tier.reservedRate * _numberReservedTokensMintable > 0)
-      ++_numberReservedTokensMintable;
+    // Get the number of reserved tokens mintable given the number of non reserved tokens minted, rounded up.
+    uint256 _numberReservedTokensMintable = (((_numberOfNonReservesMinted * _tier.reservedRate) -
+      1) / 100) + 1;
 
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - reservedMinted;
