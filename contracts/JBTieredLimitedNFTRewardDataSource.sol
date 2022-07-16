@@ -253,7 +253,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
     // A token without an owner doesn't have a URI.
-    if (ownerOf(_tokenId) == address(0)) return '';
+    if (_owners[_tokenId] == address(0)) return '';
 
     // If a token URI resolver is provided, use it to resolve the token URI.
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
