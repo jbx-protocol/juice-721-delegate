@@ -223,6 +223,71 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.balanceOf(holder), 10 * ((numberOfTiers * (numberOfTiers + 1)) / 2));
   }
 
+  function testJBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_returnsOutstandingReserved(
+    uint16 initialQuantity,
+    uint16 totalMinted,
+    uint16 reservedMinted,
+    uint16 reservedRate
+  ) public {
+    vm.assume(initialQuantity > totalMinted);
+    vm.assume(totalMinted > reservedMinted);
+    vm.assume(reservedRate > 0 && reservedRate <= 100);
+
+    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
+
+    for (uint256 i; i < 10; i++) {
+      _tiers[i] = JBNFTRewardTier({
+        contributionFloor: uint128((i + 1) * 10),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        tokenUri: 'foo'
+      });
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      owner,
+      mockContributionToken,
+      _tiers,
+      false // _shouldMintByDefault
+    );
+
+    for (uint256 i; i < 10; i++) {
+      _delegate.setTier(
+        i + 1,
+        JBNFTRewardTier({
+          contributionFloor: uint128((i + 1) * 10),
+          remainingQuantity: uint40(initialQuantity - totalMinted),
+          initialQuantity: uint40(initialQuantity),
+          votingUnits: uint16(0),
+          reservedRate: uint16(reservedRate),
+          tokenUri: 'foo'
+        })
+      );
+      _delegate.setReservesMintedFor(i + 1, reservedMinted);
+    }
+
+    for (uint256 i; i < 10; i++) {
+      uint256 nonReservedMinted = totalMinted - reservedMinted;
+      uint256 reservedMintable = (uint256(nonReservedMinted) * uint256(reservedRate)) / 100;
+
+      if ((uint256(nonReservedMinted) * uint256(reservedRate)) % 100 != 0) reservedMintable++;
+
+      vm.assume(reservedMintable > reservedMinted); // This should be invariant - todo: invariant testing
+
+      uint256 outstandingReserved = reservedMintable - reservedMinted;
+
+      assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), outstandingReserved);
+    }
+  }
+
   // ------------
 
   function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {
