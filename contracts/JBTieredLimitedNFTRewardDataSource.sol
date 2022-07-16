@@ -627,13 +627,9 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Get a reference to the account's balance in this tier.
       uint256 _balance = tierBalanceOf[_account][_i];
 
-      if (_balance != 0) {
-        // Get a reference to the tier the token belongs to.
-        JBNFTRewardTier memory _tier = tiers[_i];
-
+      if (_balance != 0)
         // Add the tier's voting units.
-        units += _balance * _tier.votingUnits;
-      }
+        units += _balance * tiers[_i].votingUnits;
 
       unchecked {
         --_i;
