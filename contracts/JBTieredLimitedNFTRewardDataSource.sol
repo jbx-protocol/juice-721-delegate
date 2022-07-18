@@ -577,6 +577,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Invalid tier or no reserved rate?
     if (_tier.initialQuantity == 0 || _tier.reservedRate == 0) return 0;
 
+    // No token minted yet? Round up to 1
+    if (_tier.initialQuantity == _tier.remaining) return 1;
+
     // The number of reserved token of the tier already minted
     uint256 reserveTokenMinted = numberOfReservesMintedFor[_tierId];
 
