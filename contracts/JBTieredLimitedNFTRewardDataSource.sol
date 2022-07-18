@@ -577,10 +577,13 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Invalid tier or no reserved rate?
     if (_tier.initialQuantity == 0 || _tier.reservedRate == 0) return 0;
 
+    // The number of reserved token of the tier already minted
+    uint256 reserveTokenMinted = numberOfReservesMintedFor[_tierId];
+
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
     uint256 _numberOfNonReservesMinted = _tier.initialQuantity -
       _tier.remainingQuantity -
-      numberOfReservesMintedFor[_tierId];
+      reserveTokenMinted;
 
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
     uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _tier.reservedRate;
@@ -590,7 +593,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       ++_numberReservedTokensMintable;
 
     // Return the difference between the amount mintable and the amount already minted.
-    return _numberReservedTokensMintable - numberOfReservesMintedFor[_tierId];
+    return _numberReservedTokensMintable - reserveTokenMinted;
   }
 
   /** 
