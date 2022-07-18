@@ -228,14 +228,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.balanceOf(holder), 10 * ((numberOfTiers * (numberOfTiers + 1)) / 2));
   }
 
-  function testJBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_returnsOutstandingReserved(
-    uint16 initialQuantity,
-    uint16 totalMinted,
-    uint16 reservedMinted,
-    uint16 reservedRate
-  ) public {
-    vm.assume(initialQuantity > totalMinted);
-    vm.assume(totalMinted > reservedMinted);
+  function testJBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_returnsOutstandingReserved()
+    public
+  {
+    // 120 minted, 1 is reserved -> 119 are non-reserved, therefore there is a max of 119/40 reserved token,
+    // rounded up at 3 -> since 1 is minted, 2 more can be
+    uint256 initialQuantity = 200;
+    uint256 totalMinted = 120;
+    uint256 reservedMinted = 1;
+    uint256 reservedRate = 40;
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
 
@@ -279,21 +280,99 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
     }
 
-    if (reservedRate > 0) {
-      for (uint256 i; i < 10; i++) {
-        // uint256 expectedReserveAvailable = initialQuantity / reservedRate;
-        // uint256 nonMintedAvailableReserved = expectedReserveAvailable == 0
-        //   ? reservedMinted > 0 ? 0 : 1
-        //   : (totalMinted - reservedMinted) / reservedRate;
-        // if (nonMintedAvailableReserved == reservedRate) nonMintedAvailableReserved--;
-        // assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), nonMintedAvailableReserved);
-      }
-    } else {
-      for (uint256 i; i < 10; i++) {
-        assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 0);
-      }
-    }
+    for (uint256 i; i < 10; i++) assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 2);
   }
+
+  // --------
+  function FixThis__JBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_FuzzedreturnsOutstandingReserved(
+    uint16 initialQuantity,
+    uint16 totalMinted,
+    uint16 reservedMinted,
+    uint16 reservedRate
+  ) public {
+    vm.assume(initialQuantity > totalMinted);
+    vm.assume(totalMinted > reservedMinted);
+    if (reservedRate != 0) vm.assume(totalMinted / reservedRate >= reservedMinted);
+
+    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
+
+    // Temp tiers, will get overwritten later
+    for (uint256 i; i < 10; i++) {
+      _tiers[i] = JBNFTRewardTier({
+        contributionFloor: uint128((i + 1) * 10),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        tokenUri: 'foo'
+      });
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      owner,
+      mockContributionToken,
+      _tiers,
+      false // _shouldMintByDefault
+    );
+
+    for (uint256 i; i < 10; i++) {
+      _delegate.ForTest_setTier(
+        i + 1,
+        JBNFTRewardTier({
+          contributionFloor: uint128((i + 1) * 10),
+          remainingQuantity: uint40(initialQuantity - totalMinted),
+          initialQuantity: uint40(initialQuantity),
+          votingUnits: uint16(0),
+          reservedRate: uint16(reservedRate),
+          tokenUri: 'foo'
+        })
+      );
+      _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
+    }
+
+    // No reserved token were available
+    if (reservedRate == 0)
+      for (uint256 i; i < 10; i++)
+        assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 0);
+    // We need to round up if non reserved minted is less than reserved rate
+    else if (totalMinted / reservedRate == 0)
+      for (uint256 i; i < 10; i++)
+        assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 1);
+    // All the reserved token are minted, rest 0 reserved
+    else if (reservedMinted == initialQuantity / reservedRate)
+      for (uint256 i; i < 10; i++)
+        assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 0);
+    // non-reserved minted is not a multiple of reserved rate, we'll have to round up
+    else if ((totalMinted - reservedMinted) % reservedRate != 0)
+      if (reservedMinted == 0)
+        // Round up if none has been minted
+        for (uint256 i; i < 10; i++)
+          assertEq(
+            _delegate.numberOfReservedTokensOutstandingFor(i + 1),
+            (totalMinted / reservedRate) + 1
+          );
+      // Some has already been minted
+      else
+        for (uint256 i; i < 10; i++)
+          assertEq(
+            _delegate.numberOfReservedTokensOutstandingFor(i + 1),
+            ((totalMinted - reservedMinted) / reservedRate) - reservedMinted + 1
+          );
+    else
+      for (uint256 i; i < 10; i++)
+        assertEq(
+          _delegate.numberOfReservedTokensOutstandingFor(i + 1),
+          ((totalMinted - reservedMinted) / reservedRate) - reservedMinted
+        );
+  }
+
+  // ---------
 
   function testJBTieredNFTRewardDelegate_getvotingUnits_returnsTheTotalVotingUnits(
     uint16 numberOfTiers,
@@ -546,21 +625,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   // TODO: fuzz
-  function testJBTieredNFTRewardDelegate_mintReservesFor_mintReservedToken()
-    public
-  // uint16 initialQuantity,
-  // uint16 totalMinted,
-  // uint16 reservedMinted,
-  // uint16 reservedRate
-  {
-    // vm.assume(reservedRate > 0 && reservedRate <= 100);
-    // vm.assume(initialQuantity >= totalMinted);
-    // vm.assume(reservedMinted <= totalMinted);
-
-    // // Cannot have more than the entire reserved token minted
-    // if (totalMinted > 0) vm.assume(reservedMinted < (totalMinted * uint256(reservedRate)) / 100);
-
-    // 100 IQ -> reserved rate of 1 means 10 are in reserves, out of them 1 is minted -> 9 can still be minted
+  function testJBTieredNFTRewardDelegate_mintReservesFor_mintReservedToken() public {
+    // 100 IQ -> 60 are minted, including one reserved, reserved rate is 10 -> 59 / 10 = 5.9 reserved,
+    // which is rounded up to 6. 1 is already minted, 5 left.
     uint256 initialQuantity = 100;
     uint256 totalMinted = 60;
     uint256 reservedMinted = 1;
@@ -611,7 +678,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 tier = 1; tier <= 10; tier++) {
       //uint256 mintable = _delegate.numberOfReservedTokensOutstandingFor(i);
-      for (uint256 token = 1; token <= 9; token++) {
+      for (uint256 token = 1; token <= 5; token++) {
         vm.expectEmit(true, true, true, true, address(_delegate));
         emit MintReservedToken(
           _generateTokenId(tier, totalMinted + token),
@@ -622,10 +689,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }
 
       vm.prank(owner);
-      _delegate.mintReservesFor(beneficiary, tier, 9);
+      _delegate.mintReservesFor(beneficiary, tier, 5);
 
       // Check balance
-      assertEq(_delegate.balanceOf(beneficiary), 9 * tier);
+      assertEq(_delegate.balanceOf(beneficiary), 5 * tier);
     }
   }
 

@@ -589,8 +589,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _tier.reservedRate;
 
     // Round up.
-    if (_numberOfNonReservesMinted - _tier.reservedRate * _numberReservedTokensMintable > 0)
-      ++_numberReservedTokensMintable;
+    if (
+      _numberOfNonReservesMinted - uint256(_tier.reservedRate) * _numberReservedTokensMintable > 0
+    ) ++_numberReservedTokensMintable;
 
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - reserveTokenMinted;
