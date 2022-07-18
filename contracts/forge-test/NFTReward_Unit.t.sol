@@ -47,7 +47,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
     address caller
   );
 
-  event Burn(uint256 indexed tokenId, address owner, address caller);
+  event MintReservedToken(
+    uint256 indexed tokenId,
+    uint256 indexed tierId,
+    address indexed beneficiary,
+    address caller
+  );
 
   function setUp() public {
     vm.label(beneficiary, 'beneficiary');
@@ -538,17 +543,27 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  // -------------------
+  // TODO: fuzz
+  function testJBTieredNFTRewardDelegate_mintReservesFor_mintReservedToken()
+    public
+  // uint16 initialQuantity,
+  // uint16 totalMinted,
+  // uint16 reservedMinted,
+  // uint16 reservedRate
+  {
+    // vm.assume(reservedRate > 0 && reservedRate <= 100);
+    // vm.assume(initialQuantity >= totalMinted);
+    // vm.assume(reservedMinted <= totalMinted);
 
-  function testJBTieredNFTRewardDelegate_mintReservesFor_mintReservedToken(
-    uint16 initialQuantity,
-    uint16 totalMinted,
-    uint16 reservedMinted,
-    uint16 reservedRate
-  ) public {
-    vm.assume(initialQuantity > totalMinted);
-    vm.assume(totalMinted > reservedMinted);
-    vm.assume(reservedRate > 0 && reservedRate <= 100);
+    // // Cannot have more than the entire reserved token minted
+    // if (totalMinted > 0) vm.assume(reservedMinted < (totalMinted * uint256(reservedRate)) / 100);
+
+    // Out of 100 token, 60 are minted. Out of these 60, 1 is a reserved one -> 59 are non-reserved,
+    // there are 59 * reservedRate reserved = 5.9, which is always rounded up = 6 (5 are then still pending)
+    uint256 initialQuantity = 100;
+    uint256 totalMinted = 60;
+    uint256 reservedMinted = 1;
+    uint256 reservedRate = 10;
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
 
@@ -588,14 +603,105 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tokenUri: 'foo'
         })
       );
+
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
     }
 
-    uint256 mintable =delegate.numberOfReservedTokensOutstandingFor(tier), outstandingReserved;
-    
+    for (uint256 tier = 1; tier <= 10; tier++) {
+      //uint256 mintable = _delegate.numberOfReservedTokensOutstandingFor(i);
+      for (uint256 token = 1; token <= 5; token++) {
+        vm.expectEmit(true, true, true, true, address(_delegate));
+        emit MintReservedToken(
+          _generateTokenId(tier, totalMinted + token),
+          tier,
+          beneficiary,
+          owner
+        );
+      }
+
+      vm.prank(owner);
+      _delegate.mintReservesFor(beneficiary, tier, 5);
+
+      // Check balance
+      assertEq(_delegate.balanceOf(beneficiary), 5 * tier);
+    }
   }
 
-  function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft() public {}
+  // TODO: fuzz
+  function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft()
+    public
+  // uint16 initialQuantity,
+  // uint16 totalMinted,
+  // uint16 reservedMinted,
+  // uint16 reservedRate
+  {
+    // vm.assume(reservedRate > 0 && reservedRate <= 100);
+    // vm.assume(initialQuantity >= totalMinted);
+    // vm.assume(reservedMinted <= totalMinted);
+
+    // // Cannot have more than the entire reserved token minted
+    // if (totalMinted > 0) vm.assume(reservedMinted < (totalMinted * uint256(reservedRate)) / 100);
+
+    // Out of 100 token, 60 are minted. Out of these 60, 1 is a reserved one -> 59 are non-reserved,
+    // there are 59 * reservedRate reserved = 5.9, which is always rounded up = 6 (5 are then still pending)
+    uint256 initialQuantity = 100;
+    uint256 totalMinted = 60;
+    uint256 reservedMinted = 1;
+    uint256 reservedRate = 10;
+
+    address holder = address(bytes20(keccak256(abi.encode('holder'))));
+
+    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
+
+    for (uint256 i; i < 10; i++) {
+      _tiers[i] = JBNFTRewardTier({
+        contributionFloor: uint128((i + 1) * 10),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        tokenUri: 'foo'
+      });
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      owner,
+      mockContributionToken,
+      _tiers,
+      false // _shouldMintByDefault
+    );
+
+    for (uint256 i; i < 10; i++) {
+      _delegate.ForTest_setTier(
+        i + 1,
+        JBNFTRewardTier({
+          contributionFloor: uint128((i + 1) * 10),
+          remainingQuantity: uint40(initialQuantity - totalMinted),
+          initialQuantity: uint40(initialQuantity),
+          votingUnits: uint16(0),
+          reservedRate: uint16(reservedRate),
+          tokenUri: 'foo'
+        })
+      );
+
+      _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
+    }
+
+    for (uint256 i = 1; i <= 10; i++) {
+      //uint256 mintable = _delegate.numberOfReservedTokensOutstandingFor(i);
+      vm.expectRevert(abi.encodeWithSignature('INSUFFICIENT_RESERVES()'));
+      vm.prank(owner);
+      _delegate.mintReservesFor(holder, i, 6);
+    }
+  }
+
+  // --------------------------------
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
   function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloor()
