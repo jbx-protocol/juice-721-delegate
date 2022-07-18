@@ -696,27 +696,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
-  // TODO: fuzz
-  function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft()
+  function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft(
+   uint16 initialQuantity,
+   uint16 totalMinted,
+   uint16 reservedMinted,
+   uint16 reservedRate
+  )
     public
-  // uint16 initialQuantity,
-  // uint16 totalMinted,
-  // uint16 reservedMinted,
-  // uint16 reservedRate
   {
-    // vm.assume(reservedRate > 0 && reservedRate <= 100);
-    // vm.assume(initialQuantity >= totalMinted);
-    // vm.assume(reservedMinted <= totalMinted);
+    vm.assume(reservedRate > 0 && reservedRate <= 100);
+    vm.assume(initialQuantity >= totalMinted);
+    vm.assume(reservedMinted <= totalMinted);
 
-    // // Cannot have more than the entire reserved token minted
-    // if (totalMinted > 0) vm.assume(reservedMinted < (totalMinted * uint256(reservedRate)) / 100);
-
-    // Out of 100 token, 60 are minted. Out of these 60, 1 is a reserved one -> 59 are non-reserved,
-    // there are 59 * reservedRate reserved = 5.9, which is always rounded up = 6 (5 are then still pending)
-    uint256 initialQuantity = 100;
-    uint256 totalMinted = 60;
-    uint256 reservedMinted = 1;
-    uint256 reservedRate = 10;
+    // Amount of reserved minted can't be more than the totalMinted and reservedRate would imply
+    vm.assume((totalMinted - reservedMinted) / reservedRate > reservedMinted);
 
     address holder = address(bytes20(keccak256(abi.encode('holder'))));
 
@@ -763,10 +756,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
 
     for (uint256 i = 1; i <= 10; i++) {
-      //uint256 mintable = _delegate.numberOfReservedTokensOutstandingFor(i);
+      // Get the amount that we can mint successfully
+      uint256 amount = _delegate.numberOfReservedTokensOutstandingFor(i);
+      // Increase it by 1 to cause an error
+      amount++;
+
       vm.expectRevert(abi.encodeWithSignature('INSUFFICIENT_RESERVES()'));
       vm.prank(owner);
-      _delegate.mintReservesFor(holder, i, 6);
+      _delegate.mintReservesFor(holder, i, amount);
     }
   }
 
