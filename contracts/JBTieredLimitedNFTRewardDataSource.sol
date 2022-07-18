@@ -55,6 +55,15 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   bool public immutable override shouldMintByDefault;
 
+  /**
+    @notice
+    Just a kind reminder to our readers
+
+    @dev
+    Used in base58ToString
+  */
+  bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -568,23 +577,20 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Invalid tier?
     if (_tier.initialQuantity == 0) return 0;
 
-    // Keep reserved token in stack
-    uint256 reservedMinted = numberOfReservesMintedFor[_tierId];
-
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
     uint256 _numberOfNonReservesMinted = _tier.initialQuantity -
       _tier.remainingQuantity -
-      reservedMinted;
+      numberOfReservesMintedFor[_tierId];
 
-    // If no token have been minted at all, return 0
-    if (_numberOfNonReservesMinted == 0) return 0;
+    // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
+    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _tier.reservedRate;
 
-    // Get the number of reserved tokens mintable given the number of non reserved tokens minted, rounded up.
-    uint256 _numberReservedTokensMintable = (((_numberOfNonReservesMinted *
-      uint256(_tier.reservedRate)) - 1) / 100) + 1;
+    // Round up.
+    if (_numberOfNonReservesMinted - _tier.reservedRate * _numberReservedTokensMintable > 0)
+      ++_numberReservedTokensMintable;
 
     // Return the difference between the amount mintable and the amount already minted.
-    return _numberReservedTokensMintable - reservedMinted;
+    return _numberReservedTokensMintable - numberOfReservesMintedFor[_tierId];
   }
 
   /** 
@@ -639,5 +645,68 @@ contract JBTieredLimitedNFTRewardDataSource is
         --_i;
       }
     }
+  }
+
+  //the _toBase58 consume a lot of gaz when called from another contract. Therefore, calling tokenURI from a contract might fail
+  //(no worries for us, view & pure functions are "free" for humans)
+  //myBytes32Hash = "0x"+bs58.decode(IPFS_HASH).slice(2).toString('hex')
+
+  /**
+  
+  @author Martin Lundfall (martin.lundfall@consensys.net)
+  Source verifyIPFS (https://github.com/MrChico/verifyIPFS/blob/master/contracts/verifyIPFS.sol)
+  
+  @notice Converts an hex bytes to a base58 string
+
+  @dev
+  IPFS hashes are a base58 string representation of a 34bytes hash.
+  The 2 first bytes can be
+  
+   */
+
+  function _toBase58(bytes memory source) internal pure returns (string memory) {
+    if (source.length == 0) return new string(0);
+    uint8[] memory digits = new uint8[](46);
+    digits[0] = 0;
+    uint8 digitlength = 1;
+    for (uint256 i = 0; i < source.length; ++i) {
+      uint256 carry = uint8(source[i]);
+      for (uint256 j = 0; j < digitlength; ++j) {
+        carry += uint256(digits[j]) * 256;
+        digits[j] = uint8(carry % 58);
+        carry = carry / 58;
+      }
+
+      while (carry > 0) {
+        digits[digitlength] = uint8(carry % 58);
+        digitlength++;
+        carry = carry / 58;
+      }
+    }
+    return string(_toAlphabet(_reverse(_truncate(digits, digitlength))));
+  }
+
+  function _truncate(uint8[] memory array, uint8 length) internal pure returns (uint8[] memory) {
+    uint8[] memory output = new uint8[](length);
+    for (uint256 i = 0; i < length; i++) {
+      output[i] = array[i];
+    }
+    return output;
+  }
+
+  function _reverse(uint8[] memory input) internal pure returns (uint8[] memory) {
+    uint8[] memory output = new uint8[](input.length);
+    for (uint256 i = 0; i < input.length; i++) {
+      output[i] = input[input.length - 1 - i];
+    }
+    return output;
+  }
+
+  function _toAlphabet(uint8[] memory indices) internal pure returns (bytes memory) {
+    bytes memory output = new bytes(indices.length);
+    for (uint256 i = 0; i < indices.length; i++) {
+      output[i] = _ALPHABET[indices[i]];
+    }
+    return output;
   }
 }
