@@ -20,8 +20,6 @@ interface IJBTieredLimitedNFTRewardDataSource {
     address caller
   );
 
-  event Burn(uint256 indexed tokenId, address owner, address caller);
-
   function contributionToken() external view returns (address);
 
   function numberOfTiers() external view returns (uint256);
