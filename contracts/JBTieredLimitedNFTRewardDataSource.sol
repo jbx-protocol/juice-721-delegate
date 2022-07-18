@@ -574,8 +574,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     view
     returns (uint256)
   {
-    // Invalid tier?
-    if (_tier.initialQuantity == 0) return 0;
+    // Invalid tier or no reserved rate?
+    if (_tier.initialQuantity == 0 || _tier.reservedRate == 0) return 0;
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
     uint256 _numberOfNonReservesMinted = _tier.initialQuantity -
@@ -653,7 +653,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   /**
   
-  @author Martin Lundfall (martin.lundfall@consensys.net)
+  @notice author Martin Lundfall (martin.lundfall@consensys.net)
   Source verifyIPFS (https://github.com/MrChico/verifyIPFS/blob/master/contracts/verifyIPFS.sol)
   
   @notice Converts an hex bytes to a base58 string
