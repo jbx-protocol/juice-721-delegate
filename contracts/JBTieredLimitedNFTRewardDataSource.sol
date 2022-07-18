@@ -576,9 +576,12 @@ contract JBTieredLimitedNFTRewardDataSource is
       _tier.remainingQuantity -
       reservedMinted;
 
+    // If no token have been minted at all, return 0
+    if (_numberOfNonReservesMinted == 0) return 0;
+
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted, rounded up.
-    uint256 _numberReservedTokensMintable = (((_numberOfNonReservesMinted * _tier.reservedRate) -
-      1) / 100) + 1;
+    uint256 _numberReservedTokensMintable = (((_numberOfNonReservesMinted *
+      uint256(_tier.reservedRate)) - 1) / 100) + 1;
 
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - reservedMinted;
