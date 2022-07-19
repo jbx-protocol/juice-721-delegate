@@ -62,11 +62,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
     vm.label(mockContributionToken, 'mockContributionToken');
     vm.label(mockTerminalAddress, 'mockTerminalAddress');
+    vm.label(mockJBProjects, 'mockJBProjects');
 
     vm.etch(mockJBDirectory, new bytes(0x69));
     vm.etch(mockTokenUriResolver, new bytes(0x69));
     vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
+    vm.etch(mockJBProjects, new bytes(0x69));
 
     // Create 10 tiers, each with 100 tokens available to mint
     for (uint256 i; i < 10; i++) {
@@ -379,8 +381,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
   }
 
-  // ---------
-
   function testJBTieredNFTRewardDelegate_getvotingUnits_returnsTheTotalVotingUnits(
     uint16 numberOfTiers,
     address holder
@@ -652,6 +652,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Amount of reserved minted can't be more than the totalMinted and reservedRate would imply
     vm.assume((totalMinted - reservedMinted) / reservedRate > reservedMinted);
 
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      //abi.encodeWithSignature('ownerOf(uint256)(address)', projectId),
+      abi.encode(owner)
+    );
+
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](nbTiers);
 
     // Temp tiers, will get overwritten later (pass the constructor check)
@@ -704,19 +711,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       for (uint256 token = 1; token <= mintable; token++) {
         vm.expectEmit(true, true, true, true, address(_delegate));
-        emit MintReservedToken(
-          _generateTokenId(tier, totalMinted + token),
-          tier,
-          beneficiary,
-          owner
-        );
+        emit MintReservedToken(_generateTokenId(tier, totalMinted + token), tier, owner, owner);
       }
 
       vm.prank(owner);
       _delegate.mintReservesFor(tier, mintable);
 
       // Check balance
-      assertEq(_delegate.balanceOf(beneficiary), mintable * tier);
+      assertEq(_delegate.balanceOf(owner), mintable * tier);
     }
   }
 
@@ -732,8 +734,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Amount of reserved minted can't be more than the totalMinted and reservedRate would imply
     vm.assume((totalMinted - reservedMinted) / reservedRate > reservedMinted);
-
-    address holder = address(bytes20(keccak256(abi.encode('holder'))));
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
 
