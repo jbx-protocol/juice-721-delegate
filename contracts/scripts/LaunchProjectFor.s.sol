@@ -129,7 +129,6 @@ contract RinkebyLaunchProjectFor is Script {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
-      baseUri: baseUri,
       contractUri: contractUri,
       owner: _projectOwner,
       contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
@@ -147,5 +146,81 @@ contract RinkebyLaunchProjectFor is Script {
       terminals: _terminals,
       memo: ''
     });
+  }
+}
+
+contract RinkebyDeployDatasource is Script {
+  IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer =
+  IJBTieredLimitedNFTRewardDataSourceProjectDeployer(0x70ae174D7702365110E04d124cde634eE43EBe21);
+  IJBController jbController;
+  IJBDirectory jbDirectory;
+  IJBPaymentTerminal[] _terminals;
+  JBFundAccessConstraints[] _fundAccessConstraints;
+
+  string name;
+  string symbol;
+  string contractUri;
+  address _projectOwner;
+
+  string[] tokenUris = [
+    'http://www.null.com/1',
+    'http://www.null.com/2',
+    'http://www.null.com/3',
+    'http://www.null.com/4',
+    'http://www.null.com/5',
+    'http://www.null.com/6',
+    'http://www.null.com/7',
+    'http://www.null.com/8',
+    'http://www.null.com/9',
+    'http://www.null.com/10'
+  ];
+
+
+  function setUp() public {
+    jbController = deployer.controller();
+    jbDirectory = jbController.directory();
+    name = '';
+    symbol = '';
+    contractUri = '';
+    _projectOwner = msg.sender;
+  }
+
+  function run(uint256 projectId) external {
+
+    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](0);
+
+    // for (uint256 i; i < 10; i++) {
+    //   tiers[i] = JBNFTRewardTier({
+    //     contributionFloor: uint128((i + 1) * 10),
+    //     remainingQuantity: uint40(100),
+    //     initialQuantity: uint40(100),
+    //     votingUnits: uint16(0),
+    //     reservedRate: uint16(0),
+    //     tokenUri: tokenUris[i]
+    //   });
+    // }
+
+    JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
+      directory: jbDirectory,
+      name: name,
+      symbol: symbol,
+      tokenUriResolver: IJBTokenUriResolver(address(0)),
+      contractUri: contractUri,
+      owner: _projectOwner,
+      contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
+      tiers: tiers,
+      shouldMintByDefault: false
+    });
+
+    vm.broadcast();
+
+    address NFTDatasource = deployer.deployDataSource(
+      projectId,
+      NFTRewardDeployerData
+   );
+
+    console.log(NFTDatasource);
+    console.log(address(jbController));
+    console.log(address(jbDirectory));
   }
 }

@@ -141,6 +141,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
         contributionFloor: uint128((i + 1) * 10),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
         tokenUri: baseUris[i]
       });
     }
@@ -150,7 +152,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       name: name,
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
-      baseUri: tokenUri,
       contractUri: contractUri,
       owner: owner,
       contributionToken: mockContributionToken,

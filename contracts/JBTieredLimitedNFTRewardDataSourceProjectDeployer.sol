@@ -60,7 +60,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     projectId = controller.projects().count() + 1;
 
     // Deploy the data source contract.
-    address _dataSourceAddress = _deployDataSource(projectId, _deployTieredNFTRewardDataSourceData);
+    address _dataSourceAddress = deployDataSource(projectId, _deployTieredNFTRewardDataSourceData);
 
     // Set the data source address as the data source of the provided metadata.
     _launchProjectData.metadata.dataSource = _dataSourceAddress;
@@ -80,28 +80,28 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     @param _projectId The ID of the project for which the data source should apply.
     @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
 
-    @return The address of the newly deployed data source.
+    @return newDatasource The address of the newly deployed data source.
   */
-  function _deployDataSource(
+  function deployDataSource(
     uint256 _projectId,
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) internal returns (address) {
-    return
-      address(
-        new JBTieredLimitedNFTRewardDataSource(
-          _projectId,
-          _deployTieredNFTRewardDataSourceData.directory,
-          _deployTieredNFTRewardDataSourceData.name,
-          _deployTieredNFTRewardDataSourceData.symbol,
-          _deployTieredNFTRewardDataSourceData.tokenUriResolver,
-          _deployTieredNFTRewardDataSourceData.baseUri,
-          _deployTieredNFTRewardDataSourceData.contractUri,
-          _deployTieredNFTRewardDataSourceData.owner,
-          _deployTieredNFTRewardDataSourceData.contributionToken,
-          _deployTieredNFTRewardDataSourceData.tiers,
-          _deployTieredNFTRewardDataSourceData.shouldMintByDefault
-        )
-      );
+  ) public override returns (address newDatasource) {
+    newDatasource = address(
+      new JBTieredLimitedNFTRewardDataSource(
+        _projectId,
+        _deployTieredNFTRewardDataSourceData.directory,
+        _deployTieredNFTRewardDataSourceData.name,
+        _deployTieredNFTRewardDataSourceData.symbol,
+        _deployTieredNFTRewardDataSourceData.tokenUriResolver,
+        _deployTieredNFTRewardDataSourceData.contractUri,
+        _deployTieredNFTRewardDataSourceData.owner,
+        _deployTieredNFTRewardDataSourceData.contributionToken,
+        _deployTieredNFTRewardDataSourceData.tiers,
+        _deployTieredNFTRewardDataSourceData.shouldMintByDefault
+      )
+    );
+
+    emit DatasourceDeployed(_projectId, newDatasource);
   }
 
   /** 

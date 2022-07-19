@@ -17,9 +17,9 @@ import './interfaces/ITokenSupplyDetails.sol';
   Intended use is to incentivize initial project support by minting a limited number of NFTs to the first N contributors among various price tiers.
 */
 contract JBTieredLimitedNFTRewardDataSource is
-  JBNFTRewardDataSource,
   IJBTieredLimitedNFTRewardDataSource,
-  ITokenSupplyDetails
+  ITokenSupplyDetails,
+  JBNFTRewardDataSource
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -27,6 +27,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   error INSUFFICIENT_AMOUNT();
   error OUT();
+  error INSUFFICIENT_RESERVES();
   error INVALID_TIER();
   error INVALID_PRICE_SORT_ORDER();
   error NO_QUANTITY();
@@ -54,6 +55,19 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   bool public immutable override shouldMintByDefault;
 
+  /**
+    @notice
+    Just a kind reminder to our readers
+
+    @dev
+    Used in base58ToString
+  */
+  bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+  //*********************************************************************//
+  // --------------------- public stored properties -------------------- //
+  //*********************************************************************//
+
   /** 
     @notice
     The reward tiers. 
@@ -61,6 +75,23 @@ contract JBTieredLimitedNFTRewardDataSource is
     _tierId The incremental ID of the tier. Ordered by contribution floor, starting with 1.
   */
   mapping(uint256 => JBNFTRewardTier) public tiers;
+
+  /** 
+    @notice
+    Each account's balance within a specific tier.
+
+    _account The address to get a balance for. 
+    _tierId The ID of the tier to get a balance within.
+  */
+  mapping(address => mapping(uint256 => uint256)) public override tierBalanceOf;
+
+  /**
+    @notice 
+    The number of reserved tokens that have been minted for each tier. 
+
+    _tierId The ID of the tier to get a minted reserved token count for.
+   */
+  mapping(uint256 => uint256) public override numberOfReservesMintedFor;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -73,19 +104,21 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return _tiers All the tiers tiers.
   */
   function allTiers() external view override returns (JBNFTRewardTier[] memory _tiers) {
+    // Keep a reference to the number of tiers in stack.
+    uint256 _numberOfTiers = numberOfTiers;
+
     // Initialize an array with the appropriate length.
-    _tiers = new JBNFTRewardTier[](numberOfTiers);
+    _tiers = new JBNFTRewardTier[](_numberOfTiers);
 
     // Loop through each tier.
-    for (uint256 _i; _i < numberOfTiers; ) {
-      // Add the 1-indexed tier to the array.
-      _tiers[_i] = tiers[_i + 1];
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+      // Add the tier to the array.
+      _tiers[_i - 1] = tiers[_i];
+
       unchecked {
-        ++_i;
+        --_i;
       }
     }
-
-    return _tiers;
   }
 
   /** 
@@ -96,9 +129,12 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function totalSupply() external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier memory _tier;
+    JBNFTRewardTier storage _tier;
 
-    for (uint256 _i; _i < numberOfTiers; ) {
+    // Keep a reference to the number of tiers in stack.
+    uint256 _numberOfTiers = numberOfTiers;
+
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Set the tier being iterated on.
       _tier = tiers[_i];
 
@@ -106,7 +142,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       supply += _tier.initialQuantity - _tier.remainingQuantity;
 
       unchecked {
-        ++_i;
+        --_i;
       }
     }
   }
@@ -116,7 +152,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     The total number of tokens with the given ID.
     @return Either 1 if the token has been minted, or 0 if it hasnt.
   */
-  function tokenSupply(uint256 _tokenId) external view override returns (uint256) {
+  function tokenSupplyOf(uint256 _tokenId) external view override returns (uint256) {
     return ownerOf(_tokenId) != address(0) ? 1 : 0;
   }
 
@@ -126,7 +162,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _owner The address to check the balance of.
     @return The number of tokens owners by the owner.
   */
-  function totalOwnerBalance(address _owner) external view override returns (uint256) {
+  function totalOwnerBalanceOf(address _owner) external view override returns (uint256) {
     return balanceOf(_owner);
   }
 
@@ -137,13 +173,60 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tokenId The ID of the token to check the owner's balance of.
     @return Either 1 if the owner has the token, or 0 if it does not.
   */
-  function ownerTokenBalance(address _owner, uint256 _tokenId)
+  function ownerTokenBalanceOf(address _owner, uint256 _tokenId)
     external
     view
     override
     returns (uint256)
   {
     return ownerOf(_tokenId) == _owner ? 1 : 0;
+  }
+
+  /** 
+    @notice 
+    The total number of tokens owned by the given owner. 
+
+    @param _owner The address to check the balance of.
+
+    @return balance The number of tokens owners by the owner accross all tiers.
+  */
+  function balanceOf(address _owner) public view override returns (uint256 balance) {
+    // Keep a reference to the number of tiers in stack.
+    uint256 _numberOfTiers = numberOfTiers;
+
+    // Loop through all tiers.
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+      // Get a reference to the account's balance in this tier.
+      balance += tierBalanceOf[_owner][_i];
+
+      unchecked {
+        --_i;
+      }
+    }
+  }
+
+  /** 
+    @notice
+    The number of reserved tokens that can currently be minted within the tier. 
+
+    @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
+
+    @return The outstanding number of reserved tokens within the tier.
+  */
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256) {
+    return _numberOfReservedTokensOutstandingFor(_tierId, tiers[_tierId]);
+  }
+
+  /**
+    @notice
+    The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
+
+    @param _account The account to get voting units for.
+
+    @return units The voting units for the account.
+  */
+  function getVotingUnits(address _account) external view virtual override returns (uint256 units) {
+    return _getVotingUnits(_account);
   }
 
   //*********************************************************************//
@@ -179,13 +262,29 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
     // A token without an owner doesn't have a URI.
-    if (ownerOf(_tokenId) == address(0)) return '';
+    if (_owners[_tokenId] == address(0)) return '';
 
     // If a token URI resolver is provided, use it to resolve the token URI.
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
     // Return the token URI for the token's tier.
     return tiers[tierIdOfToken(_tokenId)].tokenUri;
+  }
+
+  /**
+    @notice
+    Indicates if this contract adheres to the specified interface.
+
+    @dev 
+    See {IERC165-supportsInterface}.
+
+    @param _interfaceId The ID of the interface to check for adherance to.
+  */
+  function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
+    return
+      _interfaceId == type(IJBTieredLimitedNFTRewardDataSource).interfaceId ||
+      _interfaceId == type(ITokenSupplyDetails).interfaceId ||
+      super.supportsInterface(_interfaceId);
   }
 
   //*********************************************************************//
@@ -198,7 +297,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-    @param _baseUri The token's base URI, to be used if a URI resolver is not provided. 
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
     @param _contributionToken The token that contributions are expected to be in terms of.
@@ -211,7 +309,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _name,
     string memory _symbol,
     IJBTokenUriResolver _tokenUriResolver,
-    string memory _baseUri,
     string memory _contractUri,
     address _owner,
     address _contributionToken,
@@ -224,7 +321,6 @@ contract JBTieredLimitedNFTRewardDataSource is
       _name,
       _symbol,
       _tokenUriResolver,
-      _baseUri,
       _contractUri,
       _owner
     )
@@ -276,40 +372,38 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _beneficiary The address that should receive to token.
     @param _tierId The ID of the tier to mint within.
-    @param _tokenNumber The token number to use for the mint, which cannot be a token number within the tier's initial quantity.
+    @param _count The number of reserved tokens to mint. 
   */
-  function mint(
+  function mintReservesFor(
     address _beneficiary,
     uint256 _tierId,
-    uint256 _tokenNumber
-  ) external override onlyOwner returns (uint256 tokenId) {
-    // Make sure the token number is greater than the tier's initial quantity.
-    if (_tokenNumber <= tiers[_tierId].initialQuantity) revert NOT_AVAILABLE();
+    uint256 _count
+  ) external override onlyOwner {
+    // Get a reference to the tier.
+    JBNFTRewardTier storage _tier = tiers[_tierId];
 
-    // Keep a reference to the token ID.
-    tokenId = _generateTokenId(_tierId, _tokenNumber);
+    // Get a reference to the number of reserved tokens mintable for the tier.
+    uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
+      _tierId,
+      _tier
+    );
 
-    // Mint it.
-    _mint(_beneficiary, tokenId);
+    // Can't mint more reserves than expected.
+    if (_count > _numberOfReservedTokensOutstanding) revert INSUFFICIENT_RESERVES();
 
-    emit Mint(tokenId, _tierId, _beneficiary, 0, 1, msg.sender);
-  }
+    // Increment the number of reserved tokens minted.
+    numberOfReservesMintedFor[_tierId] += _count;
 
-  /** 
-    @notice
-    Burns a token ID from an account.
+    for (uint256 _i; _i < _count; ) {
+      // Mint the tokens.
+      uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
 
-    @dev
-    Only a project owner can burn tokens.
+      emit MintReservedToken(_tokenId, _tierId, _beneficiary, msg.sender);
 
-    @param _owner The address that owns the token being burned.
-    @param _tokenId The ID of the token to burn.
-  */
-  function burn(address _owner, uint256 _tokenId) external override onlyOwner {
-    // Burn the token.
-    _burn(_tokenId);
-
-    emit Burn(_tokenId, _owner, msg.sender);
+      unchecked {
+        ++_i;
+      }
+    }
   }
 
   //*********************************************************************//
@@ -363,7 +457,10 @@ contract JBTieredLimitedNFTRewardDataSource is
       _tier = tiers[_i];
 
       // Mint if the contribution value is at least as much as the floor, there's sufficient supply.
-      if (_tier.contributionFloor <= _amount && _tier.remainingQuantity != 0) {
+      if (
+        _tier.contributionFloor <= _amount &&
+        (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_i, _tier)) != 0
+      ) {
         // Mint the tokens.
         uint256 _tokenId = _mintForTier(_i, _tier, _beneficiary);
 
@@ -406,30 +503,29 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Get a reference to the tier being iterated on.
       _tierId = _mintTiers[_i];
 
-      // If no tier specified, accept the funds without minting anything.
-      if (_tierId == 0) {
-        unchecked {
-          ++_i;
-        }
-        continue;
+      // If a tier specified, accept the funds and mint.
+      if (_tierId != 0) {
+        // Keep a reference to the tier being iterated on.
+        _tier = tiers[_tierId];
+
+        // Make sure the provided tier exists.
+        if (_tier.initialQuantity == 0) revert INVALID_TIER();
+
+        // Make sure the amount meets the tier's contribution floor.
+        if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
+
+        // Make sure there are enough units available.
+        if (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_tierId, _tier) == 0)
+          revert OUT();
+
+        // Mint the tokens.
+        uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
+
+        // Decrement the remaining value.
+        _remainingValue = _remainingValue - _tier.contributionFloor;
+
+        emit Mint(_tokenId, _tierId, _beneficiary, _amount, _mintsLength, msg.sender);
       }
-
-      // Keep a reference to the tier being iterated on.
-      _tier = tiers[_tierId];
-
-      // Make sure the provided tier exists.
-      if (_tier.initialQuantity == 0) revert INVALID_TIER();
-
-      // Make sure the amount meets the tier's contribution floor.
-      if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
-
-      // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
-
-      // Decrement the remaining value.
-      _remainingValue = _remainingValue - _tier.contributionFloor;
-
-      emit Mint(_tokenId, _tierId, _beneficiary, _amount, _mintsLength, msg.sender);
 
       unchecked {
         ++_i;
@@ -452,16 +548,56 @@ contract JBTieredLimitedNFTRewardDataSource is
     JBNFTRewardTier storage _tier,
     address _beneficiary
   ) internal returns (uint256 tokenId) {
-    // Make sure there are enough units available.
-    if (_tier.remainingQuantity == 0) revert OUT();
-
     unchecked {
       // Keep a reference to the token ID.
       tokenId = _generateTokenId(_tierId, _tier.initialQuantity - --_tier.remainingQuantity);
     }
 
+    // Increment the tier balance for the beneficiary.
+    ++tierBalanceOf[_beneficiary][_tierId];
+
     // Mint the token.
     _mint(_beneficiary, tokenId);
+  }
+
+  /** 
+    @notice
+    The number of reserved tokens that can currently be minted within the tier. 
+
+    @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
+    @param _tier The tier structure to get a number of reserved tokens outstanding.
+
+    @return numberReservedTokensOutstanding The outstanding number of reserved tokens within the tier.
+  */
+  function _numberOfReservedTokensOutstandingFor(uint256 _tierId, JBNFTRewardTier memory _tier)
+    internal
+    view
+    returns (uint256)
+  {
+    // Invalid tier or no reserved rate?
+    if (_tier.initialQuantity == 0 || _tier.reservedRate == 0) return 0;
+
+    // No token minted yet? Round up to 1
+    if (_tier.initialQuantity == _tier.remainingQuantity) return 1;
+
+    // The number of reserved token of the tier already minted
+    uint256 reserveTokenMinted = numberOfReservesMintedFor[_tierId];
+
+    // Get a reference to the number of tokens already minted in the tier, not counting reserves.
+    uint256 _numberOfNonReservesMinted = _tier.initialQuantity -
+      _tier.remainingQuantity -
+      reserveTokenMinted;
+
+    // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
+    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _tier.reservedRate;
+
+    // Round up.
+    if (
+      _numberOfNonReservesMinted - uint256(_tier.reservedRate) * _numberReservedTokensMintable > 0
+    ) ++_numberReservedTokensMintable;
+
+    // Return the difference between the amount mintable and the amount already minted.
+    return _numberReservedTokensMintable - reserveTokenMinted;
   }
 
   /** 
@@ -485,9 +621,36 @@ contract JBTieredLimitedNFTRewardDataSource is
     tokenId |= _tokenNumber << 8;
   }
 
-  // From https://ethereum.stackexchange.com/questions/51229/how-to-convert-bytes-to-uint-in-solidity
-  function _bytesToUint(bytes memory _bytes) internal pure returns (uint256 number) {
-    for (uint256 _i; _i < _bytes.length; _i++)
-      number = number + uint256(uint8(_bytes[_i])) * (2**(8 * (_bytes.length - (_i + 1))));
+  /**
+    @notice
+    The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
+
+    @param _account The account to get voting units for.
+
+    @return units The voting units for the account.
+  */
+  function _getVotingUnits(address _account)
+    internal
+    view
+    virtual
+    override
+    returns (uint256 units)
+  {
+    // Keep a reference to the number of tiers.
+    uint256 _numberOfTiers = numberOfTiers;
+
+    // Loop through all tiers.
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+      // Get a reference to the account's balance in this tier.
+      uint256 _balance = tierBalanceOf[_account][_i];
+
+      if (_balance != 0)
+        // Add the tier's voting units.
+        units += _balance * tiers[_i].votingUnits;
+
+      unchecked {
+        --_i;
+      }
+    }
   }
 }

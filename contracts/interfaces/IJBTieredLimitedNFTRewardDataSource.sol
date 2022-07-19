@@ -13,7 +13,12 @@ interface IJBTieredLimitedNFTRewardDataSource {
     address caller
   );
 
-  event Burn(uint256 indexed tokenId, address owner, address caller);
+  event MintReservedToken(
+    uint256 indexed tokenId,
+    uint256 indexed tierId,
+    address indexed beneficiary,
+    address caller
+  );
 
   function contributionToken() external view returns (address);
 
@@ -21,15 +26,19 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function shouldMintByDefault() external view returns (bool);
 
+  function tierBalanceOf(address _account, uint256 _tier) external view returns (uint256);
+
+  function numberOfReservesMintedFor(uint256 _tierId) external view returns (uint256);
+
+  function getVotingUnits(address _account) external view returns (uint256 units);
+
   function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
 
   function allTiers() external view returns (JBNFTRewardTier[] memory tiers);
 
-  function mint(
+  function mintReservesFor(
     address _beneficiary,
     uint256 _tierId,
-    uint256 _tokenNumber
-  ) external returns (uint256 tokenId);
-
-  function burn(address _owner, uint256 _tokenId) external;
+    uint256 _count
+  ) external;
 }

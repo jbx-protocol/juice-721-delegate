@@ -15,8 +15,6 @@ interface IJBNFTRewardDataSource {
 
   function directory() external view returns (IJBDirectory);
 
-  function baseUri() external view returns (string memory);
-
   function contractUri() external view returns (string memory);
 
   function tokenUriResolver() external view returns (IJBTokenUriResolver);
@@ -24,6 +22,4 @@ interface IJBNFTRewardDataSource {
   function setContractUri(string calldata _contractMetadataUri) external;
 
   function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolverAddress) external;
-
-  function setBaseUri(string calldata _baseUri) external;
 }
