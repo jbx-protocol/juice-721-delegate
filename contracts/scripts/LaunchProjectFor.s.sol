@@ -6,7 +6,7 @@ import 'forge-std/Script.sol';
 // Change values in setUp() and createData()
 contract RinkebyLaunchProjectFor is Script {
   IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer =
-    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(0xaB28b6ee8D23EB47F6FC2d55ec023572E15eB6e6);
+    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(0xaF5b8838bD2a8D16Bf7f15478604fe68b69De9F4);
   IJBController jbController;
   IJBDirectory jbDirectory;
   IJBPaymentTerminal[] _terminals;
@@ -113,16 +113,26 @@ contract RinkebyLaunchProjectFor is Script {
     );
 
     // NFT Reward parameters
-    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](10);
+    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](2);
 
-    // for (uint256 i; i < 10; i++) {
-    //   tiers[i] = JBNFTRewardTier({
-    //     contributionFloor: uint128((i + 1) * 10),
-    //     idCeiling: uint48((i + 1) * 10),
-    //     remainingAllowance: uint40(10),
-    //     initialAllowance: uint40(10)
-    //   });
-    // }
+    tiers[0] = JBNFTRewardTier({
+        contributionFloor: 0.001 ether,
+        remainingQuantity: 100,
+        initialQuantity: 100,
+        votingUnits: 10,
+        reservedRate: 1,
+        tokenUri: 'poor'
+      });
+
+          tiers[1] = JBNFTRewardTier({
+        contributionFloor: 0.01 ether,
+        remainingQuantity: 100,
+        initialQuantity: 100,
+        votingUnits: 100,
+        reservedRate: 1,
+        tokenUri: 'rich'
+      });
+
 
     NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
       directory: jbDirectory,
