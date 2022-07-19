@@ -10,6 +10,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   address beneficiary = address(69420);
   address owner = address(42069);
   address mockJBDirectory = address(100);
+  address mockJBProjects = address(101);
   address mockTokenUriResolver = address(102);
   address mockContributionToken = address(103);
   address mockTerminalAddress = address(104);
@@ -91,7 +92,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
   }
 
@@ -121,7 +123,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     for (uint256 i; i < numberOfTiers; i++) {
@@ -169,7 +172,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     for (uint256 i; i < numberOfTiers; i++) {
@@ -218,7 +222,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     for (uint256 i; i < numberOfTiers; i++) {
@@ -262,7 +267,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     for (uint256 i; i < 10; i++) {
@@ -318,7 +324,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false,
+      IJBProjects(mockJBProjects) // _shouldMintByDefault
     );
 
     for (uint256 i; i < 10; i++) {
@@ -403,7 +410,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     for (uint256 i; i < numberOfTiers; i++) {
@@ -446,7 +454,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     // Mock the URI resolver call
@@ -491,7 +500,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         owner,
         mockContributionToken,
         _tiers,
-        false
+        false,
+        IJBProjects(mockJBProjects)
       );
 
     uint256 tokenId = _generateTokenId(tier, 1);
@@ -527,7 +537,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     // Check: delegate has correct parameters?
@@ -581,7 +592,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
   }
 
@@ -620,7 +632,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault,
+      IJBProjects(mockJBProjects)
     );
   }
 
@@ -663,7 +676,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
     );
 
     for (uint256 i; i < nbTiers; i++) {
@@ -699,7 +713,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }
 
       vm.prank(owner);
-      _delegate.mintReservesFor(beneficiary, tier, mintable);
+      _delegate.mintReservesFor(tier, mintable);
 
       // Check balance
       assertEq(_delegate.balanceOf(beneficiary), mintable * tier);
@@ -707,13 +721,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft(
-   uint16 initialQuantity,
-   uint16 totalMinted,
-   uint16 reservedMinted,
-   uint16 reservedRate
-  )
-    public
-  {
+    uint16 initialQuantity,
+    uint16 totalMinted,
+    uint16 reservedMinted,
+    uint16 reservedRate
+  ) public {
     vm.assume(reservedRate > 0 && reservedRate <= 100);
     vm.assume(initialQuantity >= totalMinted);
     vm.assume(reservedMinted <= totalMinted);
@@ -746,7 +758,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       mockContributionToken,
       _tiers,
-      false // _shouldMintByDefault
+      false, // _shouldMintByDefault,
+      IJBProjects(mockJBProjects)
     );
 
     for (uint256 i; i < 10; i++) {
@@ -773,7 +786,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       vm.expectRevert(abi.encodeWithSignature('INSUFFICIENT_RESERVES()'));
       vm.prank(owner);
-      _delegate.mintReservesFor(holder, i, amount);
+      _delegate.mintReservesFor(i, amount);
     }
   }
 
@@ -965,7 +978,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     address _owner,
     address _contributionToken,
     JBNFTRewardTier[] memory __tiers,
-    bool _shouldMintByDefault
+    bool _shouldMintByDefault,
+    IJBProjects _projects
   )
     JBTieredLimitedNFTRewardDataSource(
       _projectId,
@@ -977,7 +991,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _owner,
       _contributionToken,
       __tiers,
-      _shouldMintByDefault
+      _shouldMintByDefault,
+      _projects
     )
   {}
 

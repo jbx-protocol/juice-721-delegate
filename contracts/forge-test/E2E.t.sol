@@ -43,7 +43,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   function setUp() public override {
     super.setUp();
 
-    deployer = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(IJBController(_jbController));
+    deployer = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(
+      IJBController(_jbController),
+      IJBOperatorStore(_jbOperatorStore)
+    );
   }
 
   function testDeployAndLaunchProject() external {

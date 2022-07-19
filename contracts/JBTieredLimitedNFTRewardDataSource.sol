@@ -55,6 +55,12 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   bool public immutable override shouldMintByDefault;
 
+  /** 
+    @notice
+    The controller with which new projects should be deployed. 
+  */
+  IJBProjects public immutable override projects;
+
   /**
     @notice
     Just a kind reminder to our readers
@@ -213,7 +219,12 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return The outstanding number of reserved tokens within the tier.
   */
-  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256) {
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId)
+    external
+    view
+    override
+    returns (uint256)
+  {
     return _numberOfReservedTokensOutstandingFor(_tierId, tiers[_tierId]);
   }
 
@@ -313,7 +324,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     address _owner,
     address _contributionToken,
     JBNFTRewardTier[] memory _tiers,
-    bool _shouldMintByDefault
+    bool _shouldMintByDefault,
+    IJBProjects _projects
   )
     JBNFTRewardDataSource(
       _projectId,
@@ -327,6 +339,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   {
     contributionToken = _contributionToken;
     shouldMintByDefault = _shouldMintByDefault;
+    projects = _projects;
 
     // Get a reference to the number of tiers.
     uint256 _numberOfTiers = _tiers.length;
@@ -370,15 +383,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     @dev
     Only a project owner can mint tokens.
 
-    @param _beneficiary The address that should receive to token.
     @param _tierId The ID of the tier to mint within.
     @param _count The number of reserved tokens to mint. 
   */
-  function mintReservesFor(
-    address _beneficiary,
-    uint256 _tierId,
-    uint256 _count
-  ) external override onlyOwner {
+  function mintReservesFor(uint256 _tierId, uint256 _count) external override {
     // Get a reference to the tier.
     JBNFTRewardTier storage _tier = tiers[_tierId];
 
@@ -391,14 +399,17 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Can't mint more reserves than expected.
     if (_count > _numberOfReservedTokensOutstanding) revert INSUFFICIENT_RESERVES();
 
+    // Get a reference to the project's owner.
+    address _projectOwner = projects.ownerOf(projectId);
+
     // Increment the number of reserved tokens minted.
     numberOfReservesMintedFor[_tierId] += _count;
 
     for (uint256 _i; _i < _count; ) {
       // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
+      uint256 _tokenId = _mintForTier(_tierId, _tier, _projectOwner);
 
-      emit MintReservedToken(_tokenId, _tierId, _beneficiary, msg.sender);
+      emit MintReservedToken(_tokenId, _tierId, _projectOwner, msg.sender);
 
       unchecked {
         ++_i;

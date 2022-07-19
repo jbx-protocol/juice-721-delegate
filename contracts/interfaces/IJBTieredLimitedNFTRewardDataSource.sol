@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
+import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
 import './../structs/JBNFTRewardTier.sol';
 
 interface IJBTieredLimitedNFTRewardDataSource {
@@ -26,6 +27,8 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function shouldMintByDefault() external view returns (bool);
 
+  function projects() external view returns (IJBProjects);
+
   function tierBalanceOf(address _account, uint256 _tier) external view returns (uint256);
 
   function numberOfReservesMintedFor(uint256 _tierId) external view returns (uint256);
@@ -36,9 +39,7 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function allTiers() external view returns (JBNFTRewardTier[] memory tiers);
 
-  function mintReservesFor(
-    address _beneficiary,
-    uint256 _tierId,
-    uint256 _count
-  ) external;
+  function mintReservesFor(uint256 _tierId, uint256 _count) external;
+
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256);
 }

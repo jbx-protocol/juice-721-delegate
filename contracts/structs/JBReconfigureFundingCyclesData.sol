@@ -2,14 +2,12 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleMetadata.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBGroupedSplits.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBFundAccessConstraints.sol';
 
 /**
-  @member projectMetadata Metadata to associate with the project within a particular domain. This can be updated any time by the owner of the project.
   @member data Data that defines the project's first funding cycle. These properties will remain fixed for the duration of the funding cycle.
   @member metadata Metadata specifying the controller specific params that a funding cycle can have. These properties will remain fixed for the duration of the funding cycle.
   @member mustStartAtOrAfter The time before which the configured funding cycle cannot start.
@@ -18,13 +16,11 @@ import '@jbx-protocol/contracts-v2/contracts/structs/JBFundAccessConstraints.sol
   @member terminals Payment terminals to add for the project.
   @member memo A memo to pass along to the emitted event.
 */
-struct JBLaunchProjectData {
-  JBProjectMetadata projectMetadata;
+struct JBReconfigureFundingCyclesData {
   JBFundingCycleData data;
   JBFundingCycleMetadata metadata;
   uint256 mustStartAtOrAfter;
   JBGroupedSplits[] groupedSplits;
   JBFundAccessConstraints[] fundAccessConstraints;
-  IJBPaymentTerminal[] terminals;
   string memo;
 }
