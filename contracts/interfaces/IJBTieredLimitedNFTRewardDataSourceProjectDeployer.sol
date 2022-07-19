@@ -11,12 +11,14 @@ interface IJBTieredLimitedNFTRewardDataSourceProjectDeployer {
 
   function controller() external view returns (IJBController);
 
+  // deploy datasource and launch new project with fc
   function launchProjectFor(
     address _owner,
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData,
     JBLaunchProjectData memory _launchProjectData
   ) external returns (uint256 projectId);
 
+  // deploy standalone datasource
   function deployDataSource(
     uint256 _projectId,
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData

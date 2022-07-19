@@ -15,7 +15,7 @@ contract DeployMainnet is Script {
 }
 
 contract DeployRinkeby is Script {
-  IJBController jbController = IJBController(0xb51e584Ee10460E9e5ea29Deab67cd347B0cA2f3);
+  IJBController jbController = IJBController(0xd96ecf0E07eB197587Ad4A897933f78A00B21c9a);
 
   function setUp() public {}
 

@@ -3,10 +3,13 @@ pragma solidity 0.8.6;
 import '../interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
 import 'forge-std/Script.sol';
 
+// Latest NFTProjectDeployer
+address constant LATEST = 0x1Db110f9FD09820c60CaFA89CB736910306bbec9;
+
 // Change values in setUp() and createData()
 contract RinkebyLaunchProjectFor is Script {
   IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer =
-    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(0xaF5b8838bD2a8D16Bf7f15478604fe68b69De9F4);
+    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(LATEST);
   IJBController jbController;
   IJBDirectory jbDirectory;
   IJBPaymentTerminal[] _terminals;
@@ -23,10 +26,10 @@ contract RinkebyLaunchProjectFor is Script {
     _projectOwner = msg.sender; // Change me
     jbController = deployer.controller();
     jbDirectory = jbController.directory();
-    name = 'My NFT Collection'; // Change me
-    symbol = 'CANSMASHING';
-    baseUri = 'ipfs://baseUri';
-    contractUri = 'ipfs://royaltiezz';
+    name = ''; // Change me
+    symbol = '';
+    baseUri = '';
+    contractUri = '';
   }
 
   function run() external {
@@ -55,11 +58,11 @@ contract RinkebyLaunchProjectFor is Script {
   {
     // Project configuration
     JBProjectMetadata memory _projectMetadata = JBProjectMetadata({
-      content: 'myIPFSHash',
-      domain: 1
+      content: 'QmdkypzHEZTPZUWe6FmfHLD6iSu9DebRcssFFM42cv5q8i',
+      domain: 0
     });
     JBFundingCycleData memory _data = JBFundingCycleData({
-      duration: 14,
+      duration: 600,
       weight: 1000 * 10**18,
       discountRate: 450000000,
       ballot: IJBFundingCycleBallot(address(0))
@@ -99,7 +102,7 @@ contract RinkebyLaunchProjectFor is Script {
     JBGroupedSplits[] memory _groupedSplits = new JBGroupedSplits[](1);
     _groupedSplits[0] = JBGroupedSplits({group: 1, splits: _splits});
 
-    _terminals.push(IJBPaymentTerminal(0x53A92F883903a4C80bC47Cfed788c1a477dadc5c));
+    _terminals.push(IJBPaymentTerminal(0x765A8b9a23F58Db6c8849315C04ACf32b2D55cF8));
 
     _fundAccessConstraints.push(
       JBFundAccessConstraints({
@@ -113,26 +116,18 @@ contract RinkebyLaunchProjectFor is Script {
     );
 
     // NFT Reward parameters
-    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](2);
+    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](3);
 
-    tiers[0] = JBNFTRewardTier({
-        contributionFloor: 0.001 ether,
+    for (uint256 i; i < 3; i++) {
+      tiers[i] = JBNFTRewardTier({
+        contributionFloor: uint128(i * 0.001 ether),
         remainingQuantity: 100,
         initialQuantity: 100,
-        votingUnits: 10,
+        votingUnits: uint16(10*i),
         reservedRate: 1,
-        tokenUri: 'poor'
+        tokenUri: 'abc'
       });
-
-          tiers[1] = JBNFTRewardTier({
-        contributionFloor: 0.01 ether,
-        remainingQuantity: 100,
-        initialQuantity: 100,
-        votingUnits: 100,
-        reservedRate: 1,
-        tokenUri: 'rich'
-      });
-
+    }
 
     NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
       directory: jbDirectory,
@@ -143,7 +138,7 @@ contract RinkebyLaunchProjectFor is Script {
       owner: _projectOwner,
       contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
       tiers: tiers,
-      shouldMintByDefault: false
+      shouldMintByDefault: true
     });
 
     launchProjectData = JBLaunchProjectData({
@@ -161,7 +156,7 @@ contract RinkebyLaunchProjectFor is Script {
 
 contract RinkebyDeployDatasource is Script {
   IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer =
-  IJBTieredLimitedNFTRewardDataSourceProjectDeployer(0x70ae174D7702365110E04d124cde634eE43EBe21);
+  IJBTieredLimitedNFTRewardDataSourceProjectDeployer(LATEST);
   IJBController jbController;
   IJBDirectory jbDirectory;
   IJBPaymentTerminal[] _terminals;
