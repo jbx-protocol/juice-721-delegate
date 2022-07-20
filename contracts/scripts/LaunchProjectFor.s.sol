@@ -25,7 +25,7 @@ contract RinkebyLaunchProjectFor is Script {
     jbDirectory = jbController.directory();
     name = 'My NFT Collection'; // Change me
     symbol = 'CANSMASHING';
-    baseUri = 'ipfs://baseUri';
+    baseUri = 'jbx.mypinata.cloud/ipfs/';
     contractUri = 'ipfs://royaltiezz';
   }
 
@@ -121,6 +121,7 @@ contract RinkebyLaunchProjectFor is Script {
     //     idCeiling: uint48((i + 1) * 10),
     //     remainingAllowance: uint40(10),
     //     initialAllowance: uint40(10)
+    // QmURKTUr8yEM3qiPovWNRPypNwa3BppH4NknDJQV3GBhz3
     //   });
     // }
 
@@ -130,8 +131,8 @@ contract RinkebyLaunchProjectFor is Script {
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
+      baseUri: baseUri,
       owner: _projectOwner,
-      contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
       tiers: tiers,
       shouldMintByDefault: false
     });
@@ -160,21 +161,8 @@ contract RinkebyDeployDatasource is Script {
   string name;
   string symbol;
   string contractUri;
+  string baseUri;
   address _projectOwner;
-
-  string[] tokenUris = [
-    'http://www.null.com/1',
-    'http://www.null.com/2',
-    'http://www.null.com/3',
-    'http://www.null.com/4',
-    'http://www.null.com/5',
-    'http://www.null.com/6',
-    'http://www.null.com/7',
-    'http://www.null.com/8',
-    'http://www.null.com/9',
-    'http://www.null.com/10'
-  ];
-
 
   function setUp() public {
     jbController = deployer.controller();
@@ -182,6 +170,7 @@ contract RinkebyDeployDatasource is Script {
     name = '';
     symbol = '';
     contractUri = '';
+    baseUri = '';
     _projectOwner = msg.sender;
   }
 
@@ -206,8 +195,8 @@ contract RinkebyDeployDatasource is Script {
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
+      baseUri: baseUri,
       owner: _projectOwner,
-      contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
       tiers: tiers,
       shouldMintByDefault: false
     });
