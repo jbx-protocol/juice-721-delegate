@@ -2,6 +2,7 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
+import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
@@ -376,8 +377,8 @@ contract JBTieredLimitedNFTRewardDataSource is
       if (_i != 0 && _tier.contributionFloor < _tiers[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
-      // Set the initial quantity to be the remaining quantity.
-      _tier.initialQuantity = _tier.remainingQuantity;
+      // Set the remaining quantity to be the initial quantity.
+      _tier.remainingQuantity = _tier.initialQuantity;
 
       // Add the tier with the iterative ID.
       tiers[_i + 1] = _tier;
@@ -608,23 +609,27 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (_tier.initialQuantity == _tier.remainingQuantity) return 1;
 
     // The number of reserved token of the tier already minted
-    uint256 reserveTokenMinted = numberOfReservesMintedFor[_tierId];
+    uint256 reserveTokensMinted = numberOfReservesMintedFor[_tierId];
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
     uint256 _numberOfNonReservesMinted = _tier.initialQuantity -
       _tier.remainingQuantity -
-      reserveTokenMinted;
+      reserveTokensMinted;
+
+    // Store the numerator common to the next two calculations.
+    uint256 _numerator = (_numberOfNonReservesMinted * uint256(_tier.reservedRate));
 
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
-    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _tier.reservedRate;
+    uint256 _numberReservedTokensMintable = _numerator / JBConstants.MAX_RESERVED_RATE;
 
-    // Round up.
+    // Round up if no reserved tokens have been minted yet.
     if (
-      _numberOfNonReservesMinted - uint256(_tier.reservedRate) * _numberReservedTokensMintable > 0
+      reserveTokensMinted == 0 &&
+      _numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0
     ) ++_numberReservedTokensMintable;
 
     // Return the difference between the amount mintable and the amount already minted.
-    return _numberReservedTokensMintable - reserveTokenMinted;
+    return _numberReservedTokensMintable - reserveTokensMinted;
   }
 
   /** 
