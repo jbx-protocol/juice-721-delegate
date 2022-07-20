@@ -15,5 +15,5 @@ struct JBNFTRewardTier {
   uint48 initialQuantity;
   uint16 votingUnits;
   uint16 reservedRate;
-  string tokenUri;
+  bytes32 tokenUri;
 }

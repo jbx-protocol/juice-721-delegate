@@ -18,21 +18,24 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string baseUri = 'http://www.null.com';
+  string baseUri = 'http://www.null.com/';
   string contractUri = 'ipfs://null';
 
-  string[] tokenUris = [
-    'http://www.null.com/1',
-    'http://www.null.com/2',
-    'http://www.null.com/3',
-    'http://www.null.com/4',
-    'http://www.null.com/5',
-    'http://www.null.com/6',
-    'http://www.null.com/7',
-    'http://www.null.com/8',
-    'http://www.null.com/9',
-    'http://www.null.com/10'
+  //QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
+  bytes32[] tokenUris = [
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
   ];
+
+  // The theoretical tokenUri is therefore http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
 
   JBNFTRewardTier[] tiers;
 
@@ -467,14 +470,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.tokenURI(tokenId), 'resolverURI');
   }
 
-  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(
-    uint80 tier,
-    address holder
-  ) external {
+  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(address holder)
+    external
+  {
     vm.assume(holder != address(0));
-    vm.assume(tier > 0 && tier < 30);
 
-    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](30);
+    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
 
     for (uint256 i; i < _tiers.length; i++) {
       _tiers[i] = JBNFTRewardTier({
@@ -483,7 +484,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
-        tokenUri: uint2str(i + 1)
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -501,11 +502,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBProjects(mockJBProjects)
       );
 
-    uint256 tokenId = _generateTokenId(tier, 1);
+    for (uint256 i = 1; i <= _tiers.length; i++) {
+      uint256 tokenId = _generateTokenId(i, 1);
 
-    _delegate.ForTest_setOwnerOf(tokenId, holder);
+      _delegate.ForTest_setOwnerOf(tokenId, holder);
 
-    assertEq(_delegate.tokenURI(tokenId), uint2str(tier));
+      assertEq(
+        _delegate.tokenURI(tokenId),
+        'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
+      );
+    }
   }
 
   function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {

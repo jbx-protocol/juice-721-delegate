@@ -43,7 +43,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     The token to expect contributions to be made in.
   */
-  address public immutable override contributionToken = JBTokens.ETH;
+  address public immutable override contributionToken;
 
   /** 
     @notice
@@ -294,7 +294,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
     // Return the token URI for the token's tier.
-    return tiers[tierIdOfToken(_tokenId)].tokenUri;
+    // return tiers[tierIdOfToken(_tokenId)].tokenUri;
+    return _decodeIpfs(tiers[tierIdOfToken(_tokenId)].tokenUri);
   }
 
   /**
@@ -351,6 +352,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       _owner
     )
   {
+    contributionToken = JBTokens.ETH;
     shouldMintByDefault = _shouldMintByDefault;
     projects = _projects;
     baseUri = _baseUri;
@@ -677,5 +679,69 @@ contract JBTieredLimitedNFTRewardDataSource is
         --_i;
       }
     }
+  }
+
+  function _decodeIpfs(bytes32 hexString) internal view returns (string memory) {
+    // Concatenate the hex string with the fixed IPFS hash part (0x12 and 0x20)
+    bytes memory completeHexString = abi.encodePacked(bytes2(0x1220), hexString);
+
+    // Convert the hex string to an hash
+    string memory IPFSHash = _toBase58(completeHexString);
+
+    // Concatenate with the base URI
+    return string(abi.encodePacked(baseUri, IPFSHash));
+  }
+
+  /**
+    @notice
+    Convert an hex string to base58
+
+    @notice 
+    Written by Martin Ludfall - Licence: MIT
+  */
+  function _toBase58(bytes memory source) internal pure returns (string memory) {
+    if (source.length == 0) return new string(0);
+    uint8[] memory digits = new uint8[](46); // hash size with the prefix
+    digits[0] = 0;
+    uint8 digitlength = 1;
+    for (uint256 i = 0; i < source.length; ++i) {
+      uint256 carry = uint8(source[i]);
+      for (uint256 j = 0; j < digitlength; ++j) {
+        carry += uint256(digits[j]) * 256;
+        digits[j] = uint8(carry % 58);
+        carry = carry / 58;
+      }
+
+      while (carry > 0) {
+        digits[digitlength] = uint8(carry % 58);
+        digitlength++;
+        carry = carry / 58;
+      }
+    }
+    return string(_toAlphabet(_reverse(_truncate(digits, digitlength))));
+  }
+
+  function _truncate(uint8[] memory array, uint8 length) internal pure returns (uint8[] memory) {
+    uint8[] memory output = new uint8[](length);
+    for (uint256 i = 0; i < length; i++) {
+      output[i] = array[i];
+    }
+    return output;
+  }
+
+  function _reverse(uint8[] memory input) internal pure returns (uint8[] memory) {
+    uint8[] memory output = new uint8[](input.length);
+    for (uint256 i = 0; i < input.length; i++) {
+      output[i] = input[input.length - 1 - i];
+    }
+    return output;
+  }
+
+  function _toAlphabet(uint8[] memory indices) internal pure returns (bytes memory) {
+    bytes memory output = new bytes(indices.length);
+    for (uint256 i = 0; i < indices.length; i++) {
+      output[i] = _ALPHABET[indices[i]];
+    }
+    return output;
   }
 }
