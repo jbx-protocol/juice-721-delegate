@@ -61,15 +61,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   IJBProjects public immutable override projects;
 
-  /**
-    @notice
-    Just a kind reminder to our readers
-
-    @dev
-    Used in base58ToString
-  */
-  bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
