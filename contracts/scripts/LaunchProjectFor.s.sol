@@ -30,6 +30,7 @@ contract RinkebyLaunchProjectFor is Script {
     symbol = '';
     baseUri = '';
     contractUri = '';
+
   }
 
   function run() external {
@@ -125,7 +126,7 @@ contract RinkebyLaunchProjectFor is Script {
         initialQuantity: 100,
         votingUnits: uint16(10*i),
         reservedRate: 1,
-        tokenUri: 'https://gateway.pinata.cloud/ipfs/Qma5atSTeoKJkcXe2R7gdmcvPvLJJkh2jd4cDZeM1wnFgK'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -135,8 +136,8 @@ contract RinkebyLaunchProjectFor is Script {
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
+      baseUri: baseUri,
       owner: _projectOwner,
-      contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
       tiers: tiers,
       shouldMintByDefault: true
     });
@@ -165,6 +166,7 @@ contract RinkebyDeployDatasource is Script {
   string name;
   string symbol;
   string contractUri;
+  string baseUri;
   address _projectOwner;
 
   function setUp() public {
@@ -173,6 +175,7 @@ contract RinkebyDeployDatasource is Script {
     name = '';
     symbol = '';
     contractUri = '';
+    baseUri = '';
     _projectOwner = msg.sender;
   }
 
@@ -188,7 +191,7 @@ contract RinkebyDeployDatasource is Script {
         initialQuantity: 100,
         votingUnits: uint16(10*i),
         reservedRate: 1,
-        tokenUri: 'https://gateway.pinata.cloud/ipfs/Qma5atSTeoKJkcXe2R7gdmcvPvLJJkh2jd4cDZeM1wnFgK'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -198,8 +201,8 @@ contract RinkebyDeployDatasource is Script {
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
+      baseUri: baseUri,
       owner: _projectOwner,
-      contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
       tiers: tiers,
       shouldMintByDefault: false
     });

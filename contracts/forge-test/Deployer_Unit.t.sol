@@ -14,31 +14,32 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
   address owner = address(42069);
 
   address mockJBController = address(100);
+
   address mockJBOperatorStore = address(101);
   address mockJBDirectory = address(102);
   address mockTokenUriResolver = address(103);
-  address mockContributionToken = address(104);
-  address mockTerminalAddress = address(105);
-  address mockJBProjects = address(106);
+  address mockTerminalAddress = address(104);
+  address mockJBProjects = address(105);
 
   uint256 projectId = 69;
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string tokenUri = 'http://www.null.com';
+  string baseUri = 'http://www.null.com/';
   string contractUri = 'ipfs://null';
 
-  string[] baseUris = [
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0'
+  //QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
+  bytes32[] tokenUris = [
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
   ];
 
   string fcMemo = 'meemoo';
@@ -49,7 +50,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.label(owner, 'owner');
     vm.label(mockJBDirectory, 'mockJBDirectory');
     vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
-    vm.label(mockContributionToken, 'mockContributionToken');
     vm.label(mockTerminalAddress, 'mockTerminalAddress');
     vm.label(mockJBController, 'mockJBController');
     vm.label(mockJBDirectory, 'mockJBDirectory');
@@ -58,7 +58,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.etch(mockJBController, new bytes(0x69));
     vm.etch(mockJBDirectory, new bytes(0x69));
     vm.etch(mockTokenUriResolver, new bytes(0x69));
-    vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
 
@@ -145,7 +144,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: baseUris[i]
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -155,8 +154,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
+      baseUri: baseUri,
       owner: owner,
-      contributionToken: mockContributionToken,
       tiers: tiers,
       shouldMintByDefault: false
     });

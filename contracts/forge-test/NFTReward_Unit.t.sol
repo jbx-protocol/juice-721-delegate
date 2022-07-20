@@ -12,28 +12,30 @@ contract TestJBTieredNFTRewardDelegate is Test {
   address mockJBDirectory = address(100);
   address mockJBProjects = address(101);
   address mockTokenUriResolver = address(102);
-  address mockContributionToken = address(103);
   address mockTerminalAddress = address(104);
 
   uint256 projectId = 69;
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string baseUri = 'http://www.null.com';
+  string baseUri = 'http://www.null.com/';
   string contractUri = 'ipfs://null';
 
-  string[] tokenUris = [
-    'http://www.null.com/1',
-    'http://www.null.com/2',
-    'http://www.null.com/3',
-    'http://www.null.com/4',
-    'http://www.null.com/5',
-    'http://www.null.com/6',
-    'http://www.null.com/7',
-    'http://www.null.com/8',
-    'http://www.null.com/9',
-    'http://www.null.com/10'
+  //QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
+  bytes32[] tokenUris = [
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
   ];
+
+  // The theoretical tokenUri is therefore http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
 
   JBNFTRewardTier[] tiers;
 
@@ -60,13 +62,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.label(owner, 'owner');
     vm.label(mockJBDirectory, 'mockJBDirectory');
     vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
-    vm.label(mockContributionToken, 'mockContributionToken');
     vm.label(mockTerminalAddress, 'mockTerminalAddress');
     vm.label(mockJBProjects, 'mockJBProjects');
 
     vm.etch(mockJBDirectory, new bytes(0x69));
     vm.etch(mockTokenUriResolver, new bytes(0x69));
-    vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
 
@@ -91,8 +91,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -111,7 +111,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -122,8 +122,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -138,7 +138,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          tokenUri: 'foo'
+          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
         })
       );
     }
@@ -160,7 +160,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -171,8 +171,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -187,7 +187,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          tokenUri: 'foo'
+          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
         })
       );
     }
@@ -210,7 +210,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -221,8 +221,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -255,7 +255,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -266,8 +266,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -282,7 +282,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
         })
       );
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
@@ -312,7 +312,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -323,8 +323,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false,
       IJBProjects(mockJBProjects) // _shouldMintByDefault
@@ -339,7 +339,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
         })
       );
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
@@ -396,7 +396,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -407,8 +407,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -451,8 +451,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -470,14 +470,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.tokenURI(tokenId), 'resolverURI');
   }
 
-  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(
-    uint80 tier,
-    address holder
-  ) external {
+  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(address holder)
+    external
+  {
     vm.assume(holder != address(0));
-    vm.assume(tier > 0 && tier < 30);
 
-    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](30);
+    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
 
     for (uint256 i; i < _tiers.length; i++) {
       _tiers[i] = JBNFTRewardTier({
@@ -486,7 +484,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
-        tokenUri: uint2str(i + 1)
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -497,18 +495,23 @@ contract TestJBTieredNFTRewardDelegate is Test {
         symbol,
         IJBTokenUriResolver(address(0)),
         contractUri,
+        baseUri,
         owner,
-        mockContributionToken,
         _tiers,
         false,
         IJBProjects(mockJBProjects)
       );
 
-    uint256 tokenId = _generateTokenId(tier, 1);
+    for (uint256 i = 1; i <= _tiers.length; i++) {
+      uint256 tokenId = _generateTokenId(i, 1);
 
-    _delegate.ForTest_setOwnerOf(tokenId, holder);
+      _delegate.ForTest_setOwnerOf(tokenId, holder);
 
-    assertEq(_delegate.tokenURI(tokenId), uint2str(tier));
+      assertEq(
+        _delegate.tokenURI(tokenId),
+        'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
+      );
+    }
   }
 
   function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {
@@ -534,8 +537,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -549,7 +552,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(address(_delegate.tokenUriResolver()), mockTokenUriResolver);
     assertEq(_delegate.contractUri(), contractUri);
     assertEq(_delegate.owner(), owner);
-    assertEq(_delegate.contributionToken(), mockContributionToken);
     assertEq(_delegate.allTiers(), _tiers);
   }
 
@@ -589,8 +591,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -629,8 +631,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault,
       IJBProjects(mockJBProjects)
@@ -669,7 +671,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -680,8 +682,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault
       IJBProjects(mockJBProjects)
@@ -696,7 +698,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
         })
       );
 
@@ -744,7 +746,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
       });
     }
 
@@ -755,8 +757,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
-      mockContributionToken,
       _tiers,
       false, // _shouldMintByDefault,
       IJBProjects(mockJBProjects)
@@ -771,7 +773,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
         })
       );
 
@@ -812,7 +814,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(mockContributionToken, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
+        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
         0,
         msg.sender,
         false,
@@ -863,7 +865,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   //         msg.sender,
   //         projectId,
   //         0,
-  //         JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
+  //         JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
   //         0,
   //         msg.sender,
   //         false,
@@ -975,8 +977,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     string memory _symbol,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
+    string memory _baseUri,
     address _owner,
-    address _contributionToken,
     JBNFTRewardTier[] memory __tiers,
     bool _shouldMintByDefault,
     IJBProjects _projects
@@ -988,8 +990,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _symbol,
       _tokenUriResolver,
       _contractUri,
+      _baseUri,
       _owner,
-      _contributionToken,
       __tiers,
       _shouldMintByDefault,
       _projects
