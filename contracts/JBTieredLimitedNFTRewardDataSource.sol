@@ -700,8 +700,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Get a reference to the tier.
     JBNFTRewardTier memory _tier = tiers[tierIdOfToken(_tokenId)];
 
-    // Transfer the voting units.
-    _transferVotingUnits(_from, _to, _tier.votingUnits);
+    if (_tier.votingUnits > 0)
+      // Transfer the voting units.
+      _transferVotingUnits(_from, _to, _tier.votingUnits);
 
     super._afterTokenTransfer(_from, _to, _tokenId);
   }
