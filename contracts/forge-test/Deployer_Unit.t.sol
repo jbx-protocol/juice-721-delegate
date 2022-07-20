@@ -14,8 +14,10 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
   address owner = address(42069);
 
   address mockJBController = address(100);
-  address mockJBDirectory = address(101);
-  address mockTokenUriResolver = address(102);
+
+  address mockJBOperatorStore = address(101);
+  address mockJBDirectory = address(102);
+  address mockTokenUriResolver = address(103);
   address mockTerminalAddress = address(104);
   address mockJBProjects = address(105);
 
@@ -26,18 +28,18 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
   string tokenUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
-  string [] baseUris = [
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
-    'http://www.null.com/0', 
+  string[] baseUris = [
+    'http://www.null.com/0',
+    'http://www.null.com/0',
+    'http://www.null.com/0',
+    'http://www.null.com/0',
+    'http://www.null.com/0',
+    'http://www.null.com/0',
+    'http://www.null.com/0',
+    'http://www.null.com/0',
+    'http://www.null.com/0',
     'http://www.null.com/0'
-    ];
+  ];
 
   string fcMemo = 'meemoo';
 
@@ -59,7 +61,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.etch(mockJBProjects, new bytes(0x69));
 
     deployer = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(
-      IJBController(mockJBController)
+      IJBController(mockJBController),
+      IJBOperatorStore(mockJBOperatorStore)
     );
   }
 

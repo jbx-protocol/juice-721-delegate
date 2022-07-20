@@ -57,6 +57,12 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   bool public immutable override shouldMintByDefault;
 
+  /** 
+    @notice
+    The controller with which new projects should be deployed. 
+  */
+  IJBProjects public immutable override projects;
+
   /**
     @notice
     Just a kind reminder to our readers
@@ -215,7 +221,12 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return The outstanding number of reserved tokens within the tier.
   */
-  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256) {
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId)
+    external
+    view
+    override
+    returns (uint256)
+  {
     return _numberOfReservedTokensOutstandingFor(_tierId, tiers[_tierId]);
   }
 
@@ -313,7 +324,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _contractUri,
     address _owner,
     JBNFTRewardTier[] memory _tiers,
-    bool _shouldMintByDefault
+    bool _shouldMintByDefault,
+    IJBProjects _projects
   )
     JBNFTRewardDataSource(
       _projectId,
@@ -326,6 +338,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     )
   {
     shouldMintByDefault = _shouldMintByDefault;
+    projects = _projects;
 
     // Get a reference to the number of tiers.
     uint256 _numberOfTiers = _tiers.length;
@@ -369,15 +382,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     @dev
     Only a project owner can mint tokens.
 
-    @param _beneficiary The address that should receive to token.
     @param _tierId The ID of the tier to mint within.
     @param _count The number of reserved tokens to mint. 
   */
-  function mintReservesFor(
-    address _beneficiary,
-    uint256 _tierId,
-    uint256 _count
-  ) external override onlyOwner {
+  function mintReservesFor(uint256 _tierId, uint256 _count) external override {
     // Get a reference to the tier.
     JBNFTRewardTier storage _tier = tiers[_tierId];
 
@@ -390,14 +398,17 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Can't mint more reserves than expected.
     if (_count > _numberOfReservedTokensOutstanding) revert INSUFFICIENT_RESERVES();
 
+    // Get a reference to the project's owner.
+    address _projectOwner = projects.ownerOf(projectId);
+
     // Increment the number of reserved tokens minted.
     numberOfReservesMintedFor[_tierId] += _count;
 
     for (uint256 _i; _i < _count; ) {
       // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
+      uint256 _tokenId = _mintForTier(_tierId, _tier, _projectOwner);
 
-      emit MintReservedToken(_tokenId, _tierId, _beneficiary, msg.sender);
+      emit MintReservedToken(_tokenId, _tierId, _projectOwner, msg.sender);
 
       unchecked {
         ++_i;
@@ -576,6 +587,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Invalid tier or no reserved rate?
     if (_tier.initialQuantity == 0 || _tier.reservedRate == 0) return 0;
 
+    // No token minted yet? Round up to 1
+    if (_tier.initialQuantity == _tier.remainingQuantity) return 1;
+
     // The number of reserved token of the tier already minted
     uint256 reserveTokenMinted = numberOfReservesMintedFor[_tierId];
 
@@ -648,68 +662,5 @@ contract JBTieredLimitedNFTRewardDataSource is
         --_i;
       }
     }
-  }
-
-  //the _toBase58 consume a lot of gaz when called from another contract. Therefore, calling tokenURI from a contract might fail
-  //(no worries for us, view & pure functions are "free" for humans)
-  //myBytes32Hash = "0x"+bs58.decode(IPFS_HASH).slice(2).toString('hex')
-
-  /**
-  
-  @notice author Martin Lundfall (martin.lundfall@consensys.net)
-  Source verifyIPFS (https://github.com/MrChico/verifyIPFS/blob/master/contracts/verifyIPFS.sol)
-  
-  @notice Converts an hex bytes to a base58 string
-
-  @dev
-  IPFS hashes are a base58 string representation of a 34bytes hash.
-  The 2 first bytes can be
-  
-   */
-
-  function _toBase58(bytes memory source) internal pure returns (string memory) {
-    if (source.length == 0) return new string(0);
-    uint8[] memory digits = new uint8[](46);
-    digits[0] = 0;
-    uint8 digitlength = 1;
-    for (uint256 i = 0; i < source.length; ++i) {
-      uint256 carry = uint8(source[i]);
-      for (uint256 j = 0; j < digitlength; ++j) {
-        carry += uint256(digits[j]) * 256;
-        digits[j] = uint8(carry % 58);
-        carry = carry / 58;
-      }
-
-      while (carry > 0) {
-        digits[digitlength] = uint8(carry % 58);
-        digitlength++;
-        carry = carry / 58;
-      }
-    }
-    return string(_toAlphabet(_reverse(_truncate(digits, digitlength))));
-  }
-
-  function _truncate(uint8[] memory array, uint8 length) internal pure returns (uint8[] memory) {
-    uint8[] memory output = new uint8[](length);
-    for (uint256 i = 0; i < length; i++) {
-      output[i] = array[i];
-    }
-    return output;
-  }
-
-  function _reverse(uint8[] memory input) internal pure returns (uint8[] memory) {
-    uint8[] memory output = new uint8[](input.length);
-    for (uint256 i = 0; i < input.length; i++) {
-      output[i] = input[input.length - 1 - i];
-    }
-    return output;
-  }
-
-  function _toAlphabet(uint8[] memory indices) internal pure returns (bytes memory) {
-    bytes memory output = new bytes(indices.length);
-    for (uint256 i = 0; i < indices.length; i++) {
-      output[i] = _ALPHABET[indices[i]];
-    }
-    return output;
   }
 }
