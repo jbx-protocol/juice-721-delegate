@@ -57,12 +57,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   bool public immutable override shouldMintByDefault;
 
-  /** 
-    @notice
-    The controller with which new projects should be deployed. 
-  */
-  IJBProjects public immutable override projects;
-
   //*********************************************************************//
   // --------------- internal immutable stored properties -------------- //
   //*********************************************************************//
@@ -113,6 +107,12 @@ contract JBTieredLimitedNFTRewardDataSource is
     _tierId The ID of the tier to get a minted reserved token count for.
    */
   mapping(uint256 => uint256) public override numberOfReservesMintedFor;
+
+  /** 
+    @notice
+    The beneficiary of reserved tokens.
+  */
+  address public override reservedTokenBeneficiary;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -339,8 +339,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _baseUri,
     address _owner,
     JBNFTRewardTier[] memory _tiers,
-    bool _shouldMintByDefault,
-    IJBProjects _projects
+    bool _shouldMintByDefault
   )
     JBNFTRewardDataSource(
       _projectId,
@@ -354,7 +353,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   {
     contributionToken = JBTokens.ETH;
     shouldMintByDefault = _shouldMintByDefault;
-    projects = _projects;
     baseUri = _baseUri;
 
     // Get a reference to the number of tiers.
@@ -415,22 +413,32 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Can't mint more reserves than expected.
     if (_count > _numberOfReservedTokensOutstanding) revert INSUFFICIENT_RESERVES();
 
-    // Get a reference to the project's owner.
-    address _projectOwner = projects.ownerOf(projectId);
-
     // Increment the number of reserved tokens minted.
     numberOfReservesMintedFor[_tierId] += _count;
 
     for (uint256 _i; _i < _count; ) {
       // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _tier, _projectOwner);
+      uint256 _tokenId = _mintForTier(_tierId, _tier, reservedTokenBeneficiary);
 
-      emit MintReservedToken(_tokenId, _tierId, _projectOwner, msg.sender);
+      emit MintReservedToken(_tokenId, _tierId, reservedTokenBeneficiary, msg.sender);
 
       unchecked {
         ++_i;
       }
     }
+  }
+
+  /** 
+    @notice
+    Sets the beneificiary of the reserved tokens. 
+
+    @param _beneficiary The beneificiary of the reserved tokens.
+  */
+  function setReservedTokenBeneficiary(address _beneficiary) external override onlyOwner {
+    // Set the beneficiary.
+    reservedTokenBeneficiary = _beneficiary;
+
+    emit SetReservedTokenBeneficiary(_beneficiary, msg.sender);
   }
 
   //*********************************************************************//
@@ -686,10 +694,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     bytes memory completeHexString = abi.encodePacked(bytes2(0x1220), hexString);
 
     // Convert the hex string to an hash
-    string memory IPFSHash = _toBase58(completeHexString);
+    string memory ipfsHash = _toBase58(completeHexString);
 
     // Concatenate with the base URI
-    return string(abi.encodePacked(baseUri, IPFSHash));
+    return string(abi.encodePacked(baseUri, ipfsHash));
   }
 
   /**
