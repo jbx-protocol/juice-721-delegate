@@ -8,7 +8,7 @@ import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
-import './ERC721Votes.sol';
+import './ERC721.sol';
 import '../interfaces/IJBNFTRewardDataSource.sol';
 
 /**
@@ -37,7 +37,7 @@ abstract contract JBNFTRewardDataSource is
   IJBNFTRewardDataSource,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
-  ERC721Votes,
+  ERC721,
   Ownable
 {
   using Strings for uint256;
@@ -183,7 +183,7 @@ abstract contract JBNFTRewardDataSource is
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
     address _owner
-  ) ERC721(_name, _symbol) EIP712(_name, '1') {
+  ) ERC721(_name, _symbol) {
     projectId = _projectId;
     directory = _directory;
     tokenUriResolver = _tokenUriResolver;
