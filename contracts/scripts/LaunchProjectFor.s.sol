@@ -125,7 +125,7 @@ contract RinkebyLaunchProjectFor is Script {
         initialQuantity: 100,
         votingUnits: uint16(10*i),
         reservedRate: 1,
-        tokenUri: 'abc'
+        tokenUri: 'https://gateway.pinata.cloud/ipfs/Qma5atSTeoKJkcXe2R7gdmcvPvLJJkh2jd4cDZeM1wnFgK'
       });
     }
 
