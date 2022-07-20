@@ -328,6 +328,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _owner The address that should own this contract.
     @param _tiers The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _shouldMintByDefault A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
+    @param _reservedTokenBeneficiary The address that should receive the reserved tokens.
   */
   constructor(
     uint256 _projectId,
@@ -339,7 +340,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _baseUri,
     address _owner,
     JBNFTRewardTier[] memory _tiers,
-    bool _shouldMintByDefault
+    bool _shouldMintByDefault,
+    address _reservedTokenBeneficiary
   )
     JBNFTRewardDataSource(
       _projectId,
@@ -354,6 +356,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     contributionToken = JBTokens.ETH;
     shouldMintByDefault = _shouldMintByDefault;
     baseUri = _baseUri;
+    reservedTokenBeneficiary = _reservedTokenBeneficiary;
 
     // Get a reference to the number of tiers.
     uint256 _numberOfTiers = _tiers.length;
