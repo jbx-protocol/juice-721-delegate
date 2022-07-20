@@ -63,6 +63,10 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   IJBProjects public immutable override projects;
 
+  //*********************************************************************//
+  // --------------- internal immutable stored properties -------------- //
+  //*********************************************************************//
+
   /**
     @notice
     Just a kind reminder to our readers
@@ -71,6 +75,15 @@ contract JBTieredLimitedNFTRewardDataSource is
     Used in base58ToString
   */
   bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+  /**
+    @notice
+    The common base for the tokenUri's
+
+    @dev
+    No setter to insure immutability
+  */
+  string internal baseUri;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -322,6 +335,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _symbol,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
+    string memory _baseUri,
     address _owner,
     JBNFTRewardTier[] memory _tiers,
     bool _shouldMintByDefault,
@@ -339,6 +353,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   {
     shouldMintByDefault = _shouldMintByDefault;
     projects = _projects;
+    baseUri = _baseUri;
 
     // Get a reference to the number of tiers.
     uint256 _numberOfTiers = _tiers.length;

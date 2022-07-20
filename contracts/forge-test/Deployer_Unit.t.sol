@@ -25,20 +25,20 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string tokenUri = 'http://www.null.com';
+  string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
-  string[] baseUris = [
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0'
+  string[] tokenUris = [
+    'Qm12345657',
+    'Qm12345656',
+    'Qm12345655',
+    'Qm12345654',
+    'Qm12345653',
+    'Qm12345652',
+    'Qm12345651',
+    'Qm12345658',
+    'Qm12345659',
+    'Qm12345650'
   ];
 
   string fcMemo = 'meemoo';
@@ -143,7 +143,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: baseUris[i]
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -153,6 +153,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
+      baseUri: baseUri,
       owner: owner,
       tiers: tiers,
       shouldMintByDefault: false

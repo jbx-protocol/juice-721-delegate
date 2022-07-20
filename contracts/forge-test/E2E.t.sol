@@ -23,19 +23,19 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string tokenUri = 'http://www.null.com';
+  string baseUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
-  string[] baseUris = [
-    'http://www.null.com/0',
-    'http://www.null.com/1',
-    'http://www.null.com/2',
-    'http://www.null.com/3',
-    'http://www.null.com/4',
-    'http://www.null.com/5',
-    'http://www.null.com/6',
-    'http://www.null.com/7',
-    'http://www.null.com/8',
-    'http://www.null.com/9'
+  string[] tokenUris = [
+    'Qm123410',
+    'Qm123411',
+    'Qm123412',
+    'Qm123413',
+    'Qm123414',
+    'Qm123415',
+    'Qm123416',
+    'Qm123417',
+    'Qm123418',
+    'Qm123419'
   ];
 
   JBTieredLimitedNFTRewardDataSourceProjectDeployer deployer;
@@ -245,7 +245,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         initialQuantity: uint40(10),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: baseUris[i]
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -255,6 +255,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       symbol: symbol,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
+      baseUri: baseUri,
       owner: _projectOwner,
       tiers: tiers,
       shouldMintByDefault: _shouldMintByDefault

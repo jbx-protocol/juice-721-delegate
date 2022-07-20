@@ -88,6 +88,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       tiers,
       false, // _shouldMintByDefault
@@ -118,6 +119,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -166,6 +168,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -215,6 +218,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -259,6 +263,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -315,6 +320,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false,
@@ -398,6 +404,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -441,6 +448,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       tiers,
       false, // _shouldMintByDefault
@@ -486,6 +494,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         symbol,
         IJBTokenUriResolver(address(0)),
         contractUri,
+        baseUri,
         owner,
         _tiers,
         false,
@@ -522,6 +531,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -575,6 +585,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -614,6 +625,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault,
@@ -664,6 +676,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault
@@ -738,6 +751,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       symbol,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      baseUri,
       owner,
       _tiers,
       false, // _shouldMintByDefault,
@@ -957,6 +971,7 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     string memory _symbol,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
+    string memory _baseUri,
     address _owner,
     JBNFTRewardTier[] memory __tiers,
     bool _shouldMintByDefault,
@@ -969,6 +984,7 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _symbol,
       _tokenUriResolver,
       _contractUri,
+      _baseUri,
       _owner,
       __tiers,
       _shouldMintByDefault,

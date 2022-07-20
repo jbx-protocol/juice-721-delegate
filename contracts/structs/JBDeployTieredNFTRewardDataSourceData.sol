@@ -21,6 +21,7 @@ struct JBDeployTieredNFTRewardDataSourceData {
   string symbol;
   IJBTokenUriResolver tokenUriResolver;
   string contractUri;
+  string baseUri;
   address owner;
   JBNFTRewardTier[] tiers;
   bool shouldMintByDefault;
