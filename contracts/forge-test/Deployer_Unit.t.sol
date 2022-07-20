@@ -16,7 +16,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
   address mockJBController = address(100);
   address mockJBDirectory = address(101);
   address mockTokenUriResolver = address(102);
-  address mockContributionToken = address(103);
   address mockTerminalAddress = address(104);
   address mockJBProjects = address(105);
 
@@ -48,7 +47,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.label(owner, 'owner');
     vm.label(mockJBDirectory, 'mockJBDirectory');
     vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
-    vm.label(mockContributionToken, 'mockContributionToken');
     vm.label(mockTerminalAddress, 'mockTerminalAddress');
     vm.label(mockJBController, 'mockJBController');
     vm.label(mockJBDirectory, 'mockJBDirectory');
@@ -57,7 +55,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.etch(mockJBController, new bytes(0x69));
     vm.etch(mockJBDirectory, new bytes(0x69));
     vm.etch(mockTokenUriResolver, new bytes(0x69));
-    vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
 
@@ -154,7 +151,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
       owner: owner,
-      contributionToken: mockContributionToken,
       tiers: tiers,
       shouldMintByDefault: false
     });

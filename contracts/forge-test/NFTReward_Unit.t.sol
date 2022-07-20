@@ -11,7 +11,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
   address owner = address(42069);
   address mockJBDirectory = address(100);
   address mockTokenUriResolver = address(102);
-  address mockContributionToken = address(103);
   address mockTerminalAddress = address(104);
 
   uint256 projectId = 69;
@@ -59,12 +58,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.label(owner, 'owner');
     vm.label(mockJBDirectory, 'mockJBDirectory');
     vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
-    vm.label(mockContributionToken, 'mockContributionToken');
     vm.label(mockTerminalAddress, 'mockTerminalAddress');
 
     vm.etch(mockJBDirectory, new bytes(0x69));
     vm.etch(mockTokenUriResolver, new bytes(0x69));
-    vm.etch(mockContributionToken, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
 
     // Create 10 tiers, each with 100 tokens available to mint
@@ -89,7 +86,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       tiers,
       false // _shouldMintByDefault
     );
@@ -119,7 +115,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -167,7 +162,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -216,7 +210,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -260,7 +253,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -316,7 +308,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -401,7 +392,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -444,7 +434,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       tiers,
       false // _shouldMintByDefault
     );
@@ -489,7 +478,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBTokenUriResolver(address(0)),
         contractUri,
         owner,
-        mockContributionToken,
         _tiers,
         false
       );
@@ -525,7 +513,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -538,7 +525,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(address(_delegate.tokenUriResolver()), mockTokenUriResolver);
     assertEq(_delegate.contractUri(), contractUri);
     assertEq(_delegate.owner(), owner);
-    assertEq(_delegate.contributionToken(), mockContributionToken);
     assertEq(_delegate.allTiers(), _tiers);
   }
 
@@ -579,7 +565,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -618,7 +603,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -655,7 +639,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -741,7 +724,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       owner,
-      mockContributionToken,
       _tiers,
       false // _shouldMintByDefault
     );
@@ -792,7 +774,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(mockContributionToken, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
+        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
         0,
         msg.sender,
         false,
@@ -843,7 +825,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   //         msg.sender,
   //         projectId,
   //         0,
-  //         JBTokenAmount(mockContributionToken, tiers[0].contributionFloor, 0, 0),
+  //         JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
   //         0,
   //         msg.sender,
   //         false,
@@ -956,7 +938,6 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
     address _owner,
-    address _contributionToken,
     JBNFTRewardTier[] memory __tiers,
     bool _shouldMintByDefault
   )
@@ -968,7 +949,6 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _tokenUriResolver,
       _contractUri,
       _owner,
-      _contributionToken,
       __tiers,
       _shouldMintByDefault
     )

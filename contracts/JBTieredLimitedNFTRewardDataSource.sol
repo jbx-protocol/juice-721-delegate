@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
+import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
+
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
@@ -41,7 +43,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     The token to expect contributions to be made in.
   */
-  address public immutable override contributionToken;
+  address public immutable override contributionToken = JBTokens.ETH;
 
   /** 
     @notice
@@ -299,7 +301,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
-    @param _contributionToken The token that contributions are expected to be in terms of.
     @param _tiers The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _shouldMintByDefault A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
   */
@@ -311,7 +312,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
     address _owner,
-    address _contributionToken,
     JBNFTRewardTier[] memory _tiers,
     bool _shouldMintByDefault
   )
@@ -325,7 +325,6 @@ contract JBTieredLimitedNFTRewardDataSource is
       _owner
     )
   {
-    contributionToken = _contributionToken;
     shouldMintByDefault = _shouldMintByDefault;
 
     // Get a reference to the number of tiers.

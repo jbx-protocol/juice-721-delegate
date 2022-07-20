@@ -131,7 +131,6 @@ contract RinkebyLaunchProjectFor is Script {
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
       owner: _projectOwner,
-      contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
       tiers: tiers,
       shouldMintByDefault: false
     });
@@ -207,7 +206,6 @@ contract RinkebyDeployDatasource is Script {
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
       owner: _projectOwner,
-      contributionToken: address(0x000000000000000000000000000000000000EEEe), // ETH
       tiers: tiers,
       shouldMintByDefault: false
     });
