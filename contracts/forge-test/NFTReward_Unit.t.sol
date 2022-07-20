@@ -111,7 +111,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -138,7 +138,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          tokenUri: 'foo'
+          tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
         })
       );
     }
@@ -160,7 +160,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -187,7 +187,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          tokenUri: 'foo'
+          tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
         })
       );
     }
@@ -210,7 +210,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -255,7 +255,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -282,7 +282,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
         })
       );
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
@@ -312,7 +312,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -339,7 +339,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
         })
       );
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
@@ -396,7 +396,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -671,7 +671,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -698,7 +698,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
         })
       );
 
@@ -746,7 +746,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 'foo'
+        tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
       });
     }
 
@@ -773,7 +773,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 'foo'
+          tokenUri: 'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
         })
       );
 
