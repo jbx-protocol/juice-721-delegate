@@ -19,6 +19,8 @@ interface IJBNFTRewardDataSource {
 
   function tokenUriResolver() external view returns (IJBTokenUriResolver);
 
+  function firstOwnerOf(uint256 _tokenId) external view returns (address);
+
   function setContractUri(string calldata _contractMetadataUri) external;
 
   function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolverAddress) external;
