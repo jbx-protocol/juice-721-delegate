@@ -25,20 +25,19 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   string name = 'NAME';
   string symbol = 'SYM';
-  string tokenUri = 'http://www.null.com';
   string contractUri = 'ipfs://null';
 
-  string[] baseUris = [
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0',
-    'http://www.null.com/0'
+  string[] tokenUris = [
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
   ];
 
   string fcMemo = 'meemoo';
@@ -145,7 +144,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: baseUris[i]
+        tokenUri: tokenUris[i]
       });
     }
 
