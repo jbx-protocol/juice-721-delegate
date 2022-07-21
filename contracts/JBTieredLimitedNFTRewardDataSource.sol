@@ -617,7 +617,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       reserveTokensMinted;
 
     // Store the numerator common to the next two calculations.
-    uint256 _numerator = (_numberOfNonReservesMinted * uint256(_tier.reservedRate));
+    uint256 _numerator = uint256(_numberOfNonReservesMinted * _tier.reservedRate);
 
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
     uint256 _numberReservedTokensMintable = _numerator / JBConstants.MAX_RESERVED_RATE;
