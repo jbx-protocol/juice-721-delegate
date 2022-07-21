@@ -11,15 +11,14 @@ import 'forge-std/Test.sol';
 contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
   using stdStorage for StdStorage;
 
-  address owner = address(42069);
-
-  address mockJBController = address(100);
-
-  address mockJBOperatorStore = address(101);
-  address mockJBDirectory = address(102);
-  address mockTokenUriResolver = address(103);
-  address mockTerminalAddress = address(104);
-  address mockJBProjects = address(105);
+  address owner = address(bytes20(keccak256('owner')));
+  address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
+  address mockJBDirectory = address(bytes20(keccak256('mockJBDirectory')));
+  address mockTokenUriResolver = address(bytes20(keccak256('mockTokenUriResolver')));
+  address mockTerminalAddress = address(bytes20(keccak256('mockTerminalAddress')));
+  address mockJBController = address(bytes20(keccak256('mockJBController')));
+  address mockJBOperatorStore = address(bytes20(keccak256('mockJBOperatorStore')));
+  address mockJBProjects = address(bytes20(keccak256('mockJBProjects')));
 
   uint256 projectId = 69;
 
@@ -158,7 +157,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       baseUri: baseUri,
       owner: owner,
       tierData: tierData,
-      shouldMintByDefault: false
+      shouldMintByDefault: false,
+      reservedTokenBeneficiary: reserveBeneficiary
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});

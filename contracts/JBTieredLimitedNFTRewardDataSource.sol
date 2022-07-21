@@ -53,12 +53,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   bool public immutable override shouldMintByDefault;
 
-  /** 
-    @notice
-    The controller with which new projects should be deployed. 
-  */
-  IJBProjects public immutable override projects;
-
   //*********************************************************************//
   // ------------------- internal constant properties ------------------ //
   //*********************************************************************//
@@ -123,6 +117,12 @@ contract JBTieredLimitedNFTRewardDataSource is
     The total number of tiers there are. 
   */
   uint256 public override numberOfTiers;
+
+  /** 
+    @notice
+    The beneficiary of reserved tokens.
+  */
+  address public override reservedTokenBeneficiary;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -371,6 +371,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _owner The address that should own this contract.
     @param _tierData The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _shouldMintByDefault A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
+    @param _reservedTokenBeneficiary The address that should receive the reserved tokens.
   */
   constructor(
     uint256 _projectId,
@@ -383,7 +384,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     address _owner,
     JBNFTRewardTierData[] memory _tierData,
     bool _shouldMintByDefault,
-    IJBProjects _projects
+    address _reservedTokenBeneficiary
   )
     JBNFTRewardDataSource(
       _projectId,
@@ -397,8 +398,9 @@ contract JBTieredLimitedNFTRewardDataSource is
   {
     contributionToken = JBTokens.ETH;
     shouldMintByDefault = _shouldMintByDefault;
-    projects = _projects;
     baseUri = _baseUri;
+    reservedTokenBeneficiary = _reservedTokenBeneficiary;
+
     _addTierData(_tierData, true);
   }
 
@@ -429,17 +431,14 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Can't mint more reserves than expected.
     if (_count > _numberOfReservedTokensOutstanding) revert INSUFFICIENT_RESERVES();
 
-    // Get a reference to the project's owner.
-    address _projectOwner = projects.ownerOf(projectId);
-
     // Increment the number of reserved tokens minted.
     numberOfReservesMintedFor[_tierId] += _count;
 
     for (uint256 _i; _i < _count; ) {
       // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _data, _projectOwner);
+      uint256 _tokenId = _mintForTier(_tierId, _data, reservedTokenBeneficiary);
 
-      emit MintReservedToken(_tokenId, _tierId, _projectOwner, msg.sender);
+      emit MintReservedToken(_tokenId, _tierId, reservedTokenBeneficiary, msg.sender);
 
       unchecked {
         ++_i;
@@ -457,12 +456,25 @@ contract JBTieredLimitedNFTRewardDataSource is
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,
     uint256[] memory _tierIdsToRemove
-  ) external override {
+  ) external override onlyOwner {
     // Add tiers.
     if (_tierDataToAdd.length != 0) _addTierData(_tierDataToAdd, false);
 
     // Remove tiers.
     if (_tierIdsToRemove.length != 0) _removeTierIds(_tierIdsToRemove);
+  }
+
+  /** 
+    @notice
+    Sets the beneificiary of the reserved tokens. 
+
+    @param _beneficiary The beneificiary of the reserved tokens.
+  */
+  function setReservedTokenBeneficiary(address _beneficiary) external override onlyOwner {
+    // Set the beneficiary.
+    reservedTokenBeneficiary = _beneficiary;
+
+    emit SetReservedTokenBeneficiary(_beneficiary, msg.sender);
   }
 
   //*********************************************************************//
@@ -814,10 +826,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     bytes memory completeHexString = abi.encodePacked(bytes2(0x1220), hexString);
 
     // Convert the hex string to an hash
-    string memory IPFSHash = _toBase58(completeHexString);
+    string memory ipfsHash = _toBase58(completeHexString);
 
     // Concatenate with the base URI
-    return string(abi.encodePacked(baseUri, IPFSHash));
+    return string(abi.encodePacked(baseUri, ipfsHash));
   }
 
   /**
