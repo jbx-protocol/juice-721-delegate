@@ -3,7 +3,7 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
-
+import '@openzeppelin/contracts/governance/utils/Votes.sol';
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
@@ -22,7 +22,8 @@ import './interfaces/ITokenSupplyDetails.sol';
 contract JBTieredLimitedNFTRewardDataSource is
   IJBTieredLimitedNFTRewardDataSource,
   ITokenSupplyDetails,
-  JBNFTRewardDataSource
+  JBNFTRewardDataSource,
+  Votes
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -353,6 +354,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       _contractUri,
       _owner
     )
+    EIP712(_name, '1')
   {
     contributionToken = JBTokens.ETH;
     shouldMintByDefault = _shouldMintByDefault;
@@ -693,6 +695,29 @@ contract JBTieredLimitedNFTRewardDataSource is
         --_i;
       }
     }
+  }
+
+  /**
+    @notice
+    Transfer voting units after the transfer of a token.
+
+    @param _from The address where the transfer is originating.
+    @param _to The address to which the transfer is being made.
+    @param _tokenId The ID of the token being transfered.
+   */
+  function _afterTokenTransfer(
+    address _from,
+    address _to,
+    uint256 _tokenId
+  ) internal virtual override {
+    // Get a reference to the tier.
+    JBNFTRewardTier memory _tier = tiers[tierIdOfToken(_tokenId)];
+
+    if (_tier.votingUnits > 0)
+      // Transfer the voting units.
+      _transferVotingUnits(_from, _to, _tier.votingUnits);
+
+    super._afterTokenTransfer(_from, _to, _tokenId);
   }
 
   function _decodeIpfs(bytes32 hexString) internal view returns (string memory) {
