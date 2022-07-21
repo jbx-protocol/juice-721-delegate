@@ -514,6 +514,76 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnCurrentOwnerIfFirstOwner(
+    uint256 tokenId,
+    address _owner
+  ) public {
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      baseUri,
+      owner,
+      tiers,
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
+    );
+
+    _delegate.ForTest_setOwnerOf(tokenId, _owner);
+    assertEq(_delegate.firstOwnerOf(tokenId), _owner);
+  }
+
+  function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnFirstOwnerIfOwnerChanged(
+    uint256 tokenId,
+    address _owner,
+    address _previousOwner
+  ) public {
+    vm.assume(_owner != _previousOwner);
+    vm.assume(_previousOwner != address(0));
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      baseUri,
+      owner,
+      tiers,
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
+    );
+
+    _delegate.ForTest_setOwnerOf(tokenId, _owner);
+    _delegate.ForTest_setFirstOwnerOf(tokenId, _previousOwner);
+
+    assertEq(_delegate.firstOwnerOf(tokenId), _previousOwner);
+  }
+
+  function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnAddressZeroIfNotMinted(
+    uint256 tokenId
+  ) public {
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      baseUri,
+      owner,
+      tiers,
+      false, // _shouldMintByDefault
+      IJBProjects(mockJBProjects)
+    );
+
+    assertEq(_delegate.firstOwnerOf(tokenId), address(0));
+  }
+
   function testJBTieredNFTRewardDelegate_constructor_deployIfTiersSorted(uint8 nbTiers) public {
     vm.assume(nbTiers < 10);
 
@@ -1016,5 +1086,9 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
 
   function ForTest_setOwnerOf(uint256 tokenId, address _owner) public {
     _owners[tokenId] = _owner;
+  }
+
+  function ForTest_setFirstOwnerOf(uint256 tokenId, address _owner) public {
+    _firstOwnerOf[tokenId] = _owner;
   }
 }
