@@ -238,12 +238,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_returnsOutstandingReserved()
     public
   {
-    // 120 minted, 1 is reserved -> 119 are non-reserved, therefore there is a max of 119/40 reserved token,
-    // rounded up at 3 -> since 1 is minted, 2 more can be
+    // 120 are minted, 1 out of these is reserved, meaning 119 non-reserved are minted. The reservedRate is 40% (4000/10000)
+    // meaning there are 47 total reserved to mint, 1 being already minted, 46 are outstanding
     uint256 initialQuantity = 200;
     uint256 totalMinted = 120;
     uint256 reservedMinted = 1;
-    uint256 reservedRate = 40;
+    uint256 reservedRate = 4000;
 
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](10);
 
@@ -288,11 +288,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
     }
 
-    for (uint256 i; i < 10; i++) assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 2);
+    for (uint256 i; i < 10; i++)
+      assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 46);
   }
 
   // --------
-  function FixThis__JBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_FuzzedreturnsOutstandingReserved(
+  function testJBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_FuzzedreturnsOutstandingReserved(
     uint16 initialQuantity,
     uint16 totalMinted,
     uint16 reservedMinted,
@@ -346,38 +347,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
 
     // No reserved token were available
-    if (reservedRate == 0)
+    if (reservedRate == 0 || initialQuantity == 0)
       for (uint256 i; i < 10; i++)
         assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 0);
-    // We need to round up if non reserved minted is less than reserved rate
-    else if (totalMinted / reservedRate == 0)
-      for (uint256 i; i < 10; i++)
-        assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 1);
-    // All the reserved token are minted, rest 0 reserved
-    else if (reservedMinted == initialQuantity / reservedRate)
-      for (uint256 i; i < 10; i++)
-        assertEq(_delegate.numberOfReservedTokensOutstandingFor(i + 1), 0);
-    // non-reserved minted is not a multiple of reserved rate, we'll have to round up
-    else if ((totalMinted - reservedMinted) % reservedRate != 0)
-      if (reservedMinted == 0)
-        // Round up if none has been minted
-        for (uint256 i; i < 10; i++)
-          assertEq(
-            _delegate.numberOfReservedTokensOutstandingFor(i + 1),
-            (totalMinted / reservedRate) + 1
-          );
-      // Some has already been minted
-      else
-        for (uint256 i; i < 10; i++)
-          assertEq(
-            _delegate.numberOfReservedTokensOutstandingFor(i + 1),
-            ((totalMinted - reservedMinted) / reservedRate) - reservedMinted + 1
-          );
-    else
+    else if (reservedMinted != 0)
       for (uint256 i; i < 10; i++)
         assertEq(
           _delegate.numberOfReservedTokensOutstandingFor(i + 1),
-          ((totalMinted - reservedMinted) / reservedRate) - reservedMinted
+          ((totalMinted * reservedRate) / JBConstants.MAX_RESERVED_RATE) - reservedMinted
         );
   }
 
