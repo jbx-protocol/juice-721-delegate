@@ -626,9 +626,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (_numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0)
       ++_numberReservedTokensMintable;
 
-    // If no possible reserve to mint, return 0
-    if (_numberReservedTokensMintable == 0) return 0;
-
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - reserveTokensMinted;
   }
