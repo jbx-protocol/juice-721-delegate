@@ -190,7 +190,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
         _deployTieredNFTRewardDataSourceData.contractUri,
         _deployTieredNFTRewardDataSourceData.baseUri,
         _deployTieredNFTRewardDataSourceData.owner,
-        _deployTieredNFTRewardDataSourceData.tiers,
+        _deployTieredNFTRewardDataSourceData.tierData,
         _deployTieredNFTRewardDataSourceData.shouldMintByDefault,
         controller.projects()
       )

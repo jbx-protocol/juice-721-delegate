@@ -237,11 +237,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       JBLaunchProjectData memory launchProjectData
     )
   {
-    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](10);
+    JBNFTRewardTierData[] memory tierData = new JBNFTRewardTierData[](10);
 
     for (uint256 i; i < 10; i++) {
-      tiers[i] = JBNFTRewardTier({
-        contributionFloor: uint128((i + 1) * 10),
+      tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
         remainingQuantity: uint40(10),
         initialQuantity: uint40(10),
         votingUnits: uint16(0),
@@ -258,7 +259,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       contractUri: contractUri,
       baseUri: baseUri,
       owner: _projectOwner,
-      tiers: tiers,
+      tierData: tierData,
       shouldMintByDefault: _shouldMintByDefault
     });
 
