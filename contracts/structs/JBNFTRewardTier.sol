@@ -8,7 +8,7 @@ pragma solidity 0.8.6;
   @member remainingQuantity Remaining number of tokens in this tier. Together with idCeiling this enables for consecutive, increasing token ids to be issued to contributors.
   @member initialQuantity The initial `remainingAllowance` value when the tier was set.
   @member votingUnits The amount of voting significance to give this tier compared to others.
-  @memver reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
+  @memver reservedRate The rate at which reserved tokens can be minted, out of MAX_RESERVED_RATE.
   @member tokenUri The URI to use for each token within the tier.
 */
 struct JBNFTRewardTier {

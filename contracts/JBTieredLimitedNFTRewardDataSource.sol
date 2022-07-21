@@ -2,7 +2,8 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
-
+import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
+import '@openzeppelin/contracts/governance/utils/Votes.sol';
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
@@ -21,7 +22,8 @@ import './interfaces/ITokenSupplyDetails.sol';
 contract JBTieredLimitedNFTRewardDataSource is
   IJBTieredLimitedNFTRewardDataSource,
   ITokenSupplyDetails,
-  JBNFTRewardDataSource
+  JBNFTRewardDataSource,
+  Votes
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -395,6 +397,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       _contractUri,
       _owner
     )
+    EIP712(_name, '1')
   {
     contributionToken = JBTokens.ETH;
     shouldMintByDefault = _shouldMintByDefault;
@@ -748,23 +751,25 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (_data.initialQuantity == _data.remainingQuantity) return 1;
 
     // The number of reserved token of the tier already minted
-    uint256 reserveTokenMinted = numberOfReservesMintedFor[_tierId];
+    uint256 reserveTokensMinted = numberOfReservesMintedFor[_tierId];
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
     uint256 _numberOfNonReservesMinted = _data.initialQuantity -
       _data.remainingQuantity -
-      reserveTokenMinted;
+      reserveTokensMinted;
+
+    // Store the numerator common to the next two calculations.
+    uint256 _numerator = uint256(_numberOfNonReservesMinted * _data.reservedRate);
 
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
-    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _data.reservedRate;
+    uint256 _numberReservedTokensMintable = _numerator / JBConstants.MAX_RESERVED_RATE;
 
     // Round up.
-    if (
-      _numberOfNonReservesMinted - uint256(_data.reservedRate) * _numberReservedTokensMintable > 0
-    ) ++_numberReservedTokensMintable;
+    if (_numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0)
+      ++_numberReservedTokensMintable;
 
     // Return the difference between the amount mintable and the amount already minted.
-    return _numberReservedTokensMintable - reserveTokenMinted;
+    return _numberReservedTokensMintable - reserveTokensMinted;
   }
 
   /** 
@@ -819,6 +824,29 @@ contract JBTieredLimitedNFTRewardDataSource is
         --_i;
       }
     }
+  }
+
+  /**
+    @notice
+    Transfer voting units after the transfer of a token.
+
+    @param _from The address where the transfer is originating.
+    @param _to The address to which the transfer is being made.
+    @param _tokenId The ID of the token being transfered.
+   */
+  function _afterTokenTransfer(
+    address _from,
+    address _to,
+    uint256 _tokenId
+  ) internal virtual override {
+    // Get a reference to the tier.
+    JBNFTRewardTierData memory _data = tierData[tierIdOfToken(_tokenId)];
+
+    if (_data.votingUnits > 0)
+      // Transfer the voting units.
+      _transferVotingUnits(_from, _to, _data.votingUnits);
+
+    super._afterTokenTransfer(_from, _to, _tokenId);
   }
 
   function _decodeIpfs(bytes32 hexString) internal view returns (string memory) {
