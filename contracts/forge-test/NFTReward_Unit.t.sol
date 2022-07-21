@@ -526,7 +526,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       tierData,
       false, // _shouldMintByDefault
-      address(0) // should be project owner.
       reserveBeneficiary
     );
 
@@ -553,7 +552,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       tierData,
       false, // _shouldMintByDefault
-      address(0) // should be project owner.
       reserveBeneficiary
     );
 
@@ -577,7 +575,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       tierData,
       false, // _shouldMintByDefault
-      address(0) // should be project owner.
       reserveBeneficiary
     );
 
