@@ -49,6 +49,18 @@ abstract contract JBNFTRewardDataSource is
   error INVALID_PAYMENT_EVENT();
 
   //*********************************************************************//
+  // --------------------- internal stored properties ------------------ //
+  //*********************************************************************//
+
+  /** 
+    @notice 
+    The first owner of each token ID, stored on first transfer out.
+
+    _tokenId The ID of the token to get the stored first owner of.
+  */
+  mapping(uint256 => address) internal _firstOwnerOf;
+
+  //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
 
@@ -83,6 +95,22 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
+
+  /** 
+    @notice
+    The first owner of each token ID.
+
+    @param _tokenId The ID of the token to get the stored first owner of.
+
+    @return The first owner of the token.
+  */
+  function firstOwnerOf(uint256 _tokenId) external view override returns (address) {
+    // If the stored first owner is set, return it.
+    if (_firstOwnerOf[_tokenId] != address(0)) return _firstOwnerOf[_tokenId];
+
+    // Otherwise the first owner must be the current owner.
+    return _owners[_tokenId];
+  }
 
   /**
     @notice 
@@ -253,5 +281,21 @@ abstract contract JBNFTRewardDataSource is
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  function _processContribution(JBDidPayData calldata _data) internal virtual;
+  function _processContribution(JBDidPayData calldata _data) internal virtual {}
+
+  /** 
+    @notice
+    User the hook to register the first owner if it's not yet regitered.
+  */
+  function _beforeTokenTransfer(
+    address _from,
+    address _to,
+    uint256 _tokenId
+  ) internal virtual override {
+    _to; // Prevents unused var compiler and natspec complaints.
+
+    // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
+    if (_firstOwnerOf[_tokenId] == address(0) && _from != address(0))
+      _firstOwnerOf[_tokenId] = _from;
+  }
 }
