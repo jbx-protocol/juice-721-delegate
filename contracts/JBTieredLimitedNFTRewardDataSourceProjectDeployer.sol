@@ -192,7 +192,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
         _deployTieredNFTRewardDataSourceData.owner,
         _deployTieredNFTRewardDataSourceData.tiers,
         _deployTieredNFTRewardDataSourceData.shouldMintByDefault,
-        controller.projects()
+        _deployTieredNFTRewardDataSourceData.reservedTokenBeneficiary
       )
     );
 

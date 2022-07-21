@@ -10,6 +10,8 @@ import '../interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   using JBFundingCycleMetadataResolver for JBFundingCycle;
 
+  address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
+
   event Mint(
     uint256 indexed tokenId,
     uint256 indexed tierId,
@@ -259,7 +261,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       baseUri: baseUri,
       owner: _projectOwner,
       tiers: tiers,
-      shouldMintByDefault: _shouldMintByDefault
+      shouldMintByDefault: _shouldMintByDefault,
+      reservedTokenBeneficiary: reserveBeneficiary
     });
 
     launchProjectData = JBLaunchProjectData({
