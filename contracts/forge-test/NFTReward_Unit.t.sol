@@ -514,7 +514,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       tiers,
       false, // _shouldMintByDefault
-      IJBProjects(mockJBProjects)
+      reserveBeneficiary
     );
 
     _delegate.ForTest_setOwnerOf(tokenId, _owner);
@@ -540,7 +540,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       tiers,
       false, // _shouldMintByDefault
-      IJBProjects(mockJBProjects)
+      reserveBeneficiary
     );
 
     _delegate.ForTest_setOwnerOf(tokenId, _owner);
@@ -563,7 +563,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       owner,
       tiers,
       false, // _shouldMintByDefault
-      IJBProjects(mockJBProjects)
+      reserveBeneficiary
     );
 
     assertEq(_delegate.firstOwnerOf(tokenId), address(0));
