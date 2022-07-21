@@ -112,10 +112,20 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       metadata
     );
 
+    uint256 tokenId = _generateTokenId(highestTier, 1);
+
     // Check: NFT actually received?
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
     assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
-    assertEq(IERC721(NFTRewardDataSource).ownerOf(_generateTokenId(highestTier, 1)), _beneficiary);
+    assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), _beneficiary);
+    assertEq(IJBNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId), _beneficiary);
+
+    // Check: firstOwnerOf and ownerOf are correct after a transfer?
+    vm.prank(_beneficiary);
+    IERC721(NFTRewardDataSource).transferFrom(_beneficiary, address(696969420), tokenId);
+
+    assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), address(696969420));
+    assertEq(IJBNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId), _beneficiary);
   }
 
   function testMintOnPayIfMultipleTiersArePassed() external {
@@ -172,15 +182,21 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
     assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 5);
 
-    //assertEq(IERC721(NFTRewardDataSource).ownerOf(_generateTokenId(highestTier, 1)), _beneficiary);
+    for (uint256 i = 1; i <= 5; i++) {
+      uint256 tokenId = _generateTokenId(i, 1);
+      assertEq(IJBNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId), _beneficiary);
+
+      // Check: firstOwnerOf and ownerOf are correct after a transfer?
+      vm.prank(_beneficiary);
+      IERC721(NFTRewardDataSource).transferFrom(_beneficiary, address(696969420), tokenId);
+
+      assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), address(696969420));
+      assertEq(IJBNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId), _beneficiary);
+    }
   }
 
   function testMintOnPayUsingFallbackTiers(uint8 valueSent) external {
     vm.assume(valueSent >= 10 && valueSent < 2000);
-
-    // uint256 theoreticalTokenId = valueSent <= 100
-    //   ? ((((uint256(valueSent) / 10) - 1) * 10) + 1)
-    //   : 91;
 
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
 
