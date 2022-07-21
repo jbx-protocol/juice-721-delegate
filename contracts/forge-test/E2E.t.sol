@@ -126,6 +126,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), address(696969420));
     assertEq(IJBNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId), _beneficiary);
+
+    // Check: same after a second transfer - 0xSTVG-style testing?
+    vm.prank(address(696969420));
+    IERC721(NFTRewardDataSource).transferFrom(address(696969420), address(123456789), tokenId);
+
+    assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), address(123456789));
+    assertEq(IJBNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId), _beneficiary);
   }
 
   function testMintOnPayIfMultipleTiersArePassed() external {
