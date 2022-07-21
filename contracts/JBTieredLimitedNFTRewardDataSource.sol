@@ -622,11 +622,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
     uint256 _numberReservedTokensMintable = _numerator / JBConstants.MAX_RESERVED_RATE;
 
-    // Round up if no reserved tokens have been minted yet.
-    if (
-      reserveTokensMinted == 0 &&
-      _numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0
-    ) ++_numberReservedTokensMintable;
+    // Round up.
+    if (_numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0)
+      ++_numberReservedTokensMintable;
 
     // If no possible reserve to mint, return 0
     if (_numberReservedTokensMintable == 0) return 0;
