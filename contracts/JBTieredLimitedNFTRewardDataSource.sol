@@ -35,7 +35,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   error INVALID_TIER();
   error INVALID_PRICE_SORT_ORDER();
   error NO_QUANTITY();
-  error NOT_AVAILABLE();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
