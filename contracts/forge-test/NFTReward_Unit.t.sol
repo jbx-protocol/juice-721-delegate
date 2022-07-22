@@ -987,10 +987,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(first.length, second.length);
 
     for (uint256 i; i < first.length; i++) {
-      assertEq(first[i].contributionFloor, second[i].contributionFloor);
+      assertEq(first[i].data.contributionFloor, second[i].data.contributionFloor);
       // assertEq(first[i].idCeiling, second[i].idCeiling);
-      assertEq(first[i].remainingQuantity, second[i].remainingQuantity);
-      assertEq(first[i].initialQuantity, second[i].initialQuantity);
+      assertEq(first[i].data.remainingQuantity, second[i].data.remainingQuantity);
+      assertEq(first[i].data.initialQuantity, second[i].data.initialQuantity);
     }
   }
 

@@ -152,13 +152,15 @@ contract JBTieredLimitedNFTRewardDataSource is
       if (!isTierRemoved[_i])
         _tiers[_nextIndex++] = JBNFTRewardTier({
           id: _i,
-          contributionFloor: tierData[_i].contributionFloor,
-          lockedUntil: tierData[_i].lockedUntil,
-          remainingQuantity: tierData[_i].remainingQuantity,
-          initialQuantity: tierData[_i].initialQuantity,
-          votingUnits: tierData[_i].votingUnits,
-          reservedRate: tierData[_i].reservedRate,
-          tokenUri: tierData[_i].tokenUri
+          data: JBNFTRewardTierData({
+            contributionFloor: tierData[_i].contributionFloor,
+            lockedUntil: tierData[_i].lockedUntil,
+            remainingQuantity: tierData[_i].remainingQuantity,
+            initialQuantity: tierData[_i].initialQuantity,
+            votingUnits: tierData[_i].votingUnits,
+            reservedRate: tierData[_i].reservedRate,
+            tokenUri: tierData[_i].tokenUri
+          })
         });
 
       unchecked {
@@ -177,13 +179,15 @@ contract JBTieredLimitedNFTRewardDataSource is
     return
       JBNFTRewardTier({
         id: _id,
-        contributionFloor: tierData[_id].contributionFloor,
-        lockedUntil: tierData[_id].lockedUntil,
-        remainingQuantity: tierData[_id].remainingQuantity,
-        initialQuantity: tierData[_id].initialQuantity,
-        votingUnits: tierData[_id].votingUnits,
-        reservedRate: tierData[_id].reservedRate,
-        tokenUri: tierData[_id].tokenUri
+        data: JBNFTRewardTierData({
+          contributionFloor: tierData[_id].contributionFloor,
+          lockedUntil: tierData[_id].lockedUntil,
+          remainingQuantity: tierData[_id].remainingQuantity,
+          initialQuantity: tierData[_id].initialQuantity,
+          votingUnits: tierData[_id].votingUnits,
+          reservedRate: tierData[_id].reservedRate,
+          tokenUri: tierData[_id].tokenUri
+        })
       });
   }
 
