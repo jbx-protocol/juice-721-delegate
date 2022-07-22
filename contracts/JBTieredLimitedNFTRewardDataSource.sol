@@ -491,7 +491,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       if (!_allowVotingUnits && _data.votingUnits != 0) revert VOTING_UNITS_NOT_ALLOWED();
 
       // Make sure there is some quantity.
-      if (_data.remainingQuantity == 0) revert NO_QUANTITY();
+      if (_data.initialQuantity == 0) revert NO_QUANTITY();
 
       // Set the remaining quantity to be the initial quantity.
       _data.remainingQuantity = _data.initialQuantity;
