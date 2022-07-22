@@ -150,18 +150,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Add the tier to the array if it hasn't been removed.
       if (!isTierRemoved[_i])
-        _tiers[_nextIndex++] = JBNFTRewardTier({
-          id: _i,
-          data: JBNFTRewardTierData({
-            contributionFloor: tierData[_i].contributionFloor,
-            lockedUntil: tierData[_i].lockedUntil,
-            remainingQuantity: tierData[_i].remainingQuantity,
-            initialQuantity: tierData[_i].initialQuantity,
-            votingUnits: tierData[_i].votingUnits,
-            reservedRate: tierData[_i].reservedRate,
-            tokenUri: tierData[_i].tokenUri
-          })
-        });
+        // Get a reference to the tier data.
+        _tiers[_nextIndex++] = JBNFTRewardTier({id: _i, data: tierData[_i]});
 
       unchecked {
         --_i;
@@ -176,19 +166,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _id The ID of the tier to get. 
   */
   function tier(uint256 _id) external view override returns (JBNFTRewardTier memory _tier) {
-    return
-      JBNFTRewardTier({
-        id: _id,
-        data: JBNFTRewardTierData({
-          contributionFloor: tierData[_id].contributionFloor,
-          lockedUntil: tierData[_id].lockedUntil,
-          remainingQuantity: tierData[_id].remainingQuantity,
-          initialQuantity: tierData[_id].initialQuantity,
-          votingUnits: tierData[_id].votingUnits,
-          reservedRate: tierData[_id].reservedRate,
-          tokenUri: tierData[_id].tokenUri
-        })
-      });
+    return JBNFTRewardTier({id: _id, data: tierData[_id]});
   }
 
   /** 
