@@ -519,7 +519,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tierIds The tiers IDs to remove.
   */
   function _removeTierIds(uint256[] memory _tierIds) internal {
-    // Get a reference to the number of tiers being paused.
+    // Get a reference to the number of tiers being removed.
     uint256 _numTiers = _tierIds.length;
 
     // Keep a reference to the tier ID being iterated on.
