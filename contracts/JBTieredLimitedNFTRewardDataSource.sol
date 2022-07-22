@@ -590,7 +590,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Keep a reference to the best tier's ID.
     uint256 _bestTierId;
 
-    // Loop through each tier. Go from most valuable tier to least valuable.
+    // Loop through each tier and keep track of the best option.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       if (!isTierRemoved[_i]) {
         // Set the tier being iterated on. Tier's are 1 indexed.
