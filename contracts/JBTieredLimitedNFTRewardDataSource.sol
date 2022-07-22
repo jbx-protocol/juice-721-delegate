@@ -320,8 +320,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     @return The tier number of the specified token ID.
   */
   function tierIdOfToken(uint256 _tokenId) public pure override returns (uint256) {
-    // The tier ID is in the first 8 bits.
-    return uint256(uint8(_tokenId));
+    // The tier ID is in the first 32 bits.
+    return uint256(uint32(_tokenId));
   }
 
   /** 
@@ -790,11 +790,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     pure
     returns (uint256 tokenId)
   {
-    // The tier ID in the first 8 bits.
+    // The tier ID in the first 32 bits.
     tokenId = _tierId;
 
     // The token number in the rest.
-    tokenId |= _tokenNumber << 8;
+    tokenId |= _tokenNumber << 32;
   }
 
   /**
