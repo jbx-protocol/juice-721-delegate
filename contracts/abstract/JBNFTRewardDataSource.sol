@@ -50,6 +50,7 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
 
   error INVALID_PAYMENT_EVENT();
+  error INVALID_REDEMPTION_EVENT();
   error UNAUTHORIZED();
   error UNEXPECTED();
 
@@ -297,7 +298,7 @@ abstract contract JBNFTRewardDataSource is
     if (
       !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
       _data.projectId != projectId
-    ) revert INVALID_PAYMENT_EVENT();
+    ) revert INVALID_REDEMPTION_EVENT();
 
     // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
     uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
