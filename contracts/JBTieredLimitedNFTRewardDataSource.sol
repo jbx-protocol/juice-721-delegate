@@ -475,7 +475,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Fallback for if we were not able to mint using the metadata
-    if (shouldMintByDefault) return _mintBestAvailableTier(_data.amount.value, _data.beneficiary);
+    if (shouldMintByDefault) {
+      bool out = _mintBestAvailableTier(_data.amount.value, _data.beneficiary);
+      if (out) revert OUT();
+    }
   }
 
   /** 
@@ -484,8 +487,13 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _amount The amount to base the mint on.
     @param _beneficiary The address to mint for.
+
+    @return out Flag indicating if a tier threshold was passed but it was sold out.
   */
-  function _mintBestAvailableTier(uint256 _amount, address _beneficiary) internal {
+  function _mintBestAvailableTier(uint256 _amount, address _beneficiary)
+    internal
+    returns (bool out)
+  {
     // Keep a reference to the number of tiers.
     uint256 _numberOfTiers = numberOfTiers;
 
@@ -498,16 +506,17 @@ contract JBTieredLimitedNFTRewardDataSource is
       _tier = tiers[_i];
 
       // Mint if the contribution value is at least as much as the floor, there's sufficient supply.
-      if (
-        _tier.contributionFloor <= _amount &&
-        (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_i, _tier)) != 0
-      ) {
-        // Mint the tokens.
-        uint256 _tokenId = _mintForTier(_i, _tier, _beneficiary);
+      if (_tier.contributionFloor <= _amount) {
+        if ((_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_i, _tier)) != 0) {
+          // Mint the tokens.
+          uint256 _tokenId = _mintForTier(_i, _tier, _beneficiary);
 
-        emit Mint(_tokenId, _i, _beneficiary, _amount, 0, msg.sender);
+          emit Mint(_tokenId, _i, _beneficiary, _amount, 0, msg.sender);
 
-        return;
+          return false;
+        } else if (!out) {
+          out = true;
+        }
       }
 
       unchecked {
