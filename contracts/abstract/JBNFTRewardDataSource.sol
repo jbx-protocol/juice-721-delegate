@@ -51,6 +51,7 @@ abstract contract JBNFTRewardDataSource is
 
   error INVALID_PAYMENT_EVENT();
   error UNAUTHORIZED();
+  error UNEXPECTED();
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -163,6 +164,9 @@ abstract contract JBNFTRewardDataSource is
       IJBRedemptionDelegate delegate
     )
   {
+    // Make sure fungible project tokens aren't being redeemed too.
+    if (_data.tokenCount > 0) revert UNEXPECTED();
+
     // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
     uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
