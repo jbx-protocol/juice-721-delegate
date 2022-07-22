@@ -314,8 +314,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     override
     returns (uint256 weight)
   {
-    _tokenIds; // Prevents unused var compiler and natspec complaints.
-
     // Get a reference to the total number of tokens.
     uint256 _numberOfTokenIds = _tokenIds.length;
 
