@@ -56,19 +56,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   bool public immutable override shouldMintByDefault;
 
   //*********************************************************************//
-  // ------------------- internal constant properties ------------------ //
-  //*********************************************************************//
-
-  /**
-    @notice
-    Just a kind reminder to our readers
-
-    @dev
-    Used in base58ToString
-  */
-  bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-
-  //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
 
@@ -125,6 +112,19 @@ contract JBTieredLimitedNFTRewardDataSource is
     The beneficiary of reserved tokens.
   */
   address public override reservedTokenBeneficiary;
+
+  //*********************************************************************//
+  // ------------------- internal constant properties ------------------ //
+  //*********************************************************************//
+
+  /**
+    @notice
+    Just a kind reminder to our readers
+
+    @dev
+    Used in base58ToString
+  */
+  bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -485,7 +485,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
       // Set the tier being iterated on.
-      _data = _tierData[_i];
+      _data = _tierData[_i - 1];
 
       // Make sure there are no voting units if they're not allowed.
       if (!_allowVotingUnits && _data.votingUnits != 0) revert VOTING_UNITS_NOT_ALLOWED();
@@ -500,7 +500,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       uint256 _tierId = _currentNumberOfTiers + _i;
 
       // Add the tier with the iterative ID.
-      _tierData[_tierId] = _data;
+      tierData[_tierId] = _data;
 
       emit AddTier(_tierId, _data, msg.sender);
 
