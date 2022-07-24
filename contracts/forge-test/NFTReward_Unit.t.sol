@@ -22,18 +22,33 @@ contract TestJBTieredNFTRewardDelegate is Test {
   string baseUri = 'http://www.null.com/';
   string contractUri = 'ipfs://null';
 
-  //QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
+  // NodeJS: function con(hash) { Buffer.from(bs58.decode(hash).slice(2)).toString('hex') }
+  // JS;  0x${bs58.decode(hash).slice(2).toString('hex')})
+
   bytes32[] tokenUris = [
     bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
-    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
+    bytes32(0xf5d60fc6f462f6176982833f5e2ca222a2ced265fa94e4ce1c477d74910250ed),
+    bytes32(0x4258512cfb09993d9f3613a59ffc592a5593abf3c06ed57a22656c5fbca4de23),
+    bytes32(0xae7035a8ef12433adbf4a55f2063696972bcf50434fe70ee6d8ab78f83e358c8),
+    bytes32(0xae7035a8ef12433adbf4a55f2faabecff3446276fdbc6f6209e6bba25ee358c8),
+    bytes32(0xae7035a8ef1242fc4b803a9284453843f278307462311f8b8b90fddfcbe358c8),
+    bytes32(0xae824fb9f7de128f66cb5e224e4f8c65f37c479ee6ec7193c8741d6f997f5a18),
+    bytes32(0xae7035a8f8d14617dd6d904265fe7d84a493c628385ffba7016d6463c852e8c8),
+    bytes32(0xae7035a8ef12433adbf4a55f2063696972bcf50434fe70ee6d8ab78f74adbbf7),
+    bytes32(0xae7035a8ef12433adbf4a55f2063696972bcf51c38098273db23452d955758c8)
+  ];
+
+  string[] theoricHashes = [
+    'QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'QmetHutWQPz3qfu5jhTi1bqbRZXt8zAJaqqxkiJoJCX9DN',
+    'QmSodj3RSrXKPy3WRFSPz8HRDVyRdrBtjxBfoiWBgtGugN',
+    'Qma5atSTeoKJkcXe2R7gdmcvPvLJJkh2jd4cDZeM1wnFgK',
+    'Qma5atSTeoKJkcXe2R7typcvPvLJJkh2jd4cDZeM1wnFgK',
+    'Qma5atSTeoKJKSQSDFcgdmcvPvLJJkh2jd4cDZeM1wnFgK',
+    'Qma5rtytgfdgzrg4345RFGdfbzert345rfgvs5YRtSTkcX',
+    'Qma5atSTkcXe2R7gdmcvPvLJJkh2234234QcDZeM1wnFgK',
+    'Qma5atSTeoKJkcXe2R7gdmcvPvLJJkh2jd4cDZeM1ZERze',
+    'Qma5atSTeoKJkcXe2R7gdmcvPvLJLkh2jd4cDZeM1wnFgK'
   ];
 
   // The theoretical tokenUri is therefore http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
@@ -113,7 +128,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[0]
       });
     }
 
@@ -140,7 +155,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+          tokenUri: tokenUris[0]
         })
       );
     }
@@ -162,7 +177,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[0]
       });
     }
 
@@ -189,7 +204,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+          tokenUri: tokenUris[0]
         })
       );
     }
@@ -212,7 +227,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[0]
       });
     }
 
@@ -257,7 +272,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -284,7 +299,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+          tokenUri: tokenUris[i]
         })
       );
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
@@ -319,7 +334,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -346,7 +361,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+          tokenUri: tokenUris[i]
         })
       );
       _delegate.ForTest_setReservesMintedFor(i + 1, reservedMinted);
@@ -362,7 +377,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       for (uint256 i; i < 10; i++)
         assertEq(
           _delegate.numberOfReservedTokensOutstandingFor(i + 1),
-          ((totalMinted * reservedRate) / JBConstants.MAX_RESERVED_RATE) - reservedMinted
+          ((totalMinted - reservedMinted * reservedRate) / JBConstants.MAX_RESERVED_RATE)
         );
   }
 
@@ -381,7 +396,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[0]
       });
     }
 
@@ -494,7 +509,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       assertEq(
         _delegate.tokenURI(tokenId),
-        'http://www.null.com/QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz'
+        string(abi.encodePacked(baseUri, theoricHashes[i - 1]))
       );
     }
   }
@@ -719,7 +734,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -746,7 +761,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+          tokenUri: tokenUris[i]
         })
       );
 
@@ -789,7 +804,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        tokenUri: tokenUris[i]
       });
     }
 
@@ -816,7 +831,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+          tokenUri: tokenUris[i]
         })
       );
 
@@ -870,64 +885,71 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
-  // function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOut() external {
-  //   // Create 10 tiers, each with 10 tokens available to mint
-  //   for (uint256 i; i < 10; i++) {
-  //     tiers.push(JBNFTRewardTier({
-  //       contributionFloor: uint128((i + 1) * 10),
-  //       remainingQuantity: uint40(10),
-  //       initialQuantity: uint40(10),
-  //       tokenUri: tokenUris[i]
-  //     }));
-  //   }
+  function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOutInParticularTier()
+    external
+  {
+    // Create 10 tiers, each with 10 tokens available to mint
+    for (uint256 i; i < 10; i++) {
+      tiers.push(
+        JBNFTRewardTier({
+          contributionFloor: uint128((i + 1) * 10),
+          remainingQuantity: uint40(10),
+          initialQuantity: uint40(10),
+          votingUnits: uint16(0),
+          reservedRate: uint16(0),
+          tokenUri: tokenUris[i]
+        })
+      );
+    }
 
-  //   // Mock the directory call
-  //   vm.mockCall(
-  //     address(mockJBDirectory),
-  //     abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-  //     abi.encode(true)
-  //   );
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
 
-  //   uint256 _supplyLeft = tiers[0].initialQuantity;
-  //   while (true) {
-  //     uint256 _totalSupplyBeforePay = delegate.totalSupply();
+    uint256 _supplyLeft = tiers[0].initialQuantity;
+    while (true) {
+      uint256 _totalSupplyBeforePay = delegate.totalSupply();
 
-  //     // If there is no supply left this should revert
-  //     if (_supplyLeft == 0) {
-  //       vm.expectRevert(abi.encodeWithSignature('NOT_AVAILABLE()'));
-  //     }
+      // If there is no supply left this should revert
+      if (_supplyLeft == 0) {
+        vm.expectRevert(abi.encodeWithSignature('OUT()'));
+      }
 
-  //     uint256 _metadata;
-  //     _metadata |= 1 << 32; // 1 reward
-  //     _metadata |= 1 << 40; // tier 1
+      uint8[] memory tierSelected = new uint8[](1);
+      tierSelected[0] = 1;
 
-  //     // Perform the pay
-  //     vm.prank(mockTerminalAddress);
-  //     delegate.didPay(
-  //       JBDidPayData(
-  //         msg.sender,
-  //         projectId,
-  //         0,
-  //         JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
-  //         0,
-  //         msg.sender,
-  //         false,
-  //         '',
-  //         abi.encode(_metadata)
-  //       )
-  //     );
+      bytes memory _metadata = abi.encode(bytes32(0), tierSelected);
 
-  //     // Make sure if there was no supply left there was no NFT minted
-  //     if (_supplyLeft == 0) {
-  //       assertEq(delegate.totalSupply(), _totalSupplyBeforePay);
-  //       break;
-  //     } else {
-  //       assertEq(delegate.totalSupply(), _totalSupplyBeforePay + 1);
-  //     }
+      // Perform the pay
+      vm.prank(mockTerminalAddress);
+      delegate.didPay(
+        JBDidPayData(
+          msg.sender,
+          projectId,
+          0,
+          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
+          0,
+          msg.sender,
+          false,
+          '',
+          abi.encode(_metadata)
+        )
+      );
 
-  //     --_supplyLeft;
-  //   }
-  // }
+      // Make sure if there was no supply left there was no NFT minted
+      if (_supplyLeft == 0) {
+        assertEq(delegate.totalSupply(), _totalSupplyBeforePay);
+        break;
+      } else {
+        assertEq(delegate.totalSupply(), _totalSupplyBeforePay + 1);
+      }
+
+      --_supplyLeft;
+    }
+  }
 
   function testJBTieredNFTRewardDelegate_didPay_revertIfCallerIsNotATerminalOfProjectId(
     address _terminal
@@ -957,6 +979,38 @@ contract TestJBTieredNFTRewardDelegate is Test {
         new bytes(0)
       )
     );
+  }
+
+  function testJBTieredNFTRewardDelegate_didPay_doNotMintIfNotUsingCorrectToken(address token)
+    external
+  {
+    vm.assume(token != delegate.contributionToken());
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    // The caller is the _expectedCaller however the terminal in the calldata is not correct
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(token, 0, 0, 0),
+        0,
+        msg.sender,
+        false,
+        '',
+        new bytes(0)
+      )
+    );
+
+    // Check: nothing has been minted
+    assertEq(delegate.totalSupply(), 0);
   }
 
   // ----------------
