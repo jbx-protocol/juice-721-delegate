@@ -869,8 +869,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
-  // --------------------------------
-
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert
   function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloor()
     external
@@ -909,9 +907,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
   {
     // Create 10 tiers, each with 10 tokens available to mint
     for (uint256 i; i < 10; i++) {
-      tiers.push(
-        JBNFTRewardTier({
-          contributionFloor: uint128((i + 1) * 10),
+      tierData.push(
+        JBNFTRewardTierData({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
           remainingQuantity: uint40(10),
           initialQuantity: uint40(10),
           votingUnits: uint16(0),
@@ -928,7 +927,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    uint256 _supplyLeft = tiers[0].initialQuantity;
+    uint256 _supplyLeft = tierData[0].initialQuantity;
     while (true) {
       uint256 _totalSupplyBeforePay = delegate.totalSupply();
 
@@ -949,7 +948,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           msg.sender,
           projectId,
           0,
-          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
+          JBTokenAmount(JBTokens.ETH, tierData[0].contributionFloor, 0, 0),
           0,
           msg.sender,
           false,
@@ -1042,9 +1041,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < first.length; i++) {
       assertEq(first[i].data.contributionFloor, second[i].data.contributionFloor);
-      // assertEq(first[i].idCeiling, second[i].idCeiling);
+      assertEq(first[i].data.lockedUntil, second[i].data.lockedUntil);
       assertEq(first[i].data.remainingQuantity, second[i].data.remainingQuantity);
       assertEq(first[i].data.initialQuantity, second[i].data.initialQuantity);
+      assertEq(first[i].data.votingUnits, second[i].data.votingUnits);
+      assertEq(first[i].data.reservedRate, second[i].data.reservedRate);
+      assertEq(first[i].data.tokenUri, second[i].data.tokenUri);
     }
   }
 
