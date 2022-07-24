@@ -623,50 +623,51 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // assertEq(_delegate.tiers(), _tierData);
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfTiersNonSorted(
-    uint8 nbTiers,
-    uint8 errorIndex
-  ) public {
-    vm.assume(nbTiers < 20);
-    vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
-    vm.assume(errorIndex + 1 < nbTiers); // We'll create an error by inverting tiers[i] and [i+1] floor prices
+  // -- Deprecated --
+  // function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfTiersNonSorted(
+  //   uint8 nbTiers,
+  //   uint8 errorIndex
+  // ) public {
+  //   vm.assume(nbTiers < 20);
+  //   vm.assume(errorIndex < nbTiers); // Avoid overflow for the next assume
+  //   vm.assume(errorIndex + 1 < nbTiers); // We'll create an error by inverting tiers[i] and [i+1] floor prices
 
-    // Create new tiers array
-    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](nbTiers);
-    for (uint256 i; i < nbTiers; i++) {
-      _tierData[i] = JBNFTRewardTierData({
-        contributionFloor: uint80(i * 10),
-        lockedUntil: uint48(0),
-        remainingQuantity: uint40(100),
-        initialQuantity: uint40(100),
-        votingUnits: uint16(0),
-        reservedRate: uint16(0),
-        tokenUri: tokenUris[0]
-      });
-    }
+  //   // Create new tiers array
+  //   JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](nbTiers);
+  //   for (uint256 i; i < nbTiers; i++) {
+  //     _tierData[i] = JBNFTRewardTierData({
+  //       contributionFloor: uint80(i * 10),
+  //       lockedUntil: uint48(0),
+  //       remainingQuantity: uint40(100),
+  //       initialQuantity: uint40(100),
+  //       votingUnits: uint16(0),
+  //       reservedRate: uint16(0),
+  //       tokenUri: tokenUris[0]
+  //     });
+  //   }
 
-    // Swap the contribution floors
-    (_tierData[errorIndex].contributionFloor, _tierData[errorIndex + 1].contributionFloor) = (
-      _tierData[errorIndex + 1].contributionFloor,
-      _tierData[errorIndex].contributionFloor
-    );
+  //   // Swap the contribution floors
+  //   (_tierData[errorIndex].contributionFloor, _tierData[errorIndex + 1].contributionFloor) = (
+  //     _tierData[errorIndex + 1].contributionFloor,
+  //     _tierData[errorIndex].contributionFloor
+  //   );
 
-    // Expect the error at i+1 (as the floor is now smaller than i)
-    vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER()'));
-    new JBTieredLimitedNFTRewardDataSource(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IJBTokenUriResolver(mockTokenUriResolver),
-      contractUri,
-      baseUri,
-      owner,
-      _tierData,
-      false, // _shouldMintByDefault
-      reserveBeneficiary
-    );
-  }
+  //   // Expect the error at i+1 (as the floor is now smaller than i)
+  //   vm.expectRevert(abi.encodeWithSignature('INVALID_PRICE_SORT_ORDER()'));
+  //   new JBTieredLimitedNFTRewardDataSource(
+  //     projectId,
+  //     IJBDirectory(mockJBDirectory),
+  //     name,
+  //     symbol,
+  //     IJBTokenUriResolver(mockTokenUriResolver),
+  //     contractUri,
+  //     baseUri,
+  //     owner,
+  //     _tierData,
+  //     false, // _shouldMintByDefault
+  //     reserveBeneficiary
+  //   );
+  // }
 
   function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfOneEmptyRemainingQuantity(
     uint8 nbTiers,
@@ -689,8 +690,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
     }
 
-    // Swap the contribution floors
-    _tierData[errorIndex].remainingQuantity = 0;
+    _tierData[errorIndex].initialQuantity = 0;
 
     // Expect the error at i+1 (as the floor is now smaller than i)
     vm.expectRevert(abi.encodeWithSignature('NO_QUANTITY()'));
