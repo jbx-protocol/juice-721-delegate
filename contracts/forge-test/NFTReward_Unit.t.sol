@@ -73,6 +73,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     address caller
   );
 
+  event SetReservedTokenBeneficiary(
+    address indexed beneficiary,
+    address caller
+  );
+
   function setUp() public {
     vm.label(beneficiary, 'beneficiary');
     vm.label(owner, 'owner');
@@ -809,6 +814,25 @@ contract TestJBTieredNFTRewardDelegate is Test {
       // Check balance
       assertEq(_delegate.balanceOf(reserveBeneficiary), mintable * tier);
     }
+  }
+
+  // Used to detect coverage
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary() public {
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address(bytes20(keccak256('newReserveBeneficiary'))));
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address(bytes20(keccak256('anotherNewReserveBeneficiary'))));
+  }
+
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address _newBeneficiary) public {
+    // Make sure the beneficiary is actually changing
+    vm.assume(_newBeneficiary != delegate.reservedTokenBeneficiary());
+
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit SetReservedTokenBeneficiary(_newBeneficiary, owner);
+
+    vm.prank(owner);
+    delegate.setReservedTokenBeneficiary(_newBeneficiary);
+
+    assertEq(delegate.reservedTokenBeneficiary(), _newBeneficiary);
   }
 
   function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft() public {
