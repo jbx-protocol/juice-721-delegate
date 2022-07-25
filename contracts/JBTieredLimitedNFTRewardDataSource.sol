@@ -143,18 +143,15 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Initialize an array with the appropriate length.
     _tiers = new JBNFTRewardTier[](_numberOfTiers);
 
-    // Keep a reference to the next array index being populated.
-    uint256 _nextIndex;
-
     // Loop through each tier.
-    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+    for (uint256 _i; _i < _numberOfTiers; ) {
       // Add the tier to the array if it hasn't been removed.
       if (!isTierRemoved[_i])
-        // Get a reference to the tier data.
-        _tiers[_nextIndex++] = JBNFTRewardTier({id: _i, data: tierData[_i]});
+        // Get a reference to the tier data (1-indexed).
+        _tiers[_i] = JBNFTRewardTier({id: _i + 1, data: tierData[_i + 1]});
 
       unchecked {
-        --_i;
+        ++_i;
       }
     }
   }
