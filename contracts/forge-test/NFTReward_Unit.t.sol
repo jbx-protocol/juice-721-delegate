@@ -835,6 +835,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.reservedTokenBeneficiary(), _newBeneficiary);
   }
 
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(address _sender, address _newBeneficiary) public {
+    // Make sure the sender is not the owner
+    vm.assume(_sender != owner);
+
+    vm.expectRevert('Ownable: caller is not the owner');
+
+    vm.prank(_sender);
+    delegate.setReservedTokenBeneficiary(_newBeneficiary);
+  }
+
   function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft() public {
     uint256 initialQuantity = 200;
     uint256 totalMinted = 120;
