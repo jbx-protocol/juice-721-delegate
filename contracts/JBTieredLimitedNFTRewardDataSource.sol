@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
+// SPDX-License-Identifier: MIT
 
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
@@ -38,6 +38,8 @@ contract JBTieredLimitedNFTRewardDataSource is
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
+
+  error DOUBLE_FLOOR();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -125,6 +127,20 @@ contract JBTieredLimitedNFTRewardDataSource is
     Used in base58ToString
   */
   bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+  //*********************************************************************//
+  // ----------------------- internal properties ----------------------- //
+  //*********************************************************************//
+
+  /**
+  all the active floors, sorted
+   */
+  uint256[] internal _floorsSorted;
+
+  /**
+    floor->tier id
+ */
+  mapping(uint256 => uint256) internal _tierFloorIndex;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -499,6 +515,12 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Add the tier with the iterative ID.
       tierData[_tierId] = _data;
 
+      // Add the floor, will revert if already an existing floor
+      _addSortedFloor(_data.contributionFloor);
+
+      // Add the reference floor->tier data
+      _tierFloorIndex[_data.contributionFloor] = _tierId;
+
       emit AddTier(_tierId, _data, msg.sender);
 
       unchecked {
@@ -827,6 +849,39 @@ contract JBTieredLimitedNFTRewardDataSource is
       _transferVotingUnits(_from, _to, _data.votingUnits);
 
     super._afterTokenTransfer(_from, _to, _tokenId);
+  }
+
+  function _addSortedFloor(uint80 _newFloor) internal {
+    uint256 _numberOfActiveTiers = _floorsSorted.length;
+    uint256 _indexNewFloor;
+
+    if (_numberOfActiveTiers == 0) {
+      _floorsSorted.push(_newFloor);
+      return;
+    }
+
+    // Todo: binary search instead?
+    for (uint256 i; i < _numberOfActiveTiers; i++)
+      if (_floorsSorted[i] == _newFloor) revert DOUBLE_FLOOR();
+      else if (_floorsSorted[i] > _newFloor) {
+        _indexNewFloor = i - 1;
+        break;
+      }
+
+    // loop, starting at the end of the array, and shift the elements to the right (from keccack(slot)+i to keccack(slot)+i+1
+    for (uint256 i = _numberOfActiveTiers - 1; i >= _indexNewFloor; i--)
+      assembly {
+        mstore(0x0, _floorsSorted.slot)
+        let elementAddress := add(keccak256(0x0, 32), i)
+        let elementNewAddress := add(keccak256(0x0, 32), add(i, 1))
+        let data := sload(elementAddress)
+        sstore(elementNewAddress, data)
+      }
+
+    assembly {
+      // Modify the array length
+      sstore(_floorsSorted.slot, add(_numberOfActiveTiers, 1))
+    }
   }
 
   function _decodeIpfs(bytes32 hexString) internal view returns (string memory) {
