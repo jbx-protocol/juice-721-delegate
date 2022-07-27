@@ -474,16 +474,20 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Keep a reference to the flag indicating if funds should be refunded if not spent. Defaults to false, meaning no funds will be returned.
     bool _dontOverspend;
 
-    // Make decisions based on the provided metadata.
-    if (_data.metadata.length > 32) {
+    // skip the first 32 bits which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
+    // Check the 4 bits interfaceId to verify the metadata is intended for this contract
+    if(
+      _data.metadata.length > 36 &&
+      bytes4(_data.metadata[32:36]) == type(IJBNFTRewardDataSource).interfaceId
+    ){
       // Keep references to the metadata properties.
       bool _dontMint;
       uint8[] memory _tierIdsToMint;
 
-      // Decode the metadata, skip the first 32 bits which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
-      (, _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
+      // Decode the metadata
+      (,, _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
         _data.metadata,
-        (bytes32, bool, bool, bool, uint8[])
+        (bytes32, bytes4, bool, bool, bool, uint8[])
       );
 
       // Don't mint if not desired.
