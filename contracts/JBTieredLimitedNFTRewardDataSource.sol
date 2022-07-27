@@ -500,7 +500,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     // If there are funds leftover, mint the best available with it.
     if (_leftoverAmount != 0)
-      _leftoverAmount = _mintBestAvailableTiers(
+      _leftoverAmount = _mintBestAvailableTier(
         _leftoverAmount,
         _data.beneficiary,
         _expectMintFromExtraFunds
@@ -518,24 +518,18 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _beneficiary The address to mint for.
     @param _expectMint A flag indicating if a mint was expected.
 
-    @return leftoverAmount The amount leftover after the mint.
+    @return  The amount leftover after the mint.
   */
-  function _mintBestAvailableTiers(
+  function _mintBestAvailableTier(
     uint256 _amount,
     address _beneficiary,
     bool _expectMint
-  ) internal returns (uint256 leftoverAmount) {
-    // Set the leftover amount to be the initial amount.
-    leftoverAmount = _amount;
-
+  ) internal returns (uint256) {
     // Keep a reference to the number of tiers.
     uint256 _numberOfTiers = numberOfTiers;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier storage _tier;
-
-    // Keep track of if something has been minted.
-    bool _hasMinted;
 
     // Loop through each tier. Go from most valuable tier to least valuable.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
@@ -544,7 +538,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
       // Mint if the contribution value is at least as much as the floor, there's sufficient supply.
       if (
-        _tier.contributionFloor <= leftoverAmount &&
+        _tier.contributionFloor <= _amount &&
         (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_i, _tier)) != 0
       ) {
         // Mint the tokens.
@@ -552,14 +546,8 @@ contract JBTieredLimitedNFTRewardDataSource is
 
         emit Mint(_tokenId, _i, _beneficiary, _tier.contributionFloor, 0, msg.sender);
 
-        // Reduce the leftover amount.
-        leftoverAmount -= _tier.contributionFloor;
-
-        // Set the flag.
-        if (!_hasMinted) _hasMinted = true;
-
-        // If there's no leftover amount, there's nothing left to mint.
-        if (leftoverAmount == 0) return leftoverAmount;
+        // Return the leftover amount.
+        return _amount - _tier.contributionFloor;
       }
 
       unchecked {
@@ -568,7 +556,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Make sure a mint was not expected.
-    if (!_hasMinted && _expectMint) revert NOT_AVAILABLE();
+    if (_expectMint) revert NOT_AVAILABLE();
+
+    return _amount;
   }
 
   /** 
