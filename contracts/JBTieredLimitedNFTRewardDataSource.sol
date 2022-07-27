@@ -54,12 +54,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   uint256 public immutable override numberOfTiers;
 
-  /** 
-    @notice
-    A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
-  */
-  bool public immutable override shouldMintByDefault;
-
   //*********************************************************************//
   // --------------- internal immutable stored properties -------------- //
   //*********************************************************************//
@@ -330,7 +324,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
     @param _tiers The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
-    @param _shouldMintByDefault A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
     @param _reservedTokenBeneficiary The address that should receive the reserved tokens.
   */
   constructor(
@@ -343,7 +336,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _baseUri,
     address _owner,
     JBNFTRewardTier[] memory _tiers,
-    bool _shouldMintByDefault,
     address _reservedTokenBeneficiary
   )
     JBNFTRewardDataSource(
@@ -358,7 +350,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     EIP712(_name, '1')
   {
     contributionToken = JBTokens.ETH;
-    shouldMintByDefault = _shouldMintByDefault;
     baseUri = _baseUri;
     reservedTokenBeneficiary = _reservedTokenBeneficiary;
 
@@ -476,16 +467,16 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     // skip the first 32 bits which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
     // Check the 4 bits interfaceId to verify the metadata is intended for this contract
-    if(
+    if (
       _data.metadata.length > 36 &&
       bytes4(_data.metadata[32:36]) == type(IJBNFTRewardDataSource).interfaceId
-    ){
+    ) {
       // Keep references to the metadata properties.
       bool _dontMint;
       uint8[] memory _tierIdsToMint;
 
       // Decode the metadata
-      (,, _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
+      (, , _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
         _data.metadata,
         (bytes32, bytes4, bool, bool, bool, uint8[])
       );

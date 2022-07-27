@@ -27,8 +27,6 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function numberOfTiers() external view returns (uint256);
 
-  function shouldMintByDefault() external view returns (bool);
-
   function tierBalanceOf(address _account, uint256 _tier) external view returns (uint256);
 
   function numberOfReservesMintedFor(uint256 _tierId) external view returns (uint256);
