@@ -341,8 +341,13 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _numberOfTokenIds = _tokenIds.length;
 
     // Add each token's tier's contribution floor to the weight.
-    for (uint256 _i; _i < _numberOfTokenIds; )
-      weight += uint256(tiers[tierIdOfToken(_tokenIds[_i])].contributionFloor);
+    for (uint256 _i; _i < _numberOfTokenIds; ) {
+      weight += uint256(tierData[tierIdOfToken(_tokenIds[_i])].contributionFloor);
+
+      unchecked {
+        ++_i;
+      }
+    }
   }
 
   /** 
@@ -356,15 +361,19 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _numberOfTiers = numberOfTiers;
 
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier memory _tier;
+    JBNFTRewardTierData memory _data;
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTiers; ) {
-      _tier = tiers[_i];
+      _data = tierData[_i];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
-      weight += (uint256(_tier.contributionFloor) *
-        (_tier.initialQuantity - _tier.remainingQuantity));
+      weight += (uint256(_data.contributionFloor) *
+        (_data.initialQuantity - _data.remainingQuantity));
+
+      unchecked {
+        ++_i;
+      }
     }
   }
 
