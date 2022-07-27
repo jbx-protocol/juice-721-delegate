@@ -468,11 +468,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Set the leftover amount as the initial value.
     uint256 _leftoverAmount = _data.amount.value;
 
-    // Keep a reference to the flag indicating if funds should be refunded if not spent. Defaults to false, meaning no funds will be returned.
-    bool _dontOverspend;
-
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
     bool _expectMintFromExtraFunds;
+
+    // Keep a reference to the flag indicating if funds should be refunded if not spent. Defaults to false, meaning no funds will be returned.
+    bool _dontOverspend;
 
     // Make decisions based on the provided metadata.
     if (_data.metadata.length > 32) {
