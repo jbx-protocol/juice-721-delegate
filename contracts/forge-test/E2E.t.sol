@@ -85,7 +85,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     rawMetadata[0] = uint8(highestTier); // reward tier
 
     // Encode it to metadata
-    bytes memory metadata = abi.encode(bytes32(0), rawMetadata);
+    bytes memory metadata = abi.encode(bytes32(0), type(IJBNFTRewardDataSource).interfaceId, false, false, false, rawMetadata);
 
     // Check: correct tier and id?
     vm.expectEmit(true, true, true, true);
@@ -169,7 +169,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
 
     // Encode it to metadata
-    bytes memory metadata = abi.encode(bytes32(0), rawMetadata);
+    bytes memory metadata = abi.encode(bytes32(0), type(IJBNFTRewardDataSource).interfaceId, false, false, false, rawMetadata);
 
     vm.prank(_caller);
     _jbETHPaymentTerminal.pay{value: _amountNeeded}(
