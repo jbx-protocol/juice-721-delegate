@@ -494,7 +494,7 @@ contract JBTieredLimitedNFTRewardDataSource is
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
 
-    // If there's funds leftover, mint the best available with it.
+    // If there are funds leftover, mint the best available with it.
     if (_leftoverAmount != 0)
       _leftoverAmount = _mintBestAvailableTiers(
         _leftoverAmount,
