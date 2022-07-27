@@ -7,8 +7,10 @@ import '@paulrberg/contracts/math/PRBMath.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol';
+import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
+
 import './ERC721.sol';
 import '../interfaces/IJBNFTRewardDataSource.sol';
 
@@ -171,9 +173,39 @@ abstract contract JBNFTRewardDataSource is
     // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
     uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
+    // Get a reference to the redemption rate of the provided tokens.
+    uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds);
+
+    // Get a reference to the total redemption weight.
+    uint256 _totalRedemptionWeigt = totalRedemptionWeight();
+
+    // If the amount being redeemed is the total, return the rest of the overflow.
+    if (_redemptionWeight == _totalRedemptionWeigt)
+      return (_data.overflow, _data.memo, IJBRedemptionDelegate(address(this)));
+
+    // Get a reference to the linear proportion.
+    uint256 _base = PRBMath.mulDiv(
+      _data.overflow,
+      redemptionWeightOf(_decodedTokenIds),
+      totalRedemptionWeight()
+    );
+
+    // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
+    if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
+      return (_base, _data.memo, IJBRedemptionDelegate(address(this)));
+
     // Return the weighted overflow, and this contract as the delegate so that tokens can be deleted.
     return (
-      PRBMath.mulDiv(_data.overflow, redemptionWeightOf(_decodedTokenIds), totalRedemptionWeight()),
+      PRBMath.mulDiv(
+        _base,
+        _data.redemptionRate +
+          PRBMath.mulDiv(
+            redemptionWeightOf(_decodedTokenIds),
+            JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate,
+            totalRedemptionWeight()
+          ),
+        JBConstants.MAX_REDEMPTION_RATE
+      ),
       _data.memo,
       IJBRedemptionDelegate(address(this))
     );
