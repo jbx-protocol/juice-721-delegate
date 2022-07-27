@@ -502,7 +502,7 @@ contract JBTieredLimitedNFTRewardDataSource is
         _expectMintFromExtraFunds
       );
 
-    // If there's any funds leftover, send it back to the payer if the funds aren't intended to be spent.
+    // If there are any funds leftover, send it back to the payer if the funds aren't intended to be spent.
     if (_dontOverspend && _leftoverAmount != 0) revert OVERSPENDING();
   }
 
