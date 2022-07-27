@@ -4,6 +4,7 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@openzeppelin/contracts/governance/utils/Votes.sol';
+import '@openzeppelin/contracts/utils/Address.sol';
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
@@ -36,6 +37,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   error INVALID_PRICE_SORT_ORDER();
   error NO_QUANTITY();
   error NOT_AVAILABLE();
+  error OVERSPENDING();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -464,21 +466,45 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Make sure the contribution is being made in the expected token.
     if (_data.amount.token != contributionToken) return;
 
-    // Check if the metadata is filled with the needed information
+    // Set the leftover amount as the initial value.
+    uint256 _leftoverAmount = _data.amount.value;
+
+    // Keep a reference to the flag indicating if funds should be refunded if not spent. Defaults to false, meaning no funds will be returned.
+    bool _dontOverspend;
+
+    // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
+    bool _expectMintFromExtraFunds;
+
+    // Make decisions based on the provided metadata.
     if (_data.metadata.length > 32) {
+      // Keep references to the metadata properties.
+      bool _dontMint;
+      uint8[] memory _tierIdsToMint;
+
       // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
-      (, uint8[] memory _decodedMetadata) = abi.decode(_data.metadata, (bytes32, uint8[]));
+      (, _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
+        _data.metadata,
+        (bytes32, bool, bool, bool, uint8[])
+      );
+
+      // Don't mint if desired.
+      if (_dontMint) return;
 
       // Mint rewards if they were specified. If there are no rewards but a default NFT should be minted, do so.
-      if (_decodedMetadata.length != 0)
-        return _mintAll(_data.amount.value, _decodedMetadata, _data.beneficiary);
+      if (_tierIdsToMint.length != 0)
+        _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
 
-    // Fallback for if we were not able to mint using the metadata
-    if (shouldMintByDefault) {
-      bool out = _mintBestAvailableTier(_data.amount.value, _data.beneficiary);
-      if (out) revert OUT();
-    }
+    // If there's funds leftover, mint the best available with it.
+    if (_leftoverAmount != 0)
+      _leftoverAmount = _mintBestAvailableTiers(
+        _leftoverAmount,
+        _data.beneficiary,
+        _expectMintFromExtraFunds
+      );
+
+    // If there's any funds leftover, send it back to the payer if the funds aren't intended to be spent.
+    if (_dontOverspend && _leftoverAmount != 0) revert OVERSPENDING();
   }
 
   /** 
@@ -487,18 +513,26 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _amount The amount to base the mint on.
     @param _beneficiary The address to mint for.
+    @param _expectMint A flag indicating if a mint was expected.
 
-    @return out Flag indicating if a tier threshold was passed but it was sold out.
+    @return leftoverAmount The amount leftover after the mint.
   */
-  function _mintBestAvailableTier(uint256 _amount, address _beneficiary)
-    internal
-    returns (bool out)
-  {
+  function _mintBestAvailableTiers(
+    uint256 _amount,
+    address _beneficiary,
+    bool _expectMint
+  ) internal returns (uint256 leftoverAmount) {
+    // Set the leftover amount to be the initial amount.
+    leftoverAmount = _amount;
+
     // Keep a reference to the number of tiers.
     uint256 _numberOfTiers = numberOfTiers;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier storage _tier;
+
+    // Keep track of if something has been minted.
+    bool _hasMinted;
 
     // Loop through each tier. Go from most valuable tier to least valuable.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
@@ -506,23 +540,32 @@ contract JBTieredLimitedNFTRewardDataSource is
       _tier = tiers[_i];
 
       // Mint if the contribution value is at least as much as the floor, there's sufficient supply.
-      if (_tier.contributionFloor <= _amount) {
-        if ((_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_i, _tier)) != 0) {
-          // Mint the tokens.
-          uint256 _tokenId = _mintForTier(_i, _tier, _beneficiary);
+      if (
+        _tier.contributionFloor <= leftoverAmount &&
+        (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_i, _tier)) != 0
+      ) {
+        // Mint the tokens.
+        uint256 _tokenId = _mintForTier(_i, _tier, _beneficiary);
 
-          emit Mint(_tokenId, _i, _beneficiary, _amount, 0, msg.sender);
+        emit Mint(_tokenId, _i, _beneficiary, _tier.contributionFloor, 0, msg.sender);
 
-          return false;
-        } else if (!out) {
-          out = true;
-        }
+        // Reduce the leftover amount.
+        leftoverAmount -= _tier.contributionFloor;
+
+        // Set the flag.
+        if (!_hasMinted) _hasMinted = true;
+
+        // If there's no leftover amount, there's nothing left to mint.
+        if (leftoverAmount == 0) return leftoverAmount;
       }
 
       unchecked {
         --_i;
       }
     }
+
+    // Make sure a mint was not expected.
+    if (!_hasMinted && _expectMint) revert NOT_AVAILABLE();
   }
 
   /** 
@@ -532,14 +575,16 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
     @param _mintTiers An array of tierIds that the user wants to mint
     @param _beneficiary The address to mint for.
+
+    @return leftoverAmount The amount leftover after the mint.
   */
   function _mintAll(
     uint256 _amount,
     uint8[] memory _mintTiers,
     address _beneficiary
-  ) internal {
-    // Keep a reference to the amount remaining.
-    uint256 _remainingValue = _amount;
+  ) internal returns (uint256 leftoverAmount) {
+    // Set the leftover amount to be the initial amount.
+    leftoverAmount = _amount;
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTier storage _tier;
@@ -562,7 +607,7 @@ contract JBTieredLimitedNFTRewardDataSource is
         if (_tier.initialQuantity == 0) revert INVALID_TIER();
 
         // Make sure the amount meets the tier's contribution floor.
-        if (_tier.contributionFloor > _remainingValue) revert INSUFFICIENT_AMOUNT();
+        if (_tier.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
 
         // Make sure there are enough units available.
         if (_tier.remainingQuantity - _numberOfReservedTokensOutstandingFor(_tierId, _tier) == 0)
@@ -572,7 +617,7 @@ contract JBTieredLimitedNFTRewardDataSource is
         uint256 _tokenId = _mintForTier(_tierId, _tier, _beneficiary);
 
         // Decrement the remaining value.
-        _remainingValue = _remainingValue - _tier.contributionFloor;
+        leftoverAmount = leftoverAmount - _tier.contributionFloor;
 
         emit Mint(_tokenId, _tierId, _beneficiary, _amount, _mintsLength, msg.sender);
       }
