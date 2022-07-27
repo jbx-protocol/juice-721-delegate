@@ -486,7 +486,7 @@ contract JBTieredLimitedNFTRewardDataSource is
         (bytes32, bool, bool, bool, uint8[])
       );
 
-      // Don't mint if desired.
+      // Don't mint if not desired.
       if (_dontMint) return;
 
       // Mint rewards if they were specified. If there are no rewards but a default NFT should be minted, do so.
