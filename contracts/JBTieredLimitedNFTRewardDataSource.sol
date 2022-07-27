@@ -480,7 +480,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       bool _dontMint;
       uint8[] memory _tierIdsToMint;
 
-      // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+      // Decode the metadata, skip the first 32 bits which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
       (, _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
         _data.metadata,
         (bytes32, bool, bool, bool, uint8[])
