@@ -4,7 +4,6 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@openzeppelin/contracts/governance/utils/Votes.sol';
-import '@openzeppelin/contracts/utils/Address.sol';
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
