@@ -73,10 +73,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     address caller
   );
 
-  event SetReservedTokenBeneficiary(
-    address indexed beneficiary,
-    address caller
-  );
+  event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
   function setUp() public {
     vm.label(beneficiary, 'beneficiary');
@@ -818,11 +815,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   // Used to detect coverage
   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary() public {
-    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address(bytes20(keccak256('newReserveBeneficiary'))));
-    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address(bytes20(keccak256('anotherNewReserveBeneficiary'))));
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(
+      address(bytes20(keccak256('newReserveBeneficiary')))
+    );
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(
+      address(bytes20(keccak256('anotherNewReserveBeneficiary')))
+    );
   }
 
-  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address _newBeneficiary) public {
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address _newBeneficiary)
+    public
+  {
     // Make sure the beneficiary is actually changing
     vm.assume(_newBeneficiary != delegate.reservedTokenBeneficiary());
 
@@ -835,7 +838,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.reservedTokenBeneficiary(), _newBeneficiary);
   }
 
-  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(address _sender, address _newBeneficiary) public {
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
+    address _sender,
+    address _newBeneficiary
+  ) public {
     // Make sure the sender is not the owner
     vm.assume(_sender != owner);
 
@@ -957,7 +963,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
-        reservedRate: uint16(i),
+        reservedRate: uint16(0),
         tokenUri: tokenUris[0]
       });
 
@@ -1042,7 +1048,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
           id: i + 1,
           data: _tierDataRemaining[_arrayIndex]
         });
-
       } else _tiersToRemove[i] = i + 1;
     }
 
@@ -1126,6 +1131,67 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
   }
 
+  function testJBTieredNFTRewardDelegate_adjustTiers_revertIfAddingWithReservedRate(
+    uint8 initialNumberOfTiers,
+    uint8 numberTiersToAdd
+  ) public {
+    // Include adding X new tiers when 0 preexisting ones
+    vm.assume(initialNumberOfTiers < 30);
+    vm.assume(numberTiersToAdd > 0);
+
+    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](initialNumberOfTiers);
+    JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](initialNumberOfTiers);
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        tokenUri: tokenUris[0]
+      });
+
+      _tiers[i] = JBNFTRewardTier({id: i + 1, data: _tierData[i]});
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      baseUri,
+      owner,
+      _tierData,
+      false, // _shouldMintByDefault
+      reserveBeneficiary
+    );
+
+    JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](numberTiersToAdd);
+    JBNFTRewardTier[] memory _tiersAdded = new JBNFTRewardTier[](numberTiersToAdd);
+
+    for (uint256 i; i < numberTiersToAdd; i++) {
+      _tierDataToAdd[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 100),
+        lockedUntil: uint48(0),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i + 1),
+        tokenUri: tokenUris[0]
+      });
+
+      _tiersAdded[i] = JBNFTRewardTier({id: _tiers.length + (i + 1), data: _tierDataToAdd[i]});
+    }
+
+    vm.expectRevert(abi.encodeWithSignature('RESERVED_RATE_NOT_ALLOWED()'));
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
+  }
+
   function testJBTieredNFTRewardDelegate_adjustTiers_revertIfEmptyQuantity(
     uint8 initialNumberOfTiers,
     uint8 numberTiersToAdd
@@ -1175,7 +1241,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         remainingQuantity: uint40(100),
         initialQuantity: uint40(0),
         votingUnits: uint16(0),
-        reservedRate: uint16(i),
+        reservedRate: uint16(0),
         tokenUri: tokenUris[0]
       });
 

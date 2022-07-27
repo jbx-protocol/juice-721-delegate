@@ -265,8 +265,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // Get the dataSource
-    IJBTieredLimitedNFTRewardDataSource _delegate =
-            IJBTieredLimitedNFTRewardDataSource(_jbFundingCycleStore.currentOf(projectId).dataSource());
+    IJBTieredLimitedNFTRewardDataSource _delegate = IJBTieredLimitedNFTRewardDataSource(
+      _jbFundingCycleStore.currentOf(projectId).dataSource()
+    );
 
     // _payAmount has to be at least the lowest tier
     vm.assume(_payAmount >= NFTRewardDeployerData.tierData[0].contributionFloor);
@@ -299,7 +300,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     JBNFTRewardTier[] memory _originalTiers = _delegate.tiers();
     uint256[] memory _tiersToRemove = new uint256[](_originalTiers.length);
     // Append all the existing tiers
-    for(uint256 _i; _i < _originalTiers.length; _i++){
+    for (uint256 _i; _i < _originalTiers.length; _i++) {
       _tiersToRemove[_i] = _originalTiers[_i].id;
     }
 
@@ -311,7 +312,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       remainingQuantity: uint40(100),
       initialQuantity: uint40(100),
       votingUnits: uint16(0),
-      reservedRate: uint16(1),
+      reservedRate: uint16(0),
       tokenUri: tokenUris[0]
     });
 

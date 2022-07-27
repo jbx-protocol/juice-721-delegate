@@ -38,6 +38,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
+  error RESERVED_RATE_NOT_ALLOWED();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -468,9 +469,9 @@ contract JBTieredLimitedNFTRewardDataSource is
     Adds tiers. 
 
     @param _tierData The tiers to add.
-    @param _allowVotingUnits A flag indicating if tiers with voting units should be allowed.
+    @param _constructorTiers A flag indicating if tiers with voting units and reserved rate should be allowed.
   */
-  function _addTierData(JBNFTRewardTierData[] memory _tierData, bool _allowVotingUnits) internal {
+  function _addTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers) internal {
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData memory _data;
 
@@ -484,8 +485,11 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Set the tier being iterated on.
       _data = _tierData[_i - 1];
 
-      // Make sure there are no voting units if they're not allowed.
-      if (!_allowVotingUnits && _data.votingUnits != 0) revert VOTING_UNITS_NOT_ALLOWED();
+      // Make sure there are no voting units or reserved rates if they're not allowed.
+      if (!_constructorTiers) {
+        if (_data.votingUnits != 0) revert VOTING_UNITS_NOT_ALLOWED();
+        if (_data.reservedRate != 0) revert RESERVED_RATE_NOT_ALLOWED();
+      }
 
       // Make sure there is some quantity.
       if (_data.initialQuantity == 0) revert NO_QUANTITY();
