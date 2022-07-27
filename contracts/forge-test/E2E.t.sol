@@ -251,6 +251,101 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
   }
 
+  function testMintBeforeAndAfterTierChange(uint72 _payAmount) public {
+    address _user = address(bytes20(keccak256('user')));
+
+    (
+      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBLaunchProjectData memory launchProjectData
+    ) = createData(true);
+    uint256 projectId = deployer.launchProjectFor(
+      _projectOwner,
+      NFTRewardDeployerData,
+      launchProjectData
+    );
+
+    // Get the dataSource
+    IJBTieredLimitedNFTRewardDataSource _delegate = IJBTieredLimitedNFTRewardDataSource(
+      _jbFundingCycleStore.currentOf(projectId).dataSource()
+    );
+
+    // _payAmount has to be at least the lowest tier
+    vm.assume(_payAmount >= NFTRewardDeployerData.tierData[0].contributionFloor);
+
+    vm.expectEmit(false, false, false, false);
+    emit Mint(
+      0,
+      0,
+      _beneficiary,
+      _payAmount,
+      0,
+      address(_jbETHPaymentTerminal) // msg.sender
+    );
+
+    // Pay and mint an NFT
+    vm.deal(_user, _payAmount);
+    vm.prank(_user);
+    _jbETHPaymentTerminal.pay{value: _payAmount}(
+      projectId,
+      100,
+      address(0),
+      _user,
+      0,
+      false,
+      'Take my money!',
+      new bytes(0)
+    );
+
+    // Get the existing tiers
+    JBNFTRewardTier[] memory _originalTiers = _delegate.tiers();
+    uint256[] memory _tiersToRemove = new uint256[](_originalTiers.length);
+    // Append all the existing tiers
+    for (uint256 _i; _i < _originalTiers.length; _i++) {
+      _tiersToRemove[_i] = _originalTiers[_i].id;
+    }
+
+    // Add 1 new tier
+    JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](1);
+    _tierDataToAdd[0] = JBNFTRewardTierData({
+      contributionFloor: _payAmount,
+      lockedUntil: uint48(0),
+      remainingQuantity: uint40(100),
+      initialQuantity: uint40(100),
+      votingUnits: uint16(0),
+      reservedRate: uint16(0),
+      tokenUri: tokenUris[0]
+    });
+
+    // Remove all the existing tiers and add a new one at the previous paid price
+    vm.prank(_projectOwner);
+    _delegate.adjustTiers(_tierDataToAdd, _tiersToRemove);
+
+    // Mint the new NFT and make sure that it is the new tier
+    vm.expectEmit(false, true, false, false);
+    emit Mint(
+      0,
+      _originalTiers[_originalTiers.length - 1].id + 1, // The new tier should have gotten an id 1 higher than the last
+      _beneficiary,
+      _payAmount,
+      0,
+      address(_jbETHPaymentTerminal) // msg.sender
+    );
+
+    // We now pay the exact same amount and expect to receive the new tier and not the old one
+    vm.deal(_user, _payAmount);
+    vm.prank(_user);
+    _jbETHPaymentTerminal.pay{value: _payAmount}(
+      projectId,
+      100,
+      address(0),
+      _user,
+      0,
+      false,
+      'Take my money!',
+      new bytes(0)
+    );
+  }
+
   // ----- internal helpers ------
 
   // Create launchProjectFor(..) payload
@@ -262,11 +357,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       JBLaunchProjectData memory launchProjectData
     )
   {
-    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](10);
+    JBNFTRewardTierData[] memory tierData = new JBNFTRewardTierData[](10);
 
     for (uint256 i; i < 10; i++) {
-      tiers[i] = JBNFTRewardTier({
-        contributionFloor: uint128((i + 1) * 10),
+      tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
         remainingQuantity: uint40(10),
         initialQuantity: uint40(10),
         votingUnits: uint16(0),
@@ -283,7 +379,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       contractUri: contractUri,
       baseUri: baseUri,
       owner: _projectOwner,
-      tiers: tiers,
+      tierData: tierData,
       shouldMintByDefault: _shouldMintByDefault,
       reservedTokenBeneficiary: reserveBeneficiary
     });
