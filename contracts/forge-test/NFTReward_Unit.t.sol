@@ -899,8 +899,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint8 numberTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
-    vm.assume(initialNumberOfTiers < 30);
-    vm.assume(numberTiersToAdd > 0);
+    vm.assume(initialNumberOfTiers < 15);
+    vm.assume(numberTiersToAdd > 0 && numberTiersToAdd < 15);
 
     JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](initialNumberOfTiers);
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](initialNumberOfTiers);
@@ -967,7 +967,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint8 numberTiersToRemove
   ) public {
     // Include adding X new tiers when 0 preexisting ones
-    vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 30);
+    vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
     vm.assume(numberTiersToRemove > 0 && numberTiersToRemove < initialNumberOfTiers);
 
     JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](initialNumberOfTiers);
