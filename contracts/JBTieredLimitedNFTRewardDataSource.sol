@@ -146,8 +146,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Add the tier to the array if it hasn't been removed.
       if (!isTierRemoved[_i]) {
-        // Get a reference to the tier data (1-indexed).
-        _tiers[_i] = JBNFTRewardTier({id: _i + 1, data: tierData[_i + 1]});
+        // Get a reference to the tier data (1-indexed). Overwrite empty tiers.
+        _tiers[_activeTiers] = JBNFTRewardTier({id: _i + 1, data: tierData[_i + 1]});
         unchecked {
           ++_activeTiers;
         }
