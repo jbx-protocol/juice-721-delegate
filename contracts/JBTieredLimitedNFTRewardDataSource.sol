@@ -532,8 +532,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _tierId;
 
     for (uint256 _i; _i < _numTiers; ) {
-      // Set the tier being iterated on.
-      _tierId = _tierIds[_i];
+      // Set the tier being iterated on, 0-indexed
+      _tierId = _tierIds[_i] - 1;
 
       // If the tier is locked throw an error.
       if (tierData[_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
