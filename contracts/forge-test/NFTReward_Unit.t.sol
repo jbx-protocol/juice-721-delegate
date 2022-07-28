@@ -154,7 +154,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _delegate.ForTest_setTier(i + 1, _tierData[i]);
     }
 
-    assertEq(_delegate.tiers(), _tiers);
+    assertTrue(_isIn(_delegate.tiers(), _tiers));
+    assertTrue(_isIn(_tiers, _delegate.tiers()));
   }
 
   function testJBTieredNFTRewardDelegate_tier_returnsTheGivenTier(
@@ -672,7 +673,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(address(_delegate.tokenUriResolver()), mockTokenUriResolver);
     assertEq(_delegate.contractUri(), contractUri);
     assertEq(_delegate.owner(), owner);
-    assertEq(_delegate.tiers(), _tiers);
+    assertTrue(_isIn(_delegate.tiers(), _tiers)); // Order is not insured
+    assertTrue(_isIn(_tiers, _delegate.tiers()));
   }
 
   function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfOneEmptyInitialQuantity(
@@ -1476,21 +1478,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOutInParticularTier()
     external
   {
-    // Create 10 tiers, each with 10 tokens available to mint
-    for (uint256 i; i < 10; i++) {
-      tierData.push(
-        JBNFTRewardTierData({
-          contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
-          remainingQuantity: uint40(10),
-          initialQuantity: uint40(10),
-          votingUnits: uint16(0),
-          reservedRate: uint16(0),
-          tokenUri: tokenUris[i]
-        })
-      );
-    }
-
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -1507,10 +1494,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSignature('OUT()'));
       }
 
+      bool _dontMint;
+      bool _expectMintFromExtraFunds;
+      bool _dontOverspend = true;
       uint8[] memory tierSelected = new uint8[](1);
       tierSelected[0] = 1;
 
-      bytes memory _metadata = abi.encode(bytes32(0), tierSelected);
+      bytes memory _metadata = abi.encode(
+        bytes32(0),
+        type(IJBNFTRewardDataSource).interfaceId,
+        _dontMint,
+        _expectMintFromExtraFunds,
+        _dontOverspend,
+        tierSelected
+      );
 
       // Perform the pay
       vm.prank(mockTerminalAddress);
@@ -1524,7 +1521,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           msg.sender,
           false,
           '',
-          abi.encode(_metadata)
+          _metadata
         )
       );
 
