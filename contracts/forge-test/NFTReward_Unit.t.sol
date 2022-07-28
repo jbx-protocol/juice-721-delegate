@@ -1361,6 +1361,61 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Make sure a new NFT was minted
     assertEq(_totalSupplyBeforePay + 3, delegate.totalSupply());
+
+    // Correct tier has been minted?
+    assertEq(delegate.ownerOf(_generateTokenId(1, 1)), msg.sender);
+    assertEq(delegate.ownerOf(_generateTokenId(1, 2)), msg.sender);
+    assertEq(delegate.ownerOf(_generateTokenId(2, 1)), msg.sender);
+  }
+
+  function testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(uint8 _amount) external {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    uint256 _totalSupplyBeforePay = delegate.totalSupply();
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint8[] memory _tierIdsToMint = new uint8[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJBNFTRewardDataSource).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Make sure a new NFT was minted if amount >= contribution floor
+    if (_amount >= tierData[0].contributionFloor) {
+      assertEq(_totalSupplyBeforePay + 1, delegate.totalSupply());
+
+      // Correct tier has been minted?
+      uint256 highestTier = _amount > 100 ? 10 : _amount / 10;
+      uint256 tokenId = _generateTokenId(highestTier, 1);
+      assertEq(delegate.ownerOf(tokenId), msg.sender);
+    } else assertEq(_totalSupplyBeforePay, delegate.totalSupply());
   }
 
   // If the tier has been removed, revert
@@ -1398,6 +1453,66 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.adjustTiers(new JBNFTRewardTierData[](0), _toRemove);
 
     vm.expectRevert(abi.encodeWithSignature('TIER_REMOVED()'));
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(
+          JBTokens.ETH,
+          tierData[0].contributionFloor * 2 + tierData[1].contributionFloor,
+          0,
+          0
+        ),
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Make sure no new NFT was minted
+    assertEq(_totalSupplyBeforePay, delegate.totalSupply());
+  }
+
+  function testJBTieredNFTRewardDelegate_didPay_revertIfNonExistingTier(uint8 _invalidTier)
+    external
+  {
+    vm.assume(_invalidTier > tierData.length);
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    uint256 _totalSupplyBeforePay = delegate.totalSupply();
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint8[] memory _tierIdsToMint = new uint8[](1);
+    _tierIdsToMint[0] = _invalidTier;
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJBNFTRewardDataSource).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    uint256[] memory _toRemove = new uint256[](1);
+    _toRemove[0] = 1;
+
+    vm.prank(owner);
+    delegate.adjustTiers(new JBNFTRewardTierData[](0), _toRemove);
+
+    vm.expectRevert(abi.encodeWithSignature('INVALID_TIER()'));
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
