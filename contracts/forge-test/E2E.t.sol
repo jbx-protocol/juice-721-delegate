@@ -85,7 +85,14 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     rawMetadata[0] = uint8(highestTier); // reward tier
 
     // Encode it to metadata
-    bytes memory metadata = abi.encode(bytes32(0), type(IJBNFTRewardDataSource).interfaceId, false, false, false, rawMetadata);
+    bytes memory metadata = abi.encode(
+      bytes32(0),
+      type(IJBNFTRewardDataSource).interfaceId,
+      false,
+      false,
+      false,
+      rawMetadata
+    );
 
     // Check: correct tier and id?
     vm.expectEmit(true, true, true, true);
@@ -118,7 +125,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Check: NFT actually received?
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
-    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
+
+    if (valueSent < 110) assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
+    else assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 2); // Second minted with leftover (if > lowest tier)?
+
     assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), _beneficiary);
     assertEq(IJBNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId), _beneficiary);
 
@@ -148,7 +158,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       launchProjectData
     );
 
-    uint256 _amountNeeded = (50 * 60) / 2;
+    // 5 first tier floors
+    uint256 _amountNeeded = 50 + 40 + 30 + 20 + 10;
 
     uint8[] memory rawMetadata = new uint8[](5);
 
@@ -169,12 +180,19 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
 
     // Encode it to metadata
-    bytes memory metadata = abi.encode(bytes32(0), type(IJBNFTRewardDataSource).interfaceId, false, false, false, rawMetadata);
+    bytes memory metadata = abi.encode(
+      bytes32(0),
+      type(IJBNFTRewardDataSource).interfaceId,
+      false,
+      false,
+      false,
+      rawMetadata
+    );
 
     vm.prank(_caller);
     _jbETHPaymentTerminal.pay{value: _amountNeeded}(
       projectId,
-      100,
+      _amountNeeded,
       address(0),
       _beneficiary,
       /* _minReturnedTokens */
@@ -219,13 +237,15 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       launchProjectData
     );
 
+    address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+
     // Check: correct tier and id?
-    vm.expectEmit(true, true, true, true);
+    vm.expectEmit(true, true, true, true, NFTRewardDataSource);
     emit Mint(
       _generateTokenId(highestTier, 1),
       highestTier,
       _beneficiary,
-      valueSent,
+      NFTRewardDeployerData.tierData[highestTier - 1].contributionFloor,
       0,
       address(_jbETHPaymentTerminal) // msg.sender
     );
@@ -247,7 +267,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // Check: NFT actually received?
-    address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
     assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
   }
 
@@ -272,7 +291,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // _payAmount has to be at least the lowest tier
     vm.assume(_payAmount >= NFTRewardDeployerData.tierData[0].contributionFloor);
 
-    vm.expectEmit(false, false, false, false);
+    // vm.expectEmit(true, true, true, true, address(_delegate));
     emit Mint(
       0,
       0,
@@ -321,7 +340,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     _delegate.adjustTiers(_tierDataToAdd, _tiersToRemove);
 
     // Mint the new NFT and make sure that it is the new tier
-    vm.expectEmit(false, true, false, false);
+    // vm.expectEmit(false, true, false, false);
     emit Mint(
       0,
       _originalTiers[_originalTiers.length - 1].id + 1, // The new tier should have gotten an id 1 higher than the last
