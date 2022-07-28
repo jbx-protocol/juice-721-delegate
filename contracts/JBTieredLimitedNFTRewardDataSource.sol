@@ -143,18 +143,18 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _activeTiers;
 
     // Loop through each tier.
-    for (uint256 _i; _i < _numberOfTiers; ) {
-      // Add the tier to the array if it hasn't been removed.
+    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+      // Add the tier to the array if it hasn't been removed (tiers are unsorted)
       if (!isTierRemoved[_i]) {
         // Get a reference to the tier data (1-indexed). Overwrite empty tiers.
-        _tiers[_activeTiers] = JBNFTRewardTier({id: _i + 1, data: tierData[_i + 1]});
+        _tiers[_activeTiers] = JBNFTRewardTier({id: _i, data: tierData[_i]});
         unchecked {
           ++_activeTiers;
         }
       }
 
       unchecked {
-        ++_i;
+        --_i;
       }
     }
 
@@ -533,7 +533,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     for (uint256 _i; _i < _numTiers; ) {
       // Set the tier being iterated on, 0-indexed
-      _tierId = _tierIds[_i] - 1;
+      _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
       if (tierData[_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
