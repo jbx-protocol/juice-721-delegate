@@ -128,9 +128,9 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   /** 
     @notice
-    Gets an array of all the tiers. 
+    Gets an array of all the active tiers. 
 
-    @return _tiers All the tiers tiers.
+    @return _tiers All the tiers.
   */
   function tiers() external view override returns (JBNFTRewardTier[] memory _tiers) {
     // Keep a reference to the number of tiers in stack.
@@ -139,17 +139,30 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Initialize an array with the appropriate length.
     _tiers = new JBNFTRewardTier[](_numberOfTiers);
 
+    // Count the number of active tiers
+    uint256 _activeTiers;
+
     // Loop through each tier.
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Add the tier to the array if it hasn't been removed.
-      if (!isTierRemoved[_i])
+      if (!isTierRemoved[_i]) {
         // Get a reference to the tier data (1-indexed).
         _tiers[_i] = JBNFTRewardTier({id: _i + 1, data: tierData[_i + 1]});
+        unchecked {
+          ++_activeTiers;
+        }
+      }
 
       unchecked {
         ++_i;
       }
     }
+
+    // Resize the array if there are removed tiers
+    if (_activeTiers != _numberOfTiers)
+      assembly {
+        mstore(_tiers, _activeTiers)
+      }
   }
 
   /** 
