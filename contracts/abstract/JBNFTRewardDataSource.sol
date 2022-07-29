@@ -184,11 +184,7 @@ abstract contract JBNFTRewardDataSource is
       return (_data.overflow, _data.memo, IJBRedemptionDelegate(address(this)));
 
     // Get a reference to the linear proportion.
-    uint256 _base = PRBMath.mulDiv(
-      _data.overflow,
-      redemptionWeightOf(_decodedTokenIds),
-      totalRedemptionWeight()
-    );
+    uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _totalRedemptionWeigt);
 
     // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
     if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
@@ -200,9 +196,9 @@ abstract contract JBNFTRewardDataSource is
         _base,
         _data.redemptionRate +
           PRBMath.mulDiv(
-            redemptionWeightOf(_decodedTokenIds),
+            _redemptionWeight,
             JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate,
-            totalRedemptionWeight()
+            _totalRedemptionWeigt
           ),
         JBConstants.MAX_REDEMPTION_RATE
       ),
