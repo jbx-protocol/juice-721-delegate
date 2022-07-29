@@ -327,7 +327,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
     // Return the token URI for the token's tier.
-    // return tiers[tierIdOfToken(_tokenId)].tokenUri;
     return _decodeIpfs(tierData[tierIdOfToken(_tokenId)].tokenUri);
   }
 
@@ -422,11 +421,16 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Increment the number of reserved tokens minted.
     numberOfReservesMintedFor[_tierId] += _count;
 
+    // Get a reference to the beneficiary.
+    address _benenficary = _data.reservedTokenBeneficiary == address(0)
+      ? reservedTokenBeneficiary
+      : _data.reservedTokenBeneficiary;
+
     for (uint256 _i; _i < _count; ) {
       // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _data, reservedTokenBeneficiary);
+      uint256 _tokenId = _mintForTier(_tierId, _data, _benenficary);
 
-      emit MintReservedToken(_tokenId, _tierId, reservedTokenBeneficiary, msg.sender);
+      emit MintReservedToken(_tokenId, _tierId, _benenficary, msg.sender);
 
       unchecked {
         ++_i;

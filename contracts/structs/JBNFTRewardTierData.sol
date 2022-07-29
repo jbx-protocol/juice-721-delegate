@@ -9,6 +9,7 @@ pragma solidity 0.8.6;
   @member votingUnits The amount of voting significance to give this tier compared to others.
   @memver reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
   @member tokenUri The URI to use for each token within the tier.
+  @member reservedRateBeneficiary The beneificary of the reserved tokens for this tier.
 */
 struct JBNFTRewardTierData {
   uint80 contributionFloor;
@@ -18,4 +19,5 @@ struct JBNFTRewardTierData {
   uint16 votingUnits;
   uint16 reservedRate;
   bytes32 tokenUri;
+  address reservedTokenBeneficiary;
 }
