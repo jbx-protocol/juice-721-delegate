@@ -562,6 +562,113 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
+    uint16 numberOfTiers,
+    uint8 firstTier,
+    uint8 lastTier
+  ) public {
+    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    vm.assume(firstTier <= lastTier);
+    vm.assume(lastTier <= numberOfTiers);
+
+    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](numberOfTiers);
+
+    uint256 _maxNumberOfTiers = (numberOfTiers * (numberOfTiers + 1)) / 2; // "tier" token per tier -> max == numberOfTiers!
+    uint256[] memory _tierToGetWeightOf = new uint256[](_maxNumberOfTiers);
+
+    uint256 _iterator;
+    uint256 _theoreticalWeight;
+    for (uint256 i; i < numberOfTiers; i++) {
+      _tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        tokenUri: tokenUris[0]
+      });
+
+      if (i >= firstTier && i < lastTier) {
+        for (uint256 j; j <= i; j++) {
+          _tierToGetWeightOf[_iterator] = _generateTokenId(i + 1, j + 1); // "tier" tokens per tier
+          _iterator++;
+        }
+        _theoreticalWeight += (i + 1) * (i + 1) * 10; //floor is 10
+      }
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        baseUri,
+        owner,
+        _tierData,
+        reserveBeneficiary
+      );
+
+    assertEq(_delegate.redemptionWeightOf(_tierToGetWeightOf), _theoreticalWeight);
+  }
+
+  function testJBTieredNFTRewardDelegate_totalRedemptionWeight_returnsCorrectTotalWeightAsFloorsCumSum(
+    uint16 numberOfTiers
+  ) public {
+    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+
+    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](numberOfTiers);
+
+    uint256 _theoreticalWeight;
+
+    // Temp value for the constructor
+    for (uint256 i; i < numberOfTiers; i++) {
+      _tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        tokenUri: tokenUris[0]
+      });
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        baseUri,
+        owner,
+        _tierData,
+        reserveBeneficiary
+      );
+
+    for (uint256 i = 1; i <= numberOfTiers; i++) {
+      _delegate.ForTest_setTier(
+        i,
+        JBNFTRewardTierData({
+          contributionFloor: uint80(i * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(10 * i - 5 * i),
+          initialQuantity: uint40(10 * i),
+          votingUnits: uint16(0),
+          reservedRate: uint16(0),
+          tokenUri: tokenUris[i - 1]
+        })
+      );
+
+      _theoreticalWeight += (10 * i - 5 * i) * i * 10;
+    }
+
+    assertEq(_delegate.totalRedemptionWeight(), _theoreticalWeight);
+  }
+
   function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnCurrentOwnerIfFirstOwner(
     uint256 tokenId,
     address _owner
@@ -1232,7 +1339,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
   }
 
-  // -- delegate actions --
+  // ----------------
+  //        Pay
+  // ----------------
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert if no metadata passed
   function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloorIfNoMetadata()
@@ -1713,6 +1822,37 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Check: nothing has been minted
     assertEq(delegate.totalSupply(), 0);
   }
+
+  // ----------------
+  //    Redemption
+  // ----------------
+
+  function testJBTieredNFTRewardDelegate_redeemParams_returnsCorrectAmount(
+    uint256 _overflow,
+    uint256 _redemptionRate
+  ) external {
+    vm.prank(mockTerminalAddress);
+    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _delegate) = delegate
+      .redeemParams(
+        JBRedeemParamsData({
+          terminal: IJBPaymentTerminal(address(0)),
+          holder: beneficiary,
+          projectId: projectId,
+          currentFundingCycleConfiguration: 0,
+          tokenCount: 0,
+          totalSupply: 0,
+          overflow: _overflow,
+          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+          useTotalOverflow: true,
+          redemptionRate: _redemptionRate,
+          ballotRedemptionRate: 0,
+          memo: '',
+          metadata: new bytes(0)
+        })
+      );
+  }
+
+  function testJBTieredNFTRewardDelegate_redeemParams_revertIfNonZeroTokenCount() external {}
 
   // ----------------
   // Internal helpers
