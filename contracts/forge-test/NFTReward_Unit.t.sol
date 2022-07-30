@@ -1874,30 +1874,47 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     vm.expectRevert(abi.encodeWithSelector(JBNFTRewardDataSource.UNEXPECTED.selector));
 
-    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _delegate) = delegate
-      .redeemParams(
-        JBRedeemParamsData({
-          terminal: IJBPaymentTerminal(address(0)),
-          holder: beneficiary,
-          projectId: projectId,
-          currentFundingCycleConfiguration: 0,
-          tokenCount: _tokenCount,
-          totalSupply: 0,
-          overflow: 100,
-          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
-          useTotalOverflow: true,
-          redemptionRate: 100,
-          ballotRedemptionRate: 0,
-          memo: '',
-          metadata: new bytes(0)
-        })
-      );
+    delegate.redeemParams(
+      JBRedeemParamsData({
+        terminal: IJBPaymentTerminal(address(0)),
+        holder: beneficiary,
+        projectId: projectId,
+        currentFundingCycleConfiguration: 0,
+        tokenCount: _tokenCount,
+        totalSupply: 0,
+        overflow: 100,
+        reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        useTotalOverflow: true,
+        redemptionRate: 100,
+        ballotRedemptionRate: 0,
+        memo: '',
+        metadata: new bytes(0)
+      })
+    );
   }
 
   function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT(uint8 _numberOfNFT) external {
     address _holder = address(bytes20(keccak256('_holder')));
 
-    uint256[] memory _tokenList;
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        baseUri,
+        owner,
+        tierData,
+        reserveBeneficiary
+      );
+
+    uint256[] memory _tokenList = new uint256[](_numberOfNFT);
+
+    for (uint256 i; i < _numberOfNFT; i++) {
+      _delegate.ForTest_setOwnerOf(i + 1, _holder);
+      _tokenList[i] = i + 1;
+    }
 
     // Mock the directory call
     vm.mockCall(
@@ -1908,7 +1925,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     vm.prank(mockTerminalAddress);
 
-    delegate.didRedeem(
+    _delegate.didRedeem(
       JBDidRedeemData({
         holder: _holder,
         projectId: projectId,
@@ -1922,13 +1939,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_didRedeem_revertIfNotCorrectProjectId(uint8 _projectId)
-    external
-  {
-    vm.assume(_projectId != projectId);
+  function testJBTieredNFTRewardDelegate_didRedeem_revertIfNotCorrectProjectId(
+    uint8 _wrongProjectId
+  ) external {
+    vm.assume(_wrongProjectId != projectId);
     address _holder = address(bytes20(keccak256('_holder')));
 
-    uint256[] memory _tokenList;
+    uint256[] memory _tokenList = new uint256[](1);
+    _tokenList[0] = 1;
 
     // Mock the directory call
     vm.mockCall(
@@ -1944,7 +1962,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.didRedeem(
       JBDidRedeemData({
         holder: _holder,
-        projectId: _projectId,
+        projectId: _wrongProjectId,
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
         reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
@@ -1955,13 +1973,87 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_didRedeem_revertIfCallerIsNotATerminalOfTheProject(
-    uint8 _numberOfNFT
-  ) external {}
-
-  function testJBTieredNFTRewardDelegate_didRedeem_RevertIfWrongHolder(uint8 _numberOfNFT)
+  function testJBTieredNFTRewardDelegate_didRedeem_revertIfCallerIsNotATerminalOfTheProject()
     external
-  {}
+  {
+    address _holder = address(bytes20(keccak256('_holder')));
+
+    uint256[] memory _tokenList = new uint256[](1);
+    _tokenList[0] = 1;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(false)
+    );
+
+    vm.expectRevert(
+      abi.encodeWithSelector(JBNFTRewardDataSource.INVALID_REDEMPTION_EVENT.selector)
+    );
+    vm.prank(mockTerminalAddress);
+    delegate.didRedeem(
+      JBDidRedeemData({
+        holder: _holder,
+        projectId: projectId,
+        currentFundingCycleConfiguration: 1,
+        projectTokenCount: 0,
+        reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        beneficiary: payable(_holder),
+        memo: 'thy shall redeem',
+        metadata: abi.encode(_tokenList)
+      })
+    );
+  }
+
+  function testJBTieredNFTRewardDelegate_didRedeem_RevertIfWrongHolder(
+    address _wrongHolder,
+    uint8 tokenId
+  ) external {
+    address _holder = address(bytes20(keccak256('_holder')));
+    vm.assume(_holder != _wrongHolder);
+    vm.assume(tokenId != 0);
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        baseUri,
+        owner,
+        tierData,
+        reserveBeneficiary
+      );
+
+    _delegate.ForTest_setOwnerOf(tokenId, _holder);
+
+    uint256[] memory _tokenList = new uint256[](1);
+    _tokenList[0] = tokenId;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    vm.expectRevert(abi.encodeWithSelector(JBNFTRewardDataSource.UNAUTHORIZED.selector));
+    vm.prank(mockTerminalAddress);
+    _delegate.didRedeem(
+      JBDidRedeemData({
+        holder: _wrongHolder,
+        projectId: projectId,
+        currentFundingCycleConfiguration: 1,
+        projectTokenCount: 0,
+        reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        beneficiary: payable(_wrongHolder),
+        memo: 'thy shall redeem',
+        metadata: abi.encode(_tokenList)
+      })
+    );
+  }
 
   // ----------------
   // Internal helpers
