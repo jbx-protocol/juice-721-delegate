@@ -170,6 +170,9 @@ abstract contract JBNFTRewardDataSource is
     // Make sure fungible project tokens aren't being redeemed too.
     if (_data.tokenCount > 0) revert UNEXPECTED();
 
+    // If redemption rate is 0, nothing can be reclaimed from the treasury
+    if (_data.redemptionRate == 0) return (0, _data.memo, IJBRedemptionDelegate(address(this)));
+
     // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
     uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
@@ -178,10 +181,6 @@ abstract contract JBNFTRewardDataSource is
 
     // Get a reference to the total redemption weight.
     uint256 _totalRedemptionWeigt = totalRedemptionWeight();
-
-    // If the amount being redeemed is the total, return the rest of the overflow.
-    if (_redemptionWeight == _totalRedemptionWeigt)
-      return (_data.overflow, _data.memo, IJBRedemptionDelegate(address(this)));
 
     // Get a reference to the linear proportion.
     uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _totalRedemptionWeigt);
