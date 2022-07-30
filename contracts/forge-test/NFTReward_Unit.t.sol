@@ -1843,28 +1843,28 @@ contract TestJBTieredNFTRewardDelegate is Test {
   //    Redemption
   // ----------------
 
-  function testJBTieredNFTRewardDelegate_redeemParams_returnsCorrectAmount(
+  function TODO_testJBTieredNFTRewardDelegate_redeemParams_returnsCorrectAmount(
     uint256 _overflow,
     uint256 _redemptionRate
   ) external {
-    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _delegate) = delegate
-      .redeemParams(
-        JBRedeemParamsData({
-          terminal: IJBPaymentTerminal(address(0)),
-          holder: beneficiary,
-          projectId: projectId,
-          currentFundingCycleConfiguration: 0,
-          tokenCount: 0,
-          totalSupply: 0,
-          overflow: _overflow,
-          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
-          useTotalOverflow: true,
-          redemptionRate: _redemptionRate,
-          ballotRedemptionRate: 0,
-          memo: '',
-          metadata: new bytes(0)
-        })
-      );
+    // (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _delegate) = delegate
+    //   .redeemParams(
+    //     JBRedeemParamsData({
+    //       terminal: IJBPaymentTerminal(address(0)),
+    //       holder: beneficiary,
+    //       projectId: projectId,
+    //       currentFundingCycleConfiguration: 0,
+    //       tokenCount: 0,
+    //       totalSupply: 0,
+    //       overflow: _overflow,
+    //       reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+    //       useTotalOverflow: true,
+    //       redemptionRate: _redemptionRate,
+    //       ballotRedemptionRate: 0,
+    //       memo: '',
+    //       metadata: new bytes(0)
+    //     })
+    //   );
   }
 
   function testJBTieredNFTRewardDelegate_redeemParams_revertIfNonZeroTokenCount(uint256 _tokenCount)
