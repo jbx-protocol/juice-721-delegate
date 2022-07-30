@@ -659,12 +659,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          tokenUri: tokenUris[i - 1]
+          tokenUri: tokenUris[0]
         })
       );
 
       _theoreticalWeight += (10 * i - 5 * i) * i * 10;
     }
+
+    _delegate.numberOfTiers();
 
     assertEq(_delegate.totalRedemptionWeight(), _theoreticalWeight);
   }

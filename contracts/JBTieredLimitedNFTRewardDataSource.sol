@@ -373,7 +373,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTiers; ) {
-      _data = tierData[_i];
+      _data = tierData[_i + 1];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight += (uint256(_data.contributionFloor) *
