@@ -376,8 +376,9 @@ contract JBTieredLimitedNFTRewardDataSource is
       _data = tierData[_i + 1];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
-      weight += (uint256(_data.contributionFloor) *
-        (_data.initialQuantity - _data.remainingQuantity));
+      weight +=
+        (uint256(_data.contributionFloor) * (_data.initialQuantity - _data.remainingQuantity)) +
+        _numberOfReservedTokensOutstandingFor(_i, _data);
 
       unchecked {
         ++_i;
