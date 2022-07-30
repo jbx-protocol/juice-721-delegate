@@ -2,10 +2,12 @@ pragma solidity 0.8.6;
 
 import '../JBTieredLimitedNFTRewardDataSource.sol';
 import '../interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
+import './utils/AccessJBLib.sol';
 import 'forge-std/Test.sol';
 
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
+  AccessJBLib internal _accessJBLib;
 
   address beneficiary = address(bytes20(keccak256('beneficiary')));
   address owner = address(bytes20(keccak256('owner')));
@@ -74,6 +76,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
   function setUp() public {
+    _accessJBLib = new AccessJBLib();
     vm.label(beneficiary, 'beneficiary');
     vm.label(owner, 'owner');
     vm.label(reserveBeneficiary, 'reserveBeneficiary');
@@ -665,8 +668,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _theoreticalWeight += (10 * i - 5 * i) * i * 10;
     }
-
-    _delegate.numberOfTiers();
 
     assertEq(_delegate.totalRedemptionWeight(), _theoreticalWeight);
   }
@@ -1849,24 +1850,84 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 _overflow,
     uint256 _redemptionRate
   ) external {
-    // (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _delegate) = delegate
-    //   .redeemParams(
-    //     JBRedeemParamsData({
-    //       terminal: IJBPaymentTerminal(address(0)),
-    //       holder: beneficiary,
-    //       projectId: projectId,
-    //       currentFundingCycleConfiguration: 0,
-    //       tokenCount: 0,
-    //       totalSupply: 0,
-    //       overflow: _overflow,
-    //       reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
-    //       useTotalOverflow: true,
-    //       redemptionRate: _redemptionRate,
-    //       ballotRedemptionRate: 0,
-    //       memo: '',
-    //       metadata: new bytes(0)
-    //     })
-    //   );
+    uint256 _weight;
+
+    uint256 _totalWeight;
+
+    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](10);
+
+    for (uint256 i; i < 10; i++) {
+      _tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        tokenUri: tokenUris[0]
+      });
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        baseUri,
+        owner,
+        _tierData,
+        reserveBeneficiary
+      );
+
+    for (uint256 i = 1; i <= 10; i++) {
+      _delegate.ForTest_setTier(
+        i,
+        JBNFTRewardTierData({
+          contributionFloor: uint80(i * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(10 * i - 5 * i),
+          initialQuantity: uint40(10 * i),
+          votingUnits: uint16(0),
+          reservedRate: uint16(0),
+          tokenUri: tokenUris[0]
+        })
+      );
+
+      _totalWeight += (10 * i - 5 * i) * i * 10;
+    }
+
+    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _returnedDelegate) = _delegate
+      .redeemParams(
+        JBRedeemParamsData({
+          terminal: IJBPaymentTerminal(address(0)),
+          holder: beneficiary,
+          projectId: projectId,
+          currentFundingCycleConfiguration: 0,
+          tokenCount: 0,
+          totalSupply: 0,
+          overflow: _overflow,
+          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+          useTotalOverflow: true,
+          redemptionRate: _redemptionRate,
+          ballotRedemptionRate: 0,
+          memo: '',
+          metadata: new bytes(0)
+        })
+      );
+
+    // Portion of the overflow accessible (pro rata weight held)
+    uint256 _base = PRBMath.mulDiv(_overflow, _weight, _totalWeight);
+
+    uint256 _claimableOverflow = PRBMath.mulDiv(
+      _base,
+      _redemptionRate +
+        PRBMath.mulDiv(_weight, _accessJBLib.MAX_RESERVED_RATE() - _redemptionRate, _totalWeight),
+      _accessJBLib.MAX_RESERVED_RATE()
+    );
+
+    assertEq(reclaimAmount, _claimableOverflow);
   }
 
   function testJBTieredNFTRewardDelegate_redeemParams_revertIfNonZeroTokenCount(uint256 _tokenCount)
