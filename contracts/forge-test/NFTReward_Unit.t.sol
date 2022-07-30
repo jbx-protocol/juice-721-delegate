@@ -509,7 +509,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Mock the URI resolver call
     vm.mockCall(
       mockTokenUriResolver,
-      abi.encodeWithSignature('getUri(uint256)', tokenId),
+      abi.encodeWithSelector(IJBTokenUriResolver.getUri.selector, tokenId),
       abi.encode('resolverURI')
     );
 
@@ -808,7 +808,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierData[errorIndex].initialQuantity = 0;
 
     // Expect the error at i+1 (as the floor is now smaller than i)
-    vm.expectRevert(abi.encodeWithSignature('NO_QUANTITY()'));
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.NO_QUANTITY.selector)
+    );
     new JBTieredLimitedNFTRewardDataSource(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -997,7 +999,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       // Increase it by 1 to cause an error
       amount++;
 
-      vm.expectRevert(abi.encodeWithSignature('INSUFFICIENT_RESERVES()'));
+      vm.expectRevert(
+        abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.INSUFFICIENT_RESERVES.selector)
+      );
       vm.prank(owner);
       _delegate.mintReservesFor(i, amount);
     }
@@ -1214,7 +1218,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JBNFTRewardTier({id: _tiers.length + (i + 1), data: _tierDataToAdd[i]});
     }
 
-    vm.expectRevert(abi.encodeWithSignature('VOTING_UNITS_NOT_ALLOWED()'));
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.VOTING_UNITS_NOT_ALLOWED.selector)
+    );
     vm.prank(owner);
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
   }
@@ -1274,7 +1280,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JBNFTRewardTier({id: _tiers.length + (i + 1), data: _tierDataToAdd[i]});
     }
 
-    vm.expectRevert(abi.encodeWithSignature('RESERVED_RATE_NOT_ALLOWED()'));
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.RESERVED_RATE_NOT_ALLOWED.selector)
+    );
     vm.prank(owner);
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
   }
@@ -1334,7 +1342,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JBNFTRewardTier({id: _tiers.length + (i + 1), data: _tierDataToAdd[i]});
     }
 
-    vm.expectRevert(abi.encodeWithSignature('NO_QUANTITY()'));
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.NO_QUANTITY.selector)
+    );
     vm.prank(owner);
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
   }
@@ -1561,7 +1571,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(owner);
     delegate.adjustTiers(new JBNFTRewardTierData[](0), _toRemove);
 
-    vm.expectRevert(abi.encodeWithSignature('TIER_REMOVED()'));
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.TIER_REMOVED.selector)
+    );
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
@@ -1621,7 +1633,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(owner);
     delegate.adjustTiers(new JBNFTRewardTierData[](0), _toRemove);
 
-    vm.expectRevert(abi.encodeWithSignature('INVALID_TIER()'));
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.INVALID_TIER.selector)
+    );
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
@@ -1674,7 +1688,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierIdsToMint
     );
 
-    vm.expectRevert(abi.encodeWithSignature('INSUFFICIENT_AMOUNT()'));
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.INSUFFICIENT_AMOUNT.selector)
+    );
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
@@ -1715,7 +1731,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       // If there is no supply left this should revert
       if (_supplyLeft == 0) {
-        vm.expectRevert(abi.encodeWithSignature('OUT()'));
+        vm.expectRevert(abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSource.OUT.selector));
       }
 
       bool _dontMint;
@@ -1775,7 +1791,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // The caller is the _expectedCaller however the terminal in the calldata is not correct
     vm.prank(_terminal);
-    vm.expectRevert(abi.encodeWithSignature('INVALID_PAYMENT_EVENT()'));
+    vm.expectRevert(abi.encodeWithSelector(JBNFTRewardDataSource.INVALID_PAYMENT_EVENT.selector));
     delegate.didPay(
       JBDidPayData(
         msg.sender,
@@ -1856,7 +1872,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   {
     vm.assume(_tokenCount > 0);
 
-    vm.expectRevert(abi.encodeWithSignature('UNEXPECTED()'));
+    vm.expectRevert(abi.encodeWithSelector(JBNFTRewardDataSource.UNEXPECTED.selector));
 
     (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _delegate) = delegate
       .redeemParams(
@@ -1921,7 +1937,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    vm.expectRevert(abi.encodeWithSignature('))
+    vm.expectRevert(
+      abi.encodeWithSelector(JBNFTRewardDataSource.INVALID_REDEMPTION_EVENT.selector)
+    );
     vm.prank(mockTerminalAddress);
     delegate.didRedeem(
       JBDidRedeemData({
