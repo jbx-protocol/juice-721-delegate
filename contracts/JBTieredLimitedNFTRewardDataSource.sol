@@ -331,6 +331,61 @@ contract JBTieredLimitedNFTRewardDataSource is
     return _decodeIpfs(tierData[tierIdOfToken(_tokenId)].tokenUri);
   }
 
+  /** 
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
+
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+
+    @return weight The weight.
+  */
+  function redemptionWeightOf(uint256[] memory _tokenIds)
+    public
+    view
+    override
+    returns (uint256 weight)
+  {
+    // Get a reference to the total number of tokens.
+    uint256 _numberOfTokenIds = _tokenIds.length;
+
+    // Add each token's tier's contribution floor to the weight.
+    for (uint256 _i; _i < _numberOfTokenIds; ) {
+      weight += uint256(tierData[tierIdOfToken(_tokenIds[_i])].contributionFloor);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /** 
+    @notice
+    The cumulative weight that all token IDs have in redemptions. 
+
+    @return weight The total weight.
+  */
+  function totalRedemptionWeight() public view override returns (uint256 weight) {
+    // Get a reference to the total number of tiers.
+    uint256 _numberOfTiers = numberOfTiers;
+
+    // Keep a reference to the tier being iterated on.
+    JBNFTRewardTierData memory _data;
+
+    // Add each token's tier's contribution floor to the weight.
+    for (uint256 _i; _i < _numberOfTiers; ) {
+      _data = tierData[_i + 1];
+
+      // Add the tier's contribution floor multiplied by the quantity minted.
+      weight +=
+        (uint256(_data.contributionFloor) * (_data.initialQuantity - _data.remainingQuantity)) +
+        _numberOfReservedTokensOutstandingFor(_i, _data);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
   /**
     @notice
     Indicates if this contract adheres to the specified interface.
