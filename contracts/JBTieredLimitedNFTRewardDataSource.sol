@@ -531,7 +531,19 @@ contract JBTieredLimitedNFTRewardDataSource is
       uint256 _tierId = _currentNumberOfTiers + _i;
 
       // Pack the tier data.
-      uint256 _packedTierData;
+
+      // contribution floor in bits 0-79.
+      uint256 _packedTierData = _tier.contributionFloor;
+      // locked until in bits 80-127.
+      _packedTierData |= _tier.lockedUntil << 80;
+      // remaining quantity in bits 128-175.
+      _packedTierData |= _tier.remainingQuantity << 128;
+      // initial quantity in bits 176-223.
+      _packedTierData |= _tier.initialQuantity << 176;
+      // voting units in bits 224-239.
+      _packedTierData |= _tier.votingUnits << 224;
+      // reserved rate in bits 240-255.
+      _packedTierData |= _tier.reservedRate << 240;
 
       // Add the tier with the iterative ID.
       _packedPropertiesOf[_tierId] = _packedTierData;
