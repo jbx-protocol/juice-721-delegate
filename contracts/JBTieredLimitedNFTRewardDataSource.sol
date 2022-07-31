@@ -7,6 +7,7 @@ import '@openzeppelin/contracts/governance/utils/Votes.sol';
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
 import './interfaces/ITokenSupplyDetails.sol';
+import './structs/JBStoredNFTRewardTier.sol';
 
 /**
   @title
@@ -137,11 +138,11 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   /** 
     @notice
-    The packed reward tier data. 
+    The stored reward tier data. 
 
     _tierId The incremental ID of the tier, starting with 1.
   */
-  mapping(uint256 => uint256) internal _packedPropertiesOf;
+  mapping(uint256 => JBStoredNFTRewardTier) internal _storedTeirOf;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -530,23 +531,15 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Get a reference to the tier ID.
       uint256 _tierId = _currentNumberOfTiers + _i;
 
-      // Pack the tier data.
-
-      // contribution floor in bits 0-79.
-      uint256 _packedTierData = _tier.contributionFloor;
-      // locked until in bits 80-127.
-      _packedTierData |= _tier.lockedUntil << 80;
-      // remaining quantity in bits 128-175.
-      _packedTierData |= _tier.remainingQuantity << 128;
-      // initial quantity in bits 176-223.
-      _packedTierData |= _tier.initialQuantity << 176;
-      // voting units in bits 224-239.
-      _packedTierData |= _tier.votingUnits << 224;
-      // reserved rate in bits 240-255.
-      _packedTierData |= _tier.reservedRate << 240;
-
-      // Add the tier with the iterative ID.
-      _packedPropertiesOf[_tierId] = _packedTierData;
+      // Store the tier.
+      _storedTeirOf[_tierId] = JBStoredNFTRewardTier(
+        uint80(_tier.contributionFloor),
+        uint48(_tier.lockedUntil),
+        uint48(_tier.remainingQuantity),
+        uint48(_tier.initialQuantity),
+        uint16(_tier.votingUnits),
+        uint16(_tier.reservedRate)
+      );
 
       // Add the corresponding reserved token beneficiary if there is one.
       if (_tier.reservedTokenBeneficiary != address(0))
@@ -801,7 +794,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   {
     unchecked {
       // Decrease the remaining quantity.
-      _packedPropertiesOf[_tier.id] |= uint48(--_tier.remainingQuantity) << 128;
+      _storedTeirOf[_tier.id].remainingQuantity = uint48(--_tier.remainingQuantity);
 
       // Keep a reference to the token ID.
       tokenId = _generateTokenId(_tier.id, _tier.initialQuantity - _tier.remainingQuantity);
@@ -948,23 +941,17 @@ contract JBTieredLimitedNFTRewardDataSource is
     bool _includeReservedTokenBeneficiary,
     bool _includeEncodedIpfsUri
   ) internal view returns (JBNFTRewardTier memory tier) {
-    uint256 _packedTier = _packedPropertiesOf[_tierId];
+    JBStoredNFTRewardTier memory _storedTier = _storedTeirOf[_tierId];
 
     // Set the ID.
     tier.id = _tierId;
 
-    // contributionFloor in bits 0-79.
-    tier.contributionFloor = uint256(uint80(_packedTier));
-    // locked until in bits 80-127.
-    tier.lockedUntil = uint256(uint48(_packedTier >> 80));
-    // remaining quantity in bits 128-175.
-    tier.remainingQuantity = uint256(uint48(_packedTier >> 128));
-    // initial quantity in bits 176-223.
-    tier.initialQuantity = uint256(uint48(_packedTier >> 176));
-    // voting units in bits 224-239.
-    tier.votingUnits = uint256(uint16(_packedTier >> 224));
-    // reserved rate in bits 240-256.
-    tier.reservedRate = uint256(uint16(_packedTier >> 240));
+    tier.contributionFloor = uint256(_storedTier.contributionFloor);
+    tier.lockedUntil = uint256(_storedTier.lockedUntil);
+    tier.remainingQuantity = uint256(_storedTier.remainingQuantity);
+    tier.initialQuantity = uint256(_storedTier.initialQuantity);
+    tier.votingUnits = uint256(_storedTier.votingUnits);
+    tier.reservedRate = uint256(_storedTier.reservedRate);
 
     // Include the reserved token beneficiary if needed.
     if (_includeReservedTokenBeneficiary)
