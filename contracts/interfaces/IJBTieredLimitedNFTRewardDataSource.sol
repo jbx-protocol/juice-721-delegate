@@ -47,12 +47,10 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function tiers() external view returns (JBNFTRewardTier[] memory tiers);
 
-  function tierReservedTokenBeneficiary(uint256 _tier) external view returns (address);
-
   function reservedTokenBeneficiary() external view returns (address);
 
   function adjustTiers(
-    JBNFTRewardTierParams[] memory _tierDataToAdd,
+    JBNFTRewardTierParams[] memory _tiersToAdd,
     uint256[] memory _tierIdsToRemove
   ) external;
 

@@ -26,7 +26,5 @@ struct JBDeployTieredNFTRewardDataSourceData {
   address owner;
   JBNFTRewardTierParams[] tiers;
   bool shouldMintByDefault;
-  address reservedTokenDefaultBeneficiary;
-  bytes32[] tokenUri;
-  address[] reserveBeneficiary;
+  address reservedTokenBeneficiary;
 }

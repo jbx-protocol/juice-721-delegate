@@ -133,7 +133,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     _tierId the ID of the tier.
   */
-  mapping(uint256 => address) internal _tierReservedTokenBeneficiaryOf;
+  mapping(uint256 => address) internal _reservedTokenBeneficiaryOf;
 
   /** 
     @notice
@@ -204,7 +204,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function totalSupply() external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier storage _tier;
+    JBNFTRewardTier memory _tier;
 
     // Keep a reference to the number of tiers in stack.
     uint256 _numberOfTiers = numberOfTiers;
@@ -379,7 +379,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
-    @param _tierData The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
+    @param _tiers The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _reservedTokenBeneficiary The address that should receive the reserved tokens.
   */
   constructor(
@@ -391,7 +391,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _contractUri,
     string memory _baseUri,
     address _owner,
-    JBNFTRewardTierParams[] memory _tierData,
+    JBNFTRewardTierParams[] memory _tiers,
     address _reservedTokenBeneficiary
   )
     JBNFTRewardDataSource(
@@ -409,7 +409,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     baseUri = _baseUri;
     reservedTokenBeneficiary = _reservedTokenBeneficiary;
 
-    _addTierData(_tierData, true);
+    _addTiers(_tiers, true);
   }
 
   //*********************************************************************//
@@ -428,7 +428,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function mintReservesFor(uint256 _tierId, uint256 _count) external override {
     // Get a reference to the tier.
-    JBNFTRewardTier storage _tier = _getStructWith(_tierId);
+    JBNFTRewardTier memory _tier = _getStructWith(_tierId);
 
     // Get a reference to the number of reserved tokens mintable for the tier.
     uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
@@ -463,15 +463,15 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     Adjust the tiers mintable in this contract, adhering to any locked tier constraints. 
 
-    @param _tierDataToAdd An array of tier data to add.
+    @param _tiersToAdd An array of tier data to add.
     @param _tierIdsToRemove An array of tier IDs to remove.
   */
   function adjustTiers(
-    JBNFTRewardTierParams[] memory _tierDataToAdd,
+    JBNFTRewardTierParams[] memory _tiersToAdd,
     uint256[] memory _tierIdsToRemove
   ) external override onlyOwner {
     // Add tiers.
-    if (_tierDataToAdd.length != 0) _addTierData(_tierDataToAdd, false);
+    if (_tiersToAdd.length != 0) _addTiers(_tiersToAdd, false);
 
     // Remove tiers.
     if (_tierIdsToRemove.length != 0) _removeTierIds(_tierIdsToRemove);
@@ -498,22 +498,22 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     Adds tiers. 
 
-    @param _tierData The tiers to add.
+    @param _tiers The tiers to add.
     @param _constructorTiers A flag indicating if tiers with voting units and reserved rate should be allowed.
   */
-  function _addTierData(JBNFTRewardTierParams[] memory _tierData, bool _constructorTiers) internal {
+  function _addTiers(JBNFTRewardTierParams[] memory _tiers, bool _constructorTiers) internal {
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierParams memory _tier;
 
     // Get a reference to the number of new tiers.
-    uint256 _numberOfNewTiers = _tierData.length;
+    uint256 _numberOfNewTiers = _tiers.length;
 
     // Get a reference to the current total number of tiers.
     uint256 _currentNumberOfTiers = numberOfTiers;
 
     for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
       // Set the tier being iterated on.
-      _tier = _tierData[_i - 1];
+      _tier = _tiers[_i - 1];
 
       // Make sure there are no voting units or reserved rates if they're not allowed.
       if (!_constructorTiers) {
@@ -550,7 +550,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
       // Add the corresponding reserved token beneficiary if there is one.
       if (_tier.reservedTokenBeneficiary != address(0))
-        _tierReservedTokenBeneficiaryOf[_tierId] = _tier.reservedTokenBeneficiary;
+        _reservedTokenBeneficiaryOf[_tierId] = _tier.reservedTokenBeneficiary;
 
       // Add the corresponding ipfs uri if there is one.
       if (_tier.encodedIPFSUri != bytes32(0)) _encodedIPFSUriOf[_tierId] = _tier.encodedIPFSUri;
@@ -711,7 +711,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Keep a reference to the best tier.
-    JBNFTRewardTier storage _bestTier = _getStructWith(_bestTierId);
+    JBNFTRewardTier memory _bestTier = _getStructWith(_bestTierId);
 
     // Mint the tokens.
     uint256 _tokenId = _mintForTier(_bestTier, _beneficiary);
@@ -741,7 +741,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     leftoverAmount = _amount;
 
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTier storage _tier;
+    JBNFTRewardTier memory _tier;
 
     // Keep a reference to the tier ID being iterated on.
     uint256 _tierId;
@@ -794,13 +794,16 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return tokenId The ID of the token minted.
   */
-  function _mintForTier(JBNFTRewardTier storage _tier, address _beneficiary)
+  function _mintForTier(JBNFTRewardTier memory _tier, address _beneficiary)
     internal
     returns (uint256 tokenId)
   {
     unchecked {
+      // Decrease the remaining quantity.
+      _packedPropertiesOf[_tier.id] |= uint48(--_tier.remainingQuantity) << 128;
+
       // Keep a reference to the token ID.
-      tokenId = _generateTokenId(_tier.id, _tier.initialQuantity - --_tier.remainingQuantity);
+      tokenId = _generateTokenId(_tier.id, _tier.initialQuantity - _tier.remainingQuantity);
     }
 
     // Increment the tier balance for the beneficiary.
@@ -881,7 +884,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @return tier tier struct. 
   */
-  function _getStructWith(uint256 _tierId) internal view returns (JBNFTRewardTier storage tier) {
+  function _getStructWith(uint256 _tierId) internal view returns (JBNFTRewardTier memory tier) {
     uint256 _packedTier = _packedPropertiesOf[_tierId];
 
     // Set the ID.
