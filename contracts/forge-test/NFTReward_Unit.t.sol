@@ -51,7 +51,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     'Qma5atSTeoKJkcXe2R7gdmcvPvLJLkh2jd4cDZeM1wnFgK'
   ];
 
-  JBNFTRewardTierData[] tierData;
+  JBNFTRewardTierParams[] tiers;
 
   JBTieredLimitedNFTRewardDataSource delegate;
 
@@ -89,8 +89,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Create 10 tiers, each with 100 tokens available to mint
     for (uint256 i; i < 10; i++) {
-      tierData.push(
-        JBNFTRewardTierData({
+      tiers.push(
+        JBNFTRewardTierParams({
           contributionFloor: uint80((i + 1) * 10),
           lockedUntil: uint48(0),
           remainingQuantity: uint40(100),
@@ -111,7 +111,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       baseUri,
       owner,
-      tierData,
+      tiers,
       reserveBeneficiary
     );
   }
@@ -119,18 +119,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint8 numberOfTiers) public {
     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
 
-    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](numberOfTiers);
+    JBNFTRewardTierParams[] memory _tiers = new JBNFTRewardTierParams[](numberOfTiers);
     JBNFTRewardTier[] memory _tiers = new JBNFTRewardTier[](numberOfTiers);
 
     for (uint256 i; i < numberOfTiers; i++) {
-      _tierData[i] = JBNFTRewardTierData({
+      _tiers[i] = JBNFTRewardTierParams({
         contributionFloor: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: tokenUris[0]
+        encodedIPFSUri: tokenUris[0]
       });
 
       _tiers[i] = JBNFTRewardTier({id: i + 1, data: _tierData[i]});

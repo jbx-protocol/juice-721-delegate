@@ -324,20 +324,20 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
 
     // Add 1 new tier
-    JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](1);
-    _tierDataToAdd[0] = JBNFTRewardTierData({
+    JBNFTRewardTierParams[] memory _tiersToAdd = new JBNFTRewardTierParams[](1);
+    _tiersToAdd[0] = JBNFTRewardTierParams({
       contributionFloor: _payAmount,
       lockedUntil: uint48(0),
       remainingQuantity: uint40(100),
       initialQuantity: uint40(100),
       votingUnits: uint16(0),
       reservedRate: uint16(0),
-      tokenUri: tokenUris[0]
+      encodedIPFSUri: tokenUris[0]
     });
 
     // Remove all the existing tiers and add a new one at the previous paid price
     vm.prank(_projectOwner);
-    _delegate.adjustTiers(_tierDataToAdd, _tiersToRemove);
+    _delegate.adjustTiers(_tiersToAdd, _tiersToRemove);
 
     // Mint the new NFT and make sure that it is the new tier
     // vm.expectEmit(false, true, false, false);
@@ -376,17 +376,17 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       JBLaunchProjectData memory launchProjectData
     )
   {
-    JBNFTRewardTierData[] memory tierData = new JBNFTRewardTierData[](10);
+    JBNFTRewardTierParams[] memory tiers = new JBNFTRewardTierParams[](10);
 
     for (uint256 i; i < 10; i++) {
-      tierData[i] = JBNFTRewardTierData({
+      tiers[i] = JBNFTRewardTierParams({
         contributionFloor: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         remainingQuantity: uint40(10),
         initialQuantity: uint40(10),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: tokenUris[i]
+        encodedIPFSUri: tokenUris[i]
       });
     }
 
@@ -398,7 +398,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       contractUri: contractUri,
       baseUri: baseUri,
       owner: _projectOwner,
-      tierData: tierData,
+      tiers: tiers,
       shouldMintByDefault: _shouldMintByDefault,
       reservedTokenBeneficiary: reserveBeneficiary
     });

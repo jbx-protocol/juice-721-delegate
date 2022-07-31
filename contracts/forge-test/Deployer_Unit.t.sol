@@ -134,17 +134,17 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     JBGroupedSplits[] memory groupedSplits;
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
-    JBNFTRewardTierData[] memory tierData = new JBNFTRewardTierData[](10);
+    JBNFTRewardTierParams[] memory tiers = new JBNFTRewardTierParams[](10);
 
     for (uint256 i; i < 10; i++) {
-      tierData[i] = JBNFTRewardTierData({
+      tiers[i] = JBNFTRewardTierParams({
         contributionFloor: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: tokenUris[i]
+        encodedIPFSUri: tokenUris[i]
       });
     }
 
@@ -156,7 +156,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       contractUri: contractUri,
       baseUri: baseUri,
       owner: owner,
-      tierData: tierData,
+      tiers: tiers,
       shouldMintByDefault: false,
       reservedTokenBeneficiary: reserveBeneficiary
     });
