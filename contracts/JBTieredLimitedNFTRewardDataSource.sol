@@ -125,7 +125,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     _tierId the ID of the tier
   */
-  mapping(uint256 => bytes32) internal _encodedIPFSUriOf;
+  mapping(uint256 => bytes32) internal _encodedIpfsUriOf;
 
   /**
     @notice
@@ -168,7 +168,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Add the tier to the array if it hasn't been removed (tiers are unsorted)
       if (!isTierRemoved[_i]) {
         // Get a reference to the tier data (1-indexed). Overwrite empty tiers.
-        _tiers[_activeTiers] = _getStructWith(_i);
+        _tiers[_activeTiers] = _getStructWith(_i, true, true);
         unchecked {
           ++_activeTiers;
         }
@@ -193,7 +193,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _id The ID of the tier to get. 
   */
   function tierWith(uint256 _id) external view override returns (JBNFTRewardTier memory _tier) {
-    return _getStructWith(_id);
+    return _getStructWith(_id, true, true);
   }
 
   /** 
@@ -211,7 +211,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Set the tier being iterated on.
-      _tier = _getStructWith(_i);
+      _tier = _getStructWith(_i, false, false);
 
       // Increment the total supply with the amount used already.
       supply += _tier.initialQuantity - _tier.remainingQuantity;
@@ -294,7 +294,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     override
     returns (uint256)
   {
-    return _numberOfReservedTokensOutstandingFor(_tierId, _getStructWith(_tierId));
+    return _numberOfReservedTokensOutstandingFor(_tierId, _getStructWith(_tierId, false, false));
   }
 
   /**
@@ -348,7 +348,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
     // Return the token URI for the token's tier.
-    return _decodeIpfs(_encodedIPFSUriOf[tierIdOfToken(_tokenId)]);
+    return _decodeIpfs(_encodedIpfsUriOf[tierIdOfToken(_tokenId)]);
   }
 
   /**
@@ -428,7 +428,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function mintReservesFor(uint256 _tierId, uint256 _count) external override {
     // Get a reference to the tier.
-    JBNFTRewardTier memory _tier = _getStructWith(_tierId);
+    JBNFTRewardTier memory _tier = _getStructWith(_tierId, true, false);
 
     // Get a reference to the number of reserved tokens mintable for the tier.
     uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
@@ -553,7 +553,7 @@ contract JBTieredLimitedNFTRewardDataSource is
         _reservedTokenBeneficiaryOf[_tierId] = _tier.reservedTokenBeneficiary;
 
       // Add the corresponding ipfs uri if there is one.
-      if (_tier.encodedIPFSUri != bytes32(0)) _encodedIPFSUriOf[_tierId] = _tier.encodedIPFSUri;
+      if (_tier.encodedIPFSUri != bytes32(0)) _encodedIpfsUriOf[_tierId] = _tier.encodedIPFSUri;
 
       emit AddTier(_tierId, _tier, msg.sender);
 
@@ -583,7 +583,8 @@ contract JBTieredLimitedNFTRewardDataSource is
       _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
-      if (_getStructWith(_tierId).lockedUntil >= block.timestamp) revert TIER_LOCKED();
+      if (_getStructWith(_tierId, false, false).lockedUntil >= block.timestamp)
+        revert TIER_LOCKED();
 
       // Set the tier as removed.
       isTierRemoved[_tierId] = true;
@@ -685,7 +686,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       if (!isTierRemoved[_i]) {
         // Set the tier being iterated on. Tier's are 1 indexed.
-        _tier = _getStructWith(_i);
+        _tier = _getStructWith(_i, false, false);
 
         // Mint if the contribution value is at least as much as the floor, there's sufficient supply, and the floor is better than the best tier.
         if (
@@ -711,7 +712,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
 
     // Keep a reference to the best tier.
-    JBNFTRewardTier memory _bestTier = _getStructWith(_bestTierId);
+    JBNFTRewardTier memory _bestTier = _getStructWith(_bestTierId, false, false);
 
     // Mint the tokens.
     uint256 _tokenId = _mintForTier(_bestTier, _beneficiary);
@@ -758,7 +759,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       // If a tier specified, accept the funds and mint.
       if (_tierId != 0) {
         // Keep a reference to the tier being iterated on.
-        _tier = _getStructWith(_tierId);
+        _tier = _getStructWith(_tierId, false, false);
 
         // Make sure the provided tier exists.
         if (_tier.initialQuantity == 0) revert INVALID_TIER();
@@ -876,34 +877,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     tokenId |= _tokenNumber << 8;
   }
 
-  /** 
-    @notice
-    Unpack a tier's packed stored values into an easy-to-work-with tier struct.
-
-    @param _tierId The ID of the tier struct to get.
-
-    @return tier tier struct. 
-  */
-  function _getStructWith(uint256 _tierId) internal view returns (JBNFTRewardTier memory tier) {
-    uint256 _packedTier = _packedPropertiesOf[_tierId];
-
-    // Set the ID.
-    tier.id = _tierId;
-
-    // contributionFloor in bits 0-79.
-    tier.contributionFloor = uint256(uint80(_packedTier));
-    // locked until in bits 80-127.
-    tier.lockedUntil = uint256(uint48(_packedTier >> 80));
-    // remaining quantity in bits 128-175.
-    tier.remainingQuantity = uint256(uint48(_packedTier >> 128));
-    // initial quantity in bits 176-223.
-    tier.initialQuantity = uint256(uint48(_packedTier >> 176));
-    // voting units in bits 224-239.
-    tier.votingUnits = uint256(uint16(_packedTier >> 224));
-    // reserved rate in bits 240-256.
-    tier.reservedRate = uint256(uint16(_packedTier >> 240));
-  }
-
   /**
     @notice
     The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
@@ -929,7 +902,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
       if (_balance != 0)
         // Add the tier's voting units.
-        units += _balance * _getStructWith(_i).votingUnits;
+        units += _balance * _getStructWith(_i, false, false).votingUnits;
 
       unchecked {
         --_i;
@@ -951,13 +924,54 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _tokenId
   ) internal virtual override {
     // Get a reference to the tier.
-    JBNFTRewardTier memory _tier = _getStructWith(tierIdOfToken(_tokenId));
+    JBNFTRewardTier memory _tier = _getStructWith(tierIdOfToken(_tokenId), false, false);
 
     if (_tier.votingUnits > 0)
       // Transfer the voting units.
       _transferVotingUnits(_from, _to, _tier.votingUnits);
 
     super._afterTokenTransfer(_from, _to, _tokenId);
+  }
+
+  /** 
+    @notice
+    Unpack a tier's packed stored values into an easy-to-work-with tier struct.
+
+    @param _tierId The ID of the tier struct to get.
+    @param _includeReservedTokenBeneficiary A flag indicating if the reserved token beneficiary should be included.
+    @param _includeEncodedIpfsUri A flag indicating if the IPFS uri should be included.
+
+    @return tier tier struct. 
+  */
+  function _getStructWith(
+    uint256 _tierId,
+    bool _includeReservedTokenBeneficiary,
+    bool _includeEncodedIpfsUri
+  ) internal view returns (JBNFTRewardTier memory tier) {
+    uint256 _packedTier = _packedPropertiesOf[_tierId];
+
+    // Set the ID.
+    tier.id = _tierId;
+
+    // contributionFloor in bits 0-79.
+    tier.contributionFloor = uint256(uint80(_packedTier));
+    // locked until in bits 80-127.
+    tier.lockedUntil = uint256(uint48(_packedTier >> 80));
+    // remaining quantity in bits 128-175.
+    tier.remainingQuantity = uint256(uint48(_packedTier >> 128));
+    // initial quantity in bits 176-223.
+    tier.initialQuantity = uint256(uint48(_packedTier >> 176));
+    // voting units in bits 224-239.
+    tier.votingUnits = uint256(uint16(_packedTier >> 224));
+    // reserved rate in bits 240-256.
+    tier.reservedRate = uint256(uint16(_packedTier >> 240));
+
+    // Include the reserved token beneficiary if needed.
+    if (_includeReservedTokenBeneficiary)
+      tier.reservedTokenBeneficiary = _reservedTokenBeneficiaryOf[_tierId];
+
+    // Includet eh ipfs uri if needed.
+    if (_includeEncodedIpfsUri) tier.encodedIPFSUri = _encodedIpfsUriOf[_tierId];
   }
 
   function _decodeIpfs(bytes32 hexString) internal view returns (string memory) {
