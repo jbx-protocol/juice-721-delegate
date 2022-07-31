@@ -1846,16 +1846,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
   //    Redemption
   // ----------------
 
-  function TODO_testJBTieredNFTRewardDelegate_redeemParams_returnsCorrectAmount(
-    uint256 _overflow,
-    uint256 _redemptionRate
-  ) external {
-    uint256 _weight;
+  function testJBTieredNFTRewardDelegate_redeemParams_returnsCorrectAmount() external {
+    uint256 _overflow = 10e18;
+    uint256 _redemptionRate = 4000; // 40%
 
+    uint256 _weight;
     uint256 _totalWeight;
 
     JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](10);
 
+    // Temp for constructor
     for (uint256 i; i < 10; i++) {
       _tierData[i] = JBNFTRewardTierData({
         contributionFloor: uint80((i + 1) * 10),
@@ -1881,6 +1881,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reserveBeneficiary
       );
 
+    // Set 10 tiers, with half supply minted for each
     for (uint256 i = 1; i <= 10; i++) {
       _delegate.ForTest_setTier(
         i,
@@ -1898,6 +1899,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _totalWeight += (10 * i - 5 * i) * i * 10;
     }
 
+    // Redeem based on holding 1 NFT in each of the 5 first tiers
+    uint256[] memory _tokenList = new uint256[](5);
+
+    for (uint256 i; i < 5; i++) {
+      _delegate.ForTest_setOwnerOf(i + 1, beneficiary);
+      _tokenList[i] = i + 1;
+      _weight += (i + 1) * 10;
+    }
+
     (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _returnedDelegate) = _delegate
       .redeemParams(
         JBRedeemParamsData({
@@ -1912,8 +1922,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           ballotRedemptionRate: 0,
-          memo: '',
-          metadata: new bytes(0)
+          memo: 'plz gib',
+          metadata: abi.encode(_tokenList)
         })
       );
 
@@ -1928,6 +1938,187 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     assertEq(reclaimAmount, _claimableOverflow);
+    assertEq(memo, 'plz gib');
+    assertEq(address(_returnedDelegate), address(_delegate));
+  }
+
+  function testJBTieredNFTRewardDelegate_redeemParams_returnsZeroAmountIfReservedRateIsZero()
+    external
+  {
+    uint256 _overflow = 10e18;
+    uint256 _redemptionRate = 0;
+
+    uint256 _weight;
+    uint256 _totalWeight;
+
+    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](10);
+
+    // Temp for constructor
+    for (uint256 i; i < 10; i++) {
+      _tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        tokenUri: tokenUris[0]
+      });
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        baseUri,
+        owner,
+        _tierData,
+        reserveBeneficiary
+      );
+
+    // Set 10 tiers, with half supply minted for each
+    for (uint256 i = 1; i <= 10; i++) {
+      _delegate.ForTest_setTier(
+        i,
+        JBNFTRewardTierData({
+          contributionFloor: uint80(i * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(10 * i - 5 * i),
+          initialQuantity: uint40(10 * i),
+          votingUnits: uint16(0),
+          reservedRate: uint16(0),
+          tokenUri: tokenUris[0]
+        })
+      );
+
+      _totalWeight += (10 * i - 5 * i) * i * 10;
+    }
+
+    // Redeem based on holding 1 NFT in each of the 5 first tiers
+    uint256[] memory _tokenList = new uint256[](5);
+
+    for (uint256 i; i < 5; i++) {
+      _delegate.ForTest_setOwnerOf(i + 1, beneficiary);
+      _tokenList[i] = i + 1;
+      _weight += (i + 1) * (i + 1) * 10;
+    }
+
+    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _returnedDelegate) = _delegate
+      .redeemParams(
+        JBRedeemParamsData({
+          terminal: IJBPaymentTerminal(address(0)),
+          holder: beneficiary,
+          projectId: projectId,
+          currentFundingCycleConfiguration: 0,
+          tokenCount: 0,
+          totalSupply: 0,
+          overflow: _overflow,
+          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+          useTotalOverflow: true,
+          redemptionRate: _redemptionRate,
+          ballotRedemptionRate: 0,
+          memo: 'plz gib',
+          metadata: abi.encode(_tokenList)
+        })
+      );
+
+    assertEq(reclaimAmount, 0);
+    assertEq(memo, 'plz gib');
+    assertEq(address(_returnedDelegate), address(_delegate));
+  }
+
+  function testJBTieredNFTRewardDelegate_redeemParams_returnsPartOfOverflowOwnedIfRedemptionRateIsMaximum()
+    external
+  {
+    uint256 _overflow = 10e18;
+    uint256 _redemptionRate = _accessJBLib.MAX_RESERVED_RATE(); // 40%
+
+    uint256 _weight;
+    uint256 _totalWeight;
+
+    JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](10);
+
+    // Temp for constructor
+    for (uint256 i; i < 10; i++) {
+      _tierData[i] = JBNFTRewardTierData({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        remainingQuantity: uint40(100),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        tokenUri: tokenUris[0]
+      });
+    }
+
+    ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        baseUri,
+        owner,
+        _tierData,
+        reserveBeneficiary
+      );
+
+    // Set 10 tiers, with half supply minted for each
+    for (uint256 i = 1; i <= 10; i++) {
+      _delegate.ForTest_setTier(
+        i,
+        JBNFTRewardTierData({
+          contributionFloor: uint80(i * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(10 * i - 5 * i),
+          initialQuantity: uint40(10 * i),
+          votingUnits: uint16(0),
+          reservedRate: uint16(0),
+          tokenUri: tokenUris[0]
+        })
+      );
+
+      _totalWeight += (10 * i - 5 * i) * i * 10;
+    }
+
+    // Redeem based on holding 1 NFT in each of the 5 first tiers
+    uint256[] memory _tokenList = new uint256[](5);
+
+    for (uint256 i; i < 5; i++) {
+      _delegate.ForTest_setOwnerOf(_generateTokenId(i + 1, 1), beneficiary);
+      _tokenList[i] = _generateTokenId(i + 1, 1);
+      _weight += (i + 1) * 10;
+    }
+
+    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _returnedDelegate) = _delegate
+      .redeemParams(
+        JBRedeemParamsData({
+          terminal: IJBPaymentTerminal(address(0)),
+          holder: beneficiary,
+          projectId: projectId,
+          currentFundingCycleConfiguration: 0,
+          tokenCount: 0,
+          totalSupply: 0,
+          overflow: _overflow,
+          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+          useTotalOverflow: true,
+          redemptionRate: _redemptionRate,
+          ballotRedemptionRate: 0,
+          memo: 'plz gib',
+          metadata: abi.encode(_tokenList)
+        })
+      );
+
+    // Portion of the overflow accessible (pro rata weight held)
+    uint256 _base = PRBMath.mulDiv(_overflow, _weight, _totalWeight);
+
+    assertEq(reclaimAmount, _base);
+    assertEq(memo, 'plz gib');
+    assertEq(address(_returnedDelegate), address(_delegate));
   }
 
   function testJBTieredNFTRewardDelegate_redeemParams_revertIfNonZeroTokenCount(uint256 _tokenCount)
