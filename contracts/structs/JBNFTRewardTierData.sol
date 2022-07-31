@@ -18,6 +18,5 @@ struct JBNFTRewardTierData {
   uint48 initialQuantity;
   uint16 votingUnits;
   uint16 reservedRate;
-  bytes32 tokenUri;
-  address reservedTokenBeneficiary;
+  bool useTierReservedBeneficiary;
 }

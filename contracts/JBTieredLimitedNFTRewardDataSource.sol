@@ -97,6 +97,14 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   mapping(uint256 => bool) public override isTierRemoved;
 
+  /**
+  @notice
+  An optionnal beneficiary for the reserved token of a given tier
+
+  _tierId the ID of the tier
+*/
+  mapping(uint256 => address) public override tierReservedTokenBeneficiary;
+
   /** 
     @notice
     The total number of tiers there are. 
@@ -121,6 +129,19 @@ contract JBTieredLimitedNFTRewardDataSource is
     Used in base58ToString
   */
   bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+  //*********************************************************************//
+  // ------------------- internal constant properties ------------------ //
+  //*********************************************************************//
+
+  /**
+    @notice
+    When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS
+    hashes stripped down
+
+    _tierId the ID of the tier
+  */
+  mapping(uint256 => bytes32) _encodedIPFSUri;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -327,7 +348,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
 
     // Return the token URI for the token's tier.
-    return _decodeIpfs(tierData[tierIdOfToken(_tokenId)].tokenUri);
+    return _decodeIpfs(_encodedIPFSUri[tierIdOfToken(_tokenId)]);
   }
 
   /**
@@ -351,44 +372,36 @@ contract JBTieredLimitedNFTRewardDataSource is
   //*********************************************************************//
 
   /**
+
     @param _projectId The ID of the project for which this NFT should be minted in response to payments made. 
-    @param _directory The directory of terminals and controllers for projects.
-    @param _name The name of the token.
-    @param _symbol The symbol that the token should be represented by.
-    @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-    @param _contractUri A URI where contract metadata can be found. 
-    @param _owner The address that should own this contract.
-    @param _tierData The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
-    @param _reservedTokenBeneficiary The address that should receive the reserved tokens.
+    @param _deployTieredNFTRewardDataSourceData deployment data 
+
   */
   constructor(
     uint256 _projectId,
-    IJBDirectory _directory,
-    string memory _name,
-    string memory _symbol,
-    IJBTokenUriResolver _tokenUriResolver,
-    string memory _contractUri,
-    string memory _baseUri,
-    address _owner,
-    JBNFTRewardTierData[] memory _tierData,
-    address _reservedTokenBeneficiary
+    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
   )
     JBNFTRewardDataSource(
       _projectId,
-      _directory,
-      _name,
-      _symbol,
-      _tokenUriResolver,
-      _contractUri,
-      _owner
+      _deployTieredNFTRewardDataSourceData.directory,
+      _deployTieredNFTRewardDataSourceData.name,
+      _deployTieredNFTRewardDataSourceData.symbol,
+      _deployTieredNFTRewardDataSourceData.tokenUriResolver,
+      _deployTieredNFTRewardDataSourceData.contractUri,
+      _deployTieredNFTRewardDataSourceData.owner
     )
-    EIP712(_name, '1')
+    EIP712(_deployTieredNFTRewardDataSourceData.name, '1')
   {
     contributionToken = JBTokens.ETH;
-    baseUri = _baseUri;
-    reservedTokenBeneficiary = _reservedTokenBeneficiary;
+    baseUri = _deployTieredNFTRewardDataSourceData.baseUri;
+    reservedTokenBeneficiary = _deployTieredNFTRewardDataSourceData.reservedTokenDefaultBeneficiary;
 
-    _addTierData(_tierData, true);
+    _addTierData(
+      _deployTieredNFTRewardDataSourceData.tierData,
+      _deployTieredNFTRewardDataSourceData.tokenUri,
+      _deployTieredNFTRewardDataSourceData.reserveBeneficiary,
+      true
+    );
   }
 
   //*********************************************************************//
@@ -422,15 +435,15 @@ contract JBTieredLimitedNFTRewardDataSource is
     numberOfReservesMintedFor[_tierId] += _count;
 
     // Get a reference to the beneficiary.
-    address _benenficary = _data.reservedTokenBeneficiary == address(0)
-      ? reservedTokenBeneficiary
-      : _data.reservedTokenBeneficiary;
+    address _beneficiary = _data.useTierReservedBeneficiary
+      ? tierReservedTokenBeneficiary[_tierId]
+      : reservedTokenBeneficiary;
 
     for (uint256 _i; _i < _count; ) {
       // Mint the tokens.
-      uint256 _tokenId = _mintForTier(_tierId, _data, _benenficary);
+      uint256 _tokenId = _mintForTier(_tierId, _data, _beneficiary);
 
-      emit MintReservedToken(_tokenId, _tierId, _benenficary, msg.sender);
+      emit MintReservedToken(_tokenId, _tierId, _beneficiary, msg.sender);
 
       unchecked {
         ++_i;
@@ -447,10 +460,12 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,
+    bytes32[] memory _tokenUris,
     uint256[] memory _tierIdsToRemove
   ) external override onlyOwner {
     // Add tiers.
-    if (_tierDataToAdd.length != 0) _addTierData(_tierDataToAdd, false);
+    if (_tierDataToAdd.length != 0)
+      _addTierData(_tierDataToAdd, _tokenUris, new address[](0), false);
 
     // Remove tiers.
     if (_tierIdsToRemove.length != 0) _removeTierIds(_tierIdsToRemove);
@@ -480,7 +495,12 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tierData The tiers to add.
     @param _constructorTiers A flag indicating if tiers with voting units and reserved rate should be allowed.
   */
-  function _addTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers) internal {
+  function _addTierData(
+    JBNFTRewardTierData[] memory _tierData,
+    bytes32[] memory _tokenUris,
+    address[] memory _reservedBeneficiaries,
+    bool _constructorTiers
+  ) internal {
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData memory _data;
 
@@ -497,7 +517,8 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Make sure there are no voting units or reserved rates if they're not allowed.
       if (!_constructorTiers) {
         if (_data.votingUnits != 0) revert VOTING_UNITS_NOT_ALLOWED();
-        if (_data.reservedRate != 0) revert RESERVED_RATE_NOT_ALLOWED();
+        if (_data.reservedRate != 0 || _reservedBeneficiaries.length != 0)
+          revert RESERVED_RATE_NOT_ALLOWED();
       }
 
       // Make sure there is some quantity.
@@ -511,6 +532,13 @@ contract JBTieredLimitedNFTRewardDataSource is
 
       // Add the tier with the iterative ID.
       tierData[_tierId] = _data;
+
+      // Add the corresponding tokenURI
+      _encodedIPFSUri[_tierId] = _tokenUris[_i - 1];
+
+      // Add the reserved beneficiary address, if any
+      if (_i < _reservedBeneficiaries.length && _reservedBeneficiaries[_i - 1] != address(0))
+        tierReservedTokenBeneficiary[_i - 1] = _reservedBeneficiaries[_i - 1];
 
       emit AddTier(_tierId, _data, msg.sender);
 

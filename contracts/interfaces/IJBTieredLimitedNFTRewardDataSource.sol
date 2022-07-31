@@ -4,6 +4,7 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
 import './../structs/JBNFTRewardTierData.sol';
 import './../structs/JBNFTRewardTier.sol';
+import '../structs/JBDeployTieredNFTRewardDataSourceData.sol';
 
 interface IJBTieredLimitedNFTRewardDataSource {
   event Mint(
@@ -46,10 +47,13 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function tiers() external view returns (JBNFTRewardTier[] memory tiers);
 
+  function tierReservedTokenBeneficiary(uint256 _tier) external view returns (address);
+
   function reservedTokenBeneficiary() external view returns (address);
 
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,
+    bytes32[] memory _tokenUris,
     uint256[] memory _tierIdsToRemove
   ) external;
 
