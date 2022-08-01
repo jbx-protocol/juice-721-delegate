@@ -382,7 +382,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     @param _tierData The tiers to add.
     @param _constructorTiers A flag indicating if tiers with voting units and reserved rate should be allowed.
 
-    @return _tierIds The IDs of the tiers added.
+    @return tierIds The IDs of the tiers added.
   */
   function recordAddTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers)
     external
@@ -600,43 +600,65 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     Mints a token in all provided tiers.
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
-    @param _tierId The ID of the tier to mint from.
+    @param _tierIds The IDs of the tier to mint from.
     @param _beneficiary The address to mint for.
 
-    @return tokenId The ID of the token minted.
+    @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
   */
   function recordMint(
     uint256 _amount,
-    uint256 _tierId,
+    uint8[] calldata _tierIds,
     address _beneficiary
-  ) external override returns (uint256 tokenId, uint256 leftoverAmount) {
+  ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
+    // Set the leftover amount as the initial amount.
+    leftoverAmount = _amount;
+
+    // Get a reference to the number of tiers.
+    uint256 _numberOfTiers = _tierIds.length;
+
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData storage _data;
 
-    // Make sure the tier hasn't been removed.
-    if (isTierRemoved[msg.sender][_tierId]) revert TIER_REMOVED();
+    // Keep a reference to the tier ID being iterated on.
+    uint256 _tierId;
 
-    // Keep a reference to the tier being iterated on.
-    _data = tierData[msg.sender][_tierId];
+    // Initialize an array with the appropriate length.
+    tokenIds = new uint256[](_numberOfTiers);
 
-    // Make sure the provided tier exists.
-    if (_data.initialQuantity == 0) revert INVALID_TIER();
+    for (uint256 _i; _i < _numberOfTiers; ) {
+      // Set the tier ID being iterated on.
+      _tierId = _tierIds[_i];
 
-    // Make sure the amount meets the tier's contribution floor.
-    if (_data.contributionFloor > _amount) revert INSUFFICIENT_AMOUNT();
+      // Make sure the tier hasn't been removed.
+      if (isTierRemoved[msg.sender][_tierId]) revert TIER_REMOVED();
 
-    // Make sure there are enough units available.
-    if (
-      _data.remainingQuantity - _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _data) ==
-      0
-    ) revert OUT();
+      // Keep a reference to the tier being iterated on.
+      _data = tierData[msg.sender][_tierId];
 
-    // Mint the tokens.
-    tokenId = _recordMintForTier(_tierId, _data, _beneficiary);
+      // Make sure the provided tier exists.
+      if (_data.initialQuantity == 0) revert INVALID_TIER();
 
-    // Return the leftover amount.
-    leftoverAmount = _amount - _data.contributionFloor;
+      // Make sure the amount meets the tier's contribution floor.
+      if (_data.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
+
+      // Make sure there are enough units available.
+      if (
+        _data.remainingQuantity -
+          _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _data) ==
+        0
+      ) revert OUT();
+
+      // Mint the tokens.
+      tokenIds[_i] = _recordMintForTier(_tierId, _data, _beneficiary);
+
+      // Update the leftover amount;
+      leftoverAmount = leftoverAmount - _data.contributionFloor;
+
+      unchecked {
+        ++_i;
+      }
+    }
   }
 
   /** 

@@ -81,9 +81,9 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function recordMint(
     uint256 _amount,
-    uint256 _tierId,
+    uint8[] calldata _tierIds,
     address _beneficiary
-  ) external returns (uint256 tokenId, uint256 leftoverAmount);
+  ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
   function recordRemoveTierIds(uint256[] memory _tierIds) external;
 

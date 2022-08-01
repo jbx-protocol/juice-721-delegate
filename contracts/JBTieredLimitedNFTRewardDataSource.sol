@@ -466,27 +466,25 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Set the leftover amount to be the initial amount.
     leftoverAmount = _amount;
 
-    // Keep a reference to the tier ID being iterated on.
-    uint256 _tierId;
+    // Keep a reference to the token ID.
+    uint256[] memory _tokenIds;
 
-    uint256 _mintsLength = _mintTierIds.length;
+    // Record the mint. The returned token IDs correspond to the tiers passed in.
+    (_tokenIds, leftoverAmount) = store.recordMint(leftoverAmount, _mintTierIds, _beneficiary);
+
+    uint256 _mintsLength = _tokenIds.length;
+
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
 
     for (uint256 _i; _i < _mintsLength; ) {
       // Get a reference to the tier being iterated on.
-      _tierId = _mintTierIds[_i];
+      _tokenId = _tokenIds[_i];
 
-      if (_tierId != 0) {
-        // Keep a reference to the token ID.
-        uint256 _tokenId;
+      // Mint the tokens.
+      _mint(_beneficiary, _tokenId);
 
-        // Record the mint.
-        (_tokenId, leftoverAmount) = store.recordMint(leftoverAmount, _tierId, _beneficiary);
-
-        // Mint the tokens.
-        _mint(_beneficiary, _tokenId);
-
-        emit Mint(_tokenId, _tierId, _beneficiary, _amount, _mintsLength, msg.sender);
-      }
+      emit Mint(_tokenId, _mintTierIds[_i], _beneficiary, _amount, _mintsLength, msg.sender);
 
       unchecked {
         ++_i;
