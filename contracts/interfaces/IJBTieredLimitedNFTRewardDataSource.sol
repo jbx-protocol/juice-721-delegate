@@ -25,8 +25,6 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
-  function contributionToken() external view returns (address);
-
   function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);
 
   function adjustTiers(

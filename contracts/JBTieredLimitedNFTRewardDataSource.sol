@@ -36,11 +36,11 @@ contract JBTieredLimitedNFTRewardDataSource is
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
 
-  /** 
-    @notice
-    The token to expect contributions to be made in.
-  */
-  address public immutable override contributionToken;
+  // /**
+  //   @notice
+  //   The token to expect contributions to be made in.
+  // */
+  // address public immutable override contributionToken;
 
   /**
     @notice
@@ -229,7 +229,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     )
     EIP712(_name, '1')
   {
-    contributionToken = JBTokens.ETH;
     baseUri = _baseUri;
     store = _store;
 
@@ -309,63 +308,63 @@ contract JBTieredLimitedNFTRewardDataSource is
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
 
-  /**
-    @notice 
-    Mints a token for a given contribution to the beneficiary.
+  // /**
+  //   @notice
+  //   Mints a token for a given contribution to the beneficiary.
 
-    @dev
-    `_data.metadata` should include the reward tiers being requested in increments of 8 bits starting at bits 32.
+  //   @dev
+  //   `_data.metadata` should include the reward tiers being requested in increments of 8 bits starting at bits 32.
 
-    @param _data The Juicebox standard project contribution data.
-  */
-  function _processContribution(JBDidPayData calldata _data) internal override {
-    // Make sure the contribution is being made in the expected token.
-    if (_data.amount.token != contributionToken) return;
+  //   @param _data The Juicebox standard project contribution data.
+  // */
+  // function _processContribution(JBDidPayData calldata _data) internal override {
+  //   // Make sure the contribution is being made in the expected token.
+  //   if (_data.amount.token != JBTokens.ETH) return;
 
-    // Set the leftover amount as the initial value.
-    uint256 _leftoverAmount = _data.amount.value;
+  //   // Set the leftover amount as the initial value.
+  //   uint256 _leftoverAmount = _data.amount.value;
 
-    // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
-    bool _expectMintFromExtraFunds;
+  //   // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
+  //   bool _expectMintFromExtraFunds;
 
-    // Keep a reference to the flag indicating if funds should be refunded if not spent. Defaults to false, meaning no funds will be returned.
-    bool _dontOverspend;
+  //   // Keep a reference to the flag indicating if funds should be refunded if not spent. Defaults to false, meaning no funds will be returned.
+  //   bool _dontOverspend;
 
-    // skip the first 32 bits which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
-    // Check the 4 bits interfaceId to verify the metadata is intended for this contract
-    if (
-      _data.metadata.length > 36 &&
-      bytes4(_data.metadata[32:36]) == type(IJBNFTRewardDataSource).interfaceId
-    ) {
-      // Keep references to the metadata properties.
-      bool _dontMint;
-      uint8[] memory _tierIdsToMint;
+  //   // skip the first 32 bits which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
+  //   // Check the 4 bits interfaceId to verify the metadata is intended for this contract
+  //   if (
+  //     _data.metadata.length > 36 &&
+  //     bytes4(_data.metadata[32:36]) == type(IJBNFTRewardDataSource).interfaceId
+  //   ) {
+  //     // Keep references to the metadata properties.
+  //     bool _dontMint;
+  //     uint8[] memory _tierIdsToMint;
 
-      // Decode the metadata
-      (, , _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
-        _data.metadata,
-        (bytes32, bytes4, bool, bool, bool, uint8[])
-      );
+  //     // Decode the metadata
+  //     (, , _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
+  //       _data.metadata,
+  //       (bytes32, bytes4, bool, bool, bool, uint8[])
+  //     );
 
-      // Don't mint if not desired.
-      if (_dontMint) return;
+  //     // Don't mint if not desired.
+  //     if (_dontMint) return;
 
-      // Mint rewards if they were specified. If there are no rewards but a default NFT should be minted, do so.
-      if (_tierIdsToMint.length != 0)
-        _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
-    }
+  //     // Mint rewards if they were specified. If there are no rewards but a default NFT should be minted, do so.
+  //     if (_tierIdsToMint.length != 0)
+  //       _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
+  //   }
 
-    // If there are funds leftover, mint the best available with it.
-    if (_leftoverAmount != 0)
-      _leftoverAmount = _mintBestAvailableTier(
-        _leftoverAmount,
-        _data.beneficiary,
-        _expectMintFromExtraFunds
-      );
+  //   // If there are funds leftover, mint the best available with it.
+  //   if (_leftoverAmount != 0)
+  //     _leftoverAmount = _mintBestAvailableTier(
+  //       _leftoverAmount,
+  //       _data.beneficiary,
+  //       _expectMintFromExtraFunds
+  //     );
 
-    // Make sure there are no leftover funds after minting if not expected.
-    if (_dontOverspend && _leftoverAmount != 0) revert OVERSPENDING();
-  }
+  //   // Make sure there are no leftover funds after minting if not expected.
+  //   if (_dontOverspend && _leftoverAmount != 0) revert OVERSPENDING();
+  // }
 
   /** 
     @notice
