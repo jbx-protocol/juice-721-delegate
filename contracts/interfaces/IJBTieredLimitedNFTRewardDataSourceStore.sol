@@ -31,12 +31,14 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function tierIdOfToken(uint256 _tokenId) external pure returns (uint256);
 
-  // function redemptionWeightOf(address _nft, uint256[] memory _tokenIds)
-  //   external
-  //   view
-  //   returns (uint256 weight);
+  function firstOwnerOf(address _nft, uint256 _tokenId) external view returns (address);
 
-  // function totalRedemptionWeight(address _nft) external view returns (uint256 weight);
+  function redemptionWeightOf(address _nft, uint256[] memory _tokenIds)
+    external
+    view
+    returns (uint256 weight);
+
+  function totalRedemptionWeight(address _nft) external view returns (uint256 weight);
 
   function numberOfReservedTokensOutstandingFor(address _nft, uint256 _tierId)
     external
@@ -79,4 +81,6 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
   ) external returns (uint256 tokenId, uint256 leftoverAmount);
 
   function recordRemoveTierIds(uint256[] memory _tierIds) external;
+
+  function recordSetFirstOwnerOf(uint256 _tokenId, address _owner) external;
 }

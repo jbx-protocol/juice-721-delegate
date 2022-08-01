@@ -82,6 +82,18 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   mapping(address => address) public override reservedTokenBeneficiary;
 
   //*********************************************************************//
+  // --------------------- internal stored properties ------------------ //
+  //*********************************************************************//
+
+  /**
+    @notice
+    The first owner of each token ID, stored on first transfer out.
+
+    _tokenId The ID of the token to get the stored first owner of.
+  */
+  mapping(address => mapping(uint256 => address)) public override firstOwnerOf;
+
+  //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
 
@@ -265,63 +277,63 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     }
   }
 
-  // /**
-  //   @notice
-  //   The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`.
+  /**
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`.
 
-  //   @param _nft The NFT for which the redemption weight is being calculated.
-  //   @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+    @param _nft The NFT for which the redemption weight is being calculated.
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
 
-  //   @return weight The weight.
-  // */
-  // function redemptionWeightOf(address _nft, uint256[] memory _tokenIds)
-  //   public
-  //   view
-  //   override
-  //   returns (uint256 weight)
-  // {
-  //   // Get a reference to the total number of tokens.
-  //   uint256 _numberOfTokenIds = _tokenIds.length;
+    @return weight The weight.
+  */
+  function redemptionWeightOf(address _nft, uint256[] memory _tokenIds)
+    public
+    view
+    override
+    returns (uint256 weight)
+  {
+    // Get a reference to the total number of tokens.
+    uint256 _numberOfTokenIds = _tokenIds.length;
 
-  //   // Add each token's tier's contribution floor to the weight.
-  //   for (uint256 _i; _i < _numberOfTokenIds; ) {
-  //     weight += uint256(tierData[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor);
+    // Add each token's tier's contribution floor to the weight.
+    for (uint256 _i; _i < _numberOfTokenIds; ) {
+      weight += uint256(tierData[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor);
 
-  //     unchecked {
-  //       ++_i;
-  //     }
-  //   }
-  // }
+      unchecked {
+        ++_i;
+      }
+    }
+  }
 
-  // /**
-  //   @notice
-  //   The cumulative weight that all token IDs have in redemptions.
+  /**
+    @notice
+    The cumulative weight that all token IDs have in redemptions.
 
-  //   @param _nft The NFT for which the redemption weight is being calculated.
+    @param _nft The NFT for which the redemption weight is being calculated.
 
-  //   @return weight The total weight.
-  // */
-  // function totalRedemptionWeight(address _nft) public view override returns (uint256 weight) {
-  //   // Get a reference to the total number of tiers.
-  //   uint256 _numberOfTiers = numberOfTiers[_nft];
+    @return weight The total weight.
+  */
+  function totalRedemptionWeight(address _nft) public view override returns (uint256 weight) {
+    // Get a reference to the total number of tiers.
+    uint256 _numberOfTiers = numberOfTiers[_nft];
 
-  //   // Keep a reference to the tier being iterated on.
-  //   JBNFTRewardTierData memory _data;
+    // Keep a reference to the tier being iterated on.
+    JBNFTRewardTierData memory _data;
 
-  //   // Add each token's tier's contribution floor to the weight.
-  //   for (uint256 _i; _i < _numberOfTiers; ) {
-  //     _data = tierData[_nft][_i + 1];
+    // Add each token's tier's contribution floor to the weight.
+    for (uint256 _i; _i < _numberOfTiers; ) {
+      _data = tierData[_nft][_i + 1];
 
-  //     // Add the tier's contribution floor multiplied by the quantity minted.
-  //     weight +=
-  //       (uint256(_data.contributionFloor) * (_data.initialQuantity - _data.remainingQuantity)) +
-  //       _numberOfReservedTokensOutstandingFor(_nft, _i, _data);
+      // Add the tier's contribution floor multiplied by the quantity minted.
+      weight +=
+        (uint256(_data.contributionFloor) * (_data.initialQuantity - _data.remainingQuantity)) +
+        _numberOfReservedTokensOutstandingFor(_nft, _i, _data);
 
-  //     unchecked {
-  //       ++_i;
-  //     }
-  //   }
-  // }
+      unchecked {
+        ++_i;
+      }
+    }
+  }
 
   /** 
     @notice
@@ -600,6 +612,17 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     // Return the leftover amount.
     leftoverAmount = _amount - _data.contributionFloor;
+  }
+
+  /** 
+    @notice
+    Sets the first owner of a token.
+
+    @param _tokenId The ID of the token having the first owner set.
+    @param _owner The owner to set as the first owner.
+  */
+  function recordSetFirstOwnerOf(uint256 _tokenId, address _owner) external override {
+    firstOwnerOf[msg.sender][_tokenId] = _owner;
   }
 
   //*********************************************************************//

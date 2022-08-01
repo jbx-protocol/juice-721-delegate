@@ -41,7 +41,7 @@ abstract contract JBNFTRewardDataSource is
   IJBNFTRewardDataSource,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
-  // IJBRedemptionDelegate,
+  IJBRedemptionDelegate,
   ERC721,
   Ownable
 {
@@ -55,18 +55,6 @@ abstract contract JBNFTRewardDataSource is
   error INVALID_REDEMPTION_EVENT();
   error UNAUTHORIZED();
   error UNEXPECTED();
-
-  //*********************************************************************//
-  // --------------------- internal stored properties ------------------ //
-  //*********************************************************************//
-
-  // /**
-  //   @notice
-  //   The first owner of each token ID, stored on first transfer out.
-
-  //   _tokenId The ID of the token to get the stored first owner of.
-  // */
-  // mapping(uint256 => address) internal _firstOwnerOf;
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -103,22 +91,6 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
-
-  // /**
-  //   @notice
-  //   The first owner of each token ID.
-
-  //   @param _tokenId The ID of the token to get the stored first owner of.
-
-  //   @return The first owner of the token.
-  // */
-  // function firstOwnerOf(uint256 _tokenId) external view override returns (address) {
-  //   // If the stored first owner is set, return it.
-  //   if (_firstOwnerOf[_tokenId] != address(0)) return _firstOwnerOf[_tokenId];
-
-  //   // Otherwise the first owner must be the current owner.
-  //   return _owners[_tokenId];
-  // }
 
   /**
     @notice 
@@ -167,95 +139,95 @@ abstract contract JBNFTRewardDataSource is
       IJBRedemptionDelegate delegate
     )
   {
-    return (_data.reclaimAmount.value, _data.memo, IJBRedemptionDelegate(address(0)));
-    // // Make sure fungible project tokens aren't being redeemed too.
-    // if (_data.tokenCount > 0) revert UNEXPECTED();
+    // Make sure fungible project tokens aren't being redeemed too.
+    if (_data.tokenCount > 0) revert UNEXPECTED();
 
-    // // If redemption rate is 0, nothing can be reclaimed from the treasury
-    // if (_data.redemptionRate == 0) return (0, _data.memo, IJBRedemptionDelegate(address(this)));
+    // If redemption rate is 0, nothing can be reclaimed from the treasury
+    if (_data.redemptionRate == 0) return (0, _data.memo, IJBRedemptionDelegate(address(this)));
 
-    // // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
-    // uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
+    // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+    uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
-    // // Get a reference to the redemption rate of the provided tokens.
-    // uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds);
+    // Get a reference to the redemption rate of the provided tokens.
+    uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds);
 
-    // // Get a reference to the total redemption weight.
-    // uint256 _totalRedemptionWeight = totalRedemptionWeight();
+    // Get a reference to the total redemption weight.
+    uint256 _totalRedemptionWeight = totalRedemptionWeight();
 
-    // // Get a reference to the linear proportion.
-    // uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _totalRedemptionWeight);
+    // Get a reference to the linear proportion.
+    uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _totalRedemptionWeight);
 
-    // // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
-    // if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
-    //   return (_base, _data.memo, IJBRedemptionDelegate(address(this)));
+    // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
+    if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
+      return (_base, _data.memo, IJBRedemptionDelegate(address(this)));
 
-    // // Return the weighted overflow, and this contract as the delegate so that tokens can be deleted.
-    // return (
-    //   PRBMath.mulDiv(
-    //     _base,
-    //     _data.redemptionRate +
-    //       PRBMath.mulDiv(
-    //         _redemptionWeight,
-    //         JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate,
-    //         _totalRedemptionWeight
-    //       ),
-    //     JBConstants.MAX_REDEMPTION_RATE
-    //   ),
-    //   _data.memo,
-    //   IJBRedemptionDelegate(address(this))
-    // );
+    // Return the weighted overflow, and this contract as the delegate so that tokens can be deleted.
+    return (
+      PRBMath.mulDiv(
+        _base,
+        _data.redemptionRate +
+          PRBMath.mulDiv(
+            _redemptionWeight,
+            JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate,
+            _totalRedemptionWeight
+          ),
+        JBConstants.MAX_REDEMPTION_RATE
+      ),
+      _data.memo,
+      IJBRedemptionDelegate(address(this))
+    );
   }
 
-  // /**
-  //   @notice
-  //   The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`.
+  /**
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`.
 
-  //   @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
 
-  //   @return The weight.
-  // */
-  // function redemptionWeightOf(uint256[] memory _tokenIds) public view virtual returns (uint256) {
-  //   _tokenIds; // Prevents unused var compiler and natspec complaints.
-  //   return 0;
-  // }
+    @return The weight.
+  */
+  function redemptionWeightOf(uint256[] memory _tokenIds) public view virtual returns (uint256) {
+    _tokenIds; // Prevents unused var compiler and natspec complaints.
+    return 0;
+  }
 
-  // /**
-  //   @notice
-  //   The cumulative weight that all token IDs have in redemptions.
+  /**
+    @notice
+    The cumulative weight that all token IDs have in redemptions.
 
-  //   @return The total weight.
-  // */
-  // function totalRedemptionWeight() public view virtual returns (uint256) {
-  //   return 0;
-  // }
+    @return The total weight.
+  */
+  function totalRedemptionWeight() public view virtual returns (uint256) {
+    return 0;
+  }
 
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
 
-  // /**
-  //   @notice
-  //   Indicates if this contract adheres to the specified interface.
+  /**
+    @notice
+    Indicates if this contract adheres to the specified interface.
 
-  //   @dev
-  //   See {IERC165-supportsInterface}.
+    @dev
+    See {IERC165-supportsInterface}.
 
-  //   @param _interfaceId The ID of the interface to check for adherance to.
-  // */
-  // function supportsInterface(bytes4 _interfaceId)
-  //   public
-  //   view
-  //   virtual
-  //   override(ERC721, IERC165)
-  //   returns (bool)
-  // {
-  //   return
-  //     _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
-  //     _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
-  //     _interfaceId == type(IJBPayDelegate).interfaceId ||
-  //     super.supportsInterface(_interfaceId);
-  // }
+    @param _interfaceId The ID of the interface to check for adherance to.
+  */
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    virtual
+    override(ERC721, IERC165)
+    returns (bool)
+  {
+    return
+      _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
+      _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
+      _interfaceId == type(IJBPayDelegate).interfaceId ||
+      _interfaceId == type(IJBRedemptionDelegate).interfaceId ||
+      super.supportsInterface(_interfaceId);
+  }
 
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
@@ -312,47 +284,47 @@ abstract contract JBNFTRewardDataSource is
     _processContribution(_data);
   }
 
-  // /**
-  //   @notice
-  //   Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
+  /**
+    @notice
+    Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
 
-  //   @dev
-  //   This function will revert if the contract calling is not one of the project's terminals.
+    @dev
+    This function will revert if the contract calling is not one of the project's terminals.
 
-  //   @param _data The Juicebox standard project redemption data.
-  // */
-  // function didRedeem(JBDidRedeemData calldata _data) external virtual override {
-  //   // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
-  //   if (
-  //     !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
-  //     _data.projectId != projectId
-  //   ) revert INVALID_REDEMPTION_EVENT();
+    @param _data The Juicebox standard project redemption data.
+  */
+  function didRedeem(JBDidRedeemData calldata _data) external virtual override {
+    // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
+    if (
+      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
+      _data.projectId != projectId
+    ) revert INVALID_REDEMPTION_EVENT();
 
-  //   // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
-  //   uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
+    // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+    uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
-  //   // Get a reference to the number of token IDs being checked.
-  //   uint256 _numberOfTokenIds = _decodedTokenIds.length;
+    // Get a reference to the number of token IDs being checked.
+    uint256 _numberOfTokenIds = _decodedTokenIds.length;
 
-  //   // Keep a reference to the token ID being iterated on.
-  //   uint256 _tokenId;
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
 
-  //   // Iterate through all tokens, burning them if the owner is correct.
-  //   for (uint256 _i; _i < _numberOfTokenIds; ) {
-  //     // Set the token's ID.
-  //     _tokenId = _decodedTokenIds[_i];
+    // Iterate through all tokens, burning them if the owner is correct.
+    for (uint256 _i; _i < _numberOfTokenIds; ) {
+      // Set the token's ID.
+      _tokenId = _decodedTokenIds[_i];
 
-  //     // Make sure the token's owner is correct.
-  //     if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED();
+      // Make sure the token's owner is correct.
+      if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED();
 
-  //     // Burn the token.
-  //     _burn(_tokenId);
+      // Burn the token.
+      _burn(_tokenId);
 
-  //     unchecked {
-  //       ++_i;
-  //     }
-  //   }
-  // }
+      unchecked {
+        ++_i;
+      }
+    }
+  }
 
   /**
     @notice
@@ -391,20 +363,4 @@ abstract contract JBNFTRewardDataSource is
   //*********************************************************************//
 
   function _processContribution(JBDidPayData calldata _data) internal virtual {}
-
-  // /**
-  //   @notice
-  //   User the hook to register the first owner if it's not yet regitered.
-  // */
-  // function _beforeTokenTransfer(
-  //   address _from,
-  //   address _to,
-  //   uint256 _tokenId
-  // ) internal virtual override {
-  //   _to; // Prevents unused var compiler and natspec complaints.
-
-  //   // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
-  //   if (_firstOwnerOf[_tokenId] == address(0) && _from != address(0))
-  //     _firstOwnerOf[_tokenId] = _from;
-  // }
 }

@@ -27,6 +27,8 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);
 
+  function contributionToken() external view returns (address);
+
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,
     uint256[] memory _tierIdsToRemove
