@@ -25,9 +25,9 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
-  function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);
+  event SetBaseUri(string baseUri, address caller);
 
-  function contributionToken() external view returns (address);
+  function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);
 
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,
@@ -37,4 +37,6 @@ interface IJBTieredLimitedNFTRewardDataSource {
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
   function setReservedTokenBeneficiary(address _beneficiary) external;
+
+  function setBaseUri(string memory _baseUri) external;
 }

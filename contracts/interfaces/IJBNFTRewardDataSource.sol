@@ -7,8 +7,6 @@ import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol'
 interface IJBNFTRewardDataSource {
   event SetContractUri(string indexed contractUri, address caller);
 
-  event SetBaseUri(string indexed baseUri, address caller);
-
   event SetTokenUriResolver(IJBTokenUriResolver indexed newResolver, address caller);
 
   function projectId() external view returns (uint256);

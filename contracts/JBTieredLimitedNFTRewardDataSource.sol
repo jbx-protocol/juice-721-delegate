@@ -22,6 +22,7 @@ import './libraries/JBIpfsDecoder.sol';
 */
 contract JBTieredLimitedNFTRewardDataSource is
   IJBTieredLimitedNFTRewardDataSource,
+  IJBRedemptionDelegate,
   ITokenSupplyDetails,
   JBNFTRewardDataSource,
   Votes
@@ -35,12 +36,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
-
-  /**
-    @notice
-    The token to expect contributions to be made in.
-  */
-  address public immutable override contributionToken;
 
   /**
     @notice
@@ -169,33 +164,6 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   /**
     @notice
-    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`.
-
-    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
-
-    @return weight The weight.
-  */
-  function redemptionWeightOf(uint256[] memory _tokenIds)
-    public
-    view
-    override
-    returns (uint256 weight)
-  {
-    return store.redemptionWeightOf(address(this), _tokenIds);
-  }
-
-  /**
-    @notice
-    The cumulative weight that all token IDs have in redemptions.
-
-    @return weight The total weight.
-  */
-  function totalRedemptionWeight() public view override returns (uint256 weight) {
-    return store.totalRedemptionWeight(address(this));
-  }
-
-  /**
-    @notice
     Indicates if this contract adheres to the specified interface.
 
     @dev
@@ -203,11 +171,76 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _interfaceId The ID of the interface to check for adherance to.
   */
-  function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(IERC165, JBNFTRewardDataSource)
+    returns (bool)
+  {
     return
       _interfaceId == type(IJBTieredLimitedNFTRewardDataSource).interfaceId ||
-      _interfaceId == type(ITokenSupplyDetails).interfaceId ||
+      _interfaceId == type(IJBRedemptionDelegate).interfaceId ||
       super.supportsInterface(_interfaceId);
+  }
+
+  /**
+    @notice 
+    Part of IJBFundingCycleDataSource, this function gets called when a project's token holders redeem. It will return the standard properties.
+
+    @param _data The Juicebox standard project redemption data.
+
+    @return reclaimAmount The amount that should be reclaimed from the treasury.
+    @return memo The memo that should be forwarded to the event.
+    @return delegate A delegate to call once the redemption has taken place.
+  */
+  function redeemParams(JBRedeemParamsData calldata _data)
+    external
+    view
+    override
+    returns (
+      uint256 reclaimAmount,
+      string memory memo,
+      IJBRedemptionDelegate delegate
+    )
+  {
+    // Make sure fungible project tokens aren't being redeemed too.
+    if (_data.tokenCount > 0) revert UNEXPECTED();
+
+    // If redemption rate is 0, nothing can be reclaimed from the treasury
+    if (_data.redemptionRate == 0) return (0, _data.memo, IJBRedemptionDelegate(address(this)));
+
+    // Get a reference to the redemption rate of the provided tokens.
+    uint256 _redemptionWeight = store.redemptionWeightOf(
+      address(this),
+      // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+      abi.decode(_data.metadata, (uint256[]))
+    );
+
+    // Get a reference to the total redemption weight.
+    uint256 _totalRedemptionWeight = store.totalRedemptionWeight(address(this));
+
+    // Get a reference to the linear proportion.
+    uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _totalRedemptionWeight);
+
+    // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
+    if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
+      return (_base, _data.memo, IJBRedemptionDelegate(address(this)));
+
+    // Return the weighted overflow, and this contract as the delegate so that tokens can be deleted.
+    return (
+      PRBMath.mulDiv(
+        _base,
+        _data.redemptionRate +
+          PRBMath.mulDiv(
+            _redemptionWeight,
+            JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate,
+            _totalRedemptionWeight
+          ),
+        JBConstants.MAX_REDEMPTION_RATE
+      ),
+      _data.memo,
+      IJBRedemptionDelegate(address(this))
+    );
   }
 
   //*********************************************************************//
@@ -248,7 +281,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     )
     EIP712(_name, '1')
   {
-    contributionToken = JBTokens.ETH;
     baseUri = _baseUri;
     store = _store;
 
@@ -301,8 +333,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tierIdsToRemove An array of tier IDs to remove.
   */
   function adjustTiers(
-    JBNFTRewardTierData[] memory _tierDataToAdd,
-    uint256[] memory _tierIdsToRemove
+    JBNFTRewardTierData[] calldata _tierDataToAdd,
+    uint256[] calldata _tierIdsToRemove
   ) external override onlyOwner {
     // Add tiers.
     if (_tierDataToAdd.length != 0) store.recordAddTierData(_tierDataToAdd, false);
@@ -324,6 +356,64 @@ contract JBTieredLimitedNFTRewardDataSource is
     emit SetReservedTokenBeneficiary(_beneficiary, msg.sender);
   }
 
+  /**
+    @notice
+    Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
+
+    @dev
+    This function will revert if the contract calling is not one of the project's terminals.
+
+    @param _data The Juicebox standard project redemption data.
+  */
+  function didRedeem(JBDidRedeemData calldata _data) external virtual override {
+    // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
+    if (
+      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
+      _data.projectId != projectId
+    ) revert INVALID_REDEMPTION_EVENT();
+
+    // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+    uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
+
+    // Get a reference to the number of token IDs being checked.
+    uint256 _numberOfTokenIds = _decodedTokenIds.length;
+
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
+
+    // Iterate through all tokens, burning them if the owner is correct.
+    for (uint256 _i; _i < _numberOfTokenIds; ) {
+      // Set the token's ID.
+      _tokenId = _decodedTokenIds[_i];
+
+      // Make sure the token's owner is correct.
+      if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED();
+
+      // Burn the token.
+      _burn(_tokenId);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /**
+    @notice
+    Set a base token URI.
+
+    @dev
+    Only the contract's owner can set the token URI resolver.
+
+    @param _baseUri The new base URI.
+  */
+  function setBaseUri(string memory _baseUri) external override onlyOwner {
+    // Store the new value.
+    baseUri = _baseUri;
+
+    emit SetBaseUri(_baseUri, msg.sender);
+  }
+
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
@@ -339,7 +429,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function _processContribution(JBDidPayData calldata _data) internal override {
     // Make sure the contribution is being made in the expected token.
-    if (_data.amount.token != contributionToken) return;
+    if (_data.amount.token != JBTokens.ETH) return;
 
     // Set the leftover amount as the initial value.
     uint256 _leftoverAmount = _data.amount.value;
