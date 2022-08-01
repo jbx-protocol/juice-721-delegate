@@ -167,6 +167,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
     return
       _interfaceId == type(IJBTieredLimitedNFTRewardDataSource).interfaceId ||
+      _interfaceId == type(ITokenSupplyDetails).interfaceId ||
       super.supportsInterface(_interfaceId);
   }
 
