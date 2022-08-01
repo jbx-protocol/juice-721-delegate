@@ -381,10 +381,13 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @param _tierData The tiers to add.
     @param _constructorTiers A flag indicating if tiers with voting units and reserved rate should be allowed.
+
+    @return _tierIds The IDs of the tiers added.
   */
   function recordAddTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers)
     external
     override
+    returns (uint256[] memory tierIds)
   {
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData memory _data;
@@ -394,6 +397,9 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     // Get a reference to the current total number of tiers.
     uint256 _currentNumberOfTiers = numberOfTiers[msg.sender];
+
+    // Initialize an array with the appropriate length.
+    tierIds = new uint256[](_numberOfNewTiers);
 
     for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
       // Set the tier being iterated on.
@@ -417,7 +423,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       // Add the tier with the iterative ID.
       tierData[msg.sender][_tierId] = _data;
 
-      emit AddTier(_tierId, _data, msg.sender);
+      // Set the tier ID in the returned value.
+      tierIds[_numberOfNewTiers - _i] = _tierId;
 
       unchecked {
         --_i;
@@ -506,8 +513,6 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
       // Set the tier as removed.
       isTierRemoved[msg.sender][_tierId] = true;
-
-      emit RemoveTier(_tierId, msg.sender);
 
       unchecked {
         ++_i;

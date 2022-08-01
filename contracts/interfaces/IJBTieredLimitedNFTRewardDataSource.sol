@@ -23,6 +23,10 @@ interface IJBTieredLimitedNFTRewardDataSource {
     address caller
   );
 
+  event AddTier(uint256 indexed tierId, JBNFTRewardTierData data, address caller);
+
+  event RemoveTier(uint256 indexed tierId, address caller);
+
   event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
   function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);

@@ -6,9 +6,6 @@ import './../structs/JBNFTRewardTierData.sol';
 import './../structs/JBNFTRewardTier.sol';
 
 interface IJBTieredLimitedNFTRewardDataSourceStore {
-  event AddTier(uint256 indexed tierId, JBNFTRewardTierData data, address caller);
-  event RemoveTier(uint256 indexed tierId, address caller);
-
   function totalSupply(address _nft) external view returns (uint256);
 
   function balanceOf(address _nft, address _owner) external view returns (uint256);
@@ -61,7 +58,8 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
   function recordAddTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers)
-    external;
+    external
+    returns (uint256[] memory tierIds);
 
   function recordMintReservesFor(uint256 _tierId, uint256 _count)
     external

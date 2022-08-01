@@ -257,11 +257,35 @@ contract JBTieredLimitedNFTRewardDataSource is
     JBNFTRewardTierData[] calldata _tierDataToAdd,
     uint256[] calldata _tierIdsToRemove
   ) external override onlyOwner {
+    // Get a reference to the number of tiers being added.
+    uint256 _numberOfTiersToAdd = _tierDataToAdd.length;
+
     // Add tiers.
-    if (_tierDataToAdd.length != 0) store.recordAddTierData(_tierDataToAdd, false);
+    if (_numberOfTiersToAdd != 0) {
+      uint256[] memory _tierIdsAdded = store.recordAddTierData(_tierDataToAdd, false);
+
+      for (uint256 _i; _i < _numberOfTiersToAdd; ) {
+        emit AddTier(_tierIdsAdded[_i], _tierDataToAdd[_i], msg.sender);
+        unchecked {
+          ++_i;
+        }
+      }
+    }
+
+    // Get a reference to the number of tiers being removed.
+    uint256 _numberOfTiersToRemove = _tierIdsToRemove.length;
 
     // Remove tiers.
-    if (_tierIdsToRemove.length != 0) store.recordRemoveTierIds(_tierIdsToRemove);
+    if (_numberOfTiersToRemove != 0) {
+      store.recordRemoveTierIds(_tierIdsToRemove);
+
+      for (uint256 _i; _i < _numberOfTiersToRemove; ) {
+        emit RemoveTier(_tierIdsToRemove[_i], msg.sender);
+        unchecked {
+          ++_i;
+        }
+      }
+    }
   }
 
   /** 
