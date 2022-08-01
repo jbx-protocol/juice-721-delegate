@@ -48,12 +48,12 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function reservedTokenBeneficiary() external view returns (address);
 
+  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256);
+
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,
     uint256[] memory _tierIdsToRemove
   ) external;
-
-  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256);
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 

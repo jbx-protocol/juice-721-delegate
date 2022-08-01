@@ -9,8 +9,6 @@ contract DeployMainnet is Script {
 
   JBTieredLimitedNFTRewardDataSourceProjectDeployer jbTieredLimitedNFTRewardDataSource;
 
-  function setUp() public {}
-
   function run() external {
     vm.startBroadcast();
     jbTieredLimitedNFTRewardDataSource = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(
@@ -25,8 +23,6 @@ contract DeployRinkeby is Script {
   IJBOperatorStore jbOperatorStore = IJBOperatorStore(0xEDB2db4b82A4D4956C3B4aA474F7ddf3Ac73c5AB);
 
   JBTieredLimitedNFTRewardDataSourceProjectDeployer jbTieredLimitedNFTRewardDataSource;
-
-  function setUp() public {}
 
   function run() external {
     vm.startBroadcast();
