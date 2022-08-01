@@ -85,6 +85,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     @notice
     The first owner of each token ID, stored on first transfer out.
 
+    _nft The NFT contract to which the token belongs.
     _tokenId The ID of the token to get the stored first owner of.
   */
   mapping(address => mapping(uint256 => address)) public override firstOwnerOf;
