@@ -81,10 +81,6 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   */
   mapping(address => address) public override reservedTokenBeneficiary;
 
-  //*********************************************************************//
-  // --------------------- internal stored properties ------------------ //
-  //*********************************************************************//
-
   /**
     @notice
     The first owner of each token ID, stored on first transfer out.
@@ -92,6 +88,30 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     _tokenId The ID of the token to get the stored first owner of.
   */
   mapping(address => mapping(uint256 => address)) public override firstOwnerOf;
+
+  /**
+    @notice
+    The common base for the tokenUri's
+
+    _nft The NFT for which the base URI applies.
+  */
+  mapping(address => string) public override baseUriOf;
+
+  /**
+    @notice
+    Custom token URI resolver, superceeds base URI.
+
+    _nft The NFT for which the token URI resolver applies.
+  */
+  mapping(address => IJBTokenUriResolver) public override tokenUriResolverOf;
+
+  /**
+    @notice
+    Contract metadata uri.
+
+    _nft The NFT for which the contract URI resolver applies.
+  */
+  mapping(address => string) public override contractUriOf;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -623,6 +643,36 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   */
   function recordSetFirstOwnerOf(uint256 _tokenId, address _owner) external override {
     firstOwnerOf[msg.sender][_tokenId] = _owner;
+  }
+
+  /** 
+    @notice
+    Sets the base URI. 
+
+    @param _uri The base URI to set.
+  */
+  function recordSetBaseUri(string memory _uri) external override {
+    baseUriOf[msg.sender] = _uri;
+  }
+
+  /** 
+    @notice
+    Sets the contract URI. 
+
+    @param _uri The contract URI to set.
+  */
+  function recordSetContractUri(string memory _uri) external override {
+    contractUriOf[msg.sender] = _uri;
+  }
+
+  /** 
+    @notice
+    Sets the token URI resolver. 
+
+    @param _resolver The resolver to set.
+  */
+  function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external override {
+    tokenUriResolverOf[msg.sender] = _resolver;
   }
 
   //*********************************************************************//

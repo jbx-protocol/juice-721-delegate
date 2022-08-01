@@ -43,19 +43,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   IJBTieredLimitedNFTRewardDataSourceStore public immutable override store;
 
   //*********************************************************************//
-  // --------------------- public stored properties -------------------- //
-  //*********************************************************************//
-
-  /**
-    @notice
-    The common base for the tokenUri's
-
-    @dev
-    No setter to insure immutability
-  */
-  string public baseUri;
-
-  //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
 
@@ -154,39 +141,18 @@ contract JBTieredLimitedNFTRewardDataSource is
     // A token without an owner doesn't have a URI.
     if (_owners[_tokenId] == address(0)) return '';
 
+    // Get a reference to the URI resolver.
+    IJBTokenUriResolver _resolver = store.tokenUriResolverOf(address(this));
+
     // If a token URI resolver is provided, use it to resolve the token URI.
-    if (address(tokenUriResolver) != address(0)) return tokenUriResolver.getUri(_tokenId);
+    if (address(_resolver) != address(0)) return _resolver.getUri(_tokenId);
 
     // Return the token URI for the token's tier.
-    return JBIpfsDecoder.decode(baseUri, store.tier(address(this), _tokenId).data.tokenUri);
-  }
-
-  /** 
-    @notice
-    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
-
-    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
-
-    @return The weight.
-  */
-  function redemptionWeightOf(uint256[] memory _tokenIds)
-    public
-    view
-    virtual
-    override
-    returns (uint256)
-  {
-    return store.redemptionWeightOf(address(this), _tokenIds);
-  }
-
-  /** 
-    @notice
-    The cumulative weight that all token IDs have in redemptions. 
-
-    @return The total weight.
-  */
-  function totalRedemptionWeight() public view virtual override returns (uint256) {
-    return store.totalRedemptionWeight(address(this));
+    return
+      JBIpfsDecoder.decode(
+        store.baseUriOf(address(this)),
+        store.tier(address(this), _tokenId).data.tokenUri
+      );
   }
 
   /**
@@ -213,6 +179,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
+    @param _baseUri A URI to use as a base for full token URIs.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
@@ -224,26 +191,19 @@ contract JBTieredLimitedNFTRewardDataSource is
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
+    string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
-    string memory _baseUri,
     address _owner,
     JBNFTRewardTierData[] memory _tierData,
     IJBTieredLimitedNFTRewardDataSourceStore _store
-  )
-    JBNFTRewardDataSource(
-      _projectId,
-      _directory,
-      _name,
-      _symbol,
-      _tokenUriResolver,
-      _contractUri,
-      _owner
-    )
-    EIP712(_name, '1')
-  {
-    baseUri = _baseUri;
+  ) JBNFTRewardDataSource(_projectId, _directory, _name, _symbol, _owner) EIP712(_name, '1') {
     store = _store;
+
+    if (bytes(_baseUri).length != 0) _store.recordSetBaseUri(_baseUri);
+    if (bytes(_contractUri).length != 0) _store.recordSetContractUri(_contractUri);
+    if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
+      _store.recordSetTokenUriResolver(_tokenUriResolver);
 
     _store.recordAddTierData(_tierData, true);
   }
@@ -328,9 +288,41 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function setBaseUri(string memory _baseUri) external override onlyOwner {
     // Store the new value.
-    baseUri = _baseUri;
+    store.recordSetBaseUri(_baseUri);
 
     emit SetBaseUri(_baseUri, msg.sender);
+  }
+
+  /**
+    @notice
+    Set a contract metadata uri to contain opensea-style metadata.
+
+    @dev
+    Only the contract's owner can set the contract URI.
+
+    @param _contractUri The new contract URI.
+  */
+  function setContractUri(string calldata _contractUri) external override onlyOwner {
+    // Store the new value.
+    store.recordSetContractUri(_contractUri);
+
+    emit SetContractUri(_contractUri, msg.sender);
+  }
+
+  /**
+    @notice
+    Set a token URI resolver.
+
+    @dev
+    Only the contract's owner can set the token URI resolver.
+
+    @param _tokenUriResolver The new base URI.
+  */
+  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external override onlyOwner {
+    // Store the new value.
+    store.recordSetTokenUriResolver(_tokenUriResolver);
+
+    emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
   }
 
   //*********************************************************************//
@@ -478,6 +470,34 @@ contract JBTieredLimitedNFTRewardDataSource is
     }
   }
 
+  /** 
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
+
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+
+    @return The weight.
+  */
+  function _redemptionWeightOf(uint256[] memory _tokenIds)
+    internal
+    view
+    virtual
+    override
+    returns (uint256)
+  {
+    return store.redemptionWeightOf(address(this), _tokenIds);
+  }
+
+  /** 
+    @notice
+    The cumulative weight that all token IDs have in redemptions. 
+
+    @return The total weight.
+  */
+  function _totalRedemptionWeight() internal view virtual override returns (uint256) {
+    return store.totalRedemptionWeight(address(this));
+  }
+
   /**
     @notice
     The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
@@ -533,5 +553,15 @@ contract JBTieredLimitedNFTRewardDataSource is
       _transferVotingUnits(_from, _to, _tier.data.votingUnits);
 
     super._afterTokenTransfer(_from, _to, _tokenId);
+  }
+
+  /** 
+    @notice
+    The stored base URI. 
+
+    @return The URI.
+  */
+  function _baseURI() internal view virtual override returns (string memory) {
+    return store.baseUriOf(address(this));
   }
 }

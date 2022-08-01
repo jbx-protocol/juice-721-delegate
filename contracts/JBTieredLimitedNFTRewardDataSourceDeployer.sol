@@ -50,9 +50,9 @@ contract JBTieredLimitedNFTRewardDataSourceDeployer is IJBTieredLimitedNFTReward
         _deployTieredNFTRewardDataSourceData.directory,
         _deployTieredNFTRewardDataSourceData.name,
         _deployTieredNFTRewardDataSourceData.symbol,
+        _deployTieredNFTRewardDataSourceData.baseUri,
         _deployTieredNFTRewardDataSourceData.tokenUriResolver,
         _deployTieredNFTRewardDataSourceData.contractUri,
-        _deployTieredNFTRewardDataSourceData.baseUri,
         _deployTieredNFTRewardDataSourceData.owner,
         _deployTieredNFTRewardDataSourceData.tierData,
         _deployTieredNFTRewardDataSourceData.store

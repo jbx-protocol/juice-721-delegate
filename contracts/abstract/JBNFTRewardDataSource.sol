@@ -73,22 +73,6 @@ abstract contract JBNFTRewardDataSource is
   IJBDirectory public immutable override directory;
 
   //*********************************************************************//
-  // --------------------- public stored properties -------------------- //
-  //*********************************************************************//
-
-  /**
-    @notice
-    Custom token URI resolver, superceeds base URI.
-  */
-  IJBTokenUriResolver public override tokenUriResolver;
-
-  /**
-    @notice
-    Contract metadata uri.
-  */
-  string public override contractUri;
-
-  //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
 
@@ -146,16 +130,16 @@ abstract contract JBNFTRewardDataSource is
     if (_data.redemptionRate == 0) return (0, _data.memo, IJBRedemptionDelegate(address(this)));
 
     // Get a reference to the redemption rate of the provided tokens.
-    uint256 _redemptionWeight = redemptionWeightOf(
+    uint256 _redemptionWeight = _redemptionWeightOf(
       // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
       abi.decode(_data.metadata, (uint256[]))
     );
 
     // Get a reference to the total redemption weight.
-    uint256 _totalRedemptionWeight = totalRedemptionWeight();
+    uint256 _total = _totalRedemptionWeight();
 
     // Get a reference to the linear proportion.
-    uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _totalRedemptionWeight);
+    uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _total);
 
     // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
     if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
@@ -169,40 +153,13 @@ abstract contract JBNFTRewardDataSource is
           PRBMath.mulDiv(
             _redemptionWeight,
             JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate,
-            _totalRedemptionWeight
+            _total
           ),
         JBConstants.MAX_REDEMPTION_RATE
       ),
       _data.memo,
       IJBRedemptionDelegate(address(this))
     );
-  }
-
-  //*********************************************************************//
-  // -------------------------- public views --------------------------- //
-  //*********************************************************************//
-
-  /** 
-    @notice
-    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
-
-    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
-
-    @return The weight.
-  */
-  function redemptionWeightOf(uint256[] memory _tokenIds) public view virtual returns (uint256) {
-    _tokenIds; // Prevents unused var compiler and natspec complaints.
-    return 0;
-  }
-
-  /** 
-    @notice
-    The cumulative weight that all token IDs have in redemptions. 
-
-    @return The total weight.
-  */
-  function totalRedemptionWeight() public view virtual returns (uint256) {
-    return 0;
   }
 
   /**
@@ -238,8 +195,6 @@ abstract contract JBNFTRewardDataSource is
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
-    @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-    @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that will own this contract.
   */
   constructor(
@@ -247,14 +202,10 @@ abstract contract JBNFTRewardDataSource is
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    IJBTokenUriResolver _tokenUriResolver,
-    string memory _contractUri,
     address _owner
   ) ERC721(_name, _symbol) {
     projectId = _projectId;
     directory = _directory;
-    tokenUriResolver = _tokenUriResolver;
-    contractUri = _contractUri;
 
     // Transfer the ownership to the specified address.
     if (_owner != address(0)) _transferOwnership(_owner);
@@ -326,41 +277,32 @@ abstract contract JBNFTRewardDataSource is
     }
   }
 
-  /**
-    @notice
-    Set a contract metadata uri to contain opensea-style metadata.
-
-    @dev
-    Only the contract's owner can set the contract URI.
-
-    @param _contractUri The new contract URI.
-  */
-  function setContractUri(string calldata _contractUri) external override onlyOwner {
-    // Store the new value.
-    contractUri = _contractUri;
-
-    emit SetContractUri(_contractUri, msg.sender);
-  }
-
-  /**
-    @notice
-    Set a token URI resolver.
-
-    @dev
-    Only the contract's owner can set the token URI resolver.
-
-    @param _tokenUriResolver The new base URI.
-  */
-  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external override onlyOwner {
-    // Store the new value.
-    tokenUriResolver = _tokenUriResolver;
-
-    emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
-  }
-
   //*********************************************************************//
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
   function _processContribution(JBDidPayData calldata _data) internal virtual {}
+
+  /** 
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
+
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+
+    @return The weight.
+  */
+  function _redemptionWeightOf(uint256[] memory _tokenIds) internal view virtual returns (uint256) {
+    _tokenIds; // Prevents unused var compiler and natspec complaints.
+    return 0;
+  }
+
+  /** 
+    @notice
+    The cumulative weight that all token IDs have in redemptions. 
+
+    @return The total weight.
+  */
+  function _totalRedemptionWeight() internal view virtual returns (uint256) {
+    return 0;
+  }
 }

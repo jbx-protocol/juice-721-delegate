@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
+import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
 import './../structs/JBNFTRewardTierData.sol';
 import './../structs/JBNFTRewardTier.sol';
 
@@ -53,6 +54,12 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function reservedTokenBeneficiary(address _nft) external view returns (address);
 
+  function baseUriOf(address _nft) external view returns (string memory);
+
+  function contractUriOf(address _nft) external view returns (string memory);
+
+  function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
+
   function recordAddTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers)
     external;
 
@@ -83,4 +90,10 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
   function recordRemoveTierIds(uint256[] memory _tierIds) external;
 
   function recordSetFirstOwnerOf(uint256 _tokenId, address _owner) external;
+
+  function recordSetBaseUri(string memory _uri) external;
+
+  function recordSetContractUri(string memory _uri) external;
+
+  function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
 }
