@@ -463,14 +463,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint8[] memory _mintTierIds,
     address _beneficiary
   ) internal returns (uint256 leftoverAmount) {
-    // Set the leftover amount to be the initial amount.
-    leftoverAmount = _amount;
-
     // Keep a reference to the token ID.
     uint256[] memory _tokenIds;
 
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (_tokenIds, leftoverAmount) = store.recordMint(leftoverAmount, _mintTierIds, _beneficiary);
+    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds, _beneficiary);
 
     uint256 _mintsLength = _tokenIds.length;
 
