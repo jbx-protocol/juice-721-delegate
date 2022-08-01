@@ -2,7 +2,6 @@
 pragma solidity 0.8.6;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/utils/Strings.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
@@ -42,11 +41,8 @@ abstract contract JBNFTRewardDataSource is
   IJBFundingCycleDataSource,
   IJBPayDelegate,
   IJBRedemptionDelegate,
-  ERC721,
-  Ownable
+  ERC721
 {
-  using Strings for uint256;
-
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -195,20 +191,15 @@ abstract contract JBNFTRewardDataSource is
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
-    @param _owner The address that will own this contract.
   */
   constructor(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
-    string memory _symbol,
-    address _owner
+    string memory _symbol
   ) ERC721(_name, _symbol) {
     projectId = _projectId;
     directory = _directory;
-
-    // Transfer the ownership to the specified address.
-    if (_owner != address(0)) _transferOwnership(_owner);
   }
 
   //*********************************************************************//

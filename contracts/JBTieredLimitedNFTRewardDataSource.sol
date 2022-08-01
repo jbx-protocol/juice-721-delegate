@@ -24,7 +24,8 @@ contract JBTieredLimitedNFTRewardDataSource is
   IJBTieredLimitedNFTRewardDataSource,
   ITokenSupplyDetails,
   JBNFTRewardDataSource,
-  Votes
+  Votes,
+  Ownable
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -198,7 +199,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     address _owner,
     JBNFTRewardTierData[] memory _tierData,
     IJBTieredLimitedNFTRewardDataSourceStore _store
-  ) JBNFTRewardDataSource(_projectId, _directory, _name, _symbol, _owner) EIP712(_name, '1') {
+  ) JBNFTRewardDataSource(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
     store = _store;
 
     if (bytes(_baseUri).length != 0) _store.recordSetBaseUri(_baseUri);
@@ -207,6 +208,9 @@ contract JBTieredLimitedNFTRewardDataSource is
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
     _store.recordAddTierData(_tierData, true);
+
+    // Transfer the ownership to the specified address.
+    if (_owner != address(0)) _transferOwnership(_owner);
   }
 
   //*********************************************************************//
