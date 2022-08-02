@@ -495,11 +495,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     address _to,
     uint256 _tokenId
   ) internal virtual override {
-    _to; // Prevents unused var compiler and natspec complaints.
-
     // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
     if (_from != address(0) && store.firstOwnerOf(address(this), _tokenId) == address(0))
       store.recordSetFirstOwnerOf(_tokenId, _from);
+
+    super._beforeTokenTransfer(_from, _to, _tokenId);
   }
 
   /**
