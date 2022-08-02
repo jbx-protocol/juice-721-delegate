@@ -390,11 +390,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _tierId;
 
     // Record the mint.
-    (_tokenId, _tierId, leftoverAmount) = store.recordMintBestAvailableTier(
-      _amount,
-      _beneficiary,
-      _expectMint
-    );
+    (_tokenId, _tierId, leftoverAmount) = store.recordMintBestAvailableTier(_amount, _expectMint);
 
     // If there's no best tier, return.
     if (_tokenId == 0) return _amount;
@@ -424,7 +420,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256[] memory _tokenIds;
 
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds, _beneficiary);
+    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds);
 
     uint256 _mintsLength = _tokenIds.length;
 
