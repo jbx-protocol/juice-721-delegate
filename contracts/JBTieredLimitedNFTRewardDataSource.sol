@@ -6,7 +6,6 @@ import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@openzeppelin/contracts/governance/utils/Votes.sol';
 import './abstract/JBNFTRewardDataSource.sol';
 import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
-import './interfaces/ITokenSupplyDetails.sol';
 import './libraries/JBIpfsDecoder.sol';
 
 /**
@@ -22,7 +21,6 @@ import './libraries/JBIpfsDecoder.sol';
 */
 contract JBTieredLimitedNFTRewardDataSource is
   IJBTieredLimitedNFTRewardDataSource,
-  ITokenSupplyDetails,
   JBNFTRewardDataSource,
   Votes,
   Ownable
@@ -46,51 +44,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
-
-  /**
-    @notice
-    The total supply of issued NFTs from all tiers.
-
-    @return supply The total number of NFTs between all tiers.
-  */
-  function totalSupply() external view override returns (uint256 supply) {
-    return store.totalSupply(address(this));
-  }
-
-  /**
-    @notice
-    The total number of tokens with the given ID.
-    @return Either 1 if the token has been minted, or 0 if it hasnt.
-  */
-  function tokenSupplyOf(uint256 _tokenId) external view override returns (uint256) {
-    return ownerOf(_tokenId) != address(0) ? 1 : 0;
-  }
-
-  /**
-    @notice
-    The total number of tokens owned by the given owner.
-    @param _owner The address to check the balance of.
-    @return The number of tokens owners by the owner.
-  */
-  function totalOwnerBalanceOf(address _owner) external view override returns (uint256) {
-    return balanceOf(_owner);
-  }
-
-  /**
-    @notice
-    The total number of tokens with the given ID owned by the given owner.
-    @param _owner The address to check the balance of.
-    @param _tokenId The ID of the token to check the owner's balance of.
-    @return Either 1 if the owner has the token, or 0 if it does not.
-  */
-  function ownerTokenBalanceOf(address _owner, uint256 _tokenId)
-    external
-    view
-    override
-    returns (uint256)
-  {
-    return ownerOf(_tokenId) == _owner ? 1 : 0;
-  }
 
   /** 
     @notice 
@@ -168,7 +121,6 @@ contract JBTieredLimitedNFTRewardDataSource is
   function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
     return
       _interfaceId == type(IJBTieredLimitedNFTRewardDataSource).interfaceId ||
-      _interfaceId == type(ITokenSupplyDetails).interfaceId ||
       super.supportsInterface(_interfaceId);
   }
 
