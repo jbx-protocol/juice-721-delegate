@@ -524,9 +524,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Get a reference to the tier.
     JBNFTRewardTier memory _tier = store.tierOfTokenId(address(this), _tokenId);
 
-    // If this is not a mint then record the transfer
-    if (_from != address(0))
-      store.recordTransferForTier(_tier.id, _from, _to);
+    store.recordTransferForTier(_tier.id, _from, _to);
 
     if (_tier.data.votingUnits > 0)
       // Transfer the voting units.

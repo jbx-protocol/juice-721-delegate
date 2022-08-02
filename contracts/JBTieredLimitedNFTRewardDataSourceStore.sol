@@ -472,9 +472,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     tokenIds = new uint256[](_count);
 
     for (uint256 _i; _i < _count; ) {
-      // Mint the tokens.
-      uint256 _tokenId = _recordMintForTier(_tierId, _data, reservedTokenBeneficiary[msg.sender]);
-      tokenIds[_i] = _tokenId;
+      // Generate the tokens.
+      tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
 
       unchecked {
         ++_i;
@@ -505,15 +504,17 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     address _from,
     address _to
   ) external override {
-    // decrease the tier balance for the sender
-    --tierBalanceOf[msg.sender][_from][_tierId];
+    // If this is not a mint then subtract the tier balance from the original holder.
+    if (_from != address(0))
+      // decrease the tier balance for the sender
+      --tierBalanceOf[msg.sender][_from][_tierId];
 
     // if this is a burn the balance is not added
-    if(_to == address(0)) return;
-
-    unchecked {
-      // increase the tier balance for the beneficiary
-      ++tierBalanceOf[msg.sender][_to][_tierId];
+    if (_to != address(0)) {
+      unchecked {
+        // increase the tier balance for the beneficiary
+        ++tierBalanceOf[msg.sender][_to][_tierId];
+      }
     }
   }
 
@@ -551,18 +552,13 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.
-    @param _beneficiary The address to mint for.
     @param _expectMint A flag indicating if a mint is expected.
 
     @return tokenId The token ID minted.
     @return tierId The ID of the tier minted from.
     @return leftoverAmount The amount leftover after the mint. 
   */
-  function recordMintBestAvailableTier(
-    uint256 _amount,
-    address _beneficiary,
-    bool _expectMint
-  )
+  function recordMintBestAvailableTier(uint256 _amount, bool _expectMint)
     external
     override
     returns (
@@ -607,8 +603,14 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the best tier.
     JBNFTRewardTierData storage _bestTierData = tierData[msg.sender][tierId];
 
-    // Make the project ID.
-    tokenId = _recordMintForTier(tierId, _bestTierData, _beneficiary);
+    // Make the token ID.
+    unchecked {
+      // Keep a reference to the token ID.
+      tokenId = _generateTokenId(
+        tierId,
+        _bestTierData.initialQuantity - --_bestTierData.remainingQuantity
+      );
+    }
 
     // If there's no best tier, return.
     if (tokenId == 0) {
@@ -627,16 +629,15 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
     @param _tierIds The IDs of the tier to mint from.
-    @param _beneficiary The address to mint for.
 
     @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
   */
-  function recordMint(
-    uint256 _amount,
-    uint8[] calldata _tierIds,
-    address _beneficiary
-  ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
+  function recordMint(uint256 _amount, uint8[] calldata _tierIds)
+    external
+    override
+    returns (uint256[] memory tokenIds, uint256 leftoverAmount)
+  {
     // Set the leftover amount as the initial amount.
     leftoverAmount = _amount;
 
@@ -676,7 +677,10 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       ) revert OUT();
 
       // Mint the tokens.
-      tokenIds[_i] = _recordMintForTier(_tierId, _data, _beneficiary);
+      unchecked {
+        // Keep a reference to the token ID.
+        tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
+      }
 
       // Update the leftover amount;
       leftoverAmount = leftoverAmount - _data.contributionFloor;
@@ -773,30 +777,6 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - reserveTokensMinted;
-  }
-
-  /** 
-    @notice
-    Mints a token in a tier for a specific benficiary.
-
-    @param _tierId The ID of the tier to mint within.
-    @param _data The tier data to mint for.
-    @param _beneficiary The address to mint for.
-
-    @return tokenId The ID of the token minted.
-  */
-  function _recordMintForTier(
-    uint256 _tierId,
-    JBNFTRewardTierData storage _data,
-    address _beneficiary
-  ) internal returns (uint256 tokenId) {
-    unchecked {
-      // Keep a reference to the token ID.
-      tokenId = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
-    }
-
-    // Increment the tier balance for the beneficiary.
-    ++tierBalanceOf[msg.sender][_beneficiary][_tierId];
   }
 
   /** 

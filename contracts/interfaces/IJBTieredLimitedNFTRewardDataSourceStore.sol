@@ -65,11 +65,7 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
     external
     returns (uint256[] memory tokenIds);
 
-  function recordMintBestAvailableTier(
-    uint256 _amount,
-    address _beneficiary,
-    bool _expectMint
-  )
+  function recordMintBestAvailableTier(uint256 _amount, bool _expectMint)
     external
     returns (
       uint256 tokenId,
@@ -79,11 +75,9 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function recordSetReservedTokenBeneficiary(address _beneficiary) external;
 
-  function recordMint(
-    uint256 _amount,
-    uint8[] calldata _tierIds,
-    address _beneficiary
-  ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
+  function recordMint(uint256 _amount, uint8[] calldata _tierIds)
+    external
+    returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
   function recordTransferForTier(
     uint256 _tierId,
