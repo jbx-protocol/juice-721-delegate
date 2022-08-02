@@ -79,7 +79,7 @@ abstract contract JBNFTRewardDataSource is
     @dev 
     This function will revert if the contract calling it is not the store of one of the project's terminals. 
 
-    @param _data The Juicebox standard project contribution data.
+    @param _data The Juicebox standard project payment data.
 
     @return weight The weight that tokens should get minted in accordance to 
     @return memo The memo that should be forwarded to the event.
@@ -213,7 +213,7 @@ abstract contract JBNFTRewardDataSource is
     @dev 
     This function will revert if the contract calling is not one of the project's terminals. 
 
-    @param _data The Juicebox standard project contribution data.
+    @param _data The Juicebox standard project payment data.
   */
   function didPay(JBDidPayData calldata _data) external virtual override {
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
@@ -222,7 +222,7 @@ abstract contract JBNFTRewardDataSource is
       _data.projectId != projectId
     ) revert INVALID_PAYMENT_EVENT();
 
-    // Process the contribution.
+    // Process the payment.
     _processPayment(_data);
   }
 
@@ -272,7 +272,15 @@ abstract contract JBNFTRewardDataSource is
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  function _processPayment(JBDidPayData calldata _data) internal virtual {}
+  /** 
+    @notice
+    Process a received payment.
+
+    @param _data The Juicebox standard project payment data.
+  */
+  function _processPayment(JBDidPayData calldata _data) internal virtual {
+    _data; // Prevents unused var compiler and natspec complaints.
+  }
 
   /** 
     @notice
