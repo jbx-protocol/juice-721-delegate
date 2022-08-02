@@ -223,7 +223,7 @@ abstract contract JBNFTRewardDataSource is
     ) revert INVALID_PAYMENT_EVENT();
 
     // Process the contribution.
-    _processContribution(_data);
+    _processPayment(_data);
   }
 
   /**
@@ -272,7 +272,7 @@ abstract contract JBNFTRewardDataSource is
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  function _processContribution(JBDidPayData calldata _data) internal virtual {}
+  function _processPayment(JBDidPayData calldata _data) internal virtual {}
 
   /** 
     @notice

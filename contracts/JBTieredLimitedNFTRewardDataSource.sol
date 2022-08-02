@@ -319,7 +319,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     @param _data The Juicebox standard project contribution data.
   */
-  function _processContribution(JBDidPayData calldata _data) internal override {
+  function _processPayment(JBDidPayData calldata _data) internal override {
     // Make sure the contribution is being made in the expected token.
     if (_data.amount.token != JBTokens.ETH) return;
 
