@@ -140,10 +140,9 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Add the tier to the array if it hasn't been removed (tiers are unsorted)
       if (!isTierRemoved[_nft][_i]) {
-        // Get a reference to the tier data (1-indexed). Overwrite empty tiers.
-        _tiers[_activeTiers] = JBNFTRewardTier({id: _i, data: tierData[_nft][_i]});
         unchecked {
-          ++_activeTiers;
+          // Get a reference to the tier data (1-indexed). Overwrite empty tiers.
+          _tiers[_activeTiers++] = JBNFTRewardTier({id: _i, data: tierData[_nft][_i]});
         }
       }
 
