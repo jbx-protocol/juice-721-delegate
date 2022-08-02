@@ -180,10 +180,12 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Record the minted reserves for the tier.
     uint256[] memory _tokenIds = store.recordMintReservesFor(_tierId, _count);
 
+    // Keep a reference to the reserved token beneficiary.
+    address _reservedTokenBeneficiary = store.reservedTokenBeneficiary(address(this));
+
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;
 
-    address _reservedTokenBeneficiary = store.reservedTokenBeneficiary(address(this));
 
     for (uint256 _i; _i < _count; ) {
       // Set the token ID.
