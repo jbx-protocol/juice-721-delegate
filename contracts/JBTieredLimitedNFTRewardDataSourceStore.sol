@@ -471,12 +471,11 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     tokenIds = new uint256[](_count);
 
     for (uint256 _i; _i < _count; ) {
+      // Generate the tokens.
+      tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
+
       unchecked {
-        // Generate the tokens.
-        tokenIds[_i++] = _generateTokenId(
-          _tierId,
-          _data.initialQuantity - --_data.remainingQuantity
-        );
+        ++_i;
       }
     }
   }
@@ -532,16 +531,18 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _tierId;
 
     for (uint256 _i; _i < _numTiers; ) {
-      unchecked {
-        // Set the tier being iterated on, 0-indexed
-        _tierId = _tierIds[_i++];
-      }
+      // Set the tier being iterated on, 0-indexed
+      _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
       if (tierData[msg.sender][_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
 
       // Set the tier as removed.
       isTierRemoved[msg.sender][_tierId] = true;
+
+      unchecked {
+        ++_i;
+      }
     }
   }
 
@@ -677,14 +678,15 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       // Mint the tokens.
       unchecked {
         // Keep a reference to the token ID.
-        tokenIds[_i++] = _generateTokenId(
-          _tierId,
-          _data.initialQuantity - --_data.remainingQuantity
-        );
+        tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
       }
 
       // Update the leftover amount;
       leftoverAmount = leftoverAmount - _data.contributionFloor;
+
+      unchecked {
+        ++_i;
+      }
     }
   }
 
