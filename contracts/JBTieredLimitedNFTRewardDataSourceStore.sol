@@ -471,11 +471,12 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     tokenIds = new uint256[](_count);
 
     for (uint256 _i; _i < _count; ) {
-      // Generate the tokens.
-      tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
-
       unchecked {
-        ++_i;
+        // Generate the tokens.
+        tokenIds[_i++] = _generateTokenId(
+          _tierId,
+          _data.initialQuantity - --_data.remainingQuantity
+        );
       }
     }
   }
