@@ -146,9 +146,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -192,9 +192,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -240,9 +240,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -296,9 +296,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -342,9 +342,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -414,9 +414,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -486,9 +486,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -534,9 +534,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -579,9 +579,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(address(0)),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -597,6 +597,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         string(abi.encodePacked(baseUri, theoricHashes[i - 1]))
       );
     }
+
+    _ForTest_store.tiers(address(_delegate));
   }
 
   function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
@@ -641,9 +643,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -683,9 +685,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -722,9 +724,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -748,9 +750,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -771,9 +773,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -810,9 +812,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      contractUri,
-      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
       owner,
       _tierData,
       new JBTieredLimitedNFTRewardDataSourceStore()
@@ -824,7 +826,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.name(), name);
     assertEq(_delegate.symbol(), symbol);
     assertEq(
-      address(_delegate.store().tokenUriResolverOf(address(delegate))),
+      address(_delegate.store().tokenUriResolverOf(address(_delegate))),
       mockTokenUriResolver
     );
     assertEq(_delegate.contractURI(), contractUri);
@@ -856,6 +858,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     _tierData[errorIndex].initialQuantity = 0;
 
+    JBTieredLimitedNFTRewardDataSourceStore _dataSourceStore = new JBTieredLimitedNFTRewardDataSourceStore();
+
     // Expect the error at i+1 (as the floor is now smaller than i)
     vm.expectRevert(
       abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSourceStore.NO_QUANTITY.selector)
@@ -865,12 +869,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      contractUri,
-      IJBTokenUriResolver(mockTokenUriResolver),
       baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
       owner,
       _tierData,
-      new JBTieredLimitedNFTRewardDataSourceStore()
+      _dataSourceStore
     );
   }
 
@@ -910,9 +914,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -955,6 +959,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
           owner
         );
       }
+
+      // -- remove post PR reserved token per tier
+      vm.prank(owner);
+      _delegate.setReservedTokenBeneficiary(reserveBeneficiary);
+      // -- end remove
 
       vm.prank(owner);
       _delegate.mintReservesFor(tier, mintable);
@@ -1027,9 +1036,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -1107,9 +1116,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -1176,9 +1185,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -1265,9 +1274,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -1330,9 +1339,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -1395,9 +1404,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -1951,9 +1960,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -2051,9 +2060,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -2141,9 +2150,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -2239,9 +2248,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -2358,9 +2367,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
+        baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        baseUri,
         owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
@@ -2542,9 +2551,9 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
+    string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
-    string memory _baseUri,
     address _owner,
     JBNFTRewardTierData[] memory _tierData,
     IJBTieredLimitedNFTRewardDataSourceStore _testStore
@@ -2554,9 +2563,9 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _directory,
       _name,
       _symbol,
-      _contractUri,
-      _tokenUriResolver,
       _baseUri,
+      _tokenUriResolver,
+      _contractUri,
       _owner,
       _tierData,
       _testStore
