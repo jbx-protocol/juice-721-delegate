@@ -186,7 +186,6 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;
 
-
     for (uint256 _i; _i < _count; ) {
       // Set the token ID.
       _tokenId = _tokenIds[_i];
