@@ -508,6 +508,9 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // decrease the tier balance for the sender
     --tierBalanceOf[msg.sender][_from][_tierId];
 
+    // if this is a burn the balance is not added
+    if(_to == address(0)) return;
+
     unchecked {
       // increase the tier balance for the beneficiary
       ++tierBalanceOf[msg.sender][_to][_tierId];
