@@ -109,6 +109,10 @@ contract JBTieredLimitedNFTRewardDataSource is
       );
   }
 
+  function contractURI() external view returns (string memory) {
+    return store.contractUriOf(address(this));
+  }
+
   /**
     @notice
     Indicates if this contract adheres to the specified interface.
