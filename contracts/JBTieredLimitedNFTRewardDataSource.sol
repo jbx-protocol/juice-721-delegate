@@ -520,7 +520,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     store.recordTransferForTier(_tier.id, _from, _to);
 
-    if (_tier.data.votingUnits > 0)
+    if (_tier.data.votingUnits != 0)
       // Transfer the voting units.
       _transferVotingUnits(_from, _to, _tier.data.votingUnits);
 
