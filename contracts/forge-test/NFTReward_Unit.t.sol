@@ -156,7 +156,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Avoid having difference due to the reverse order of the tiers array in _addTierData
     for (uint256 i; i < numberOfTiers; i++) {
-      _delegate.test_store().ForTest_setTier(i + 1, _tierData[i]);
+      _delegate.test_store().ForTest_setTier(address(_delegate), i + 1, _tierData[i]);
     }
 
     assertTrue(_isIn(_delegate.test_store().tiers(address(_delegate)), _tiers));
@@ -202,7 +202,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Avoid having difference due to the reverse order of the tiers array in _addTierData
     for (uint256 i; i < numberOfTiers; i++) {
-      _delegate.test_store().ForTest_setTier(i + 1, _tierData[i]);
+      _delegate.test_store().ForTest_setTier(address(_delegate), i + 1, _tierData[i]);
     }
 
     // Check: correct tier, if exist?
@@ -250,6 +250,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberOfTiers; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i + 1,
         JBNFTRewardTierData({
           contributionFloor: uint80((i + 1) * 10),
@@ -304,7 +305,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
 
     for (uint256 i; i < numberOfTiers; i++) {
-      _delegate.test_store().ForTest_setBalanceOf(holder, i + 1, (i + 1) * 10);
+      _delegate.test_store().ForTest_setBalanceOf(address(_delegate), holder, i + 1, (i + 1) * 10);
     }
 
     assertEq(_delegate.balanceOf(holder), 10 * ((numberOfTiers * (numberOfTiers + 1)) / 2));
@@ -351,6 +352,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < 10; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i + 1,
         JBNFTRewardTierData({
           contributionFloor: uint80((i + 1) * 10),
@@ -362,7 +364,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tokenUri: tokenUris[i]
         })
       );
-      _delegate.test_store().ForTest_setReservesMintedFor(i + 1, reservedMinted);
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
     }
 
     for (uint256 i; i < 10; i++)
@@ -418,6 +424,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < 10; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i + 1,
         JBNFTRewardTierData({
           contributionFloor: uint80((i + 1) * 10),
@@ -429,7 +436,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tokenUri: tokenUris[i]
         })
       );
-      _delegate.test_store().ForTest_setReservesMintedFor(i + 1, reservedMinted);
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
     }
 
     // No reserved token were available
@@ -484,7 +495,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
 
     for (uint256 i; i < numberOfTiers; i++) {
-      _delegate.test_store().ForTest_setBalanceOf(holder, i + 1, 10);
+      _delegate.test_store().ForTest_setBalanceOf(address(_delegate), holder, i + 1, 10);
     }
 
     assertEq(
@@ -682,6 +693,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i = 1; i <= numberOfTiers; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i,
         JBNFTRewardTierData({
           contributionFloor: uint80(i * 10),
@@ -745,7 +757,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
 
     _delegate.ForTest_setOwnerOf(tokenId, _owner);
-    _delegate.test_store().ForTest_setFirstOwnerOf(tokenId, _previousOwner);
+    _delegate.test_store().ForTest_setFirstOwnerOf(address(_delegate), tokenId, _previousOwner);
 
     assertEq(_delegate.firstOwnerOf(tokenId), _previousOwner);
   }
@@ -908,6 +920,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < nbTiers; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i + 1,
         JBNFTRewardTierData({
           contributionFloor: uint80((i + 1) * 10),
@@ -920,7 +933,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         })
       );
 
-      _delegate.test_store().ForTest_setReservesMintedFor(i + 1, reservedMinted);
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
     }
 
     for (uint256 tier = 1; tier <= nbTiers; tier++) {
@@ -1020,6 +1037,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < 10; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i + 1,
         JBNFTRewardTierData({
           contributionFloor: uint80((i + 1) * 10),
@@ -1032,7 +1050,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         })
       );
 
-      _delegate.test_store().ForTest_setReservesMintedFor(i + 1, reservedMinted);
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
     }
 
     for (uint256 i = 1; i <= 10; i++) {
@@ -1940,6 +1962,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Set 10 tiers, with half supply minted for each
     for (uint256 i = 1; i <= 10; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i,
         JBNFTRewardTierData({
           contributionFloor: uint80(i * 10),
@@ -2039,6 +2062,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Set 10 tiers, with half supply minted for each
     for (uint256 i = 1; i <= 10; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i,
         JBNFTRewardTierData({
           contributionFloor: uint80(i * 10),
@@ -2128,6 +2152,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Set 10 tiers, with half supply minted for each
     for (uint256 i = 1; i <= 10; i++) {
       _delegate.test_store().ForTest_setTier(
+        address(_delegate),
         i,
         JBNFTRewardTierData({
           contributionFloor: uint80(i * 10),
@@ -2483,17 +2508,30 @@ contract TestJBTieredNFTRewardDelegate is Test {
 interface IJBTieredLimitedNFTRewardDataSourceStore_ForTest is
   IJBTieredLimitedNFTRewardDataSourceStore
 {
-  function ForTest_setTier(uint256 index, JBNFTRewardTierData calldata newTier) external;
+  function ForTest_setTier(
+    address _delegate,
+    uint256 index,
+    JBNFTRewardTierData calldata newTier
+  ) external;
 
   function ForTest_setBalanceOf(
+    address _delegate,
     address holder,
     uint256 tier,
     uint256 balance
   ) external;
 
-  function ForTest_setReservesMintedFor(uint256 tier, uint256 amount) external;
+  function ForTest_setReservesMintedFor(
+    address _delegate,
+    uint256 tier,
+    uint256 amount
+  ) external;
 
-  function ForTest_setFirstOwnerOf(uint256 tokenId, address _owner) external;
+  function ForTest_setFirstOwnerOf(
+    address _delegate,
+    uint256 tokenId,
+    address _owner
+  ) external;
 }
 
 contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardDataSource {
@@ -2536,23 +2574,36 @@ contract ForTest_JBTieredLimitedNFTRewardDataSourceStore is
   JBTieredLimitedNFTRewardDataSourceStore,
   IJBTieredLimitedNFTRewardDataSourceStore_ForTest
 {
-  function ForTest_setTier(uint256 index, JBNFTRewardTierData calldata newTier) public override {
-    tierData[address(this)][index] = newTier;
+  function ForTest_setTier(
+    address _delegate,
+    uint256 index,
+    JBNFTRewardTierData calldata newTier
+  ) public override {
+    tierData[address(_delegate)][index] = newTier;
   }
 
   function ForTest_setBalanceOf(
+    address _delegate,
     address holder,
     uint256 tier,
     uint256 balance
   ) public override {
-    tierBalanceOf[address(this)][holder][tier] = balance;
+    tierBalanceOf[address(_delegate)][holder][tier] = balance;
   }
 
-  function ForTest_setReservesMintedFor(uint256 tier, uint256 amount) public override {
-    numberOfReservesMintedFor[address(this)][tier] = amount;
+  function ForTest_setReservesMintedFor(
+    address _delegate,
+    uint256 tier,
+    uint256 amount
+  ) public override {
+    numberOfReservesMintedFor[address(_delegate)][tier] = amount;
   }
 
-  function ForTest_setFirstOwnerOf(uint256 tokenId, address _owner) public override {
-    firstOwnerOf[address(this)][tokenId] = _owner;
+  function ForTest_setFirstOwnerOf(
+    address _delegate,
+    uint256 tokenId,
+    address _owner
+  ) public override {
+    firstOwnerOf[address(_delegate)][tokenId] = _owner;
   }
 }
