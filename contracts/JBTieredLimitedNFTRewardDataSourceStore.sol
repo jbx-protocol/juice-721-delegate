@@ -678,15 +678,14 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       // Mint the tokens.
       unchecked {
         // Keep a reference to the token ID.
-        tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
+        tokenIds[++_i] = _generateTokenId(
+          _tierId,
+          _data.initialQuantity - --_data.remainingQuantity
+        );
       }
 
       // Update the leftover amount;
       leftoverAmount = leftoverAmount - _data.contributionFloor;
-
-      unchecked {
-        ++_i;
-      }
     }
   }
 
