@@ -282,10 +282,13 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the number of tiers.
     uint256 _numberOfTiers = numberOfTiers[_nft];
 
+    // Keep a reference to the balance being iterated on.
+    uint256 _balance;
+
     // Loop through all tiers.
     for (uint256 _i = _numberOfTiers; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
-      uint256 _balance = tierBalanceOf[_nft][_account][_i];
+      _balance = tierBalanceOf[_nft][_account][_i];
 
       if (_balance != 0)
         // Add the tier's voting units.
