@@ -552,7 +552,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     _to; // Prevents unused var compiler and natspec complaints.
 
     // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
-    if (store.firstOwnerOf(address(this), _tokenId) == address(0) && _from != address(0))
+    if (_from != address(0) && store.firstOwnerOf(address(this), _tokenId) == address(0))
       store.recordSetFirstOwnerOf(_tokenId, _from);
   }
 
@@ -571,6 +571,10 @@ contract JBTieredLimitedNFTRewardDataSource is
   ) internal virtual override {
     // Get a reference to the tier.
     JBNFTRewardTier memory _tier = store.tierOfTokenId(address(this), _tokenId);
+
+    // If this is not a mint then record the transfer
+    if (_from != address(0))
+      store.recordTransferForTier(_tier.id, _from, _to);
 
     if (_tier.data.votingUnits > 0)
       // Transfer the voting units.

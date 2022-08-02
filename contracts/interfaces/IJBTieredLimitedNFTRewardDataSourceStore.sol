@@ -85,6 +85,12 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
     address _beneficiary
   ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
+  function recordTransferForTier(
+    uint256 _tierId,
+    address _from,
+    address _to
+  ) external;
+
   function recordRemoveTierIds(uint256[] memory _tierIds) external;
 
   function recordSetFirstOwnerOf(uint256 _tokenId, address _owner) external;

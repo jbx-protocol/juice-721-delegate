@@ -494,6 +494,28 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
   /** 
     @notice
+    Record a token transfer
+
+    @param _tierId The ID the tier being transfered
+    @param _from The sender of the token
+    @param _to The recipient of the token
+  */
+  function recordTransferForTier(
+    uint256 _tierId,
+    address _from,
+    address _to
+  ) external override {
+    // decrease the tier balance for the sender
+    --tierBalanceOf[msg.sender][_from][_tierId];
+
+    unchecked {
+      // increase the tier balance for the beneficiary
+      ++tierBalanceOf[msg.sender][_to][_tierId];
+    }
+  }
+
+  /** 
+    @notice
     Remove tiers. 
 
     @param _tierIds The tiers IDs to remove.
