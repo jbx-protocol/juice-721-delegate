@@ -171,10 +171,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
   /** 
     @notice
-    Mint a token within the tier for the provided value.
-
-    @dev
-    Only a project owner can mint tokens.
+    Mint reserved tokens within the tier for the provided value.
 
     @param _tierId The ID of the tier to mint within.
     @param _count The number of reserved tokens to mint. 
