@@ -18,7 +18,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 indexed tierId,
     address indexed beneficiary,
     uint256 totalAmountContributed,
-    uint256 numRewards,
     address caller
   );
   event Burn(uint256 indexed tokenId, address owner, address caller);
@@ -94,7 +93,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       highestTier,
       _beneficiary,
       valueSent,
-      1,
       address(_jbETHPaymentTerminal) // msg.sender
     );
     vm.prank(_caller);
@@ -166,7 +164,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         i + 1,
         _beneficiary,
         _amountNeeded,
-        5,
         address(_jbETHPaymentTerminal) // msg.sender
       );
     }
@@ -234,7 +231,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       highestTier,
       _beneficiary,
       NFTRewardDeployerData.tierData[highestTier - 1].contributionFloor,
-      0,
       address(_jbETHPaymentTerminal) // msg.sender
     );
     vm.prank(_caller);
@@ -279,7 +275,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       0,
       _beneficiary,
       _payAmount,
-      0,
       address(_jbETHPaymentTerminal) // msg.sender
     );
     // Pay and mint an NFT
@@ -323,7 +318,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _originalTiers[_originalTiers.length - 1].id + 1, // The new tier should have gotten an id 1 higher than the last
       _beneficiary,
       _payAmount,
-      0,
       address(_jbETHPaymentTerminal) // msg.sender
     );
     // We now pay the exact same amount and expect to receive the new tier and not the old one

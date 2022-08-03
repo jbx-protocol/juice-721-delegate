@@ -63,7 +63,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 indexed tierId,
     address indexed beneficiary,
     uint256 totalAmountContributed,
-    uint256 numRewards,
     address caller
   );
 
