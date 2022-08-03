@@ -160,7 +160,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _activeTiers;
 
     // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _startingId;
+    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _after[_nft][0];
 
     // Make the sorted array.
     while (_currentSortIndex != 0) {
@@ -175,6 +175,12 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       // Set the next sort index.
       _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
     }
+
+    // Resize the array if there are removed tiers
+    if (_activeTiers != _numberOfTiers)
+      assembly {
+        mstore(_tiers, _activeTiers)
+      }
   }
 
   /** 
