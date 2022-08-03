@@ -323,7 +323,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @return weight The weight.
   */
-  function redemptionWeightOf(address _nft, uint256[] memory _tokenIds)
+  function redemptionWeightOf(address _nft, uint256[] calldata _tokenIds)
     public
     view
     override
@@ -584,7 +584,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @param _tierIds The tiers IDs to remove.
   */
-  function recordRemoveTierIds(uint256[] memory _tierIds) external override {
+  function recordRemoveTierIds(uint256[] calldata _tierIds) external override {
     // Get a reference to the number of tiers being removed.
     uint256 _numTiers = _tierIds.length;
 
@@ -780,7 +780,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @param _uri The base URI to set.
   */
-  function recordSetBaseUri(string memory _uri) external override {
+  function recordSetBaseUri(string calldata _uri) external override {
     baseUriOf[msg.sender] = _uri;
   }
 
@@ -790,7 +790,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @param _uri The contract URI to set.
   */
-  function recordSetContractUri(string memory _uri) external override {
+  function recordSetContractUri(string calldata _uri) external override {
     contractUriOf[msg.sender] = _uri;
   }
 

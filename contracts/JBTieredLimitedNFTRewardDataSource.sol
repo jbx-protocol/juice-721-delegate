@@ -111,8 +111,18 @@ contract JBTieredLimitedNFTRewardDataSource is
     return
       JBIpfsDecoder.decode(
         store.baseUriOf(address(this)),
-        store.tier(address(this), _tokenId).data.tokenUri
+        store.tierOfTokenId(address(this), _tokenId).data.tokenUri
       );
+  }
+
+  /** 
+    @notice
+    Returns the URI where contract metadata can be found. 
+
+    @return The contract's metadata URI.
+  */
+  function contractURI() external view override returns (string memory) {
+    return store.contractUriOf(address(this));
   }
 
   /**
@@ -539,7 +549,7 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     store.recordTransferForTier(_tier.id, _from, _to);
 
-    if (_tier.data.votingUnits > 0)
+    if (_tier.data.votingUnits != 0)
       // Transfer the voting units.
       _transferVotingUnits(_from, _to, _tier.data.votingUnits);
 
