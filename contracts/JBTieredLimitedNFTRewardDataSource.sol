@@ -536,14 +536,4 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     super._afterTokenTransfer(_from, _to, _tokenId);
   }
-
-  /** 
-    @notice
-    The stored base URI. 
-
-    @return The URI.
-  */
-  function _baseURI() internal view virtual override returns (string memory) {
-    return store.baseUriOf(address(this));
-  }
 }
