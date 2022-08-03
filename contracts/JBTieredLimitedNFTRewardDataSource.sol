@@ -105,7 +105,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     return
       JBIpfsDecoder.decode(
         store.baseUriOf(address(this)),
-        store.tier(address(this), _tokenId).data.tokenUri
+        store.tierOfTokenId(address(this), _tokenId).data.tokenUri
       );
   }
 
