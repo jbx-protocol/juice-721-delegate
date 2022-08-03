@@ -586,7 +586,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
       );
-
+    
     for (uint256 i = 1; i <= _tierData.length; i++) {
       uint256 tokenId = _generateTokenId(i, 1);
 
@@ -2241,6 +2241,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT(uint8 _numberOfNFT) external {
     address _holder = address(bytes20(keccak256('_holder')));
+    
+    // Has to all fit in tier 1
+    vm.assume(_numberOfNFT < tierData[0].initialQuantity);
 
     ForTest_JBTieredLimitedNFTRewardDataSourceStore _ForTest_store = new ForTest_JBTieredLimitedNFTRewardDataSourceStore();
     ForTest_JBTieredLimitedNFTRewardDataSource _delegate = new ForTest_JBTieredLimitedNFTRewardDataSource(
@@ -2256,13 +2259,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
       );
 
-    uint256[] memory _tokenList = new uint256[](_numberOfNFT);
-
-    for (uint256 i; i < _numberOfNFT; i++) {
-      _delegate.ForTest_setOwnerOf(i + 1, _holder);
-      _tokenList[i] = i + 1;
-    }
-
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -2270,8 +2266,34 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    vm.prank(mockTerminalAddress);
+    uint256[] memory _tokenList = new uint256[](_numberOfNFT);
 
+    // TODO: mint different tiers
+    for (uint256 i; i < _numberOfNFT; i++) {
+      // We mint the NFTs otherwise the voting balance does not get incremented
+      // which leads to underflow on redeem
+      vm.prank(mockTerminalAddress);
+      _delegate.didPay(
+        JBDidPayData(
+          _holder,
+          projectId,
+          0,
+          JBTokenAmount(JBTokens.ETH, tierData[0].contributionFloor, 0, 0),
+          0,
+          _holder,
+          false,
+          '',
+          new bytes(0)
+        )
+      );
+
+      _tokenList[i] = _generateTokenId(1, i + 1);
+
+      // Assert that a new NFT was minted
+      assertEq(_delegate.balanceOf(_holder), i + 1);
+    }
+
+    vm.prank(mockTerminalAddress);
     _delegate.didRedeem(
       JBDidRedeemData({
         holder: _holder,
@@ -2284,6 +2306,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         metadata: abi.encode(_tokenList)
       })
     );
+
+    // Balance should be 0 again
+    assertEq(_delegate.balanceOf(_holder), 0);
   }
 
   function testJBTieredNFTRewardDelegate_didRedeem_revertIfNotCorrectProjectId(
