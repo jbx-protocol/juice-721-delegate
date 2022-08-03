@@ -406,7 +406,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Mint the tokens.
     _mint(_beneficiary, _tokenId);
 
-    emit Mint(_tokenId, _tierId, _beneficiary, _amount - leftoverAmount, 0, msg.sender);
+    emit Mint(_tokenId, _tierId, _beneficiary, _amount - leftoverAmount, msg.sender);
   }
 
   /** 
@@ -442,7 +442,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Mint the tokens.
       _mint(_beneficiary, _tokenId);
 
-      emit Mint(_tokenId, _mintTierIds[_i], _beneficiary, _amount, _mintsLength, msg.sender);
+      emit Mint(_tokenId, _mintTierIds[_i], _beneficiary, _amount, msg.sender);
 
       unchecked {
         ++_i;
