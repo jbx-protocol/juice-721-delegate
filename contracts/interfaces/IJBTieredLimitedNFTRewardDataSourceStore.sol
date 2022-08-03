@@ -12,7 +12,11 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function numberOfTiers(address _nft) external view returns (uint256);
 
-  function tiers(address _nft) external view returns (JBNFTRewardTier[] memory tiers);
+  function tiers(
+    address _nft,
+    uint256 _startingSortIndex,
+    uint256 _size
+  ) external view returns (JBNFTRewardTier[] memory tiers);
 
   function tier(address _nft, uint256 _id) external view returns (JBNFTRewardTier memory tier);
 
@@ -57,9 +61,11 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
-  function recordAddTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers)
-    external
-    returns (uint256[] memory tierIds);
+  function recordAddTierData(
+    JBNFTRewardTierData[] memory _tierData,
+    bool _allowVotingUnits,
+    bool _allowReservedRate
+  ) external returns (uint256[] memory tierIds);
 
   function recordMintReservesFor(uint256 _tierId, uint256 _count)
     external

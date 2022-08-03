@@ -133,7 +133,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
     JBNFTRewardTierData[] memory tierData = new JBNFTRewardTierData[](10);
-    
+
     for (uint256 i; i < 10; i++) {
       tierData[i] = JBNFTRewardTierData({
         contributionFloor: uint80((i + 1) * 10),

@@ -15,6 +15,8 @@ interface IJBNFTRewardDataSource {
 
   function directory() external view returns (IJBDirectory);
 
+  function allowRedemptions() external view returns (bool);
+
   function setBaseUri(string memory _baseUri) external;
 
   function setContractUri(string calldata _contractMetadataUri) external;

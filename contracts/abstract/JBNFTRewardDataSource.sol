@@ -68,6 +68,12 @@ abstract contract JBNFTRewardDataSource is
   */
   IJBDirectory public immutable override directory;
 
+  /** 
+    @notice
+    A flag indicating if the NFTs should be allowed to be redeemable. 
+  */
+  bool public immutable override allowRedemptions;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -119,6 +125,10 @@ abstract contract JBNFTRewardDataSource is
       IJBRedemptionDelegate delegate
     )
   {
+    // Pass along the default values if this contract doesn't allow redemptions.
+    if (!allowRedemptions)
+      return (_data.reclaimAmount.value, _data.memo, IJBRedemptionDelegate(address(0)));
+
     // Make sure fungible project tokens aren't being redeemed too.
     if (_data.tokenCount > 0) revert UNEXPECTED();
 
@@ -191,15 +201,18 @@ abstract contract JBNFTRewardDataSource is
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
+    @param _allowRedemptions A flag indicating if the NFTs should be allowed to be redeemable.
   */
   constructor(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
-    string memory _symbol
+    string memory _symbol,
+    bool _allowRedemptions
   ) ERC721(_name, _symbol) {
     projectId = _projectId;
     directory = _directory;
+    allowRedemptions = _allowRedemptions;
   }
 
   //*********************************************************************//

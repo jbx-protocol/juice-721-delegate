@@ -41,6 +41,12 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   IJBTieredLimitedNFTRewardDataSourceStore public immutable override store;
 
+  /**
+    @notice
+    A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+  */
+  bool public immutable override allowVotingUnitChanges;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -133,33 +139,41 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
+    @param _allowRedemptions A flag indicating if the NFTs should be allowed to be redeemable.
     @param _baseUri A URI to use as a base for full token URIs.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
     @param _owner The address that should own this contract.
     @param _tierData The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _store A contract that stores the NFT's data.
+    @param _allowVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
   */
   constructor(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
+    bool _allowRedemptions,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
     address _owner,
     JBNFTRewardTierData[] memory _tierData,
-    IJBTieredLimitedNFTRewardDataSourceStore _store
-  ) JBNFTRewardDataSource(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
+    IJBTieredLimitedNFTRewardDataSourceStore _store,
+    bool _allowVotingUnitChanges
+  )
+    JBNFTRewardDataSource(_projectId, _directory, _name, _symbol, _allowRedemptions)
+    EIP712(_name, '1')
+  {
     store = _store;
+    allowVotingUnitChanges = _allowVotingUnitChanges;
 
     if (bytes(_baseUri).length != 0) _store.recordSetBaseUri(_baseUri);
     if (bytes(_contractUri).length != 0) _store.recordSetContractUri(_contractUri);
     if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
-    _store.recordAddTierData(_tierData, true);
+    _store.recordAddTierData(_tierData, true, true);
 
     // Transfer the ownership to the specified address.
     if (_owner != address(0)) _transferOwnership(_owner);
@@ -217,7 +231,11 @@ contract JBTieredLimitedNFTRewardDataSource is
 
     // Add tiers.
     if (_numberOfTiersToAdd != 0) {
-      uint256[] memory _tierIdsAdded = store.recordAddTierData(_tierDataToAdd, false);
+      uint256[] memory _tierIdsAdded = store.recordAddTierData(
+        _tierDataToAdd,
+        allowVotingUnitChanges,
+        !allowRedemptions
+      );
 
       for (uint256 _i; _i < _numberOfTiersToAdd; ) {
         emit AddTier(_tierIdsAdded[_i], _tierDataToAdd[_i], msg.sender);
@@ -420,6 +438,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Record the mint. The returned token IDs correspond to the tiers passed in.
     (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds);
 
+    // Get a reference to the number of mints.
     uint256 _mintsLength = _tokenIds.length;
 
     // Keep a reference to the token ID being iterated on.
