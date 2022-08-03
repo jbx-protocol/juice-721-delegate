@@ -119,10 +119,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     else assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 2); // Second minted with leftover (if > lowest tier)?
     assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), _beneficiary);
     assertEq(
-      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).store().firstOwnerOf(
-        NFTRewardDataSource,
-        tokenId
-      ),
+      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId),
       _beneficiary
     );
     // Check: firstOwnerOf and ownerOf are correct after a transfer?
@@ -130,10 +127,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     IERC721(NFTRewardDataSource).transferFrom(_beneficiary, address(696969420), tokenId);
     assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), address(696969420));
     assertEq(
-      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).store().firstOwnerOf(
-        NFTRewardDataSource,
-        tokenId
-      ),
+      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId),
       _beneficiary
     );
     // Check: same after a second transfer - 0xSTVG-style testing?
@@ -206,10 +200,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     for (uint256 i = 1; i <= 5; i++) {
       uint256 tokenId = _generateTokenId(i, 1);
       assertEq(
-        IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).store().firstOwnerOf(
-          NFTRewardDataSource,
-          tokenId
-        ),
+        IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId),
         _beneficiary
       );
       // Check: firstOwnerOf and ownerOf are correct after a transfer?
@@ -217,10 +208,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       IERC721(NFTRewardDataSource).transferFrom(_beneficiary, address(696969420), tokenId);
       assertEq(IERC721(NFTRewardDataSource).ownerOf(tokenId), address(696969420));
       assertEq(
-        IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).store().firstOwnerOf(
-          NFTRewardDataSource,
-          tokenId
-        ),
+        IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).firstOwnerOf(tokenId),
         _beneficiary
       );
     }
