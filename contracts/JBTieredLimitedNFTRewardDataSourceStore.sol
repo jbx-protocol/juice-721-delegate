@@ -25,6 +25,20 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   error VOTING_UNITS_NOT_ALLOWED();
   error INVALID_PRICE_SORT_ORDER();
 
+  //*********************************************************************//
+  // --------------------- internal stored properties ------------------ //
+  //*********************************************************************//
+
+  /** 
+    @notice
+    The index that should come after the given index when sorting by contribution floor.
+
+    @dev
+    If empty, assume the next index should come after. 
+
+    _nft The NFT contract to get ther order index from.
+    _index The index to get a tier after relative to.
+  */
   mapping(address => mapping(uint256 => uint256)) internal _after;
 
   //*********************************************************************//
@@ -158,17 +172,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
         });
       }
 
-      // Check for an index that should come after the current one.
-      uint256 _storedNext = _after[_nft][_currentSortIndex];
-
-      // If there's a stored index that should come after the current one, set it as the current.
-      if (_storedNext != 0)
-        _currentSortIndex = _storedNext;
-        // Otherwise if the current index is the last, set the current sort order to zero to finish the loop.
-      else if (_currentSortIndex == _numberOfTiers)
-        _currentSortIndex = 0;
-        // Otherwise increment the current sort index.
-      else _currentSortIndex++;
+      // Set the next sort index.
+      _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
     }
   }
 
@@ -453,33 +458,26 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       // If the
       if (_startSortIndex != 0) {
         // Keep track of the sort index.
-        uint256 _current = _startSortIndex;
+        uint256 _currentSortIndex = _startSortIndex;
         // Keep track of the previous index.
         uint256 _previous;
 
-        while (_current != 0) {
+        while (_currentSortIndex != 0) {
           // If the contribution floor is less than the tier being iterated on, set the
-          if (_data.contributionFloor < tierData[msg.sender][_current].contributionFloor) {
+          if (_data.contributionFloor < tierData[msg.sender][_currentSortIndex].contributionFloor) {
             // Set the tier after the tier being added as the one being iterated on.
-            _after[msg.sender][_tierId] = _current;
+            _after[msg.sender][_tierId] = _currentSortIndex;
             // Set the tier after the previous one being iterated on as the tier being added.
             _after[msg.sender][_previous] = _tierId;
             // If the tier being iterated on is the first sorted tier, set the first sorted tier to be the tier being added.
-            if (_current == _after[msg.sender][0]) _after[msg.sender][0] = _tierId;
+            if (_currentSortIndex == _after[msg.sender][0]) _after[msg.sender][0] = _tierId;
             // Set current to zero to break out of the loop.
-            _current = 0;
+            _currentSortIndex = 0;
           } else {
             // Set the previous index to be the current index.
-            _previous = _current;
-            // Update the current index to be the one saved to be after, if it exists.
-            uint256 _storedNext = _after[msg.sender][_current];
-            if (_storedNext != 0)
-              _current = _storedNext;
-              // Otherwise if this is the last tier, set current to zero to break out of the loop.
-            else if (_current == _currentNumberOfTiers)
-              _current = 0;
-              // Otherwise increment the current.
-            else _current++;
+            _previous = _currentSortIndex;
+            // Set the next sort index.
+            _currentSortIndex = _nextSortIndex(_currentSortIndex, _currentNumberOfTiers);
           }
         }
       }
@@ -633,9 +631,6 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData memory _data;
 
-    // Keep a reference to the best contribution floor.
-    uint256 _bestContributioFloor;
-
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
@@ -644,32 +639,25 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _currentSortIndex = _startSortIndex;
 
     while (_currentSortIndex != 0) {
-      if (!isTierRemoved[msg.sender][_currentSortIndex]) {
+      if (isTierRemoved[msg.sender][_currentSortIndex])
+        // Set the next sort index.
+        _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
+      else {
         // Set the tier being iterated on. Tier's are 1 indexed.
         _data = tierData[msg.sender][_currentSortIndex];
 
-        // Mint if the contribution value is at least as much as the floor, there's sufficient supply, and the floor is better than the best tier.
-        if (
-          _data.contributionFloor > _bestContributioFloor &&
-          _data.contributionFloor <= _amount &&
-          (_data.remainingQuantity -
-            _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _data)) !=
-          0
-        ) {
-          _bestContributioFloor = _data.contributionFloor;
-          tierId = _currentSortIndex;
+        if (_data.contributionFloor > _amount) _currentSortIndex = 0;
+        else {
+          if (
+            (_data.remainingQuantity -
+              _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _data)) != 0
+          ) {
+            tierId = _currentSortIndex;
+          }
+          // Set the next sort index.
+          _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
         }
       }
-
-      // Update the current index to be the one saved to be after, if it exists.
-      uint256 _storedNext = _after[msg.sender][_currentSortIndex];
-      if (_storedNext != 0)
-        _currentSortIndex = _storedNext;
-        // Otherwise if this is the last tier, set current to zero to break out of the loop.
-      else if (_currentSortIndex == _numberOfTiers)
-        _currentSortIndex = 0;
-        // Otherwise increment the current.
-      else _currentSortIndex++;
     }
 
     // Keep a reference to the best tier.
@@ -691,7 +679,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       leftoverAmount = _amount;
     } else {
       // Set the leftover amount.
-      leftoverAmount = _amount - _bestContributioFloor;
+      leftoverAmount = _amount - _bestTierData.contributionFloor;
     }
   }
 
@@ -870,5 +858,24 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     // The token number in the rest.
     tokenId |= _tokenNumber << 8;
+  }
+
+  /** 
+    @notice 
+    The next sorted index. 
+
+    @param _index The index relative to which the next sorted index will be returned.
+    @param _max The maximum possible index.
+
+    @return The index.
+  */
+  function _nextSortIndex(uint256 _index, uint256 _max) internal view returns (uint256) {
+    // Update the current index to be the one saved to be after, if it exists.
+    uint256 _storedNext = _after[msg.sender][_index];
+    if (_storedNext != 0) return _storedNext;
+    // Otherwise if this is the last tier, set current to zero to break out of the loop.
+    else if (_index == _max) return 0;
+    // Otherwise increment the current.
+    else return _index + 1;
   }
 }
