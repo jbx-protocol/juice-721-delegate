@@ -109,7 +109,13 @@ contract JBTieredLimitedNFTRewardDataSource is
       );
   }
 
-  function contractURI() external view returns (string memory) {
+  /** 
+    @notice
+    Returns the URI where contract metadata can be found. 
+
+    @return The contract's metadata URI.
+  */
+  function contractURI() external view override returns (string memory) {
     return store.contractUriOf(address(this));
   }
 

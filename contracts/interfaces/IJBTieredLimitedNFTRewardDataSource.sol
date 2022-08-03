@@ -31,6 +31,8 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);
 
+  function contractURI() external view returns (string memory);
+
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
   function adjustTiers(
