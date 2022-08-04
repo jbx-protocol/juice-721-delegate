@@ -762,6 +762,9 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // The number of reserved token of the tier already minted
     uint256 reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
 
+    // If only the reserved token (from the rounding up) has been minted so far, return 0
+    if (_data.initialQuantity - reserveTokensMinted == _data.remainingQuantity) return 0;
+
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
     uint256 _numberOfNonReservesMinted = _data.initialQuantity -
       _data.remainingQuantity -
