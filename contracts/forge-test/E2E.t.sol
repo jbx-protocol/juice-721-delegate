@@ -258,17 +258,21 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData(true);
+
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
       launchProjectData
     );
+
     // Get the dataSource
     IJBTieredLimitedNFTRewardDataSource _delegate = IJBTieredLimitedNFTRewardDataSource(
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
+
     // _payAmount has to be at least the lowest tier
     vm.assume(_payAmount >= NFTRewardDeployerData.tierData[0].contributionFloor);
+
     // vm.expectEmit(true, true, true, true, address(_delegate));
     emit Mint(
       0,
@@ -277,6 +281,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _payAmount,
       address(_jbETHPaymentTerminal) // msg.sender
     );
+
     // Pay and mint an NFT
     vm.deal(_user, _payAmount);
     vm.prank(_user);
@@ -290,13 +295,16 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       'Take my money!',
       new bytes(0)
     );
+
     // Get the existing tiers
     JBNFTRewardTier[] memory _originalTiers = _delegate.store().tiers(address(_delegate));
     uint256[] memory _tiersToRemove = new uint256[](_originalTiers.length);
+
     // Append all the existing tiers
     for (uint256 _i; _i < _originalTiers.length; _i++) {
       _tiersToRemove[_i] = _originalTiers[_i].id;
     }
+
     // Add 1 new tier
     JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](1);
     _tierDataToAdd[0] = JBNFTRewardTierData({
@@ -308,9 +316,11 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       reservedRate: uint16(0),
       tokenUri: tokenUris[0]
     });
+
     // Remove all the existing tiers and add a new one at the previous paid price
     vm.prank(_projectOwner);
     _delegate.adjustTiers(_tierDataToAdd, _tiersToRemove);
+
     // Mint the new NFT and make sure that it is the new tier
     // vm.expectEmit(false, true, false, false);
     emit Mint(
@@ -320,6 +330,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _payAmount,
       address(_jbETHPaymentTerminal) // msg.sender
     );
+
     // We now pay the exact same amount and expect to receive the new tier and not the old one
     vm.deal(_user, _payAmount);
     vm.prank(_user);
@@ -333,6 +344,128 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       'Take my money!',
       new bytes(0)
     );
+  }
+
+  function testMintReservedToken() external {
+    uint16 valueSent = 1500;
+    vm.assume(valueSent >= 10 && valueSent < 2000);
+    uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
+
+    (
+      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBLaunchProjectData memory launchProjectData
+    ) = createData(false);
+
+    uint256 projectId = deployer.launchProjectFor(
+      _projectOwner,
+      NFTRewardDeployerData,
+      launchProjectData
+    );
+    address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+
+    // Set the reserved token beneficiary
+    vm.prank(_projectOwner);
+    IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).setReservedTokenBeneficiary(
+      _projectOwner
+    );
+
+    // Check: 1 reserved token before any mint from a contribution?
+    assertEq(
+      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource)
+        .store()
+        .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, highestTier),
+      1
+    );
+
+    // Mint the reserved token
+    vm.prank(_projectOwner);
+    IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).mintReservesFor(highestTier, 1);
+
+    // Check: NFT received?
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_projectOwner), 1);
+
+    // Check: no more reserved token to mint?
+    assertEq(
+      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource)
+        .store()
+        .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, highestTier),
+      0
+    );
+
+    // Check: cannot mint more reserved token?
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSourceStore.INSUFFICIENT_RESERVES.selector)
+    );
+    vm.prank(_projectOwner);
+    IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).mintReservesFor(highestTier, 1);
+
+    uint8[] memory rawMetadata = new uint8[](1);
+    rawMetadata[0] = uint8(highestTier); // reward tier
+    // Encode it to metadata
+    bytes memory metadata = abi.encode(
+      bytes32(0),
+      type(IJBNFTRewardDataSource).interfaceId,
+      false,
+      false,
+      false,
+      rawMetadata
+    );
+
+    // Check: correct tier and id?
+    vm.expectEmit(true, true, true, true);
+    emit Mint(
+      _generateTokenId(highestTier, 2), // First one is the reserved
+      highestTier,
+      _beneficiary,
+      valueSent,
+      address(_jbETHPaymentTerminal) // msg.sender
+    );
+
+    vm.prank(_caller);
+    _jbETHPaymentTerminal.pay{value: valueSent}(
+      projectId,
+      100,
+      address(0),
+      _beneficiary,
+      /* _minReturnedTokens */
+      0,
+      /* _preferClaimedTokens */
+      false,
+      /* _memo */
+      'Take my money!',
+      /* _delegateMetadata */
+      metadata
+    );
+
+    // Check: new reserved one?
+    assertEq(
+      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource)
+        .store()
+        .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, highestTier),
+      1
+    );
+
+    // Mint the reserved token
+    vm.prank(_projectOwner);
+    IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).mintReservesFor(highestTier, 1);
+
+    // Check: NFT received?
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_projectOwner), 2);
+
+    // Check: no more reserved token to mint?
+    assertEq(
+      IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource)
+        .store()
+        .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, highestTier),
+      0
+    );
+
+    // Check: cannot mint more reserved token?
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTieredLimitedNFTRewardDataSourceStore.INSUFFICIENT_RESERVES.selector)
+    );
+    vm.prank(_projectOwner);
+    IJBTieredLimitedNFTRewardDataSource(NFTRewardDataSource).mintReservesFor(highestTier, 1);
   }
 
   // ----- internal helpers ------
@@ -352,7 +485,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         remainingQuantity: uint40(10),
         initialQuantity: uint40(10),
         votingUnits: uint16(0),
-        reservedRate: uint16(0),
+        reservedRate: uint16(JBConstants.MAX_RESERVED_RATE),
         tokenUri: tokenUris[i]
       });
     }
