@@ -137,7 +137,7 @@ abstract contract JBNFTRewardDataSource is
 
     // Get a reference to the redemption rate of the provided tokens.
     uint256 _redemptionWeight = _redemptionWeightOf(
-      // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+      // Decode the metadata
       abi.decode(_data.metadata, (uint256[]))
     );
 
@@ -255,7 +255,7 @@ abstract contract JBNFTRewardDataSource is
       _data.projectId != projectId
     ) revert INVALID_REDEMPTION_EVENT();
 
-    // Decode the metadata, Skip the first 32 bits which are used by the JB protocol.
+    // Decode the metadata
     uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
     // Get a reference to the number of token IDs being checked.

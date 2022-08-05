@@ -63,7 +63,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 indexed tierId,
     address indexed beneficiary,
     uint256 totalAmountContributed,
-    uint256 numRewards,
     address caller
   );
 
@@ -75,6 +74,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
   );
 
   event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
+
+  event AddTier(uint256 indexed tierId, JBNFTRewardTierData data, address caller);
+
+  event RemoveTier(uint256 indexed tierId, address caller);
 
   function setUp() public {
     _accessJBLib = new AccessJBLib();
@@ -378,7 +381,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
   }
 
-  // --------
   function TOFIX_JBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_FuzzedreturnsOutstandingReserved(
     uint16 initialQuantity,
     uint16 totalMinted,
@@ -504,15 +506,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  // TODO:
-  function TODO_testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(
+  function testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(
     uint8 _tierId,
     uint8 _tokenNumber
   ) external {
     vm.assume(_tierId > 0 && _tokenNumber > 0);
     uint256 tokenId = _generateTokenId(_tierId, _tokenNumber);
 
-    //assertEq(delegate.store().tierOfTokenId(address(delegate), tokenId), _tierId);
+    assertEq(delegate.store().tierOfTokenId(address(delegate), tokenId).id, _tierId);
   }
 
   function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNotMinted(uint256 tokenId)
@@ -586,7 +587,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store))
       );
-    
+
     for (uint256 i = 1; i <= _tierData.length; i++) {
       uint256 tokenId = _generateTokenId(i, 1);
 
@@ -597,8 +598,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         string(abi.encodePacked(baseUri, theoricHashes[i - 1]))
       );
     }
-
-    _ForTest_store.tiers(address(_delegate));
   }
 
   function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
@@ -612,7 +611,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     JBNFTRewardTierData[] memory _tierData = new JBNFTRewardTierData[](numberOfTiers);
 
-    uint256 _maxNumberOfTiers = (numberOfTiers * (numberOfTiers + 1)) / 2; // "tier" token per tier -> max == numberOfTiers!
+    uint256 _maxNumberOfTiers = (numberOfTiers * (numberOfTiers + 1)) / 2; // "tier amount" of token mintable per tier -> max == numberOfTiers!
     uint256[] memory _tierToGetWeightOf = new uint256[](_maxNumberOfTiers);
 
     uint256 _iterator;
@@ -973,6 +972,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  // For coverage
   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary() public {
     testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(
       address(bytes20(keccak256('newReserveBeneficiary')))
@@ -1139,6 +1139,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
 
       _tiersAdded[i] = JBNFTRewardTier({id: _tiers.length + (i + 1), data: _tierDataToAdd[i]});
+
+      vm.expectEmit(true, true, true, true, address(_delegate));
+      emit AddTier(_tiersAdded[i].id, _tierDataToAdd[i], owner);
     }
 
     vm.prank(owner);
@@ -1221,7 +1224,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
           id: i + 1,
           data: _tierDataRemaining[_arrayIndex]
         });
-      } else _tiersToRemove[i] = i + 1;
+      } else {
+        _tiersToRemove[i] = i + 1;
+
+        // Check: correct event params?
+        vm.expectEmit(true, false, false, true, address(_delegate));
+        emit RemoveTier(_tiersToRemove[i], owner);
+      }
     }
 
     vm.prank(owner);
@@ -2241,7 +2250,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT(uint8 _numberOfNFT) external {
     address _holder = address(bytes20(keccak256('_holder')));
-    
+
     // Has to all fit in tier 1
     vm.assume(_numberOfNFT < tierData[0].initialQuantity);
 

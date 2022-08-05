@@ -247,10 +247,10 @@ contract JBTieredLimitedNFTRewardDataSource is
         !allowRedemptions
       );
 
-      for (uint256 _i; _i < _numberOfTiersToAdd; ) {
-        emit AddTier(_tierIdsAdded[_i], _tierDataToAdd[_i], msg.sender);
+      for (uint256 _i = _numberOfTiersToAdd; _i != 0; ) {
+        emit AddTier(_tierIdsAdded[_i - 1], _tierDataToAdd[_numberOfTiersToAdd - _i], msg.sender);
         unchecked {
-          ++_i;
+          --_i;
         }
       }
     }
@@ -424,7 +424,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Mint the tokens.
     _mint(_beneficiary, _tokenId);
 
-    emit Mint(_tokenId, _tierId, _beneficiary, _amount - leftoverAmount, 0, msg.sender);
+    emit Mint(_tokenId, _tierId, _beneficiary, _amount - leftoverAmount, msg.sender);
   }
 
   /** 
@@ -461,7 +461,7 @@ contract JBTieredLimitedNFTRewardDataSource is
       // Mint the tokens.
       _mint(_beneficiary, _tokenId);
 
-      emit Mint(_tokenId, _mintTierIds[_i], _beneficiary, _amount, _mintsLength, msg.sender);
+      emit Mint(_tokenId, _mintTierIds[_i], _beneficiary, _amount, msg.sender);
 
       unchecked {
         ++_i;
@@ -554,15 +554,5 @@ contract JBTieredLimitedNFTRewardDataSource is
       _transferVotingUnits(_from, _to, _tier.data.votingUnits);
 
     super._afterTokenTransfer(_from, _to, _tokenId);
-  }
-
-  /** 
-    @notice
-    The stored base URI. 
-
-    @return The URI.
-  */
-  function _baseURI() internal view virtual override returns (string memory) {
-    return store.baseUriOf(address(this));
   }
 }
