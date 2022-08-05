@@ -23,6 +23,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   );
 
   event Burn(uint256 indexed tokenId, address owner, address caller);
+
   string name = 'NAME';
   string symbol = 'SYM';
   string baseUri = 'http://www.null.com/';
@@ -291,6 +292,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   function testMintBeforeAndAfterTierChange(uint72 _payAmount) public {
     address _user = address(bytes20(keccak256('user')));
+
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
@@ -309,15 +311,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // _payAmount has to be at least the lowest tier
     vm.assume(_payAmount >= NFTRewardDeployerData.tierData[0].contributionFloor);
-
-    // vm.expectEmit(true, true, true, true, address(_delegate));
-    emit Mint(
-      0,
-      0,
-      _beneficiary,
-      _payAmount,
-      address(_jbETHPaymentTerminal) // msg.sender
-    );
+    uint256 highestTier = _payAmount <= 100 ? (_payAmount / 10) : 10;
 
     // Pay and mint an NFT
     vm.deal(_user, _payAmount);
@@ -357,16 +351,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Remove all the existing tiers and add a new one at the previous paid price
     vm.prank(_projectOwner);
     _delegate.adjustTiers(_tierDataToAdd, _tiersToRemove);
-
-    // Mint the new NFT and make sure that it is the new tier
-    // vm.expectEmit(false, true, false, false);
-    emit Mint(
-      0,
-      _originalTiers[_originalTiers.length - 1].id + 1, // The new tier should have gotten an id 1 higher than the last
-      _beneficiary,
-      _payAmount,
-      address(_jbETHPaymentTerminal) // msg.sender
-    );
 
     // We now pay the exact same amount and expect to receive the new tier and not the old one
     vm.deal(_user, _payAmount);
