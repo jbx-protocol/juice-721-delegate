@@ -34,18 +34,23 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
   */
   IJBController public immutable override controller;
 
+  /** 
+    @notice
+    The contract responsibile for deploying the delegate. 
+  */
+  IJBTieredLimitedNFTRewardDataSourceDeployer public immutable override delegateDeployer;
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
-  /** 
-    @param _controller The controller with which new projects should be deployed. 
-    @param _operatorStore A contract storing operator assignments.
-  */
-  constructor(IJBController _controller, IJBOperatorStore _operatorStore)
-    JBOperatable(_operatorStore)
-  {
+  constructor(
+    IJBController _controller,
+    IJBTieredLimitedNFTRewardDataSourceDeployer _delegateDeployer,
+    IJBOperatorStore _operatorStore
+  ) JBOperatable(_operatorStore) {
     controller = _controller;
+    delegateDeployer = _delegateDeployer;
   }
 
   //*********************************************************************//
@@ -71,7 +76,10 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     projectId = controller.projects().count() + 1;
 
     // Deploy the data source contract.
-    address _dataSourceAddress = deployDataSource(projectId, _deployTieredNFTRewardDataSourceData);
+    address _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+      projectId,
+      _deployTieredNFTRewardDataSourceData
+    );
 
     // Set the data source address as the data source of the provided metadata.
     _launchProjectData.metadata.dataSource = _dataSourceAddress;
@@ -83,18 +91,18 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     _launchProjectFor(_owner, _launchProjectData);
   }
 
-  /** 
-    @notice 
+  /**
+    @notice
     Launches funding cycle's for a project with a tiered NFT rewards data source attached.
 
     @dev
     Only a project owner or operator can launch its funding cycles.
 
-    @param _projectId The ID of the project having funding cycles launched. 
+    @param _projectId The ID of the project having funding cycles launched.
     @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
     @param _launchFundingCyclesData Data necessary to fulfill the transaction to launch funding cycles for the project.
 
-    @return configuration The configuration of the funding cycle that was successfully created.  
+    @return configuration The configuration of the funding cycle that was successfully created.
   */
   function launchFundingCyclesFor(
     uint256 _projectId,
@@ -111,7 +119,10 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     returns (uint256 configuration)
   {
     // Deploy the data source contract.
-    address _dataSourceAddress = deployDataSource(_projectId, _deployTieredNFTRewardDataSourceData);
+    address _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+      _projectId,
+      _deployTieredNFTRewardDataSourceData
+    );
 
     // Set the data source address as the data source of the provided metadata.
     _launchFundingCyclesData.metadata.dataSource = _dataSourceAddress;
@@ -123,14 +134,14 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     return _launchFundingCyclesFor(_projectId, _launchFundingCyclesData);
   }
 
-  /** 
-    @notice 
+  /**
+    @notice
     Reconfigures funding cycles for a project with a tiered NFT rewards data source attached.
 
     @dev
     Only a project's owner or a designated operator can configure its funding cycles.
 
-    @param _projectId The ID of the project having funding cycles launched. 
+    @param _projectId The ID of the project having funding cycles launched.
     @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
     @param _reconfigureFundingCyclesData Data necessary to fulfill the transaction to reconfigure funding cycles for the project.
 
@@ -151,7 +162,10 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     returns (uint256 configuration)
   {
     // Deploy the data source contract.
-    address _dataSourceAddress = deployDataSource(_projectId, _deployTieredNFTRewardDataSourceData);
+    address _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+      _projectId,
+      _deployTieredNFTRewardDataSourceData
+    );
 
     // Set the data source address as the data source of the provided metadata.
     _reconfigureFundingCyclesData.metadata.dataSource = _dataSourceAddress;
@@ -161,41 +175,6 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
 
     // Reconfigure the funding cycles.
     return _reconfigureFundingCyclesOf(_projectId, _reconfigureFundingCyclesData);
-  }
-
-  //*********************************************************************//
-  // ----------------------- public transactions ----------------------- //
-  //*********************************************************************//
-
-  /** 
-    @notice
-    Deploys a Tiered limited NFT reward data source.
-
-    @param _projectId The ID of the project for which the data source should apply.
-    @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
-
-    @return newDatasource The address of the newly deployed data source.
-  */
-  function deployDataSource(
-    uint256 _projectId,
-    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) public override returns (address newDatasource) {
-    newDatasource = address(
-      new JBTieredLimitedNFTRewardDataSource(
-        _projectId,
-        _deployTieredNFTRewardDataSourceData.directory,
-        _deployTieredNFTRewardDataSourceData.name,
-        _deployTieredNFTRewardDataSourceData.symbol,
-        _deployTieredNFTRewardDataSourceData.tokenUriResolver,
-        _deployTieredNFTRewardDataSourceData.contractUri,
-        _deployTieredNFTRewardDataSourceData.baseUri,
-        _deployTieredNFTRewardDataSourceData.owner,
-        _deployTieredNFTRewardDataSourceData.tierData,
-        _deployTieredNFTRewardDataSourceData.reservedTokenBeneficiary
-      )
-    );
-
-    emit DatasourceDeployed(_projectId, newDatasource);
   }
 
   //*********************************************************************//
@@ -225,14 +204,14 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     );
   }
 
-  /** 
+  /**
     @notice
     Launches funding cycles for a project.
 
-    @param _projectId The ID of the project having funding cycles launched. 
+    @param _projectId The ID of the project having funding cycles launched.
     @param _launchFundingCyclesData Data necessary to fulfill the transaction to launch funding cycles for the project.
 
-    @return configuration The configuration of the funding cycle that was successfully created.  
+    @return configuration The configuration of the funding cycle that was successfully created.
   */
   function _launchFundingCyclesFor(
     uint256 _projectId,
@@ -251,11 +230,11 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
       );
   }
 
-  /** 
+  /**
     @notice
     Reconfigure funding cycles for a project.
 
-    @param _projectId The ID of the project having funding cycles launched. 
+    @param _projectId The ID of the project having funding cycles launched.
     @param _reconfigureFundingCyclesData Data necessary to fulfill the transaction to launch funding cycles for the project.
 
     @return The configuration of the funding cycle that was successfully reconfigured.

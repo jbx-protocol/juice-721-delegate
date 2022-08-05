@@ -4,6 +4,7 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
 import './../structs/JBNFTRewardTierData.sol';
 import './../structs/JBNFTRewardTier.sol';
+import './IJBTieredLimitedNFTRewardDataSourceStore.sol';
 
 interface IJBTieredLimitedNFTRewardDataSource {
   event Mint(
@@ -11,7 +12,6 @@ interface IJBTieredLimitedNFTRewardDataSource {
     uint256 indexed tierId,
     address indexed beneficiary,
     uint256 totalAmountContributed,
-    uint256 numRewards,
     address caller
   );
 
@@ -28,27 +28,11 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
-  function contributionToken() external view returns (address);
+  function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);
 
-  function numberOfTiers() external view returns (uint256);
+  function contractURI() external view returns (string memory);
 
-  function isTierRemoved(uint256 _tierId) external view returns (bool);
-
-  function tierBalanceOf(address _account, uint256 _tier) external view returns (uint256);
-
-  function numberOfReservesMintedFor(uint256 _tierId) external view returns (uint256);
-
-  function getVotingUnits(address _account) external view returns (uint256 units);
-
-  function tierIdOfToken(uint256 _tokenId) external view returns (uint256);
-
-  function tier(uint256 _id) external view returns (JBNFTRewardTier memory _tier);
-
-  function tiers() external view returns (JBNFTRewardTier[] memory tiers);
-
-  function reservedTokenBeneficiary() external view returns (address);
-
-  function numberOfReservedTokensOutstandingFor(uint256 _tierId) external view returns (uint256);
+  function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,

@@ -3,6 +3,8 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
 
 import '../JBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
+import '../JBTieredLimitedNFTRewardDataSourceDeployer.sol';
+import '../JBTieredLimitedNFTRewardDataSourceStore.sol';
 import '../interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
 import '../structs/JBLaunchProjectData.sol';
 
@@ -43,7 +45,9 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   string fcMemo = 'meemoo';
 
-  JBTieredLimitedNFTRewardDataSourceProjectDeployer deployer;
+  IJBTieredLimitedNFTRewardDataSourceStore store;
+  IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer;
+  IJBTieredLimitedNFTRewardDataSourceDeployer delegateDeployer;
 
   function setUp() public {
     vm.label(owner, 'owner');
@@ -53,15 +57,18 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.label(mockJBController, 'mockJBController');
     vm.label(mockJBDirectory, 'mockJBDirectory');
     vm.label(mockJBProjects, 'mockJBProjects');
-
     vm.etch(mockJBController, new bytes(0x69));
     vm.etch(mockJBDirectory, new bytes(0x69));
     vm.etch(mockTokenUriResolver, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
 
+    store = new JBTieredLimitedNFTRewardDataSourceStore();
+    delegateDeployer = new JBTieredLimitedNFTRewardDataSourceDeployer();
+
     deployer = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(
       IJBController(mockJBController),
+      delegateDeployer,
       IJBOperatorStore(mockJBOperatorStore)
     );
   }
@@ -71,7 +78,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
-
     vm.mockCall(
       mockJBController,
       abi.encodeWithSelector(IJBController.projects.selector),
@@ -82,15 +88,12 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       abi.encodeWithSelector(IJBProjects.count.selector),
       abi.encode(previousProjectId)
     );
-
     vm.mockCall(
       mockJBController,
       abi.encodeWithSelector(IJBController.launchProjectFor.selector),
       abi.encode(true)
     );
-
     uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData);
-
     assertEq(previousProjectId, _projectId - 1);
   }
 
@@ -99,27 +102,22 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
-
     vm.mockCall(
       mockJBController,
       abi.encodeWithSelector(IJBController.projects.selector),
       abi.encode(mockJBProjects)
     );
     vm.mockCall(mockJBProjects, abi.encodeWithSelector(IJBProjects.count.selector), abi.encode(5));
-
     vm.mockCall(
       mockJBController,
       abi.encodeWithSelector(IJBController.launchProjectFor.selector),
       abi.encode(true)
     );
-
     uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData);
-
     assertEq(_projectId, 6);
   }
 
   // -- internal helpers --
-
   function createData()
     internal
     view
@@ -135,7 +133,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
     JBNFTRewardTierData[] memory tierData = new JBNFTRewardTierData[](10);
-
+    
     for (uint256 i; i < 10; i++) {
       tierData[i] = JBNFTRewardTierData({
         contributionFloor: uint80((i + 1) * 10),
@@ -158,11 +156,11 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       owner: owner,
       tierData: tierData,
       shouldMintByDefault: false,
-      reservedTokenBeneficiary: reserveBeneficiary
+      reservedTokenBeneficiary: reserveBeneficiary,
+      store: store
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
-
     data = JBFundingCycleData({
       duration: 14,
       weight: 10**18,
