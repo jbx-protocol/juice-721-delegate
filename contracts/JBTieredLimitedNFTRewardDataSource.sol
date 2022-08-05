@@ -229,10 +229,10 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (_numberOfTiersToAdd != 0) {
       uint256[] memory _tierIdsAdded = store.recordAddTierData(_tierDataToAdd, false);
 
-      for (uint256 _i; _i < _numberOfTiersToAdd; ) {
-        emit AddTier(_tierIdsAdded[_i], _tierDataToAdd[_i], msg.sender);
+      for (uint256 _i = _numberOfTiersToAdd; _i != 0; ) {
+        emit AddTier(_tierIdsAdded[_i - 1], _tierDataToAdd[_numberOfTiersToAdd - _i], msg.sender);
         unchecked {
-          ++_i;
+          --_i;
         }
       }
     }
