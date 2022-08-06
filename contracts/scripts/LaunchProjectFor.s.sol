@@ -141,14 +141,15 @@ contract RinkebyLaunchProjectFor is Script {
       directory: jbDirectory,
       name: name,
       symbol: symbol,
+      baseUri: baseUri,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
-      baseUri: baseUri,
       owner: _projectOwner,
       tierData: tiers,
-      shouldMintByDefault: true,
       reservedTokenBeneficiary: msg.sender,
-      store: IJBTieredLimitedNFTRewardDataSourceStore(STORE)
+      store: IJBTieredLimitedNFTRewardDataSourceStore(STORE),
+      lockReservedTokenChanges: true,
+      lockVotingUnitChanges: true
     });
 
     launchProjectData = JBLaunchProjectData({
