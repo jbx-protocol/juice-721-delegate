@@ -1,19 +1,25 @@
 pragma solidity 0.8.6;
 
 import '../interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
+import '../JBTieredLimitedNFTRewardDataSourceStore.sol';
 import 'forge-std/Script.sol';
 
 // Latest NFTProjectDeployer
-address constant LATEST = 0x1Db110f9FD09820c60CaFA89CB736910306bbec9;
+address constant PROJECT_DEPLOYER = 0xB36538f5399B83F669095e7EbBC315f858D8CB2a;
+
+// JBTieredLimitedNFTRewardDataSourceStore
+address constant STORE = 0x69C131362A7c472A343A0434F2C0C6B6B85A5721;
 
 // Change values in setUp() and createData()
 contract RinkebyLaunchProjectFor is Script {
   IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer =
-    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(LATEST);
+    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(PROJECT_DEPLOYER);
   IJBController jbController;
   IJBDirectory jbDirectory;
   IJBPaymentTerminal[] _terminals;
   JBFundAccessConstraints[] _fundAccessConstraints;
+
+  JBTieredLimitedNFTRewardDataSourceStore store;
 
   string name;
   string symbol;
@@ -61,6 +67,7 @@ contract RinkebyLaunchProjectFor is Script {
       content: 'QmdkypzHEZTPZUWe6FmfHLD6iSu9DebRcssFFM42cv5q8i',
       domain: 0
     });
+
     JBFundingCycleData memory _data = JBFundingCycleData({
       duration: 600,
       weight: 1000 * 10**18,
@@ -116,11 +123,12 @@ contract RinkebyLaunchProjectFor is Script {
     );
 
     // NFT Reward parameters
-    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](3);
+    JBNFTRewardTierData[] memory tiers = new JBNFTRewardTierData[](3);
 
     for (uint256 i; i < 3; i++) {
-      tiers[i] = JBNFTRewardTier({
-        contributionFloor: uint128(i * 0.001 ether),
+      tiers[i] = JBNFTRewardTierData({
+        contributionFloor: uint80(i * 0.001 ether),
+        lockedUntil: uint48(0),
         remainingQuantity: 100,
         initialQuantity: 100,
         votingUnits: uint16(10 * i),
@@ -137,8 +145,10 @@ contract RinkebyLaunchProjectFor is Script {
       contractUri: contractUri,
       baseUri: baseUri,
       owner: _projectOwner,
-      tiers: tiers,
-      shouldMintByDefault: true
+      tierData: tiers,
+      shouldMintByDefault: true,
+      reservedTokenBeneficiary: msg.sender,
+      store: IJBTieredLimitedNFTRewardDataSourceStore(STORE)
     });
 
     launchProjectData = JBLaunchProjectData({
@@ -151,67 +161,5 @@ contract RinkebyLaunchProjectFor is Script {
       terminals: _terminals,
       memo: ''
     });
-  }
-}
-
-contract RinkebyDeployDatasource is Script {
-  IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer =
-    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(LATEST);
-  IJBController jbController;
-  IJBDirectory jbDirectory;
-  IJBPaymentTerminal[] _terminals;
-  JBFundAccessConstraints[] _fundAccessConstraints;
-
-  string name;
-  string symbol;
-  string contractUri;
-  string baseUri;
-  address _projectOwner;
-
-  function setUp() public {
-    jbController = deployer.controller();
-    jbDirectory = jbController.directory();
-    name = '';
-    symbol = '';
-    contractUri = '';
-    baseUri = '';
-    _projectOwner = msg.sender;
-  }
-
-  function run(uint256 projectId) external {
-    // NFT Reward parameters
-    JBNFTRewardTier[] memory tiers = new JBNFTRewardTier[](3);
-
-    for (uint256 i; i < 3; i++) {
-      tiers[i] = JBNFTRewardTier({
-        contributionFloor: uint128(i * 0.001 ether),
-        remainingQuantity: 100,
-        initialQuantity: 100,
-        votingUnits: uint16(10 * i),
-        reservedRate: 1,
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
-      });
-    }
-
-    JBDeployTieredNFTRewardDataSourceData
-      memory NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
-        directory: jbDirectory,
-        name: name,
-        symbol: symbol,
-        tokenUriResolver: IJBTokenUriResolver(address(0)),
-        contractUri: contractUri,
-        baseUri: baseUri,
-        owner: _projectOwner,
-        tiers: tiers,
-        shouldMintByDefault: false
-      });
-
-    vm.broadcast();
-
-    address NFTDatasource = deployer.deployDataSource(projectId, NFTRewardDeployerData);
-
-    console.log(NFTDatasource);
-    console.log(address(jbController));
-    console.log(address(jbDirectory));
   }
 }
