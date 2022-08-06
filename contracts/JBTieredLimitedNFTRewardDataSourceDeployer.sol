@@ -43,22 +43,27 @@ contract JBTieredLimitedNFTRewardDataSourceDeployer is IJBTieredLimitedNFTReward
   function deployDataSourceFor(
     uint256 _projectId,
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) external override returns (address newDataSource) {
-    newDataSource = address(
-      new JBTieredLimitedNFTRewardDataSource(
-        _projectId,
-        _deployTieredNFTRewardDataSourceData.directory,
-        _deployTieredNFTRewardDataSourceData.name,
-        _deployTieredNFTRewardDataSourceData.symbol,
-        _deployTieredNFTRewardDataSourceData.baseUri,
-        _deployTieredNFTRewardDataSourceData.tokenUriResolver,
-        _deployTieredNFTRewardDataSourceData.contractUri,
-        _deployTieredNFTRewardDataSourceData.owner,
-        _deployTieredNFTRewardDataSourceData.tierData,
-        _deployTieredNFTRewardDataSourceData.store
-      )
+  ) external override returns (IJBTieredLimitedNFTRewardDataSource) {
+    JBTieredLimitedNFTRewardDataSource newDataSource = new JBTieredLimitedNFTRewardDataSource(
+      _projectId,
+      _deployTieredNFTRewardDataSourceData.directory,
+      _deployTieredNFTRewardDataSourceData.name,
+      _deployTieredNFTRewardDataSourceData.symbol,
+      _deployTieredNFTRewardDataSourceData.baseUri,
+      _deployTieredNFTRewardDataSourceData.tokenUriResolver,
+      _deployTieredNFTRewardDataSourceData.contractUri,
+      _deployTieredNFTRewardDataSourceData.tierData,
+      _deployTieredNFTRewardDataSourceData.store,
+      _deployTieredNFTRewardDataSourceData.lockReservedTokenChanges,
+      _deployTieredNFTRewardDataSourceData.lockVotingUnitChanges
     );
 
+    // Transfer the ownership to the specified address.
+    if (_deployTieredNFTRewardDataSourceData.owner != address(0))
+      newDataSource.transferOwnership(_deployTieredNFTRewardDataSourceData.owner);
+
     emit DatasourceDeployed(_projectId, newDataSource);
+
+    return newDataSource;
   }
 }

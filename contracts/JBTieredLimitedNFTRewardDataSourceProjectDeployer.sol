@@ -76,13 +76,13 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     projectId = controller.projects().count() + 1;
 
     // Deploy the data source contract.
-    address _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    IJBTieredLimitedNFTRewardDataSource _dataSourceAddress = delegateDeployer.deployDataSourceFor(
       projectId,
       _deployTieredNFTRewardDataSourceData
     );
 
     // Set the data source address as the data source of the provided metadata.
-    _launchProjectData.metadata.dataSource = _dataSourceAddress;
+    _launchProjectData.metadata.dataSource = address(_dataSourceAddress);
 
     // Set the project to use the data source for it's pay function.
     _launchProjectData.metadata.useDataSourceForPay = true;
@@ -119,13 +119,13 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     returns (uint256 configuration)
   {
     // Deploy the data source contract.
-    address _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    IJBTieredLimitedNFTRewardDataSource _dataSourceAddress = delegateDeployer.deployDataSourceFor(
       _projectId,
       _deployTieredNFTRewardDataSourceData
     );
 
     // Set the data source address as the data source of the provided metadata.
-    _launchFundingCyclesData.metadata.dataSource = _dataSourceAddress;
+    _launchFundingCyclesData.metadata.dataSource = address(_dataSourceAddress);
 
     // Set the project to use the data source for it's pay function.
     _launchFundingCyclesData.metadata.useDataSourceForPay = true;
@@ -162,13 +162,13 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     returns (uint256 configuration)
   {
     // Deploy the data source contract.
-    address _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    IJBTieredLimitedNFTRewardDataSource _dataSourceAddress = delegateDeployer.deployDataSourceFor(
       _projectId,
       _deployTieredNFTRewardDataSourceData
     );
 
     // Set the data source address as the data source of the provided metadata.
-    _reconfigureFundingCyclesData.metadata.dataSource = _dataSourceAddress;
+    _reconfigureFundingCyclesData.metadata.dataSource = address(_dataSourceAddress);
 
     // Set the project to use the data source for it's pay function.
     _reconfigureFundingCyclesData.metadata.useDataSourceForPay = true;

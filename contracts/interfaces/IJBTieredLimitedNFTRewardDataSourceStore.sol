@@ -6,13 +6,19 @@ import './../structs/JBNFTRewardTierData.sol';
 import './../structs/JBNFTRewardTier.sol';
 
 interface IJBTieredLimitedNFTRewardDataSourceStore {
+  event CleanTiers(address indexed nft, address caller);
+
   function totalSupply(address _nft) external view returns (uint256);
 
   function balanceOf(address _nft, address _owner) external view returns (uint256);
 
-  function numberOfTiers(address _nft) external view returns (uint256);
+  function maxTierId(address _nft) external view returns (uint256);
 
-  function tiers(address _nft) external view returns (JBNFTRewardTier[] memory tiers);
+  function tiers(
+    address _nft,
+    uint256 _startingSortIndex,
+    uint256 _size
+  ) external view returns (JBNFTRewardTier[] memory tiers);
 
   function tier(address _nft, uint256 _id) external view returns (JBNFTRewardTier memory tier);
 
@@ -47,6 +53,10 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function isTierRemoved(address _nft, uint256 _tierId) external view returns (bool);
 
+  function lockVotingUnitChangesFor(address _nft) external view returns (bool);
+
+  function lockReservedTokenChangesFor(address _nft) external view returns (bool);
+
   function votingUnitsOf(address _nft, address _account) external view returns (uint256 units);
 
   function reservedTokenBeneficiary(address _nft) external view returns (address);
@@ -57,7 +67,7 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
-  function recordAddTierData(JBNFTRewardTierData[] memory _tierData, bool _constructorTiers)
+  function recordAddTierData(JBNFTRewardTierData[] memory _tierData)
     external
     returns (uint256[] memory tierIds);
 
@@ -94,4 +104,10 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
   function recordSetContractUri(string memory _uri) external;
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
+
+  function recordLockVotingUnitChanges(bool _flag) external;
+
+  function recordLockReservedTokenChanges(bool _flag) external;
+
+  function cleanTiers(address _nft) external;
 }
