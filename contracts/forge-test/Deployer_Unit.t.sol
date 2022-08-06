@@ -150,6 +150,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       directory: IJBDirectory(mockJBDirectory),
       name: name,
       symbol: symbol,
+      allowRedemptions: true,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
       baseUri: baseUri,
@@ -157,7 +158,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       tierData: tierData,
       shouldMintByDefault: false,
       reservedTokenBeneficiary: reserveBeneficiary,
-      store: store
+      store: store,
+      allowVotingUnitChanges: true
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});

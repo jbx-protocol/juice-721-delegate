@@ -328,7 +328,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // Get the existing tiers
-    JBNFTRewardTier[] memory _originalTiers = _delegate.store().tiers(address(_delegate));
+    JBNFTRewardTier[] memory _originalTiers = _delegate.store().tiers(address(_delegate), 0, 10);
     uint256[] memory _tiersToRemove = new uint256[](_originalTiers.length);
 
     // Append all the existing tiers
@@ -514,6 +514,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       directory: _jbDirectory,
       name: name,
       symbol: symbol,
+      allowRedemptions: true,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
       baseUri: baseUri,
@@ -521,7 +522,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       tierData: tierData,
       shouldMintByDefault: _shouldMintByDefault,
       reservedTokenBeneficiary: reserveBeneficiary,
-      store: new JBTieredLimitedNFTRewardDataSourceStore()
+      store: new JBTieredLimitedNFTRewardDataSourceStore(),
+      allowVotingUnitChanges: true
     });
     launchProjectData = JBLaunchProjectData({
       projectMetadata: _projectMetadata,
