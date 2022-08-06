@@ -676,14 +676,15 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
         // Set the tier being iterated on. Tier's are 1 indexed.
         _data = tierData[msg.sender][_currentSortIndex];
 
+        // If the contribution floor has gone over, break out of the loop.
         if (_data.contributionFloor > _amount) _currentSortIndex = 0;
         else {
+          // Set the tier as the best available so far if there is still a remaining quantity.
           if (
             (_data.remainingQuantity -
               _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _data)) != 0
-          ) {
-            tierId = _currentSortIndex;
-          }
+          ) tierId = _currentSortIndex;
+
           // Set the next sort index.
           _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
         }
