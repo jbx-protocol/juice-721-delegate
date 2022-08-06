@@ -5,8 +5,8 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBOperations.sol';
-import './JBTieredLimitedNFTRewardDataSource.sol';
-import './interfaces/IJBTieredLimitedNFTRewardDataSourceDeployer.sol';
+import './JBTiered721Delegate.sol';
+import './interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**
   @notice
@@ -14,13 +14,13 @@ import './interfaces/IJBTieredLimitedNFTRewardDataSourceDeployer.sol';
 
   @dev
   Adheres to -
-  IJBTieredLimitedNFTRewardDataSourceProjectDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
+  IJBTiered721DelegateProjectDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
 
   @dev
   Inherits from -
   JBOperatable: Several functions in this contract can only be accessed by a project owner, or an address that has been preconfifigured to be an operator of the project.
 */
-contract JBTieredLimitedNFTRewardDataSourceDeployer is IJBTieredLimitedNFTRewardDataSourceDeployer {
+contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
@@ -42,9 +42,9 @@ contract JBTieredLimitedNFTRewardDataSourceDeployer is IJBTieredLimitedNFTReward
   */
   function deployDataSourceFor(
     uint256 _projectId,
-    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) external override returns (IJBTieredLimitedNFTRewardDataSource) {
-    JBTieredLimitedNFTRewardDataSource newDataSource = new JBTieredLimitedNFTRewardDataSource(
+    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData
+  ) external override returns (IJBTiered721Delegate) {
+    JBTiered721Delegate newDataSource = new JBTiered721Delegate(
       _projectId,
       _deployTieredNFTRewardDataSourceData.directory,
       _deployTieredNFTRewardDataSourceData.name,

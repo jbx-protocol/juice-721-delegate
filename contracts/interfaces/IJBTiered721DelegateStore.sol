@@ -2,10 +2,10 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
-import './../structs/JBNFTRewardTierData.sol';
-import './../structs/JBNFTRewardTier.sol';
+import './../structs/JB721TierData.sol';
+import './../structs/JB721Tier.sol';
 
-interface IJBTieredLimitedNFTRewardDataSourceStore {
+interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
 
   function totalSupply(address _nft) external view returns (uint256);
@@ -18,9 +18,9 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
     address _nft,
     uint256 _startingSortIndex,
     uint256 _size
-  ) external view returns (JBNFTRewardTier[] memory tiers);
+  ) external view returns (JB721Tier[] memory tiers);
 
-  function tier(address _nft, uint256 _id) external view returns (JBNFTRewardTier memory tier);
+  function tier(address _nft, uint256 _id) external view returns (JB721Tier memory tier);
 
   function tierBalanceOf(
     address _nft,
@@ -31,7 +31,7 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
   function tierOfTokenId(address _nft, uint256 _tokenId)
     external
     view
-    returns (JBNFTRewardTier memory tier);
+    returns (JB721Tier memory tier);
 
   function tierIdOfToken(uint256 _tokenId) external pure returns (uint256);
 
@@ -67,7 +67,7 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
-  function recordAddTierData(JBNFTRewardTierData[] memory _tierData)
+  function recordAddTierData(JB721TierData[] memory _tierData)
     external
     returns (uint256[] memory tierIds);
 

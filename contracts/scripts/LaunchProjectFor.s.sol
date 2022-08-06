@@ -1,25 +1,25 @@
 pragma solidity 0.8.6;
 
-import '../interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
-import '../JBTieredLimitedNFTRewardDataSourceStore.sol';
+import '../interfaces/IJBTiered721DelegateProjectDeployer.sol';
+import '../JBTiered721DelegateStore.sol';
 import 'forge-std/Script.sol';
 
 // Latest NFTProjectDeployer
 address constant PROJECT_DEPLOYER = 0xB36538f5399B83F669095e7EbBC315f858D8CB2a;
 
-// JBTieredLimitedNFTRewardDataSourceStore
+// JBTiered721DelegateStore
 address constant STORE = 0x69C131362A7c472A343A0434F2C0C6B6B85A5721;
 
 // Change values in setUp() and createData()
 contract RinkebyLaunchProjectFor is Script {
-  IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer =
-    IJBTieredLimitedNFTRewardDataSourceProjectDeployer(PROJECT_DEPLOYER);
+  IJBTiered721DelegateProjectDeployer deployer =
+    IJBTiered721DelegateProjectDeployer(PROJECT_DEPLOYER);
   IJBController jbController;
   IJBDirectory jbDirectory;
   IJBPaymentTerminal[] _terminals;
   JBFundAccessConstraints[] _fundAccessConstraints;
 
-  JBTieredLimitedNFTRewardDataSourceStore store;
+  JBTiered721DelegateStore store;
 
   string name;
   string symbol;
@@ -40,7 +40,7 @@ contract RinkebyLaunchProjectFor is Script {
 
   function run() external {
     (
-      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
 
@@ -58,7 +58,7 @@ contract RinkebyLaunchProjectFor is Script {
   function createData()
     internal
     returns (
-      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     )
   {
@@ -123,10 +123,10 @@ contract RinkebyLaunchProjectFor is Script {
     );
 
     // NFT Reward parameters
-    JBNFTRewardTierData[] memory tiers = new JBNFTRewardTierData[](3);
+    JB721TierData[] memory tiers = new JB721TierData[](3);
 
     for (uint256 i; i < 3; i++) {
-      tiers[i] = JBNFTRewardTierData({
+      tiers[i] = JB721TierData({
         contributionFloor: uint80(i * 0.001 ether),
         lockedUntil: uint48(0),
         remainingQuantity: 100,
@@ -137,7 +137,7 @@ contract RinkebyLaunchProjectFor is Script {
       });
     }
 
-    NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
+    NFTRewardDeployerData = JBDeployTiered721DelegateData({
       directory: jbDirectory,
       name: name,
       symbol: symbol,
@@ -147,7 +147,7 @@ contract RinkebyLaunchProjectFor is Script {
       owner: _projectOwner,
       tierData: tiers,
       reservedTokenBeneficiary: msg.sender,
-      store: IJBTieredLimitedNFTRewardDataSourceStore(STORE),
+      store: IJBTiered721DelegateStore(STORE),
       lockReservedTokenChanges: true,
       lockVotingUnitChanges: true
     });

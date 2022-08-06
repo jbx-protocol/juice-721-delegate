@@ -2,15 +2,15 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
 
-import '../JBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
-import '../JBTieredLimitedNFTRewardDataSourceDeployer.sol';
-import '../JBTieredLimitedNFTRewardDataSourceStore.sol';
-import '../interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
+import '../JBTiered721DelegateProjectDeployer.sol';
+import '../JBTiered721DelegateDeployer.sol';
+import '../JBTiered721DelegateStore.sol';
+import '../interfaces/IJBTiered721DelegateProjectDeployer.sol';
 import '../structs/JBLaunchProjectData.sol';
 
 import 'forge-std/Test.sol';
 
-contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
+contract TestJBTiered721DelegateProjectDeployer is Test {
   using stdStorage for StdStorage;
 
   address owner = address(bytes20(keccak256('owner')));
@@ -45,9 +45,9 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   string fcMemo = 'meemoo';
 
-  IJBTieredLimitedNFTRewardDataSourceStore store;
-  IJBTieredLimitedNFTRewardDataSourceProjectDeployer deployer;
-  IJBTieredLimitedNFTRewardDataSourceDeployer delegateDeployer;
+  IJBTiered721DelegateStore store;
+  IJBTiered721DelegateProjectDeployer deployer;
+  IJBTiered721DelegateDeployer delegateDeployer;
 
   function setUp() public {
     vm.label(owner, 'owner');
@@ -63,10 +63,10 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
 
-    store = new JBTieredLimitedNFTRewardDataSourceStore();
-    delegateDeployer = new JBTieredLimitedNFTRewardDataSourceDeployer();
+    store = new JBTiered721DelegateStore();
+    delegateDeployer = new JBTiered721DelegateDeployer();
 
-    deployer = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(
+    deployer = new JBTiered721DelegateProjectDeployer(
       IJBController(mockJBController),
       delegateDeployer,
       IJBOperatorStore(mockJBOperatorStore)
@@ -75,7 +75,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   function testLaunchProjectFor_shouldLaunchProject(uint128 previousProjectId) external {
     (
-      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
@@ -99,7 +99,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
 
   function testLaunchProjectFor_shouldLaunchProject_nonFuzzed() external {
     (
-      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
@@ -122,7 +122,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     internal
     view
     returns (
-      JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     )
   {
@@ -132,10 +132,10 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
     JBGroupedSplits[] memory groupedSplits;
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
-    JBNFTRewardTierData[] memory tierData = new JBNFTRewardTierData[](10);
+    JB721TierData[] memory tierData = new JB721TierData[](10);
 
     for (uint256 i; i < 10; i++) {
-      tierData[i] = JBNFTRewardTierData({
+      tierData[i] = JB721TierData({
         contributionFloor: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         remainingQuantity: uint40(100),
@@ -146,7 +146,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       });
     }
 
-    NFTRewardDeployerData = JBDeployTieredNFTRewardDataSourceData({
+    NFTRewardDeployerData = JBDeployTiered721DelegateData({
       directory: IJBDirectory(mockJBDirectory),
       name: name,
       symbol: symbol,

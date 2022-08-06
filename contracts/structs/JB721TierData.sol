@@ -10,7 +10,7 @@ pragma solidity 0.8.6;
   @memver reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
   @member tokenUri The URI to use for each token within the tier.
 */
-struct JBNFTRewardTierData {
+struct JB721TierData {
   uint80 contributionFloor;
   uint48 lockedUntil;
   uint48 remainingQuantity;

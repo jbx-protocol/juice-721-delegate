@@ -11,11 +11,11 @@ import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
 
 import './ERC721.sol';
-import '../interfaces/IJBNFTRewardDataSource.sol';
+import '../interfaces/IJB721Delegate.sol';
 
 /**
   @title 
-  JBNFTRewardDataSource
+  JB721Delegate
 
   @notice 
   Data source that offers project contributors NFTs.
@@ -25,7 +25,7 @@ import '../interfaces/IJBNFTRewardDataSource.sol';
 
   @dev
   Adheres to -
-  IJBNFTRewardDataSource: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
+  IJB721Delegate: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
   IJBFundingCycleDataSource: Allows this contract to be attached to a funding cycle to have its methods called during regular protocol operations.
   IJBPayDelegate: Allows this contract to receive callbacks when a project receives a payment.
   IJBRedemptionDelegate: Allows this contract to receive callbacks when a token holder redeems.
@@ -36,8 +36,8 @@ import '../interfaces/IJBNFTRewardDataSource.sol';
   ERC721Votes: A checkpointable standard definition for non-fungible tokens (NFTs).
   Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-abstract contract JBNFTRewardDataSource is
-  IJBNFTRewardDataSource,
+abstract contract JB721Delegate is
+  IJB721Delegate,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
   IJBRedemptionDelegate,
@@ -175,7 +175,7 @@ abstract contract JBNFTRewardDataSource is
     returns (bool)
   {
     return
-      _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
+      _interfaceId == type(IJB721Delegate).interfaceId ||
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
       _interfaceId == type(IJBPayDelegate).interfaceId ||
       _interfaceId == type(IJBRedemptionDelegate).interfaceId ||

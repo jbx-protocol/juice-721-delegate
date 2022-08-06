@@ -4,13 +4,13 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@openzeppelin/contracts/governance/utils/Votes.sol';
-import './abstract/JBNFTRewardDataSource.sol';
-import './interfaces/IJBTieredLimitedNFTRewardDataSource.sol';
+import './abstract/JB721Delegate.sol';
+import './interfaces/IJBTiered721Delegate.sol';
 import './libraries/JBIpfsDecoder.sol';
 
 /**
   @title
-  JBTieredLimitedNFTRewardDataSource
+  JBTiered721Delegate
 
   @notice
   Juicebox data source that offers NFTs to project contributors.
@@ -19,12 +19,7 @@ import './libraries/JBIpfsDecoder.sol';
   This contract allows project creators to reward contributors with NFTs. 
   Intended use is to incentivize initial project support by minting a limited number of NFTs to the first N contributors among various price tiers.
 */
-contract JBTieredLimitedNFTRewardDataSource is
-  IJBTieredLimitedNFTRewardDataSource,
-  JBNFTRewardDataSource,
-  Votes,
-  Ownable
-{
+contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Ownable {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -39,7 +34,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     @notice
     The contract that stores and manages the nft's data.
   */
-  IJBTieredLimitedNFTRewardDataSourceStore public immutable override store;
+  IJBTiered721DelegateStore public immutable override store;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -130,7 +125,7 @@ contract JBTieredLimitedNFTRewardDataSource is
   */
   function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
     return
-      _interfaceId == type(IJBTieredLimitedNFTRewardDataSource).interfaceId ||
+      _interfaceId == type(IJBTiered721Delegate).interfaceId ||
       super.supportsInterface(_interfaceId);
   }
 
@@ -159,11 +154,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
-    JBNFTRewardTierData[] memory _tierData,
-    IJBTieredLimitedNFTRewardDataSourceStore _store,
+    JB721TierData[] memory _tierData,
+    IJBTiered721DelegateStore _store,
     bool _lockReservedTokenChanges,
     bool _lockVotingUnitChanges
-  ) JBNFTRewardDataSource(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
+  ) JB721Delegate(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
     store = _store;
 
     if (bytes(_baseUri).length != 0) _store.recordSetBaseUri(_baseUri);
@@ -220,10 +215,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _tierDataToAdd An array of tier data to add.
     @param _tierIdsToRemove An array of tier IDs to remove.
   */
-  function adjustTiers(
-    JBNFTRewardTierData[] calldata _tierDataToAdd,
-    uint256[] calldata _tierIdsToRemove
-  ) external override onlyOwner {
+  function adjustTiers(JB721TierData[] calldata _tierDataToAdd, uint256[] calldata _tierIdsToRemove)
+    external
+    override
+    onlyOwner
+  {
     // Get a reference to the number of tiers being added.
     uint256 _numberOfTiersToAdd = _tierDataToAdd.length;
 
@@ -346,7 +342,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     // Check the 4 bits interfaceId to verify the metadata is intended for this contract
     if (
       _data.metadata.length > 36 &&
-      bytes4(_data.metadata[32:36]) == type(IJBNFTRewardDataSource).interfaceId
+      bytes4(_data.metadata[32:36]) == type(IJB721Delegate).interfaceId
     ) {
       // Keep references to the metadata properties.
       bool _dontMint;
@@ -529,7 +525,7 @@ contract JBTieredLimitedNFTRewardDataSource is
     uint256 _tokenId
   ) internal virtual override {
     // Get a reference to the tier.
-    JBNFTRewardTier memory _tier = store.tierOfTokenId(address(this), _tokenId);
+    JB721Tier memory _tier = store.tierOfTokenId(address(this), _tokenId);
 
     store.recordTransferForTier(_tier.id, _from, _to);
 

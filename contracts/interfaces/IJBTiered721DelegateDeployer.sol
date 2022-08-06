@@ -4,20 +4,17 @@ pragma solidity 0.8.6;
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol';
-import '../structs/JBDeployTieredNFTRewardDataSourceData.sol';
+import '../structs/JBDeployTiered721DelegateData.sol';
 import '../structs/JBLaunchProjectData.sol';
 import '../structs/JBLaunchFundingCyclesData.sol';
 import '../structs/JBReconfigureFundingCyclesData.sol';
-import './IJBTieredLimitedNFTRewardDataSource.sol';
+import './IJBTiered721Delegate.sol';
 
-interface IJBTieredLimitedNFTRewardDataSourceDeployer {
-  event DatasourceDeployed(
-    uint256 indexed projectId,
-    IJBTieredLimitedNFTRewardDataSource newDatasource
-  );
+interface IJBTiered721DelegateDeployer {
+  event DatasourceDeployed(uint256 indexed projectId, IJBTiered721Delegate newDatasource);
 
   function deployDataSourceFor(
     uint256 _projectId,
-    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) external returns (IJBTieredLimitedNFTRewardDataSource dataSource);
+    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData
+  ) external returns (IJBTiered721Delegate dataSource);
 }
