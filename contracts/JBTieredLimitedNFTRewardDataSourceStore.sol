@@ -664,51 +664,48 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
-    uint256 _startSortIndex = _after[msg.sender][0];
-    if (_startSortIndex == 0) _startSortIndex = 1;
-    uint256 _currentSortIndex = _startSortIndex;
+    uint256 _currentSortIndex = _after[msg.sender][0];
+    if (_currentSortIndex == 0) _currentSortIndex = 1;
 
     while (_currentSortIndex != 0) {
-      if (isTierRemoved[msg.sender][_currentSortIndex])
-        // Set the next sort index.
-        _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
+      // If the contribution floor has gone over, break out of the loop.
+      if (_data.contributionFloor > _amount) _currentSortIndex = 0;
       else {
-        // Set the tier being iterated on. Tier's are 1 indexed.
-        _data = tierData[msg.sender][_currentSortIndex];
+        // If the tier is not removed, check to see if it's optimal.
+        if (!isTierRemoved[msg.sender][_currentSortIndex]) {
+          // Set the tier being iterated on. Tier's are 1 indexed.
+          _data = tierData[msg.sender][_currentSortIndex];
 
-        // If the contribution floor has gone over, break out of the loop.
-        if (_data.contributionFloor > _amount) _currentSortIndex = 0;
-        else {
           // Set the tier as the best available so far if there is still a remaining quantity.
           if (
             (_data.remainingQuantity -
               _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _data)) != 0
           ) tierId = _currentSortIndex;
-
-          // Set the next sort index.
-          _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
         }
+
+        // Set the next sort index.
+        _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
       }
     }
 
-    // Keep a reference to the best tier.
-    JBNFTRewardTierData storage _bestTierData = tierData[msg.sender][tierId];
-
-    // Make the token ID.
-    unchecked {
-      // Keep a reference to the token ID.
-      tokenId = _generateTokenId(
-        tierId,
-        _bestTierData.initialQuantity - --_bestTierData.remainingQuantity
-      );
-    }
-
     // If there's no best tier, return.
-    if (tokenId == 0) {
+    if (tierId == 0) {
       // Make sure a mint was not expected.
       if (_expectMint) revert NOT_AVAILABLE();
       leftoverAmount = _amount;
     } else {
+      // Keep a reference to the best tier.
+      JBNFTRewardTierData storage _bestTierData = tierData[msg.sender][tierId];
+
+      // Make the token ID.
+      unchecked {
+        // Keep a reference to the token ID.
+        tokenId = _generateTokenId(
+          tierId,
+          _bestTierData.initialQuantity - --_bestTierData.remainingQuantity
+        );
+      }
+
       // Set the leftover amount.
       leftoverAmount = _amount - _bestTierData.contributionFloor;
     }
