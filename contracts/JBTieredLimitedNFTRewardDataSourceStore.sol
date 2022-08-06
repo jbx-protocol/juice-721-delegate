@@ -489,10 +489,18 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
         while (_currentSortIndex != 0) {
           // If the contribution floor is less than the tier being iterated on, set the
           if (_data.contributionFloor < tierData[msg.sender][_currentSortIndex].contributionFloor) {
-            // Set the tier after the tier being added as the one being iterated on.
-            _after[msg.sender][_tierId] = _currentSortIndex;
-            // Set the tier after the previous one being iterated on as the tier being added.
-            _after[msg.sender][_previous] = _tierId;
+            // If the index being iterated on isn't the next index, set the after.
+            if (_currentSortIndex != _tierId + 1)
+              // Set the tier after the tier being added as the one being iterated on.
+              _after[msg.sender][_tierId] = _currentSortIndex;
+            // If the previous after index was set to something else, set the previous after.
+            if (_previous != _tierId - 1)
+              // Set the tier after the previous one being iterated on as the tier being added.
+              _after[msg.sender][_previous] = _tierId;
+
+            // For the next tier being added, start at this current index.
+            _startSortIndex = _currentSortIndex;
+
             // Set current to zero to break out of the loop.
             _currentSortIndex = 0;
           } else {
