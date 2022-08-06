@@ -3,6 +3,7 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import './interfaces/IJBTiered721DelegateStore.sol';
+import './structs/JBStored721Tier.sol';
 
 /**
   @title
@@ -41,6 +42,33 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => mapping(uint256 => uint256)) internal _tierIdAfter;
 
+  /**
+    @notice
+    When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS hashes stripped down.
+
+    _nft The NFT contract to which the encoded upfs uri belongs.
+    _tierId the ID of the tier
+  */
+  mapping(address => mapping(uint256 => bytes32)) internal _encodedIpfsUriOf;
+
+  /**
+    @notice
+    An optionnal beneficiary for the reserved token of a given tier.
+
+    _nft The NFT contract to which the reserved token beneficiary belongs.
+    _tierId the ID of the tier.
+  */
+  mapping(address => mapping(uint256 => address)) internal _reservedTokenBeneficiaryOf;
+
+  /** 
+    @notice
+    The reward tier data. 
+
+    _nft The NFT contract to which the tier data belong.
+    _tierId The incremental ID of the tier, starting with 1.
+  */
+  mapping(address => mapping(uint256 => JBStored721Tier)) internal _storedTierOf;
+
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -52,15 +80,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _nft The NFT contract to get the number of tiers of.
   */
   mapping(address => uint256) public override maxTierId;
-
-  /** 
-    @notice
-    The reward tier data. 
-
-    _nft The NFT contract to which the tier data belong.
-    _tierId The incremental ID of the tier, starting with 1.
-  */
-  mapping(address => mapping(uint256 => JB721TierData)) public tierData;
 
   /** 
     @notice
@@ -96,7 +115,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     _nft The NFT contract to which the reserved token beneficiary applies.
   */
-  mapping(address => address) public override reservedTokenBeneficiary;
+  mapping(address => address) public override defaultReservedTokenBeneficiaryOf;
 
   /**
     @notice
@@ -178,13 +197,24 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(msg.sender);
 
+    // Keep a referecen to the tier being iterated on.
+    JBStored721Tier memory _storedTier;
+
     // Make the sorted array.
     while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
       if (!isTierRemoved[_nft][_currentSortIndex]) {
+        _storedTier = _storedTierOf[_nft][_currentSortIndex];
         // Add the tier to the array being returned.
         _tiers[_numberOfIncludedTiers++] = JB721Tier({
           id: _currentSortIndex,
-          data: tierData[_nft][_currentSortIndex]
+          contributionFloor: _storedTier.contributionFloor,
+          lockedUntil: _storedTier.lockedUntil,
+          remainingQuantity: _storedTier.remainingQuantity,
+          initialQuantity: _storedTier.initialQuantity,
+          votingUnits: _storedTier.votingUnits,
+          reservedRate: _storedTier.reservedRate,
+          reservedTokenBeneficiary: _reservedTokenBeneficiaryOf[_nft][_currentSortIndex],
+          encodedIPFSUri: _encodedIpfsUriOf[_nft][_currentSortIndex]
         });
       }
 
@@ -209,7 +239,21 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @return The tier.
   */
   function tier(address _nft, uint256 _id) external view override returns (JB721Tier memory) {
-    return JB721Tier({id: _id, data: tierData[_nft][_id]});
+    // Get the stored tier.
+    JBStored721Tier memory _storedTier = _storedTierOf[_nft][_id];
+
+    return
+      JB721Tier({
+        id: _id,
+        contributionFloor: _storedTier.contributionFloor,
+        lockedUntil: _storedTier.lockedUntil,
+        remainingQuantity: _storedTier.remainingQuantity,
+        initialQuantity: _storedTier.initialQuantity,
+        votingUnits: _storedTier.votingUnits,
+        reservedRate: _storedTier.reservedRate,
+        reservedTokenBeneficiary: _reservedTokenBeneficiaryOf[_nft][_id],
+        encodedIPFSUri: _encodedIpfsUriOf[_nft][_id]
+      });
   }
 
   /** 
@@ -231,7 +275,21 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the tier's ID.
     uint256 _tierId = tierIdOfToken(_tokenId);
 
-    return JB721Tier({id: _tierId, data: tierData[_nft][_tierId]});
+    // Get the stored tier.
+    JBStored721Tier memory _storedTier = _storedTierOf[_nft][_tierId];
+
+    return
+      JB721Tier({
+        id: _tierId,
+        contributionFloor: _storedTier.contributionFloor,
+        lockedUntil: _storedTier.lockedUntil,
+        remainingQuantity: _storedTier.remainingQuantity,
+        initialQuantity: _storedTier.initialQuantity,
+        votingUnits: _storedTier.votingUnits,
+        reservedRate: _storedTier.reservedRate,
+        reservedTokenBeneficiary: _reservedTokenBeneficiaryOf[_nft][_tierId],
+        encodedIPFSUri: _encodedIpfsUriOf[_nft][_tierId]
+      });
   }
 
   /** 
@@ -244,17 +302,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function totalSupply(address _nft) external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
-    JB721TierData storage _data;
+    JBStored721Tier storage _storedTier;
 
     // Keep a reference to the greatest tier ID.
     uint256 _maxTierId = maxTierId[_nft];
 
     for (uint256 _i = _maxTierId; _i != 0; ) {
       // Set the tier being iterated on.
-      _data = tierData[_nft][_i];
+      _storedTier = _storedTierOf[_nft][_i];
 
       // Increment the total supply with the amount used already.
-      supply += _data.initialQuantity - _data.remainingQuantity;
+      supply += _storedTier.initialQuantity - _storedTier.remainingQuantity;
 
       unchecked {
         --_i;
@@ -277,7 +335,33 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     override
     returns (uint256)
   {
-    return _numberOfReservedTokensOutstandingFor(_nft, _tierId, tierData[_nft][_tierId]);
+    return _numberOfReservedTokensOutstandingFor(_nft, _tierId, _storedTierOf[_nft][_tierId]);
+  }
+
+  /** 
+    @notice
+    The reserved token beneficiary for each tier. 
+
+    @param _nft The NFT to get the reserved token beneficiary within.
+    @param _tierId The ID of the tier to get a reserved token beneficiary of.
+
+    @return The reserved token benficiary.
+  */
+  function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
+    external
+    view
+    override
+    returns (address)
+  {
+    // Get the stored reserved token beneficiary.
+    address _storedReservedTokenBeneficiaryOfTier = _reservedTokenBeneficiaryOf[_nft][_tierId];
+
+    // If the tier has a beneficiary return it.
+    if (_storedReservedTokenBeneficiaryOfTier != address(0))
+      return _storedReservedTokenBeneficiaryOfTier;
+
+    // Return the default.
+    return defaultReservedTokenBeneficiaryOf[_nft];
   }
 
   /** 
@@ -333,7 +417,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       if (_balance != 0)
         // Add the tier's voting units.
-        units += _balance * tierData[_nft][_i].votingUnits;
+        units += _balance * _storedTierOf[_nft][_i].votingUnits;
 
       unchecked {
         --_i;
@@ -361,7 +445,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
-      weight += uint256(tierData[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor);
+      weight += uint256(_storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor);
 
       unchecked {
         ++_i;
@@ -382,16 +466,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _maxTierId = maxTierId[_nft];
 
     // Keep a reference to the tier being iterated on.
-    JB721TierData memory _data;
+    JBStored721Tier memory _storedTier;
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _maxTierId; ) {
-      _data = tierData[_nft][_i + 1];
+      _storedTier = _storedTierOf[_nft][_i + 1];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        (uint256(_data.contributionFloor) * (_data.initialQuantity - _data.remainingQuantity)) +
-        _numberOfReservedTokensOutstandingFor(_nft, _i, _data);
+        (uint256(_storedTier.contributionFloor) *
+          (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
+        _numberOfReservedTokensOutstandingFor(_nft, _i, _storedTier);
 
       unchecked {
         ++_i;
@@ -423,20 +508,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Adds tiers. 
 
-    @param _tierData The tiers to add.
+    @param _tiersToAdd The tiers to add.
 
     @return tierIds The IDs of the tiers added.
   */
-  function recordAddTierData(JB721TierData[] memory _tierData)
+  function recordAddTierData(JB721TierParams[] memory _tiersToAdd)
     external
     override
     returns (uint256[] memory tierIds)
   {
-    // Keep a reference to the tier being iterated on.
-    JB721TierData memory _data;
-
     // Get a reference to the number of new tiers.
-    uint256 _numberOfNewTiers = _tierData.length;
+    uint256 _numberOfNewTiers = _tiersToAdd.length;
 
     // Keep a reference to the greatest tier ID.
     uint256 _currentMaxTierId = maxTierId[msg.sender];
@@ -449,31 +531,53 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // If there's no sort index, start with the first index.
     uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _firstSortIndexOf(msg.sender);
 
+    // Keep a reference to the tier being iterated on.
+    JB721TierParams memory _tierToAdd;
+
     for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
       // Set the tier being iterated on.
-      _data = _tierData[_i - 1];
+      _tierToAdd = _tiersToAdd[_i - 1];
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
-      if (_i != _numberOfNewTiers && _data.contributionFloor >= _tierData[_i].contributionFloor)
-        revert INVALID_PRICE_SORT_ORDER();
+      if (
+        _i != _numberOfNewTiers && _tierToAdd.contributionFloor >= _tiersToAdd[_i].contributionFloor
+      ) revert INVALID_PRICE_SORT_ORDER();
 
       // Make sure there are no voting units or reserved rates if they're not allowed.
-      if (lockVotingUnitChangesFor[msg.sender] && _data.votingUnits != 0)
+      if (lockVotingUnitChangesFor[msg.sender] && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
-      if (lockReservedTokenChangesFor[msg.sender] && _data.reservedRate != 0)
+      if (lockReservedTokenChangesFor[msg.sender] && _tierToAdd.reservedRate != 0)
         revert RESERVED_RATE_NOT_ALLOWED();
 
       // Make sure there is some quantity.
-      if (_data.initialQuantity == 0) revert NO_QUANTITY();
-
-      // Set the remaining quantity to be the initial quantity.
-      _data.remainingQuantity = _data.initialQuantity;
+      if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
 
       // Get a reference to the tier ID.
       uint256 _tierId = _currentMaxTierId + _i;
 
       // Add the tier with the iterative ID.
-      tierData[msg.sender][_tierId] = _data;
+      _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
+        contributionFloor: uint80(_tierToAdd.contributionFloor),
+        lockedUntil: uint48(_tierToAdd.lockedUntil),
+        remainingQuantity: uint48(_tierToAdd.initialQuantity),
+        initialQuantity: uint48(_tierToAdd.initialQuantity),
+        votingUnits: uint16(_tierToAdd.votingUnits),
+        reservedRate: uint16(_tierToAdd.reservedRate)
+      });
+
+      // Set the reserved token beneficiary if needed.
+      if (
+        _tierToAdd.reservedTokenBeneficiary != address(0) &&
+        _tierToAdd.reservedTokenBeneficiary != defaultReservedTokenBeneficiaryOf[msg.sender]
+      ) {
+        if (_tierToAdd.shouldUseBeneficiaryAsDefault)
+          defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
+        else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
+      }
+
+      // Set the encodedIPFSUri if needed.
+      if (_tierToAdd.encodedIPFSUri != bytes32(0))
+        _encodedIpfsUriOf[msg.sender][_tierId] = _tierToAdd.encodedIPFSUri;
 
       if (_startSortIndex != 0) {
         // Keep track of the sort index.
@@ -483,7 +587,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
         while (_currentSortIndex != 0) {
           // If the contribution floor is less than the tier being iterated on, set the
-          if (_data.contributionFloor < tierData[msg.sender][_currentSortIndex].contributionFloor) {
+          if (
+            _tierToAdd.contributionFloor <
+            _storedTierOf[msg.sender][_currentSortIndex].contributionFloor
+          ) {
             // If the index being iterated on isn't the next index, set the after.
             if (_currentSortIndex != _tierId + 1)
               // Set the tier after the tier being added as the one being iterated on.
@@ -536,13 +643,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     returns (uint256[] memory tokenIds)
   {
     // Get a reference to the tier.
-    JB721TierData storage _data = tierData[msg.sender][_tierId];
+    JBStored721Tier storage _storedTier = _storedTierOf[msg.sender][_tierId];
 
     // Get a reference to the number of reserved tokens mintable for the tier.
     uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
       msg.sender,
       _tierId,
-      _data
+      _storedTier
     );
 
     // Can't mint more reserves than expected.
@@ -556,7 +663,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     for (uint256 _i; _i < _count; ) {
       // Generate the tokens.
-      tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
+      tokenIds[_i] = _generateTokenId(
+        _tierId,
+        _storedTier.initialQuantity - --_storedTier.remainingQuantity
+      );
 
       unchecked {
         ++_i;
@@ -570,8 +680,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _beneficiary The reservd token beneficiary.
   */
-  function recordSetReservedTokenBeneficiary(address _beneficiary) external override {
-    reservedTokenBeneficiary[msg.sender] = _beneficiary;
+  function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external override {
+    defaultReservedTokenBeneficiaryOf[msg.sender] = _beneficiary;
   }
 
   /** 
@@ -619,7 +729,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
-      if (tierData[msg.sender][_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
+      if (_storedTierOf[msg.sender][_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
 
       // Set the tier as removed.
       isTierRemoved[msg.sender][_tierId] = true;
@@ -654,7 +764,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _maxTierId = maxTierId[msg.sender];
 
     // Keep a reference to the tier being iterated on.
-    JB721TierData memory _data;
+    JBStored721Tier memory _storedTier;
 
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
@@ -663,17 +773,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     while (_currentSortIndex != 0) {
       // Set the tier being iterated on. Tier's are 1 indexed.
-      _data = tierData[msg.sender][_currentSortIndex];
+      _storedTier = _storedTierOf[msg.sender][_currentSortIndex];
 
       // If the contribution floor has gone over, break out of the loop.
-      if (_data.contributionFloor > _amount) _currentSortIndex = 0;
+      if (_storedTier.contributionFloor > _amount) _currentSortIndex = 0;
       else {
         // If the tier is not removed, check to see if it's optimal.
         // Set the tier as the best available so far if there is still a remaining quantity.
         if (
           !isTierRemoved[msg.sender][_currentSortIndex] &&
-          (_data.remainingQuantity -
-            _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _data)) !=
+          (_storedTier.remainingQuantity -
+            _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _storedTier)) !=
           0
         ) tierId = _currentSortIndex;
 
@@ -689,19 +799,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       leftoverAmount = _amount;
     } else {
       // Keep a reference to the best tier.
-      JB721TierData storage _bestTierData = tierData[msg.sender][tierId];
+      JBStored721Tier storage _bestStoredTier = _storedTierOf[msg.sender][tierId];
 
       // Make the token ID.
       unchecked {
         // Keep a reference to the token ID.
         tokenId = _generateTokenId(
           tierId,
-          _bestTierData.initialQuantity - --_bestTierData.remainingQuantity
+          _bestStoredTier.initialQuantity - --_bestStoredTier.remainingQuantity
         );
       }
 
       // Set the leftover amount.
-      leftoverAmount = _amount - _bestTierData.contributionFloor;
+      leftoverAmount = _amount - _bestStoredTier.contributionFloor;
     }
   }
 
@@ -727,7 +837,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _numberOfTiers = _tierIds.length;
 
     // Keep a reference to the tier being iterated on.
-    JB721TierData storage _data;
+    JBStored721Tier storage _storedTier;
 
     // Keep a reference to the tier ID being iterated on.
     uint256 _tierId;
@@ -743,29 +853,32 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (isTierRemoved[msg.sender][_tierId]) revert TIER_REMOVED();
 
       // Keep a reference to the tier being iterated on.
-      _data = tierData[msg.sender][_tierId];
+      _storedTier = _storedTierOf[msg.sender][_tierId];
 
       // Make sure the provided tier exists.
-      if (_data.initialQuantity == 0) revert INVALID_TIER();
+      if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
 
       // Make sure the amount meets the tier's contribution floor.
-      if (_data.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
+      if (_storedTier.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
 
       // Make sure there are enough units available.
       if (
-        _data.remainingQuantity -
-          _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _data) ==
+        _storedTier.remainingQuantity -
+          _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _storedTier) ==
         0
       ) revert OUT();
 
       // Mint the tokens.
       unchecked {
         // Keep a reference to the token ID.
-        tokenIds[_i] = _generateTokenId(_tierId, _data.initialQuantity - --_data.remainingQuantity);
+        tokenIds[_i] = _generateTokenId(
+          _tierId,
+          _storedTier.initialQuantity - --_storedTier.remainingQuantity
+        );
       }
 
       // Update the leftover amount;
-      leftoverAmount = leftoverAmount - _data.contributionFloor;
+      leftoverAmount = leftoverAmount - _storedTier.contributionFloor;
 
       unchecked {
         ++_i;
@@ -878,34 +991,35 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _nft The NFT to get reserved tokens outstanding.
     @param _tierId The ID of the tier to get a number of reserved tokens outstanding.
-    @param _data The tier data to get a number of reserved tokens outstanding.
+    @param _storedTier The tier to get a number of reserved tokens outstanding.
 
     @return numberReservedTokensOutstanding The outstanding number of reserved tokens within the tier.
   */
   function _numberOfReservedTokensOutstandingFor(
     address _nft,
     uint256 _tierId,
-    JB721TierData memory _data
+    JBStored721Tier memory _storedTier
   ) internal view returns (uint256) {
     // Invalid tier or no reserved rate?
-    if (_data.initialQuantity == 0 || _data.reservedRate == 0) return 0;
+    if (_storedTier.initialQuantity == 0 || _storedTier.reservedRate == 0) return 0;
 
     // No token minted yet? Round up to 1
-    if (_data.initialQuantity == _data.remainingQuantity) return 1;
+    if (_storedTier.initialQuantity == _storedTier.remainingQuantity) return 1;
 
     // The number of reserved token of the tier already minted
     uint256 reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
 
     // If only the reserved token (from the rounding up) has been minted so far, return 0
-    if (_data.initialQuantity - reserveTokensMinted == _data.remainingQuantity) return 0;
+    if (_storedTier.initialQuantity - reserveTokensMinted == _storedTier.remainingQuantity)
+      return 0;
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves.
-    uint256 _numberOfNonReservesMinted = _data.initialQuantity -
-      _data.remainingQuantity -
+    uint256 _numberOfNonReservesMinted = _storedTier.initialQuantity -
+      _storedTier.remainingQuantity -
       reserveTokensMinted;
 
     // Store the numerator common to the next two calculations.
-    uint256 _numerator = uint256(_numberOfNonReservesMinted * _data.reservedRate);
+    uint256 _numerator = uint256(_numberOfNonReservesMinted * _storedTier.reservedRate);
 
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
     uint256 _numberReservedTokensMintable = _numerator / JBConstants.MAX_RESERVED_RATE;

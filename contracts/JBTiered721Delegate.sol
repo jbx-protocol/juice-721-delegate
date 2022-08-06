@@ -100,7 +100,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     return
       JBIpfsDecoder.decode(
         store.baseUriOf(address(this)),
-        store.tierOfTokenId(address(this), _tokenId).data.tokenUri
+        store.tierOfTokenId(address(this), _tokenId).encodedIPFSUri
       );
   }
 
@@ -141,7 +141,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _baseUri A URI to use as a base for full token URIs.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
-    @param _tierData The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
+    @param _tiers The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _store A contract that stores the NFT's data.
     @param _lockReservedTokenChanges A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
     @param _lockVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
@@ -154,7 +154,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
-    JB721TierData[] memory _tierData,
+    JB721TierParams[] memory _tiers,
     IJBTiered721DelegateStore _store,
     bool _lockReservedTokenChanges,
     bool _lockVotingUnitChanges
@@ -166,7 +166,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
-    _store.recordAddTierData(_tierData);
+    _store.recordAddTierData(_tiers);
 
     if (_lockReservedTokenChanges) _store.recordLockReservedTokenChanges(_lockReservedTokenChanges);
     if (_lockVotingUnitChanges) _store.recordLockVotingUnitChanges(_lockVotingUnitChanges);
@@ -188,7 +188,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256[] memory _tokenIds = store.recordMintReservesFor(_tierId, _count);
 
     // Keep a reference to the reserved token beneficiary.
-    address _reservedTokenBeneficiary = store.reservedTokenBeneficiary(address(this));
+    address _reservedTokenBeneficiary = store.reservedTokenBeneficiaryOf(address(this), _tierId);
 
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;
@@ -212,23 +212,23 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @notice
     Adjust the tiers mintable in this contract, adhering to any locked tier constraints. 
 
-    @param _tierDataToAdd An array of tier data to add.
+    @param _tiersToAdd An array of tier data to add.
     @param _tierIdsToRemove An array of tier IDs to remove.
   */
-  function adjustTiers(JB721TierData[] calldata _tierDataToAdd, uint256[] calldata _tierIdsToRemove)
+  function adjustTiers(JB721TierParams[] calldata _tiersToAdd, uint256[] calldata _tierIdsToRemove)
     external
     override
     onlyOwner
   {
     // Get a reference to the number of tiers being added.
-    uint256 _numberOfTiersToAdd = _tierDataToAdd.length;
+    uint256 _numberOfTiersToAdd = _tiersToAdd.length;
 
     // Add tiers.
     if (_numberOfTiersToAdd != 0) {
-      uint256[] memory _tierIdsAdded = store.recordAddTierData(_tierDataToAdd);
+      uint256[] memory _tierIdsAdded = store.recordAddTierData(_tiersToAdd);
 
       for (uint256 _i = _numberOfTiersToAdd; _i != 0; ) {
-        emit AddTier(_tierIdsAdded[_i - 1], _tierDataToAdd[_numberOfTiersToAdd - _i], msg.sender);
+        emit AddTier(_tierIdsAdded[_i - 1], _tiersToAdd[_numberOfTiersToAdd - _i], msg.sender);
         unchecked {
           --_i;
         }
@@ -259,7 +259,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function setReservedTokenBeneficiary(address _beneficiary) external override onlyOwner {
     // Set the beneficiary.
-    store.recordSetReservedTokenBeneficiary(_beneficiary);
+    store.recordSetDefaultReservedTokenBeneficiary(_beneficiary);
 
     emit SetReservedTokenBeneficiary(_beneficiary, msg.sender);
   }
@@ -529,9 +529,9 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     store.recordTransferForTier(_tier.id, _from, _to);
 
-    if (_tier.data.votingUnits != 0)
+    if (_tier.votingUnits != 0)
       // Transfer the voting units.
-      _transferVotingUnits(_from, _to, _tier.data.votingUnits);
+      _transferVotingUnits(_from, _to, _tier.votingUnits);
 
     super._afterTokenTransfer(_from, _to, _tokenId);
   }
