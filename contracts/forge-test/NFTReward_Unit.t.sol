@@ -157,8 +157,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -168,8 +168,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _delegate.test_store().ForTest_setTier(address(_delegate), i + 1, _tierData[i]);
     }
 
-    assertTrue(_isIn(_delegate.test_store().tiers(address(_delegate), 0, 10), _tiers));
-    assertTrue(_isIn(_tiers, _delegate.test_store().tiers(address(_delegate), 0, 10)));
+    assertTrue(_isIn(_delegate.test_store().tiers(address(_delegate), 0, numberOfTiers), _tiers));
+    assertTrue(_isIn(_tiers, _delegate.test_store().tiers(address(_delegate), 0, numberOfTiers)));
   }
 
   function testJBTieredNFTRewardDelegate_tier_returnsTheGivenTier(
@@ -206,8 +206,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -257,8 +257,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -316,8 +316,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -365,8 +365,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -439,8 +439,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -514,8 +514,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -564,8 +564,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -612,8 +612,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -677,8 +677,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -722,8 +722,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -764,8 +764,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -793,8 +793,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -819,8 +819,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -878,8 +878,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
     assertEq(_delegate.contractURI(), contractUri);
     assertEq(_delegate.owner(), owner);
-    assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, 10), _tiers)); // Order is not insured
-    assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, 10)));
+    assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, nbTiers), _tiers)); // Order is not insured
+    assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, nbTiers)));
   }
 
   function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfOneEmptyInitialQuantity(
@@ -967,8 +967,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -1093,8 +1093,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -1176,8 +1176,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -1205,7 +1205,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(owner);
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
 
-    JBNFTRewardTier[] memory _storedTiers = _delegate.test_store().tiers(address(_delegate), 0, 10);
+    JBNFTRewardTier[] memory _storedTiers = _delegate.test_store().tiers(
+      address(_delegate),
+      0,
+      initialNumberOfTiers + numberTiersToAdd
+    );
 
     // Check: Expected number of tiers?
     assertEq(_storedTiers.length, _tiers.length + _tiersAdded.length);
@@ -1251,13 +1255,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
-
-    _delegate.test_store().tiers(address(_delegate), 0, 10);
 
     uint256[] memory _tiersToRemove = new uint256[](numberTiersToRemove);
 
@@ -1297,7 +1299,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(owner);
     _delegate.adjustTiers(new JBNFTRewardTierData[](0), _tiersToRemove);
 
-    JBNFTRewardTier[] memory _storedTiers = _delegate.test_store().tiers(address(_delegate), 0, 10);
+    JBNFTRewardTier[] memory _storedTiers = _delegate.test_store().tiers(
+      address(_delegate),
+      0,
+      initialNumberOfTiers - numberTiersToRemove
+    );
 
     // Check expected number of tiers remainings
     assertEq(_storedTiers.length, _tiers.length - numberTiersToRemove);
@@ -1349,7 +1355,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
+        false,
         true
       );
 
@@ -1418,7 +1424,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
         true,
-        true
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -1485,8 +1491,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -2044,8 +2050,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -2147,8 +2153,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -2240,8 +2246,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -2344,8 +2350,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -2488,8 +2494,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         contractUri,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
-        true,
-        true
+        false,
+        false
       );
 
     _delegate.transferOwnership(owner);
@@ -2675,8 +2681,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     string memory _contractUri,
     JBNFTRewardTierData[] memory _tierData,
     IJBTieredLimitedNFTRewardDataSourceStore _testStore,
-    bool _allowReservedTokenChanges,
-    bool _allowVotingUnitChanges
+    bool _lockReservedTokenChanges,
+    bool _lockVotingUnitChanges
   )
     JBTieredLimitedNFTRewardDataSource(
       _projectId,
@@ -2688,8 +2694,8 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _contractUri,
       _tierData,
       _testStore,
-      _allowReservedTokenChanges,
-      _allowVotingUnitChanges
+      _lockReservedTokenChanges,
+      _lockVotingUnitChanges
     )
   {
     test_store = IJBTieredLimitedNFTRewardDataSourceStore_ForTest(address(_testStore));

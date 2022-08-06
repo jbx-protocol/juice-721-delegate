@@ -158,8 +158,8 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       shouldMintByDefault: false,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
-      allowReservedTokenChanges: true,
-      allowVotingUnitChanges: true
+      lockReservedTokenChanges: true,
+      lockVotingUnitChanges: true
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});

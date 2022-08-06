@@ -137,7 +137,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     _nft The NFT for which the flag applies.
   */
-  mapping(address => bool) public override allowReservedTokenChangesFor;
+  mapping(address => bool) public override lockReservedTokenChangesFor;
 
   /**
     @notice
@@ -145,7 +145,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     _nft The NFT for which the flag applies.
   */
-  mapping(address => bool) public override allowVotingUnitChangesFor;
+  mapping(address => bool) public override lockVotingUnitChangesFor;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -172,17 +172,20 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Initialize an array with the appropriate length.
     _tiers = new JBNFTRewardTier[](_size);
 
-    // Count the number of active tiers
-    uint256 _activeTiers;
+    // Count the number of included tiers.
+    uint256 _numberOfIncludedTiers;
 
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _startingId != 0 ? _startingId : _after[_nft][0];
 
+    // Start at the first index if nothing is specified.
+    if (_currentSortIndex == 0) _currentSortIndex = 1;
+
     // Make the sorted array.
-    while (_currentSortIndex != 0) {
+    while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
       if (!isTierRemoved[_nft][_currentSortIndex]) {
         // Add the tier to the array being returned.
-        _tiers[_activeTiers++] = JBNFTRewardTier({
+        _tiers[_numberOfIncludedTiers++] = JBNFTRewardTier({
           id: _currentSortIndex,
           data: tierData[_nft][_currentSortIndex]
         });
@@ -193,9 +196,9 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     }
 
     // Resize the array if there are removed tiers
-    if (_activeTiers != _numberOfTiers)
+    if (_numberOfIncludedTiers != _numberOfTiers)
       assembly {
-        mstore(_tiers, _activeTiers)
+        mstore(_tiers, _numberOfIncludedTiers)
       }
   }
 
@@ -460,9 +463,9 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
         revert INVALID_PRICE_SORT_ORDER();
 
       // Make sure there are no voting units or reserved rates if they're not allowed.
-      if (!allowVotingUnitChangesFor[msg.sender] && _data.votingUnits != 0)
+      if (lockVotingUnitChangesFor[msg.sender] && _data.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
-      if (!allowReservedTokenChangesFor[msg.sender] && _data.reservedRate != 0)
+      if (lockReservedTokenChangesFor[msg.sender] && _data.reservedRate != 0)
         revert RESERVED_RATE_NOT_ALLOWED();
 
       // Make sure there is some quantity.
@@ -820,8 +823,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @param _flag The flag to set.
   */
-  function recordAllowVotingUnitChanges(bool _flag) external override {
-    allowVotingUnitChangesFor[msg.sender] = _flag;
+  function recordLockVotingUnitChanges(bool _flag) external override {
+    lockVotingUnitChangesFor[msg.sender] = _flag;
   }
 
   /** 
@@ -830,8 +833,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @param _flag The flag to set.
   */
-  function recordAllowReservedTokenChanges(bool _flag) external override {
-    allowReservedTokenChangesFor[msg.sender] = _flag;
+  function recordLockReservedTokenChanges(bool _flag) external override {
+    lockReservedTokenChangesFor[msg.sender] = _flag;
   }
 
   //*********************************************************************//

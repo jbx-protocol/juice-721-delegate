@@ -17,8 +17,8 @@ import './../interfaces/IJBTieredLimitedNFTRewardDataSourceStore.sol';
   @member shouldMintByDefault A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
   @member reservedTokenBeneficiary The address receiving the reserved token
   @member store The store contract to use.
-  @member allowReservedTokenChanges A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
-  @member allowVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+  @member lockReservedTokenChanges A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
+  @member lockVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
 */
 struct JBDeployTieredNFTRewardDataSourceData {
   IJBDirectory directory;
@@ -32,6 +32,6 @@ struct JBDeployTieredNFTRewardDataSourceData {
   bool shouldMintByDefault;
   address reservedTokenBeneficiary;
   IJBTieredLimitedNFTRewardDataSourceStore store;
-  bool allowReservedTokenChanges;
-  bool allowVotingUnitChanges;
+  bool lockReservedTokenChanges;
+  bool lockVotingUnitChanges;
 }

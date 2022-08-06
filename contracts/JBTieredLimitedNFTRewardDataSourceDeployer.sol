@@ -54,8 +54,8 @@ contract JBTieredLimitedNFTRewardDataSourceDeployer is IJBTieredLimitedNFTReward
       _deployTieredNFTRewardDataSourceData.contractUri,
       _deployTieredNFTRewardDataSourceData.tierData,
       _deployTieredNFTRewardDataSourceData.store,
-      _deployTieredNFTRewardDataSourceData.allowReservedTokenChanges,
-      _deployTieredNFTRewardDataSourceData.allowVotingUnitChanges
+      _deployTieredNFTRewardDataSourceData.lockReservedTokenChanges,
+      _deployTieredNFTRewardDataSourceData.lockVotingUnitChanges
     );
 
     // Transfer the ownership to the specified address.

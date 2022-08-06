@@ -148,8 +148,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     @param _contractUri A URI where contract metadata can be found. 
     @param _tierData The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _store A contract that stores the NFT's data.
-    @param _allowReservedTokenChanges A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
-    @param _allowVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+    @param _lockReservedTokenChanges A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
+    @param _lockVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
   */
   constructor(
     uint256 _projectId,
@@ -161,8 +161,8 @@ contract JBTieredLimitedNFTRewardDataSource is
     string memory _contractUri,
     JBNFTRewardTierData[] memory _tierData,
     IJBTieredLimitedNFTRewardDataSourceStore _store,
-    bool _allowReservedTokenChanges,
-    bool _allowVotingUnitChanges
+    bool _lockReservedTokenChanges,
+    bool _lockVotingUnitChanges
   ) JBNFTRewardDataSource(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
     store = _store;
 
@@ -170,11 +170,11 @@ contract JBTieredLimitedNFTRewardDataSource is
     if (bytes(_contractUri).length != 0) _store.recordSetContractUri(_contractUri);
     if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
       _store.recordSetTokenUriResolver(_tokenUriResolver);
-    if (_allowReservedTokenChanges)
-      _store.recordAllowReservedTokenChanges(_allowReservedTokenChanges);
-    if (_allowVotingUnitChanges) _store.recordAllowVotingUnitChanges(_allowVotingUnitChanges);
 
     _store.recordAddTierData(_tierData);
+
+    if (_lockReservedTokenChanges) _store.recordLockReservedTokenChanges(_lockReservedTokenChanges);
+    if (_lockVotingUnitChanges) _store.recordLockVotingUnitChanges(_lockVotingUnitChanges);
   }
 
   //*********************************************************************//

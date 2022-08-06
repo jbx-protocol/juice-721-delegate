@@ -51,9 +51,9 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function isTierRemoved(address _nft, uint256 _tierId) external view returns (bool);
 
-  function allowVotingUnitChangesFor(address _nft) external view returns (bool);
+  function lockVotingUnitChangesFor(address _nft) external view returns (bool);
 
-  function allowReservedTokenChangesFor(address _nft) external view returns (bool);
+  function lockReservedTokenChangesFor(address _nft) external view returns (bool);
 
   function votingUnitsOf(address _nft, address _account) external view returns (uint256 units);
 
@@ -103,7 +103,7 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
 
-  function recordAllowVotingUnitChanges(bool _flag) external;
+  function recordLockVotingUnitChanges(bool _flag) external;
 
-  function recordAllowReservedTokenChanges(bool _flag) external;
+  function recordLockReservedTokenChanges(bool _flag) external;
 }
