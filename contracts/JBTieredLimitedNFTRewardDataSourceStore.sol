@@ -39,7 +39,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     _nft The NFT contract to get ther order index from.
     _index The index to get a tier after relative to.
   */
-  mapping(address => mapping(uint256 => uint256)) internal _after;
+  mapping(address => mapping(uint256 => uint256)) internal _tierIdAfter;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -447,9 +447,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
-    uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _after[msg.sender][0] != 0
-      ? _after[msg.sender][0]
-      : 1;
+    uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _firstSortIndexOf(msg.sender);
 
     for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
       // Set the tier being iterated on.
@@ -489,11 +487,11 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
             // If the index being iterated on isn't the next index, set the after.
             if (_currentSortIndex != _tierId + 1)
               // Set the tier after the tier being added as the one being iterated on.
-              _after[msg.sender][_tierId] = _currentSortIndex;
+              _tierIdAfter[msg.sender][_tierId] = _currentSortIndex;
             // If the previous after index was set to something else, set the previous after.
             if (_previous != _tierId - 1)
               // Set the tier after the previous one being iterated on as the tier being added.
-              _after[msg.sender][_previous] = _tierId;
+              _tierIdAfter[msg.sender][_previous] = _tierId;
 
             // For the next tier being added, start at this current index.
             _startSortIndex = _currentSortIndex;
@@ -855,7 +853,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Make the sorted array.
     while (_currentSortIndex != 0) {
       if (!isTierRemoved[_nft][_currentSortIndex]) {
-        if (_currentSortIndex != _previous + 1) _after[_nft][_previous] = _currentSortIndex;
+        if (_currentSortIndex != _previous + 1) _tierIdAfter[_nft][_previous] = _currentSortIndex;
         // Set the previous index to be the current index.
         _previous = _currentSortIndex;
       }
@@ -948,7 +946,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   */
   function _nextSortIndex(uint256 _index, uint256 _max) internal view returns (uint256) {
     // Update the current index to be the one saved to be after, if it exists.
-    uint256 _storedNext = _after[msg.sender][_index];
+    uint256 _storedNext = _tierIdAfter[msg.sender][_index];
     if (_storedNext != 0) return _storedNext;
     // Otherwise if this is the last tier, set current to zero to break out of the loop.
     else if (_index == _max) return 0;
@@ -965,7 +963,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     @return index The first index.
   */
   function _firstSortIndexOf(address _nft) internal view returns (uint256 index) {
-    index = _after[_nft][0];
+    index = _tierIdAfter[_nft][0];
     // Start at the first index if nothing is specified.
     if (index == 0) index = 1;
   }
