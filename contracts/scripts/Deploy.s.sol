@@ -2,6 +2,7 @@ pragma solidity 0.8.6;
 
 import '../JBTieredLimitedNFTRewardDataSourceDeployer.sol';
 import '../JBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
+import '../JBTieredLimitedNFTRewardDataSourceStore.sol';
 import 'forge-std/Script.sol';
 
 contract DeployMainnet is Script {
@@ -27,15 +28,22 @@ contract DeployRinkeby is Script {
   IJBOperatorStore jbOperatorStore = IJBOperatorStore(0xEDB2db4b82A4D4956C3B4aA474F7ddf3Ac73c5AB);
 
   JBTieredLimitedNFTRewardDataSourceDeployer jbDelegateDeployer;
-  JBTieredLimitedNFTRewardDataSourceProjectDeployer jbTieredLimitedNFTRewardDataSource;
+  JBTieredLimitedNFTRewardDataSourceProjectDeployer jbTieredLimitedNFTRewardDataSourceProjectDeployer;
+  JBTieredLimitedNFTRewardDataSourceStore jbTieredLimitedNFTRewardDataSourceStore;
 
   function run() external {
     vm.startBroadcast();
     jbDelegateDeployer = new JBTieredLimitedNFTRewardDataSourceDeployer();
-    jbTieredLimitedNFTRewardDataSource = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(
+
+    jbTieredLimitedNFTRewardDataSourceProjectDeployer = new JBTieredLimitedNFTRewardDataSourceProjectDeployer(
       jbController,
       jbDelegateDeployer,
       jbOperatorStore
     );
+
+    jbTieredLimitedNFTRewardDataSourceStore = new JBTieredLimitedNFTRewardDataSourceStore();
+
+    console.log(address(jbTieredLimitedNFTRewardDataSourceProjectDeployer));
+    console.log(address(jbTieredLimitedNFTRewardDataSourceStore));
   }
 }
