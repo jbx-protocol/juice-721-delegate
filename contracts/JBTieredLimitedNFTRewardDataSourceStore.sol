@@ -853,7 +853,11 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Make the sorted array.
     while (_currentSortIndex != 0) {
       if (!isTierRemoved[_nft][_currentSortIndex]) {
-        if (_currentSortIndex != _previous + 1) _tierIdAfter[_nft][_previous] = _currentSortIndex;
+        // If the correct after index isn't already stored, store it.
+        if (
+          _currentSortIndex != _previous + 1 && _tierIdAfter[_nft][_previous] != _currentSortIndex
+        ) _tierIdAfter[_nft][_previous] = _currentSortIndex;
+
         // Set the previous index to be the current index.
         _previous = _currentSortIndex;
       }
