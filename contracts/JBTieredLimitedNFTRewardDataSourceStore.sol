@@ -131,6 +131,22 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   */
   mapping(address => string) public override contractUriOf;
 
+  /** 
+    @notice
+    A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
+
+    _nft The NFT for which the flag applies.
+  */
+  mapping(address => bool) public override allowReservedTokenChangesFor;
+
+  /**
+    @notice
+    A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+
+    _nft The NFT for which the flag applies.
+  */
+  mapping(address => bool) public override allowVotingUnitChangesFor;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -408,16 +424,14 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     Adds tiers. 
 
     @param _tierData The tiers to add.
-    @param _allowVotingUnits A flag indicating if the provided tiers can have voting units. 
-    @param _allowReservedRate A flag indicating if the provided tiers can have a reserved rate. 
 
     @return tierIds The IDs of the tiers added.
   */
-  function recordAddTierData(
-    JBNFTRewardTierData[] memory _tierData,
-    bool _allowVotingUnits,
-    bool _allowReservedRate
-  ) external override returns (uint256[] memory tierIds) {
+  function recordAddTierData(JBNFTRewardTierData[] memory _tierData)
+    external
+    override
+    returns (uint256[] memory tierIds)
+  {
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData memory _data;
 
@@ -446,8 +460,10 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
         revert INVALID_PRICE_SORT_ORDER();
 
       // Make sure there are no voting units or reserved rates if they're not allowed.
-      if (!_allowVotingUnits && _data.votingUnits != 0) revert VOTING_UNITS_NOT_ALLOWED();
-      if (!_allowReservedRate && _data.reservedRate != 0) revert RESERVED_RATE_NOT_ALLOWED();
+      if (!allowVotingUnitChangesFor[msg.sender] && _data.votingUnits != 0)
+        revert VOTING_UNITS_NOT_ALLOWED();
+      if (!allowReservedTokenChangesFor[msg.sender] && _data.reservedRate != 0)
+        revert RESERVED_RATE_NOT_ALLOWED();
 
       // Make sure there is some quantity.
       if (_data.initialQuantity == 0) revert NO_QUANTITY();
@@ -796,6 +812,26 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   */
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external override {
     tokenUriResolverOf[msg.sender] = _resolver;
+  }
+
+  /** 
+    @notice
+    Sets a flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+
+    @param _flag The flag to set.
+  */
+  function recordAllowVotingUnitChanges(bool _flag) external override {
+    allowVotingUnitChangesFor[msg.sender] = _flag;
+  }
+
+  /** 
+    @notice
+    Sets a flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate. 
+
+    @param _flag The flag to set.
+  */
+  function recordAllowReservedTokenChanges(bool _flag) external override {
+    allowReservedTokenChangesFor[msg.sender] = _flag;
   }
 
   //*********************************************************************//

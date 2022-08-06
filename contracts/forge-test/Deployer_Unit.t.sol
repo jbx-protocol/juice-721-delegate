@@ -150,7 +150,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       directory: IJBDirectory(mockJBDirectory),
       name: name,
       symbol: symbol,
-      allowRedemptions: true,
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
       baseUri: baseUri,
@@ -159,6 +158,7 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       shouldMintByDefault: false,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
+      allowReservedTokenChanges: true,
       allowVotingUnitChanges: true
     });
 

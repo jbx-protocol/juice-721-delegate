@@ -514,7 +514,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       directory: _jbDirectory,
       name: name,
       symbol: symbol,
-      allowRedemptions: true,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
       baseUri: baseUri,
@@ -523,6 +522,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       shouldMintByDefault: _shouldMintByDefault,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: new JBTieredLimitedNFTRewardDataSourceStore(),
+      allowReservedTokenChanges: true,
       allowVotingUnitChanges: true
     });
     launchProjectData = JBLaunchProjectData({

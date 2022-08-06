@@ -34,8 +34,6 @@ interface IJBTieredLimitedNFTRewardDataSource {
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
-  function allowVotingUnitChanges() external view returns (bool);
-
   function adjustTiers(
     JBNFTRewardTierData[] memory _tierDataToAdd,
     uint256[] memory _tierIdsToRemove

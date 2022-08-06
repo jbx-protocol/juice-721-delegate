@@ -8,12 +8,16 @@ import '../structs/JBDeployTieredNFTRewardDataSourceData.sol';
 import '../structs/JBLaunchProjectData.sol';
 import '../structs/JBLaunchFundingCyclesData.sol';
 import '../structs/JBReconfigureFundingCyclesData.sol';
+import './IJBTieredLimitedNFTRewardDataSource.sol';
 
 interface IJBTieredLimitedNFTRewardDataSourceDeployer {
-  event DatasourceDeployed(uint256 indexed projectId, address newDatasource);
+  event DatasourceDeployed(
+    uint256 indexed projectId,
+    IJBTieredLimitedNFTRewardDataSource newDatasource
+  );
 
   function deployDataSourceFor(
     uint256 _projectId,
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) external returns (address dataSource);
+  ) external returns (IJBTieredLimitedNFTRewardDataSource dataSource);
 }

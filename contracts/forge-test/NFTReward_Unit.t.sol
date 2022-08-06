@@ -114,15 +114,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      true,
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      owner,
       tierData,
       new JBTieredLimitedNFTRewardDataSourceStore(),
+      true,
       true
     );
+
+    delegate.transferOwnership(owner);
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint8 numberOfTiers) public {
@@ -151,15 +152,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     // Avoid having difference due to the reverse order of the tiers array in _addTierData
     for (uint256 i; i < numberOfTiers; i++) {
@@ -199,15 +201,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     // Avoid having difference due to the reverse order of the tiers array in _addTierData
     for (uint256 i; i < numberOfTiers; i++) {
@@ -249,15 +252,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i; i < numberOfTiers; i++) {
       _delegate.test_store().ForTest_setTier(
@@ -307,15 +311,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i; i < numberOfTiers; i++) {
       _delegate.test_store().ForTest_setBalanceOf(address(_delegate), holder, i + 1, (i + 1) * 10);
@@ -355,15 +360,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i; i < 10; i++) {
       _delegate.test_store().ForTest_setTier(
@@ -428,15 +434,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i; i < 10; i++) {
       _delegate.test_store().ForTest_setTier(
@@ -502,15 +509,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i; i < numberOfTiers; i++) {
       _delegate.test_store().ForTest_setBalanceOf(address(_delegate), holder, i + 1, 10);
@@ -551,15 +559,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     // Mock the URI resolver call
     vm.mockCall(
@@ -598,15 +607,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(address(0)),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i = 1; i <= _tierData.length; i++) {
       uint256 tokenId = _generateTokenId(i, 1);
@@ -662,15 +672,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     assertEq(
       _delegate.test_store().redemptionWeightOf(address(_delegate), _tierToGetWeightOf),
@@ -706,15 +717,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i = 1; i <= numberOfTiers; i++) {
       _delegate.test_store().ForTest_setTier(
@@ -747,15 +759,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     _delegate.ForTest_setOwnerOf(tokenId, _owner);
     assertEq(_delegate.firstOwnerOf(tokenId), _owner);
@@ -775,15 +788,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     _delegate.ForTest_setOwnerOf(tokenId, _owner);
     _delegate.test_store().ForTest_setFirstOwnerOf(address(_delegate), tokenId, _previousOwner);
@@ -800,15 +814,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     assertEq(_delegate.firstOwnerOf(tokenId), address(0));
   }
@@ -841,15 +856,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      true,
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      owner,
       _tierData,
       new JBTieredLimitedNFTRewardDataSourceStore(),
+      true,
       true
     );
+
+    _delegate.transferOwnership(owner);
 
     // Check: delegate has correct parameters?
     assertEq(_delegate.projectId(), projectId);
@@ -900,13 +916,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
-      true,
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      owner,
       _tierData,
       _dataSourceStore,
+      true,
       true
     );
   }
@@ -947,15 +962,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i; i < nbTiers; i++) {
       _delegate.test_store().ForTest_setTier(
@@ -1072,15 +1088,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     for (uint256 i; i < 10; i++) {
       _delegate.test_store().ForTest_setTier(
@@ -1154,15 +1171,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](numberTiersToAdd);
     JBNFTRewardTier[] memory _tiersAdded = new JBNFTRewardTier[](numberTiersToAdd);
@@ -1228,15 +1246,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     _delegate.test_store().tiers(address(_delegate), 0, 10);
 
@@ -1325,15 +1344,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](numberTiersToAdd);
     JBNFTRewardTier[] memory _tiersAdded = new JBNFTRewardTier[](numberTiersToAdd);
@@ -1392,15 +1412,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](numberTiersToAdd);
     JBNFTRewardTier[] memory _tiersAdded = new JBNFTRewardTier[](numberTiersToAdd);
@@ -1459,15 +1480,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     JBNFTRewardTierData[] memory _tierDataToAdd = new JBNFTRewardTierData[](numberTiersToAdd);
     JBNFTRewardTier[] memory _tiersAdded = new JBNFTRewardTier[](numberTiersToAdd);
@@ -2017,15 +2039,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     // Set 10 tiers, with half supply minted for each
     for (uint256 i = 1; i <= 10; i++) {
@@ -2119,15 +2142,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     // Set 10 tiers, with half supply minted for each
     for (uint256 i = 1; i <= 10; i++) {
@@ -2211,15 +2235,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         _tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     // Set 10 tiers, with half supply minted for each
     for (uint256 i = 1; i <= 10; i++) {
@@ -2314,15 +2339,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     // Mock the directory call
     vm.mockCall(
@@ -2457,15 +2483,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         IJBDirectory(mockJBDirectory),
         name,
         symbol,
-        true,
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         tierData,
         IJBTieredLimitedNFTRewardDataSourceStore(address(_ForTest_store)),
+        true,
         true
       );
+
+    _delegate.transferOwnership(owner);
 
     _delegate.ForTest_setOwnerOf(tokenId, _holder);
 
@@ -2643,13 +2670,12 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    bool _allowRedemptions,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
-    address _owner,
     JBNFTRewardTierData[] memory _tierData,
     IJBTieredLimitedNFTRewardDataSourceStore _testStore,
+    bool _allowReservedTokenChanges,
     bool _allowVotingUnitChanges
   )
     JBTieredLimitedNFTRewardDataSource(
@@ -2657,13 +2683,12 @@ contract ForTest_JBTieredLimitedNFTRewardDataSource is JBTieredLimitedNFTRewardD
       _directory,
       _name,
       _symbol,
-      _allowRedemptions,
       _baseUri,
       _tokenUriResolver,
       _contractUri,
-      _owner,
       _tierData,
       _testStore,
+      _allowReservedTokenChanges,
       _allowVotingUnitChanges
     )
   {
