@@ -118,7 +118,6 @@ contract RinkebyLaunchProjectFor is Script {
   //     baseUri: baseUri,
   //     owner: _projectOwner,
   //     tierData: tierData,
-  //     shouldMintByDefault: false,
   //     reservedTokenBeneficiary: _projectOwner
   //   });
   //   launchProjectData = JBLaunchProjectData({
@@ -177,7 +176,6 @@ contract RinkebyDeployDatasource is Script {
   //       baseUri: baseUri,
   //       owner: _projectOwner,
   //       tierData: tierData,
-  //       shouldMintByDefault: false,
   //       reservedTokenBeneficiary: _projectOwner
   //     });
   //   vm.broadcast();

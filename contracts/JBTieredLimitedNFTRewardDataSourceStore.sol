@@ -480,7 +480,6 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       // Add the tier with the iterative ID.
       tierData[msg.sender][_tierId] = _data;
 
-      // If the
       if (_startSortIndex != 0) {
         // Keep track of the sort index.
         uint256 _currentSortIndex = _startSortIndex;
@@ -494,8 +493,6 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
             _after[msg.sender][_tierId] = _currentSortIndex;
             // Set the tier after the previous one being iterated on as the tier being added.
             _after[msg.sender][_previous] = _tierId;
-            // If the tier being iterated on is the first sorted tier, set the first sorted tier to be the tier being added.
-            if (_currentSortIndex == _after[msg.sender][0]) _after[msg.sender][0] = _tierId;
             // Set current to zero to break out of the loop.
             _currentSortIndex = 0;
           } else {

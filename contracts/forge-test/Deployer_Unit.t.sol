@@ -155,7 +155,6 @@ contract TestJBTieredLimitedNFTRewardDataSourceProjectDeployer is Test {
       baseUri: baseUri,
       owner: owner,
       tierData: tierData,
-      shouldMintByDefault: false,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
       lockReservedTokenChanges: true,

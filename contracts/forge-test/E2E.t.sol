@@ -54,7 +54,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
-    ) = createData(false);
+    ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -71,7 +71,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
-    ) = createData(false);
+    ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -147,7 +147,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
-    ) = createData(false);
+    ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -219,7 +219,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
-    ) = createData(true);
+    ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -259,7 +259,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
-    ) = createData(true);
+    ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -271,7 +271,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
     // _payAmount has to be at least the lowest tier
     vm.assume(_payAmount >= NFTRewardDeployerData.tierData[0].contributionFloor);
-    uint256 highestTier = _payAmount <= 100 ? (_payAmount / 10) : 10;
     // Pay and mint an NFT
     vm.deal(_user, _payAmount);
     vm.prank(_user);
@@ -328,7 +327,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
-    ) = createData(false);
+    ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -428,7 +427,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   // ----- internal helpers ------
   // Create launchProjectFor(..) payload
-  function createData(bool _shouldMintByDefault)
+  function createData()
     internal
     returns (
       JBDeployTieredNFTRewardDataSourceData memory NFTRewardDeployerData,
@@ -456,7 +455,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       baseUri: baseUri,
       owner: _projectOwner,
       tierData: tierData,
-      shouldMintByDefault: _shouldMintByDefault,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: new JBTieredLimitedNFTRewardDataSourceStore(),
       lockReservedTokenChanges: true,
