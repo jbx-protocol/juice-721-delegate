@@ -156,7 +156,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     Gets an array of all the active tiers. 
 
     @param _nft The NFT contract to get tiers for.
-    @param _startingId The start index of the array of tiers sorted by contribution floor.
+    @param _startingId The start index of the array of tiers sorted by contribution floor. Send 0 to start at the beginning.
     @param _size The number of tiers to include.
 
     @return _tiers All the tiers.
