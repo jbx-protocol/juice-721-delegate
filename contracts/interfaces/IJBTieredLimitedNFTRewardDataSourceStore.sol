@@ -12,7 +12,7 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
 
   function balanceOf(address _nft, address _owner) external view returns (uint256);
 
-  function numberOfTiers(address _nft) external view returns (uint256);
+  function maxTierId(address _nft) external view returns (uint256);
 
   function tiers(
     address _nft,

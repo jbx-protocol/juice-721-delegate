@@ -51,7 +51,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     _nft The NFT contract to get the number of tiers of.
   */
-  mapping(address => uint256) public override numberOfTiers;
+  mapping(address => uint256) public override maxTierId;
 
   /** 
     @notice
@@ -166,8 +166,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _startingId,
     uint256 _size
   ) external view override returns (JBNFTRewardTier[] memory _tiers) {
-    // Keep a reference to the number of tiers in stack.
-    uint256 _numberOfTiers = numberOfTiers[_nft];
+    // Keep a reference to the max tier ID.
+    uint256 _maxTierId = maxTierId[_nft];
 
     // Initialize an array with the appropriate length.
     _tiers = new JBNFTRewardTier[](_size);
@@ -189,11 +189,11 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       }
 
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
+      _currentSortIndex = _nextSortIndex(_currentSortIndex, _maxTierId);
     }
 
     // Resize the array if there are removed tiers
-    if (_numberOfIncludedTiers != _numberOfTiers)
+    if (_numberOfIncludedTiers != _size)
       assembly {
         mstore(_tiers, _numberOfIncludedTiers)
       }
@@ -246,10 +246,10 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData storage _data;
 
-    // Keep a reference to the number of tiers in stack.
-    uint256 _numberOfTiers = numberOfTiers[_nft];
+    // Keep a reference to the greatest tier ID.
+    uint256 _maxTierId = maxTierId[_nft];
 
-    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+    for (uint256 _i = _maxTierId; _i != 0; ) {
       // Set the tier being iterated on.
       _data = tierData[_nft][_i];
 
@@ -290,11 +290,11 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     @return balance The number of tokens owners by the owner accross all tiers.
   */
   function balanceOf(address _nft, address _owner) public view override returns (uint256 balance) {
-    // Keep a reference to the number of tiers in stack.
-    uint256 _numberOfTiers = numberOfTiers[_nft];
+    // Keep a reference to the greatest tier ID.
+    uint256 _maxTierId = maxTierId[_nft];
 
     // Loop through all tiers.
-    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+    for (uint256 _i = _maxTierId; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
       balance += tierBalanceOf[_nft][_owner][_i];
 
@@ -320,14 +320,14 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     override
     returns (uint256 units)
   {
-    // Keep a reference to the number of tiers.
-    uint256 _numberOfTiers = numberOfTiers[_nft];
+    // Keep a reference to the greatest tier ID.
+    uint256 _maxTierId = maxTierId[_nft];
 
     // Keep a reference to the balance being iterated on.
     uint256 _balance;
 
     // Loop through all tiers.
-    for (uint256 _i = _numberOfTiers; _i != 0; ) {
+    for (uint256 _i = _maxTierId; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
       _balance = tierBalanceOf[_nft][_account][_i];
 
@@ -378,14 +378,14 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     @return weight The total weight.
   */
   function totalRedemptionWeight(address _nft) public view override returns (uint256 weight) {
-    // Get a reference to the total number of tiers.
-    uint256 _numberOfTiers = numberOfTiers[_nft];
+    // Keep a reference to the greatest tier ID.
+    uint256 _maxTierId = maxTierId[_nft];
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData memory _data;
 
     // Add each token's tier's contribution floor to the weight.
-    for (uint256 _i; _i < _numberOfTiers; ) {
+    for (uint256 _i; _i < _maxTierId; ) {
       _data = tierData[_nft][_i + 1];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
@@ -438,8 +438,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Get a reference to the number of new tiers.
     uint256 _numberOfNewTiers = _tierData.length;
 
-    // Get a reference to the current total number of tiers.
-    uint256 _currentNumberOfTiers = numberOfTiers[msg.sender];
+    // Keep a reference to the greatest tier ID.
+    uint256 _currentMaxTierId = maxTierId[msg.sender];
 
     // Initialize an array with the appropriate length.
     tierIds = new uint256[](_numberOfNewTiers);
@@ -447,7 +447,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
-    uint256 _startSortIndex = _currentNumberOfTiers == 0 ? 0 : _after[msg.sender][0] != 0
+    uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _after[msg.sender][0] != 0
       ? _after[msg.sender][0]
       : 1;
 
@@ -472,7 +472,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       _data.remainingQuantity = _data.initialQuantity;
 
       // Get a reference to the tier ID.
-      uint256 _tierId = _currentNumberOfTiers + _i;
+      uint256 _tierId = _currentMaxTierId + _i;
 
       // Add the tier with the iterative ID.
       tierData[msg.sender][_tierId] = _data;
@@ -504,7 +504,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
             // Set the previous index to be the current index.
             _previous = _currentSortIndex;
             // Set the next sort index.
-            _currentSortIndex = _nextSortIndex(_currentSortIndex, _currentNumberOfTiers);
+            _currentSortIndex = _nextSortIndex(_currentSortIndex, _currentMaxTierId);
           }
         }
       }
@@ -517,7 +517,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       }
     }
 
-    numberOfTiers[msg.sender] = _currentNumberOfTiers + _numberOfNewTiers;
+    maxTierId[msg.sender] = _currentMaxTierId + _numberOfNewTiers;
   }
 
   /** 
@@ -652,8 +652,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       uint256 leftoverAmount
     )
   {
-    // Keep a reference to the number of tiers.
-    uint256 _numberOfTiers = numberOfTiers[msg.sender];
+    // Keep a reference to the greatest tier ID.
+    uint256 _maxTierId = maxTierId[msg.sender];
 
     // Keep a reference to the tier being iterated on.
     JBNFTRewardTierData memory _data;
@@ -680,7 +680,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
         ) tierId = _currentSortIndex;
 
         // Set the next sort index.
-        _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
+        _currentSortIndex = _nextSortIndex(_currentSortIndex, _maxTierId);
       }
     }
 
@@ -843,8 +843,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     @param _nft The NFT contract to clean tiers for.
   */
   function cleanTiers(address _nft) external override {
-    // Keep a reference to the number of tiers in stack.
-    uint256 _numberOfTiers = numberOfTiers[_nft];
+    // Keep a reference to the greatest tier ID.
+    uint256 _maxTierId = maxTierId[msg.sender];
 
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _firstSortIndexOf(_nft);
@@ -860,7 +860,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
         _previous = _currentSortIndex;
       }
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
+      _currentSortIndex = _nextSortIndex(_currentSortIndex, _maxTierId);
     }
 
     emit CleanTiers(_nft, msg.sender);
