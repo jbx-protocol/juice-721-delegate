@@ -5,9 +5,9 @@ import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
 
 interface IJBNFTRewardDataSource {
-  event SetContractUri(string indexed contractUri, address caller);
-
   event SetBaseUri(string indexed baseUri, address caller);
+
+  event SetContractUri(string indexed contractUri, address caller);
 
   event SetTokenUriResolver(IJBTokenUriResolver indexed newResolver, address caller);
 
@@ -15,9 +15,7 @@ interface IJBNFTRewardDataSource {
 
   function directory() external view returns (IJBDirectory);
 
-  function contractUri() external view returns (string memory);
-
-  function tokenUriResolver() external view returns (IJBTokenUriResolver);
+  function setBaseUri(string memory _baseUri) external;
 
   function setContractUri(string calldata _contractMetadataUri) external;
 

@@ -8,11 +8,14 @@ import '../structs/JBDeployTieredNFTRewardDataSourceData.sol';
 import '../structs/JBLaunchProjectData.sol';
 import '../structs/JBLaunchFundingCyclesData.sol';
 import '../structs/JBReconfigureFundingCyclesData.sol';
+import './IJBTieredLimitedNFTRewardDataSourceDeployer.sol';
 
 interface IJBTieredLimitedNFTRewardDataSourceProjectDeployer {
   event DatasourceDeployed(uint256 indexed projectId, address newDatasource);
 
   function controller() external view returns (IJBController);
+
+  function delegateDeployer() external view returns (IJBTieredLimitedNFTRewardDataSourceDeployer);
 
   function launchProjectFor(
     address _owner,
@@ -31,9 +34,4 @@ interface IJBTieredLimitedNFTRewardDataSourceProjectDeployer {
     JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData,
     JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData
   ) external returns (uint256 configuration);
-
-  function deployDataSource(
-    uint256 _projectId,
-    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData
-  ) external returns (address dataSource);
 }

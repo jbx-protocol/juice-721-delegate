@@ -2,13 +2,15 @@
 pragma solidity 0.8.6;
 
 import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/utils/Strings.sol';
+import '@paulrberg/contracts/math/PRBMath.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol';
+import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
-import './ERC721Votes.sol';
+
+import './ERC721.sol';
 import '../interfaces/IJBNFTRewardDataSource.sol';
 
 /**
@@ -26,6 +28,7 @@ import '../interfaces/IJBNFTRewardDataSource.sol';
   IJBNFTRewardDataSource: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
   IJBFundingCycleDataSource: Allows this contract to be attached to a funding cycle to have its methods called during regular protocol operations.
   IJBPayDelegate: Allows this contract to receive callbacks when a project receives a payment.
+  IJBRedemptionDelegate: Allows this contract to receive callbacks when a token holder redeems.
 
   @dev
   Inherits from -
@@ -37,16 +40,17 @@ abstract contract JBNFTRewardDataSource is
   IJBNFTRewardDataSource,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
-  ERC721Votes,
-  Ownable
+  IJBRedemptionDelegate,
+  ERC721
 {
-  using Strings for uint256;
-
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
   error INVALID_PAYMENT_EVENT();
+  error INVALID_REDEMPTION_EVENT();
+  error UNAUTHORIZED();
+  error UNEXPECTED();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -65,22 +69,6 @@ abstract contract JBNFTRewardDataSource is
   IJBDirectory public immutable override directory;
 
   //*********************************************************************//
-  // --------------------- public stored properties -------------------- //
-  //*********************************************************************//
-
-  /**
-    @notice
-    Custom token URI resolver, superceeds base URI.
-  */
-  IJBTokenUriResolver public override tokenUriResolver;
-
-  /**
-    @notice
-    Contract metadata uri.
-  */
-  string public override contractUri;
-
-  //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
 
@@ -91,7 +79,7 @@ abstract contract JBNFTRewardDataSource is
     @dev 
     This function will revert if the contract calling it is not the store of one of the project's terminals. 
 
-    @param _data The Juicebox standard project contribution data.
+    @param _data The Juicebox standard project payment data.
 
     @return weight The weight that tokens should get minted in accordance to 
     @return memo The memo that should be forwarded to the event.
@@ -123,7 +111,7 @@ abstract contract JBNFTRewardDataSource is
   */
   function redeemParams(JBRedeemParamsData calldata _data)
     external
-    pure
+    view
     override
     returns (
       uint256 reclaimAmount,
@@ -131,19 +119,50 @@ abstract contract JBNFTRewardDataSource is
       IJBRedemptionDelegate delegate
     )
   {
-    // Return the default values.
-    return (_data.reclaimAmount.value, _data.memo, IJBRedemptionDelegate(address(0)));
-  }
+    // Make sure fungible project tokens aren't being redeemed too.
+    if (_data.tokenCount > 0) revert UNEXPECTED();
 
-  //*********************************************************************//
-  // -------------------------- public views --------------------------- //
-  //*********************************************************************//
+    // If redemption rate is 0, nothing can be reclaimed from the treasury
+    if (_data.redemptionRate == 0) return (0, _data.memo, IJBRedemptionDelegate(address(this)));
+
+    // Get a reference to the redemption rate of the provided tokens.
+    uint256 _redemptionWeight = _redemptionWeightOf(
+      // Decode the metadata
+      abi.decode(_data.metadata, (uint256[]))
+    );
+
+    // Get a reference to the total redemption weight.
+    uint256 _total = _totalRedemptionWeight();
+
+    // Get a reference to the linear proportion.
+    uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _total);
+
+    // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
+    if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
+      return (_base, _data.memo, IJBRedemptionDelegate(address(this)));
+
+    // Return the weighted overflow, and this contract as the delegate so that tokens can be deleted.
+    return (
+      PRBMath.mulDiv(
+        _base,
+        _data.redemptionRate +
+          PRBMath.mulDiv(
+            _redemptionWeight,
+            JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate,
+            _total
+          ),
+        JBConstants.MAX_REDEMPTION_RATE
+      ),
+      _data.memo,
+      IJBRedemptionDelegate(address(this))
+    );
+  }
 
   /**
     @notice
     Indicates if this contract adheres to the specified interface.
 
-    @dev 
+    @dev
     See {IERC165-supportsInterface}.
 
     @param _interfaceId The ID of the interface to check for adherance to.
@@ -159,6 +178,7 @@ abstract contract JBNFTRewardDataSource is
       _interfaceId == type(IJBNFTRewardDataSource).interfaceId ||
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
       _interfaceId == type(IJBPayDelegate).interfaceId ||
+      _interfaceId == type(IJBRedemptionDelegate).interfaceId ||
       super.supportsInterface(_interfaceId);
   }
 
@@ -171,26 +191,15 @@ abstract contract JBNFTRewardDataSource is
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
-    @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-    @param _contractUri A URI where contract metadata can be found. 
-    @param _owner The address that will own this contract.
   */
   constructor(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
-    string memory _symbol,
-    IJBTokenUriResolver _tokenUriResolver,
-    string memory _contractUri,
-    address _owner
-  ) ERC721(_name, _symbol) EIP712(_name, '1') {
+    string memory _symbol
+  ) ERC721(_name, _symbol) {
     projectId = _projectId;
     directory = _directory;
-    tokenUriResolver = _tokenUriResolver;
-    contractUri = _contractUri;
-
-    // Transfer the ownership to the specified address.
-    if (_owner != address(0)) _transferOwnership(_owner);
   }
 
   //*********************************************************************//
@@ -204,54 +213,95 @@ abstract contract JBNFTRewardDataSource is
     @dev 
     This function will revert if the contract calling is not one of the project's terminals. 
 
-    @param _data The Juicebox standard project contribution data.
+    @param _data The Juicebox standard project payment data.
   */
-  function didPay(JBDidPayData calldata _data) external override {
+  function didPay(JBDidPayData calldata _data) external virtual override {
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
       !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
       _data.projectId != projectId
     ) revert INVALID_PAYMENT_EVENT();
 
-    // Process the contribution.
-    _processContribution(_data);
+    // Process the payment.
+    _processPayment(_data);
   }
 
   /**
     @notice
-    Set a contract metadata uri to contain opensea-style metadata.
+    Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
 
     @dev
-    Only the contract's owner can set the contract URI.
+    This function will revert if the contract calling is not one of the project's terminals.
 
-    @param _contractUri The new contract URI.
+    @param _data The Juicebox standard project redemption data.
   */
-  function setContractUri(string calldata _contractUri) external override onlyOwner {
-    // Store the new value.
-    contractUri = _contractUri;
+  function didRedeem(JBDidRedeemData calldata _data) external virtual override {
+    // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
+    if (
+      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
+      _data.projectId != projectId
+    ) revert INVALID_REDEMPTION_EVENT();
 
-    emit SetContractUri(_contractUri, msg.sender);
-  }
+    // Decode the metadata
+    uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
-  /**
-    @notice
-    Set a token URI resolver.
+    // Get a reference to the number of token IDs being checked.
+    uint256 _numberOfTokenIds = _decodedTokenIds.length;
 
-    @dev
-    Only the contract's owner can set the token URI resolver.
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
 
-    @param _tokenUriResolver The new base URI.
-  */
-  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external override onlyOwner {
-    // Store the new value.
-    tokenUriResolver = _tokenUriResolver;
+    // Iterate through all tokens, burning them if the owner is correct.
+    for (uint256 _i; _i < _numberOfTokenIds; ) {
+      // Set the token's ID.
+      _tokenId = _decodedTokenIds[_i];
 
-    emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
+      // Make sure the token's owner is correct.
+      if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED();
+
+      // Burn the token.
+      _burn(_tokenId);
+
+      unchecked {
+        ++_i;
+      }
+    }
   }
 
   //*********************************************************************//
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  function _processContribution(JBDidPayData calldata _data) internal virtual;
+  /** 
+    @notice
+    Process a received payment.
+
+    @param _data The Juicebox standard project payment data.
+  */
+  function _processPayment(JBDidPayData calldata _data) internal virtual {
+    _data; // Prevents unused var compiler and natspec complaints.
+  }
+
+  /** 
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
+
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+
+    @return The weight.
+  */
+  function _redemptionWeightOf(uint256[] memory _tokenIds) internal view virtual returns (uint256) {
+    _tokenIds; // Prevents unused var compiler and natspec complaints.
+    return 0;
+  }
+
+  /** 
+    @notice
+    The cumulative weight that all token IDs have in redemptions. 
+
+    @return The total weight.
+  */
+  function _totalRedemptionWeight() internal view virtual returns (uint256) {
+    return 0;
+  }
 }

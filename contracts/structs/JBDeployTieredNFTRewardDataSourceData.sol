@@ -3,7 +3,8 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
-import './JBNFTRewardTier.sol';
+import './JBNFTRewardTierData.sol';
+import './../interfaces/IJBTieredLimitedNFTRewardDataSourceStore.sol';
 
 /**
   @member directory The directory of terminals and controllers for projects.
@@ -12,8 +13,10 @@ import './JBNFTRewardTier.sol';
   @member tokenUriResolver A contract responsible for resolving the token URI for each token ID.
   @member contractUri A URI where contract metadata can be found. 
   @member owner The address that should own this contract.
-  @member tiers The tiers according to which token distribution will be made. 
+  @member tierData The tier data according to which token distribution will be made. 
   @member shouldMintByDefault A flag indicating if contributions should mint NFTs if a tier's treshold is passed even if the tier ID isn't specified. 
+  @member reservedTokenBeneficiary The address receiving the reserved token
+  @member store The store contract to use.
 */
 struct JBDeployTieredNFTRewardDataSourceData {
   IJBDirectory directory;
@@ -23,6 +26,8 @@ struct JBDeployTieredNFTRewardDataSourceData {
   string contractUri;
   string baseUri;
   address owner;
-  JBNFTRewardTier[] tiers;
+  JBNFTRewardTierData[] tierData;
   bool shouldMintByDefault;
+  address reservedTokenBeneficiary;
+  IJBTieredLimitedNFTRewardDataSourceStore store;
 }
