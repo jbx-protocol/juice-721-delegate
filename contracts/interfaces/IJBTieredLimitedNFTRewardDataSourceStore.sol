@@ -6,6 +6,8 @@ import './../structs/JBNFTRewardTierData.sol';
 import './../structs/JBNFTRewardTier.sol';
 
 interface IJBTieredLimitedNFTRewardDataSourceStore {
+  event CleanTiers(address indexed nft, address caller);
+
   function totalSupply(address _nft) external view returns (uint256);
 
   function balanceOf(address _nft, address _owner) external view returns (uint256);
@@ -106,4 +108,6 @@ interface IJBTieredLimitedNFTRewardDataSourceStore {
   function recordLockVotingUnitChanges(bool _flag) external;
 
   function recordLockReservedTokenChanges(bool _flag) external;
+
+  function cleanTiers(address _nft) external;
 }

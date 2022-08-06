@@ -176,10 +176,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _numberOfIncludedTiers;
 
     // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _after[_nft][0];
-
-    // Start at the first index if nothing is specified.
-    if (_currentSortIndex == 0) _currentSortIndex = 1;
+    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(msg.sender);
 
     // Make the sorted array.
     while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
@@ -664,8 +661,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
-    uint256 _currentSortIndex = _after[msg.sender][0];
-    if (_currentSortIndex == 0) _currentSortIndex = 1;
+    uint256 _currentSortIndex = _firstSortIndexOf(msg.sender);
 
     while (_currentSortIndex != 0) {
       // Set the tier being iterated on. Tier's are 1 indexed.
@@ -840,6 +836,36 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     lockReservedTokenChangesFor[msg.sender] = _flag;
   }
 
+  /** 
+    @notice
+    Removes removed tiers from sequencing.
+
+    @param _nft The NFT contract to clean tiers for.
+  */
+  function cleanTiers(address _nft) external override {
+    // Keep a reference to the number of tiers in stack.
+    uint256 _numberOfTiers = numberOfTiers[_nft];
+
+    // Get a reference to the index being iterated on, starting with the starting index.
+    uint256 _currentSortIndex = _firstSortIndexOf(_nft);
+
+    // Keep track of the previous non-removed index.
+    uint256 _previous;
+
+    // Make the sorted array.
+    while (_currentSortIndex != 0) {
+      if (!isTierRemoved[_nft][_currentSortIndex]) {
+        if (_currentSortIndex != _previous + 1) _after[_nft][_previous] = _currentSortIndex;
+        // Set the previous index to be the current index.
+        _previous = _currentSortIndex;
+      }
+      // Set the next sort index.
+      _currentSortIndex = _nextSortIndex(_currentSortIndex, _numberOfTiers);
+    }
+
+    emit CleanTiers(_nft, msg.sender);
+  }
+
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
@@ -928,5 +954,19 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     else if (_index == _max) return 0;
     // Otherwise increment the current.
     else return _index + 1;
+  }
+
+  /** 
+    @notice
+    The first sorted index of an NFT.
+
+    @param _nft The NFT to get the first index of.
+
+    @return index The first index.
+  */
+  function _firstSortIndexOf(address _nft) internal view returns (uint256 index) {
+    index = _after[_nft][0];
+    // Start at the first index if nothing is specified.
+    if (index == 0) index = 1;
   }
 }
