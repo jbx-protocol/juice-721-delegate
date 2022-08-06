@@ -2,13 +2,13 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
-import './interfaces/IJBTieredLimitedNFTRewardDataSourceStore.sol';
+import './interfaces/IJBTiered721DelegateStore.sol';
 
 /**
   @title
-  JBTieredLimitedNFTRewardDataSourceStore
+  JBTiered721DelegateStore
 */
-contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDataSourceStore {
+contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -60,7 +60,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     _nft The NFT contract to which the tier data belong.
     _tierId The incremental ID of the tier, starting with 1.
   */
-  mapping(address => mapping(uint256 => JBNFTRewardTierData)) public tierData;
+  mapping(address => mapping(uint256 => JB721TierData)) public tierData;
 
   /** 
     @notice
@@ -165,12 +165,12 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     address _nft,
     uint256 _startingId,
     uint256 _size
-  ) external view override returns (JBNFTRewardTier[] memory _tiers) {
+  ) external view override returns (JB721Tier[] memory _tiers) {
     // Keep a reference to the max tier ID.
     uint256 _maxTierId = maxTierId[_nft];
 
     // Initialize an array with the appropriate length.
-    _tiers = new JBNFTRewardTier[](_size);
+    _tiers = new JB721Tier[](_size);
 
     // Count the number of included tiers.
     uint256 _numberOfIncludedTiers;
@@ -182,7 +182,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
       if (!isTierRemoved[_nft][_currentSortIndex]) {
         // Add the tier to the array being returned.
-        _tiers[_numberOfIncludedTiers++] = JBNFTRewardTier({
+        _tiers[_numberOfIncludedTiers++] = JB721Tier({
           id: _currentSortIndex,
           data: tierData[_nft][_currentSortIndex]
         });
@@ -208,8 +208,8 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @return The tier.
   */
-  function tier(address _nft, uint256 _id) external view override returns (JBNFTRewardTier memory) {
-    return JBNFTRewardTier({id: _id, data: tierData[_nft][_id]});
+  function tier(address _nft, uint256 _id) external view override returns (JB721Tier memory) {
+    return JB721Tier({id: _id, data: tierData[_nft][_id]});
   }
 
   /** 
@@ -226,12 +226,12 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     external
     view
     override
-    returns (JBNFTRewardTier memory)
+    returns (JB721Tier memory)
   {
     // Get a reference to the tier's ID.
     uint256 _tierId = tierIdOfToken(_tokenId);
 
-    return JBNFTRewardTier({id: _tierId, data: tierData[_nft][_tierId]});
+    return JB721Tier({id: _tierId, data: tierData[_nft][_tierId]});
   }
 
   /** 
@@ -244,7 +244,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   */
   function totalSupply(address _nft) external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTierData storage _data;
+    JB721TierData storage _data;
 
     // Keep a reference to the greatest tier ID.
     uint256 _maxTierId = maxTierId[_nft];
@@ -382,7 +382,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _maxTierId = maxTierId[_nft];
 
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTierData memory _data;
+    JB721TierData memory _data;
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _maxTierId; ) {
@@ -427,13 +427,13 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
 
     @return tierIds The IDs of the tiers added.
   */
-  function recordAddTierData(JBNFTRewardTierData[] memory _tierData)
+  function recordAddTierData(JB721TierData[] memory _tierData)
     external
     override
     returns (uint256[] memory tierIds)
   {
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTierData memory _data;
+    JB721TierData memory _data;
 
     // Get a reference to the number of new tiers.
     uint256 _numberOfNewTiers = _tierData.length;
@@ -536,7 +536,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     returns (uint256[] memory tokenIds)
   {
     // Get a reference to the tier.
-    JBNFTRewardTierData storage _data = tierData[msg.sender][_tierId];
+    JB721TierData storage _data = tierData[msg.sender][_tierId];
 
     // Get a reference to the number of reserved tokens mintable for the tier.
     uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
@@ -654,7 +654,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _maxTierId = maxTierId[msg.sender];
 
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTierData memory _data;
+    JB721TierData memory _data;
 
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
@@ -689,7 +689,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
       leftoverAmount = _amount;
     } else {
       // Keep a reference to the best tier.
-      JBNFTRewardTierData storage _bestTierData = tierData[msg.sender][tierId];
+      JB721TierData storage _bestTierData = tierData[msg.sender][tierId];
 
       // Make the token ID.
       unchecked {
@@ -727,7 +727,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
     uint256 _numberOfTiers = _tierIds.length;
 
     // Keep a reference to the tier being iterated on.
-    JBNFTRewardTierData storage _data;
+    JB721TierData storage _data;
 
     // Keep a reference to the tier ID being iterated on.
     uint256 _tierId;
@@ -885,7 +885,7 @@ contract JBTieredLimitedNFTRewardDataSourceStore is IJBTieredLimitedNFTRewardDat
   function _numberOfReservedTokensOutstandingFor(
     address _nft,
     uint256 _tierId,
-    JBNFTRewardTierData memory _data
+    JB721TierData memory _data
   ) internal view returns (uint256) {
     // Invalid tier or no reserved rate?
     if (_data.initialQuantity == 0 || _data.reservedRate == 0) return 0;

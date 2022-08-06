@@ -2,11 +2,11 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
-import './../structs/JBNFTRewardTierData.sol';
-import './../structs/JBNFTRewardTier.sol';
-import './IJBTieredLimitedNFTRewardDataSourceStore.sol';
+import './../structs/JB721TierData.sol';
+import './../structs/JB721Tier.sol';
+import './IJBTiered721DelegateStore.sol';
 
-interface IJBTieredLimitedNFTRewardDataSource {
+interface IJBTiered721Delegate {
   event Mint(
     uint256 indexed tokenId,
     uint256 indexed tierId,
@@ -22,22 +22,20 @@ interface IJBTieredLimitedNFTRewardDataSource {
     address caller
   );
 
-  event AddTier(uint256 indexed tierId, JBNFTRewardTierData data, address caller);
+  event AddTier(uint256 indexed tierId, JB721TierData data, address caller);
 
   event RemoveTier(uint256 indexed tierId, address caller);
 
   event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
-  function store() external view returns (IJBTieredLimitedNFTRewardDataSourceStore);
+  function store() external view returns (IJBTiered721DelegateStore);
 
   function contractURI() external view returns (string memory);
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
-  function adjustTiers(
-    JBNFTRewardTierData[] memory _tierDataToAdd,
-    uint256[] memory _tierIdsToRemove
-  ) external;
+  function adjustTiers(JB721TierData[] memory _tierDataToAdd, uint256[] memory _tierIdsToRemove)
+    external;
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 

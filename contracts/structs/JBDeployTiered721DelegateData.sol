@@ -3,8 +3,8 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
-import './JBNFTRewardTierData.sol';
-import './../interfaces/IJBTieredLimitedNFTRewardDataSourceStore.sol';
+import './JB721TierData.sol';
+import './../interfaces/IJBTiered721DelegateStore.sol';
 
 /**
   @member directory The directory of terminals and controllers for projects.
@@ -19,7 +19,7 @@ import './../interfaces/IJBTieredLimitedNFTRewardDataSourceStore.sol';
   @member lockReservedTokenChanges A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
   @member lockVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
 */
-struct JBDeployTieredNFTRewardDataSourceData {
+struct JBDeployTiered721DelegateData {
   IJBDirectory directory;
   string name;
   string symbol;
@@ -27,9 +27,9 @@ struct JBDeployTieredNFTRewardDataSourceData {
   IJBTokenUriResolver tokenUriResolver;
   string contractUri;
   address owner;
-  JBNFTRewardTierData[] tierData;
+  JB721TierData[] tierData;
   address reservedTokenBeneficiary;
-  IJBTieredLimitedNFTRewardDataSourceStore store;
+  IJBTiered721DelegateStore store;
   bool lockReservedTokenChanges;
   bool lockVotingUnitChanges;
 }

@@ -5,8 +5,8 @@ import '@jbx-protocol/contracts-v2/contracts/abstract/JBOperatable.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBOperations.sol';
-import './JBTieredLimitedNFTRewardDataSource.sol';
-import './interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
+import './JBTiered721Delegate.sol';
+import './interfaces/IJBTiered721DelegateProjectDeployer.sol';
 
 /**
   @notice
@@ -14,16 +14,13 @@ import './interfaces/IJBTieredLimitedNFTRewardDataSourceProjectDeployer.sol';
 
   @dev
   Adheres to -
-  IJBTieredLimitedNFTRewardDataSourceProjectDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
+  IJBTiered721DelegateProjectDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
 
   @dev
   Inherits from -
   JBOperatable: Several functions in this contract can only be accessed by a project owner, or an address that has been preconfifigured to be an operator of the project.
 */
-contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
-  IJBTieredLimitedNFTRewardDataSourceProjectDeployer,
-  JBOperatable
-{
+contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeployer, JBOperatable {
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
@@ -38,7 +35,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     @notice
     The contract responsibile for deploying the delegate. 
   */
-  IJBTieredLimitedNFTRewardDataSourceDeployer public immutable override delegateDeployer;
+  IJBTiered721DelegateDeployer public immutable override delegateDeployer;
 
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
@@ -46,7 +43,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
 
   constructor(
     IJBController _controller,
-    IJBTieredLimitedNFTRewardDataSourceDeployer _delegateDeployer,
+    IJBTiered721DelegateDeployer _delegateDeployer,
     IJBOperatorStore _operatorStore
   ) JBOperatable(_operatorStore) {
     controller = _controller;
@@ -69,14 +66,14 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
   */
   function launchProjectFor(
     address _owner,
-    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData,
+    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData,
     JBLaunchProjectData memory _launchProjectData
   ) external override returns (uint256 projectId) {
     // Get the project ID, optimistically knowing it will be one greater than the current count.
     projectId = controller.projects().count() + 1;
 
     // Deploy the data source contract.
-    IJBTieredLimitedNFTRewardDataSource _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    IJBTiered721Delegate _dataSourceAddress = delegateDeployer.deployDataSourceFor(
       projectId,
       _deployTieredNFTRewardDataSourceData
     );
@@ -106,7 +103,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
   */
   function launchFundingCyclesFor(
     uint256 _projectId,
-    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData,
+    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData,
     JBLaunchFundingCyclesData memory _launchFundingCyclesData
   )
     external
@@ -119,7 +116,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     returns (uint256 configuration)
   {
     // Deploy the data source contract.
-    IJBTieredLimitedNFTRewardDataSource _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    IJBTiered721Delegate _dataSourceAddress = delegateDeployer.deployDataSourceFor(
       _projectId,
       _deployTieredNFTRewardDataSourceData
     );
@@ -149,7 +146,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
   */
   function reconfigureFundingCyclesOf(
     uint256 _projectId,
-    JBDeployTieredNFTRewardDataSourceData memory _deployTieredNFTRewardDataSourceData,
+    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData,
     JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData
   )
     external
@@ -162,7 +159,7 @@ contract JBTieredLimitedNFTRewardDataSourceProjectDeployer is
     returns (uint256 configuration)
   {
     // Deploy the data source contract.
-    IJBTieredLimitedNFTRewardDataSource _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    IJBTiered721Delegate _dataSourceAddress = delegateDeployer.deployDataSourceFor(
       _projectId,
       _deployTieredNFTRewardDataSourceData
     );
