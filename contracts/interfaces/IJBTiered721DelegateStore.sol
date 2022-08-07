@@ -35,7 +35,7 @@ interface IJBTiered721DelegateStore {
 
   function tierIdOfToken(uint256 _tokenId) external pure returns (uint256);
 
-  function encodedIPFSUriOf(address _nft, uint256 _tierId) external viewt returns (bytes32);
+  function encodedIPFSUriOf(address _nft, uint256 _tierId) external view returns (bytes32);
 
   function firstOwnerOf(address _nft, uint256 _tokenId) external view returns (address);
 
@@ -92,7 +92,7 @@ interface IJBTiered721DelegateStore {
 
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;
 
-  function recordMint(uint256 _amount, uint8[] calldata _tierIds)
+  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
     external
     returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 

@@ -14,12 +14,12 @@ pragma solidity 0.8.6;
 */
 struct JB721Tier {
   uint256 id;
-  uint80 contributionFloor;
-  uint48 lockedUntil;
-  uint48 remainingQuantity;
-  uint48 initialQuantity;
-  uint16 votingUnits;
-  uint16 reservedRate;
+  uint256 contributionFloor;
+  uint256 lockedUntil;
+  uint256 remainingQuantity;
+  uint256 initialQuantity;
+  uint256 votingUnits;
+  uint256 reservedRate;
   address reservedTokenBeneficiary;
   bytes32 encodedIPFSUri;
 }

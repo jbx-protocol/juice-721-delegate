@@ -100,7 +100,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     return
       JBIpfsDecoder.decode(
         store.baseUriOf(address(this)),
-        store.encodedIPFSUri(address(this), _tokenId)
+        store.encodedIPFSUriOf(address(this), _tokenId)
       );
   }
 
@@ -346,12 +346,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     ) {
       // Keep references to the metadata properties.
       bool _dontMint;
-      uint8[] memory _tierIdsToMint;
+      uint16[] memory _tierIdsToMint;
 
       // Decode the metadata
       (, , _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
         _data.metadata,
-        (bytes32, bytes4, bool, bool, bool, uint8[])
+        (bytes32, bytes4, bool, bool, bool, uint16[])
       );
 
       // Don't mint if not desired.
@@ -419,7 +419,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function _mintAll(
     uint256 _amount,
-    uint8[] memory _mintTierIds,
+    uint16[] memory _mintTierIds,
     address _beneficiary
   ) internal returns (uint256 leftoverAmount) {
     // Keep a reference to the token ID.
