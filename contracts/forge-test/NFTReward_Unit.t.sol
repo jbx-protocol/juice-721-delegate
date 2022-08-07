@@ -260,63 +260,65 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
   }
 
-  //   function testJBTieredNFTRewardDelegate_totalSupply_returnsTotalSupply(uint16 numberOfTiers)
-  //     public
-  //   {
-  //     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+  // function testJBTieredNFTRewardDelegate_totalSupply_returnsTotalSupply(uint8 numberOfTiers)
+  //   public
+  // {
+  //   vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](numberOfTiers);
+  //   JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
 
-  //     for (uint256 i; i < numberOfTiers; i++) {
-  //       _tierData[i] = JB721TierData({
+  //   for (uint256 i; i < numberOfTiers; i++) {
+  //     _tierParams[i] = JB721TierParams({
+  //       contributionFloor: uint80((i + 1) * 10),
+  //       lockedUntil: uint48(0),
+  //       initialQuantity: uint40(100),
+  //       votingUnits: uint16(0),
+  //       reservedRate: uint16(0),
+  //       reservedTokenBeneficiary: reserveBeneficiary,
+  //       encodedIPFSUri: tokenUris[0],
+  //       shouldUseBeneficiaryAsDefault: false
+  //     });
+  //   }
+
+  //   ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+  //   ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+  //     projectId,
+  //     IJBDirectory(mockJBDirectory),
+  //     name,
+  //     symbol,
+  //     baseUri,
+  //     IJBTokenUriResolver(mockTokenUriResolver),
+  //     contractUri,
+  //     _tierParams,
+  //     IJBTiered721DelegateStore(address(_ForTest_store)),
+  //     false,
+  //     false
+  //   );
+
+  //   _delegate.transferOwnership(owner);
+
+  //   for (uint256 i; i < numberOfTiers; i++) {
+  //     _delegate.test_store().ForTest_setTier(
+  //       address(_delegate),
+  //       i + 1,
+  //       JB721TierParams({
   //         contributionFloor: uint80((i + 1) * 10),
   //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
   //         initialQuantity: uint40(100),
   //         votingUnits: uint16(0),
   //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[0]
-  //       });
-  //     }
-
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
-
-  //     _delegate.transferOwnership(owner);
-
-  //     for (uint256 i; i < numberOfTiers; i++) {
-  //       _delegate.test_store().ForTest_setTier(
-  //         address(_delegate),
-  //         i + 1,
-  //         JB721TierData({
-  //           contributionFloor: uint80((i + 1) * 10),
-  //           lockedUntil: uint48(0),
-  //           remainingQuantity: uint40(100 - (i + 1)),
-  //           initialQuantity: uint40(100),
-  //           votingUnits: uint16(0),
-  //           reservedRate: uint16(0),
-  //           tokenUri: tokenUris[0]
-  //         })
-  //       );
-  //     }
-
-  //     assertEq(
-  //       _delegate.test_store().totalSupply(address(_delegate)),
-  //       ((numberOfTiers * (numberOfTiers + 1)) / 2)
+  //         reservedTokenBeneficiary: reserveBeneficiary,
+  //         encodedIPFSUri: tokenUris[0],
+  //         shouldUseBeneficiaryAsDefault: false
+  //       })
   //     );
   //   }
+
+  //   assertEq(
+  //     _delegate.test_store().totalSupply(address(_delegate)),
+  //     ((numberOfTiers * (numberOfTiers + 1)) / 2)
+  //   );
+  // }
 
   //   function testJBTieredNFTRewardDelegate_balanceOf_returnsCompleteBalance(
   //     uint16 numberOfTiers,
