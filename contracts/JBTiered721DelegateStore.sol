@@ -164,7 +164,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _nft The NFT contract to which the encoded upfs uri belongs.
     _tierId the ID of the tier
   */
-  mapping(address => mapping(uint256 => bytes32)) public view override encodedIPFSUriOf;
+  mapping(address => mapping(uint256 => bytes32)) public override encodedIPFSUriOf;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
