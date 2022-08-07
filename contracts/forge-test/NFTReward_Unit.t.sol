@@ -688,397 +688,405 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
-  //   function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
-  //     uint16 numberOfTiers,
-  //     uint16 firstTier,
-  //     uint16 lastTier
-  //   ) public {
-  //     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
-  //     vm.assume(firstTier <= lastTier);
-  //     vm.assume(lastTier <= numberOfTiers);
+  function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
+    uint16 numberOfTiers,
+    uint16 firstTier,
+    uint16 lastTier
+  ) public {
+    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    vm.assume(firstTier <= lastTier);
+    vm.assume(lastTier <= numberOfTiers);
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](numberOfTiers);
+    JB721TierParams[] memory _tiers = new JB721TierParams[](numberOfTiers);
 
-  //     uint256 _maxNumberOfTiers = (numberOfTiers * (numberOfTiers + 1)) / 2; // "tier amount" of token mintable per tier -> max == numberOfTiers!
-  //     uint256[] memory _tierToGetWeightOf = new uint256[](_maxNumberOfTiers);
+    uint256 _maxNumberOfTiers = (numberOfTiers * (numberOfTiers + 1)) / 2; // "tier amount" of token mintable per tier -> max == numberOfTiers!
+    uint256[] memory _tierToGetWeightOf = new uint256[](_maxNumberOfTiers);
 
-  //     uint256 _iterator;
-  //     uint256 _theoreticalWeight;
-  //     for (uint256 i; i < numberOfTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(i + 1),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[0]
-  //       });
+    uint256 _iterator;
+    uint256 _theoreticalWeight;
+    for (uint256 i; i < numberOfTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        shouldUseBeneficiaryAsDefault: false
+      });
 
-  //       if (i >= firstTier && i < lastTier) {
-  //         for (uint256 j; j <= i; j++) {
-  //           _tierToGetWeightOf[_iterator] = _generateTokenId(i + 1, j + 1); // "tier" tokens per tier
-  //           _iterator++;
-  //         }
-  //         _theoreticalWeight += (i + 1) * (i + 1) * 10; //floor is 10
-  //       }
-  //     }
+      if (i >= firstTier && i < lastTier) {
+        for (uint256 j; j <= i; j++) {
+          _tierToGetWeightOf[_iterator] = _generateTokenId(i + 1, j + 1); // "tier" tokens per tier
+          _iterator++;
+        }
+        _theoreticalWeight += (i + 1) * (i + 1) * 10; //floor is 10
+      }
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     assertEq(
-  //       _delegate.test_store().redemptionWeightOf(address(_delegate), _tierToGetWeightOf),
-  //       _theoreticalWeight
-  //     );
-  //   }
+    assertEq(
+      _delegate.test_store().redemptionWeightOf(address(_delegate), _tierToGetWeightOf),
+      _theoreticalWeight
+    );
+  }
 
-  //   function testJBTieredNFTRewardDelegate_totalRedemptionWeight_returnsCorrectTotalWeightAsFloorsCumSum(
-  //     uint16 numberOfTiers
-  //   ) public {
-  //     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+  function testJBTieredNFTRewardDelegate_totalRedemptionWeight_returnsCorrectTotalWeightAsFloorsCumSum(
+    uint16 numberOfTiers
+  ) public {
+    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](numberOfTiers);
+    JB721TierParams[] memory _tiers = new JB721TierParams[](numberOfTiers);
 
-  //     uint256 _theoreticalWeight;
+    uint256 _theoreticalWeight;
 
-  //     // Temp value for the constructor
-  //     for (uint256 i; i < numberOfTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(i + 1),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[0]
-  //       });
-  //     }
+    // Temp value for the constructor
+    for (uint256 i; i < numberOfTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     for (uint256 i = 1; i <= numberOfTiers; i++) {
-  //       _delegate.test_store().ForTest_setTier(
-  //         address(_delegate),
-  //         i,
-  //         JB721TierData({
-  //           contributionFloor: uint80(i * 10),
-  //           lockedUntil: uint48(0),
-  //           remainingQuantity: uint40(10 * i - 5 * i),
-  //           initialQuantity: uint40(10 * i),
-  //           votingUnits: uint16(0),
-  //           reservedRate: uint16(0),
-  //           tokenUri: tokenUris[0]
-  //         })
-  //       );
+    for (uint256 i = 1; i <= numberOfTiers; i++) {
+      _delegate.test_store().ForTest_setTier(
+        address(_delegate),
+        i,
+        JBStored721Tier({
+          contributionFloor: uint80(i * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(10 * i - 5 * i),
+          initialQuantity: uint40(10 * i),
+          votingUnits: uint16(0),
+          reservedRate: uint16(0)
+        })
+      );
 
-  //       _theoreticalWeight += (10 * i - 5 * i) * i * 10;
-  //     }
+      _theoreticalWeight += (10 * i - 5 * i) * i * 10;
+    }
 
-  //     assertEq(_delegate.test_store().totalRedemptionWeight(address(_delegate)), _theoreticalWeight);
-  //   }
+    assertEq(_delegate.test_store().totalRedemptionWeight(address(_delegate)), _theoreticalWeight);
+  }
 
-  //   function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnCurrentOwnerIfFirstOwner(
-  //     uint256 tokenId,
-  //     address _owner
-  //   ) public {
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+  function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnCurrentOwnerIfFirstOwner(
+    uint256 tokenId,
+    address _owner
+  ) public {
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     _delegate.ForTest_setOwnerOf(tokenId, _owner);
-  //     assertEq(_delegate.firstOwnerOf(tokenId), _owner);
-  //   }
+    _delegate.ForTest_setOwnerOf(tokenId, _owner);
+    assertEq(_delegate.firstOwnerOf(tokenId), _owner);
+  }
 
-  //   function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnFirstOwnerIfOwnerChanged(
-  //     uint256 tokenId,
-  //     address _owner,
-  //     address _previousOwner
-  //   ) public {
-  //     vm.assume(_owner != _previousOwner);
-  //     vm.assume(_previousOwner != address(0));
+  function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnFirstOwnerIfOwnerChanged(
+    uint256 tokenId,
+    address _owner,
+    address _previousOwner
+  ) public {
+    vm.assume(_owner != _previousOwner);
+    vm.assume(_previousOwner != address(0));
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     _delegate.ForTest_setOwnerOf(tokenId, _owner);
-  //     _delegate.test_store().ForTest_setFirstOwnerOf(address(_delegate), tokenId, _previousOwner);
+    _delegate.ForTest_setOwnerOf(tokenId, _owner);
+    _delegate.test_store().ForTest_setFirstOwnerOf(address(_delegate), tokenId, _previousOwner);
 
-  //     assertEq(_delegate.firstOwnerOf(tokenId), _previousOwner);
-  //   }
+    assertEq(_delegate.firstOwnerOf(tokenId), _previousOwner);
+  }
 
-  //   function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnAddressZeroIfNotMinted(
-  //     uint256 tokenId
-  //   ) public {
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+  function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnAddressZeroIfNotMinted(
+    uint256 tokenId
+  ) public {
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     assertEq(_delegate.firstOwnerOf(tokenId), address(0));
-  //   }
+    assertEq(_delegate.firstOwnerOf(tokenId), address(0));
+  }
 
-  //   function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity(uint16 nbTiers)
-  //     public
-  //   {
-  //     vm.assume(nbTiers < 10);
+  function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity(uint16 nbTiers)
+    public
+  {
+    vm.assume(nbTiers < 10);
 
-  //     // Create new tiers array
-  //     JB721TierData[] memory _tierData = new JB721TierData[](nbTiers);
-  //     JB721Tier[] memory _tiers = new JB721Tier[](nbTiers);
+    // Create new tiers array
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](nbTiers);
+    JB721Tier[] memory _tiers = new JB721Tier[](nbTiers);
 
-  //     for (uint256 i; i < nbTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80(i * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[i]
-  //       });
+    for (uint256 i; i < nbTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80(i * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
+      });
 
-  //       _tiers[i] = JB721Tier({id: i + 1, data: _tierData[i]});
-  //     }
+      _tiers[i] = JB721Tier({
+        id: i + 1,
+        contributionFloor: _tierParams[i].contributionFloor,
+        lockedUntil: _tierParams[i].lockedUntil,
+        remainingQuantity: _tierParams[i].initialQuantity,
+        initialQuantity: _tierParams[i].initialQuantity,
+        votingUnits: _tierParams[i].votingUnits,
+        reservedRate: _tierParams[i].reservedRate,
+        reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+      });
+    }
 
-  //     JBTiered721Delegate _delegate = new JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       new JBTiered721DelegateStore(),
-  //       true,
-  //       true
-  //     );
+    JBTiered721Delegate _delegate = new JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      new JBTiered721DelegateStore(),
+      true,
+      true
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     // Check: delegate has correct parameters?
-  //     assertEq(_delegate.projectId(), projectId);
-  //     assertEq(address(_delegate.directory()), mockJBDirectory);
-  //     assertEq(_delegate.name(), name);
-  //     assertEq(_delegate.symbol(), symbol);
-  //     assertEq(
-  //       address(_delegate.store().tokenUriResolverOf(address(_delegate))),
-  //       mockTokenUriResolver
-  //     );
-  //     assertEq(_delegate.contractURI(), contractUri);
-  //     assertEq(_delegate.owner(), owner);
-  //     assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, nbTiers), _tiers)); // Order is not insured
-  //     assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, nbTiers)));
-  //   }
+    // Check: delegate has correct parameters?
+    assertEq(_delegate.projectId(), projectId);
+    assertEq(address(_delegate.directory()), mockJBDirectory);
+    assertEq(_delegate.name(), name);
+    assertEq(_delegate.symbol(), symbol);
+    assertEq(
+      address(_delegate.store().tokenUriResolverOf(address(_delegate))),
+      mockTokenUriResolver
+    );
+    assertEq(_delegate.contractURI(), contractUri);
+    assertEq(_delegate.owner(), owner);
+    assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, nbTiers), _tiers)); // Order is not insured
+    assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, nbTiers)));
+  }
 
-  //   function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfOneEmptyInitialQuantity(
-  //     uint16 nbTiers,
-  //     uint16 errorIndex
-  //   ) public {
-  //     vm.assume(nbTiers < 20);
-  //     vm.assume(errorIndex < nbTiers);
+  function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfOneEmptyInitialQuantity(
+    uint16 nbTiers,
+    uint16 errorIndex
+  ) public {
+    vm.assume(nbTiers < 20);
+    vm.assume(errorIndex < nbTiers);
 
-  //     // Create new tiers array
-  //     JB721TierData[] memory _tierData = new JB721TierData[](nbTiers);
-  //     for (uint256 i; i < nbTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80(i * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[0]
-  //       });
-  //     }
+    // Create new tiers array
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80(i * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
 
-  //     _tierData[errorIndex].initialQuantity = 0;
+    _tiers[errorIndex].initialQuantity = 0;
 
-  //     JBTiered721DelegateStore _dataSourceStore = new JBTiered721DelegateStore();
+    JBTiered721DelegateStore _dataSourceStore = new JBTiered721DelegateStore();
 
-  //     // Expect the error at i+1 (as the floor is now smaller than i)
-  //     vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.NO_QUANTITY.selector));
-  //     new JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       _dataSourceStore,
-  //       true,
-  //       true
-  //     );
-  //   }
+    // Expect the error at i+1 (as the floor is now smaller than i)
+    vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.NO_QUANTITY.selector));
+    new JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      _dataSourceStore,
+      true,
+      true
+    );
+  }
 
-  //   function testJBTieredNFTRewardDelegate_mintReservesFor_mintReservedToken() public {
-  //     // 120 are minted, 1 out of these is reserved, meaning 119 non-reserved are minted. The reservedRate is 40% (4000/10000)
-  //     // meaning there are 47 total reserved to mint, 1 being already minted, 46 are outstanding
-  //     uint256 initialQuantity = 200;
-  //     uint256 totalMinted = 120;
-  //     uint256 reservedMinted = 1;
-  //     uint256 reservedRate = 4000;
-  //     uint256 nbTiers = 3;
+  function testJBTieredNFTRewardDelegate_mintReservesFor_mintReservedToken() public {
+    // 120 are minted, 1 out of these is reserved, meaning 119 non-reserved are minted. The reservedRate is 40% (4000/10000)
+    // meaning there are 47 total reserved to mint, 1 being already minted, 46 are outstanding
+    uint256 initialQuantity = 200;
+    uint256 totalMinted = 120;
+    uint256 reservedMinted = 1;
+    uint256 reservedRate = 4000;
+    uint256 nbTiers = 3;
 
-  //     vm.mockCall(
-  //       mockJBProjects,
-  //       abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
-  //       abi.encode(owner)
-  //     );
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      abi.encode(owner)
+    );
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](nbTiers);
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
 
-  //     // Temp tiers, will get overwritten later (pass the constructor check)
-  //     for (uint256 i; i < nbTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[i]
-  //       });
-  //     }
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     for (uint256 i; i < nbTiers; i++) {
-  //       _delegate.test_store().ForTest_setTier(
-  //         address(_delegate),
-  //         i + 1,
-  //         JB721TierData({
-  //           contributionFloor: uint80((i + 1) * 10),
-  //           lockedUntil: uint48(0),
-  //           remainingQuantity: uint40(initialQuantity - totalMinted),
-  //           initialQuantity: uint40(initialQuantity),
-  //           votingUnits: uint16(0),
-  //           reservedRate: uint16(reservedRate),
-  //           tokenUri: tokenUris[i]
-  //         })
-  //       );
+    for (uint256 i; i < nbTiers; i++) {
+      _delegate.test_store().ForTest_setTier(
+        address(_delegate),
+        i + 1,
+        JBStored721Tier({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(initialQuantity - totalMinted),
+          initialQuantity: uint40(initialQuantity),
+          votingUnits: uint16(0),
+          reservedRate: uint16(reservedRate)
+        })
+      );
 
-  //       _delegate.test_store().ForTest_setReservesMintedFor(
-  //         address(_delegate),
-  //         i + 1,
-  //         reservedMinted
-  //       );
-  //     }
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
+    }
 
-  //     for (uint256 tier = 1; tier <= nbTiers; tier++) {
-  //       uint256 mintable = _delegate.test_store().numberOfReservedTokensOutstandingFor(
-  //         address(_delegate),
-  //         tier
-  //       );
+    for (uint256 tier = 1; tier <= nbTiers; tier++) {
+      uint256 mintable = _delegate.test_store().numberOfReservedTokensOutstandingFor(
+        address(_delegate),
+        tier
+      );
 
-  //       for (uint256 token = 1; token <= mintable; token++) {
-  //         vm.expectEmit(true, true, true, true, address(_delegate));
-  //         emit MintReservedToken(
-  //           _generateTokenId(tier, totalMinted + token),
-  //           tier,
-  //           reserveBeneficiary,
-  //           owner
-  //         );
-  //       }
+      for (uint256 token = 1; token <= mintable; token++) {
+        vm.expectEmit(true, true, true, true, address(_delegate));
+        emit MintReservedToken(
+          _generateTokenId(tier, totalMinted + token),
+          tier,
+          reserveBeneficiary,
+          owner
+        );
+      }
 
-  //       // -- remove post PR reserved token per tier
-  //       vm.prank(owner);
-  //       _delegate.setReservedTokenBeneficiary(reserveBeneficiary);
-  //       // -- end remove
+      vm.prank(owner);
+      _delegate.mintReservesFor(tier, mintable);
 
-  //       vm.prank(owner);
-  //       _delegate.mintReservesFor(tier, mintable);
-
-  //       // Check balance
-  //       assertEq(_delegate.balanceOf(reserveBeneficiary), mintable * tier);
-  //     }
-  //   }
+      // Check balance
+      assertEq(_delegate.balanceOf(reserveBeneficiary), mintable * tier);
+    }
+  }
 
   //   // For coverage
   //   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary() public {
