@@ -1138,11 +1138,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
     uint8 initialNumberOfTiers,
-    uint8 numberTiersToAdd
+    uint8[] memory floorTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
     vm.assume(initialNumberOfTiers < 15);
-    vm.assume(numberTiersToAdd > 0 && numberTiersToAdd < 15);
+    vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
+
+    for (uint256 i; i < floorTiersToAdd.length; i++) vm.assume(floorTiersToAdd[i] != 0);
 
     JB721TierData[] memory _tierData = new JB721TierData[](initialNumberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
@@ -1178,10 +1180,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     _delegate.transferOwnership(owner);
 
-    JB721TierData[] memory _tierDataToAdd = new JB721TierData[](numberTiersToAdd);
-    JB721Tier[] memory _tiersAdded = new JB721Tier[](numberTiersToAdd);
+    JB721TierData[] memory _tierDataToAdd = new JB721TierData[](floorTiersToAdd.length);
+    JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
 
-    for (uint256 i; i < numberTiersToAdd; i++) {
+    for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierDataToAdd[i] = JB721TierData({
         contributionFloor: uint80((i + 1) * 100),
         lockedUntil: uint48(0),
@@ -1204,15 +1206,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
       address(_delegate),
       0,
-      initialNumberOfTiers + numberTiersToAdd
+      initialNumberOfTiers + floorTiersToAdd.length
     );
 
     // Check: Expected number of tiers?
     assertEq(_storedTiers.length, _tiers.length + _tiersAdded.length);
 
     // Check: Are all tiers in the new tiers (unsorted)?
-    assertTrue(_isIn(_tiers, _storedTiers));
-    assertTrue(_isIn(_tiersAdded, _storedTiers));
+    assertTrue(_isIn(_tiers, _storedTiers)); // Original tiers
+    assertTrue(_isIn(_tiersAdded, _storedTiers)); // New tiers
+
+    // Check: Are all the tiers sorted?
+    for (uint256 i = 1; i < _storedTiers.length; i++) {
+      assertLe(_storedTiers[i - 1].data.contributionFloor, _storedTiers[i].data.contributionFloor);
+    }
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_removeTiers(
@@ -1269,6 +1276,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       if (i >= numberTiersToRemove) {
         uint256 _arrayIndex = i - numberTiersToRemove;
+
         _tierDataRemaining[_arrayIndex] = JB721TierData({
           contributionFloor: uint80((i + 1) * 10),
           lockedUntil: uint48(0),
@@ -1308,11 +1316,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertTrue(_isIn(_tiersRemaining, _storedTiers));
 
     // Check that none of the removed tiers still exist
-    for (uint256 i; i < _tiersToRemove.length; i++) {
-      JB721Tier[] memory _removedTier = new JB721Tier[](1);
-      _removedTier[0] = _tiers[i];
-      assertTrue(!_isIn(_removedTier, _storedTiers));
-    }
+    assertTrue(_isIn(_storedTiers, _tiersRemaining));
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_revertIfAddingWithVotingPower(
@@ -2578,34 +2582,23 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Insure all the smoll indexes have been iterated on (ie we've seen (smoll.length)! elements)
     if (count == (smol.length * (smol.length + 1)) / 2) return true;
     else {
-      emit log('_isIn: incomplete inclusion');
-      return false;
+      fail('_isIn: incomplete inclusion');
     }
   }
 
-  function _compareTiers(JB721Tier memory first, JB721Tier memory second) private returns (bool) {
-    if (
-      first.id == second.id &&
+  function _compareTiers(JB721Tier memory first, JB721Tier memory second)
+    private
+    pure
+    returns (bool)
+  {
+    return (first.id == second.id &&
       first.data.contributionFloor == second.data.contributionFloor &&
       first.data.lockedUntil == second.data.lockedUntil &&
       first.data.remainingQuantity == second.data.remainingQuantity &&
       first.data.initialQuantity == second.data.initialQuantity &&
       first.data.votingUnits == second.data.votingUnits &&
       first.data.reservedRate == second.data.reservedRate &&
-      first.data.tokenUri == second.data.tokenUri
-    ) return true;
-    else {
-      emit log('_compareTiers:mismatch');
-      console.log(first.id, second.id);
-      console.log(first.data.contributionFloor, second.data.contributionFloor);
-      console.log(first.data.lockedUntil, second.data.lockedUntil);
-      console.log(first.data.remainingQuantity, second.data.remainingQuantity);
-      console.log(first.data.initialQuantity, second.data.initialQuantity);
-      console.log(first.data.votingUnits, second.data.votingUnits);
-      console.log(first.data.reservedRate, second.data.reservedRate);
-      console.log(uint256(first.data.tokenUri), uint256(second.data.tokenUri));
-      return false;
-    }
+      first.data.tokenUri == second.data.tokenUri);
   }
 }
 
