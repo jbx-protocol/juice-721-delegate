@@ -73,7 +73,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     address caller
   );
 
-  event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
+  event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
   event AddTier(uint256 indexed tierId, JB721TierParams tier, address caller);
 
@@ -1088,43 +1088,48 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
-  //   // For coverage
-  //   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary() public {
-  //     testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(
-  //       address(bytes20(keccak256('newReserveBeneficiary')))
-  //     );
-  //     testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(
-  //       address(bytes20(keccak256('anotherNewReserveBeneficiary')))
-  //     );
-  //   }
+  // For coverage
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary() public {
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(
+      address(bytes20(keccak256('newReserveBeneficiary')))
+    );
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(
+      address(bytes20(keccak256('anotherNewReserveBeneficiary')))
+    );
+  }
 
-  //   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address _newBeneficiary)
-  //     public
-  //   {
-  //     // Make sure the beneficiary is actually changing
-  //     vm.assume(_newBeneficiary != delegate.store().reservedTokenBeneficiary(address(delegate)));
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiaryFuzzed(address _newBeneficiary)
+    public
+  {
+    // Make sure the beneficiary is actually changing
+    vm.assume(
+      _newBeneficiary != delegate.store().defaultReservedTokenBeneficiaryOf(address(delegate))
+    );
 
-  //     vm.expectEmit(true, true, true, true, address(delegate));
-  //     emit SetReservedTokenBeneficiary(_newBeneficiary, owner);
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit SetDefaultReservedTokenBeneficiary(_newBeneficiary, owner);
 
-  //     vm.prank(owner);
-  //     delegate.setReservedTokenBeneficiary(_newBeneficiary);
+    vm.prank(owner);
+    delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
 
-  //     assertEq(delegate.store().reservedTokenBeneficiary(address(delegate)), _newBeneficiary);
-  //   }
+    assertEq(
+      delegate.store().defaultReservedTokenBeneficiaryOf(address(delegate)),
+      _newBeneficiary
+    );
+  }
 
-  //   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
-  //     address _sender,
-  //     address _newBeneficiary
-  //   ) public {
-  //     // Make sure the sender is not the owner
-  //     vm.assume(_sender != owner);
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
+    address _sender,
+    address _newBeneficiary
+  ) public {
+    // Make sure the sender is not the owner
+    vm.assume(_sender != owner);
 
-  //     vm.expectRevert('Ownable: caller is not the owner');
+    vm.expectRevert('Ownable: caller is not the owner');
 
-  //     vm.prank(_sender);
-  //     delegate.setReservedTokenBeneficiary(_newBeneficiary);
-  //   }
+    vm.prank(_sender);
+    delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
+  }
 
   //   function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft() public {
   //     uint256 initialQuantity = 200;

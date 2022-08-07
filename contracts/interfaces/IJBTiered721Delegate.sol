@@ -25,7 +25,7 @@ interface IJBTiered721Delegate {
 
   event RemoveTier(uint256 indexed tierId, address caller);
 
-  event SetReservedTokenBeneficiary(address indexed beneficiary, address caller);
+  event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
   function store() external view returns (IJBTiered721DelegateStore);
 
@@ -38,5 +38,5 @@ interface IJBTiered721Delegate {
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
-  function setReservedTokenBeneficiary(address _beneficiary) external;
+  function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
 }

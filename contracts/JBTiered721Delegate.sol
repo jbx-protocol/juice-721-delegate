@@ -257,11 +257,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     @param _beneficiary The beneificiary of the reserved tokens.
   */
-  function setReservedTokenBeneficiary(address _beneficiary) external override onlyOwner {
+  function setDefaultReservedTokenBeneficiary(address _beneficiary) external override onlyOwner {
     // Set the beneficiary.
     store.recordSetDefaultReservedTokenBeneficiary(_beneficiary);
 
-    emit SetReservedTokenBeneficiary(_beneficiary, msg.sender);
+    emit SetDefaultReservedTokenBeneficiary(_beneficiary, msg.sender);
   }
 
   /**
