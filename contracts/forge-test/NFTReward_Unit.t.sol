@@ -126,7 +126,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.transferOwnership(owner);
   }
 
-  function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint8 numberOfTiers) public {
+  function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint16 numberOfTiers) public {
     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
 
     JB721TierData[] memory _tierData = new JB721TierData[](numberOfTiers);
@@ -173,8 +173,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_tier_returnsTheGivenTier(
-    uint8 numberOfTiers,
-    uint8 givenTier
+    uint16 numberOfTiers,
+    uint16 givenTier
   ) public {
     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
 
@@ -531,8 +531,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(
-    uint8 _tierId,
-    uint8 _tokenNumber
+    uint16 _tierId,
+    uint16 _tokenNumber
   ) external {
     vm.assume(_tierId > 0 && _tokenNumber > 0);
     uint256 tokenId = _generateTokenId(_tierId, _tokenNumber);
@@ -632,8 +632,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
     uint16 numberOfTiers,
-    uint8 firstTier,
-    uint8 lastTier
+    uint16 firstTier,
+    uint16 lastTier
   ) public {
     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
     vm.assume(firstTier <= lastTier);
@@ -828,7 +828,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.firstOwnerOf(tokenId), address(0));
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity(uint8 nbTiers)
+  function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity(uint16 nbTiers)
     public
   {
     vm.assume(nbTiers < 10);
@@ -883,8 +883,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfOneEmptyInitialQuantity(
-    uint8 nbTiers,
-    uint8 errorIndex
+    uint16 nbTiers,
+    uint16 errorIndex
   ) public {
     vm.assume(nbTiers < 20);
     vm.assume(errorIndex < nbTiers);
@@ -1137,8 +1137,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
-    uint8 initialNumberOfTiers,
-    uint8 numberTiersToAdd
+    uint16 initialNumberOfTiers,
+    uint16 numberTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
     vm.assume(initialNumberOfTiers < 15);
@@ -1216,8 +1216,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_removeTiers(
-    uint8 initialNumberOfTiers,
-    uint8 numberTiersToRemove
+    uint16 initialNumberOfTiers,
+    uint16 numberTiersToRemove
   ) public {
     // Include adding X new tiers when 0 preexisting ones
     vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
@@ -1316,8 +1316,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_revertIfAddingWithVotingPower(
-    uint8 initialNumberOfTiers,
-    uint8 numberTiersToAdd
+    uint16 initialNumberOfTiers,
+    uint16 numberTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
     vm.assume(initialNumberOfTiers < 30);
@@ -1382,8 +1382,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_revertIfAddingWithReservedRate(
-    uint8 initialNumberOfTiers,
-    uint8 numberTiersToAdd
+    uint16 initialNumberOfTiers,
+    uint16 numberTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
     vm.assume(initialNumberOfTiers < 30);
@@ -1448,8 +1448,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_revertIfEmptyQuantity(
-    uint8 initialNumberOfTiers,
-    uint8 numberTiersToAdd
+    uint16 initialNumberOfTiers,
+    uint16 numberTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
     vm.assume(initialNumberOfTiers < 30);
@@ -1561,7 +1561,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     bool _dontMint = true;
     bool _expectMintFromExtraFunds;
     bool _dontOverspend;
-    uint8[] memory _tierIdsToMint = new uint8[](1);
+    uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = 1;
 
     bytes memory _metadata = abi.encode(
@@ -1606,7 +1606,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     bool _dontMint;
     bool _expectMintFromExtraFunds;
     bool _dontOverspend;
-    uint8[] memory _tierIdsToMint = new uint8[](3);
+    uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
     _tierIdsToMint[2] = 2;
@@ -1662,7 +1662,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     bool _dontMint;
     bool _expectMintFromExtraFunds;
     bool _dontOverspend;
-    uint8[] memory _tierIdsToMint = new uint8[](0);
+    uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
@@ -1713,7 +1713,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     bool _dontMint;
     bool _expectMintFromExtraFunds;
     bool _dontOverspend;
-    uint8[] memory _tierIdsToMint = new uint8[](3);
+    uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
     _tierIdsToMint[2] = 2;
@@ -1758,7 +1758,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
   }
 
-  function testJBTieredNFTRewardDelegate_didPay_revertIfNonExistingTier(uint8 _invalidTier)
+  function testJBTieredNFTRewardDelegate_didPay_revertIfNonExistingTier(uint16 _invalidTier)
     external
   {
     vm.assume(_invalidTier > tierData.length);
@@ -1775,7 +1775,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     bool _dontMint;
     bool _expectMintFromExtraFunds;
     bool _dontOverspend;
-    uint8[] memory _tierIdsToMint = new uint8[](1);
+    uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = _invalidTier;
 
     bytes memory _metadata = abi.encode(
@@ -1832,7 +1832,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     bool _dontMint;
     bool _expectMintFromExtraFunds;
     bool _dontOverspend;
-    uint8[] memory _tierIdsToMint = new uint8[](3);
+    uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
     _tierIdsToMint[2] = 2;
@@ -1893,7 +1893,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bool _dontMint;
       bool _expectMintFromExtraFunds;
       bool _dontOverspend = true;
-      uint8[] memory tierSelected = new uint8[](1);
+      uint16[] memory tierSelected = new uint16[](1);
       tierSelected[0] = 1;
 
       bytes memory _metadata = abi.encode(
@@ -2315,7 +2315,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT(uint8 _numberOfNFT) external {
+  function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT(uint16 _numberOfNFT) external {
     address _holder = address(bytes20(keccak256('_holder')));
 
     // Has to all fit in tier 1

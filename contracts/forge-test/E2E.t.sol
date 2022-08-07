@@ -78,8 +78,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       launchProjectData
     );
     // Craft the metadata: claim from the highest tier
-    uint8[] memory rawMetadata = new uint8[](1);
-    rawMetadata[0] = uint8(highestTier);
+    uint16[] memory rawMetadata = new uint16[](1);
+    rawMetadata[0] = uint16(highestTier);
     bytes memory metadata = abi.encode(
       bytes32(0),
       type(IJB721Delegate).interfaceId,
@@ -146,10 +146,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
     // 5 first tier floors
     uint256 _amountNeeded = 50 + 40 + 30 + 20 + 10;
-    uint8[] memory rawMetadata = new uint8[](5);
+    uint16[] memory rawMetadata = new uint16[](5);
     // Mint one per tier for the first 5 tiers
     for (uint256 i = 0; i < 5; i++) {
-      rawMetadata[i] = uint8(i + 1); // Not the tier 0
+      rawMetadata[i] = uint16(i + 1); // Not the tier 0
       // Check: correct tiers and ids?
       vm.expectEmit(true, true, true, true);
       emit Mint(
@@ -198,7 +198,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
   }
 
-  function testMintOnPayUsingFallbackTiers(uint8 valueSent) external {
+  function testMintOnPayUsingFallbackTiers(uint16 valueSent) external {
     vm.assume(valueSent >= 10 && valueSent < 2000);
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
@@ -349,8 +349,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
     vm.prank(_projectOwner);
     IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
-    uint8[] memory rawMetadata = new uint8[](1);
-    rawMetadata[0] = uint8(highestTier); // reward tier
+    uint16[] memory rawMetadata = new uint16[](1);
+    rawMetadata[0] = uint16(highestTier); // reward tier
     bytes memory metadata = abi.encode(
       bytes32(0),
       type(IJB721Delegate).interfaceId,
