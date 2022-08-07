@@ -539,152 +539,154 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
   }
 
-  //   function testJBTieredNFTRewardDelegate_getvotingUnits_returnsTheTotalVotingUnits(
-  //     uint16 numberOfTiers,
-  //     address holder
-  //   ) public {
-  //     vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+  function testJBTieredNFTRewardDelegate_getvotingUnits_returnsTheTotalVotingUnits(
+    uint16 numberOfTiers,
+    address holder
+  ) public {
+    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](numberOfTiers);
+    JB721TierParams[] memory _tiers = new JB721TierParams[](numberOfTiers);
 
-  //     for (uint256 i; i < numberOfTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(i + 1),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[0]
-  //       });
-  //     }
+    for (uint256 i; i < numberOfTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     for (uint256 i; i < numberOfTiers; i++) {
-  //       _delegate.test_store().ForTest_setBalanceOf(address(_delegate), holder, i + 1, 10);
-  //     }
+    for (uint256 i; i < numberOfTiers; i++) {
+      _delegate.test_store().ForTest_setBalanceOf(address(_delegate), holder, i + 1, 10);
+    }
 
-  //     assertEq(
-  //       _delegate.test_store().votingUnitsOf(address(_delegate), holder),
-  //       10 * ((numberOfTiers * (numberOfTiers + 1)) / 2)
-  //     );
-  //   }
+    assertEq(
+      _delegate.test_store().votingUnitsOf(address(_delegate), holder),
+      10 * ((numberOfTiers * (numberOfTiers + 1)) / 2)
+    );
+  }
 
-  //   function testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(
-  //     uint16 _tierId,
-  //     uint16 _tokenNumber
-  //   ) external {
-  //     vm.assume(_tierId > 0 && _tokenNumber > 0);
-  //     uint256 tokenId = _generateTokenId(_tierId, _tokenNumber);
+  function testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(
+    uint16 _tierId,
+    uint16 _tokenNumber
+  ) external {
+    vm.assume(_tierId > 0 && _tokenNumber > 0);
+    uint256 tokenId = _generateTokenId(_tierId, _tokenNumber);
 
-  //     assertEq(delegate.store().tierOfTokenId(address(delegate), tokenId).id, _tierId);
-  //   }
+    assertEq(delegate.store().tierOfTokenId(address(delegate), tokenId).id, _tierId);
+  }
 
-  //   function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNotMinted(uint256 tokenId)
-  //     external
-  //   {
-  //     // Token not minted -> no URI
-  //     assertEq(delegate.tokenURI(tokenId), '');
-  //   }
+  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNotMinted(uint256 tokenId)
+    external
+  {
+    // Token not minted -> no URI
+    assertEq(delegate.tokenURI(tokenId), '');
+  }
 
-  //   function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfResolverUsed(
-  //     uint256 tokenId,
-  //     address holder
-  //   ) external {
-  //     vm.assume(holder != address(0));
+  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfResolverUsed(
+    uint256 tokenId,
+    address holder
+  ) external {
+    vm.assume(holder != address(0));
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     // Mock the URI resolver call
-  //     vm.mockCall(
-  //       mockTokenUriResolver,
-  //       abi.encodeWithSelector(IJBTokenUriResolver.getUri.selector, tokenId),
-  //       abi.encode('resolverURI')
-  //     );
+    // Mock the URI resolver call
+    vm.mockCall(
+      mockTokenUriResolver,
+      abi.encodeWithSelector(IJBTokenUriResolver.getUri.selector, tokenId),
+      abi.encode('resolverURI')
+    );
 
-  //     _delegate.ForTest_setOwnerOf(tokenId, holder);
+    _delegate.ForTest_setOwnerOf(tokenId, holder);
 
-  //     assertEq(_delegate.tokenURI(tokenId), 'resolverURI');
-  //   }
+    assertEq(_delegate.tokenURI(tokenId), 'resolverURI');
+  }
 
-  //   function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(address holder)
-  //     external
-  //   {
-  //     vm.assume(holder != address(0));
+  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(address holder)
+    external
+  {
+    vm.assume(holder != address(0));
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](10);
+    JB721TierParams[] memory _tiers = new JB721TierParams[](10);
 
-  //     for (uint256 i; i < _tierData.length; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(i + 1),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[i]
-  //       });
-  //     }
+    for (uint256 i; i < _tiers.length; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(i + 1),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(address(0)),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(address(0)),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     for (uint256 i = 1; i <= _tierData.length; i++) {
-  //       uint256 tokenId = _generateTokenId(i, 1);
+    for (uint256 i = 1; i <= _tiers.length; i++) {
+      uint256 tokenId = _generateTokenId(i, 1);
 
-  //       _delegate.ForTest_setOwnerOf(tokenId, holder);
+      _delegate.ForTest_setOwnerOf(tokenId, holder);
 
-  //       assertEq(
-  //         _delegate.tokenURI(tokenId),
-  //         string(abi.encodePacked(baseUri, theoricHashes[i - 1]))
-  //       );
-  //     }
-  //   }
+      assertEq(
+        _delegate.tokenURI(tokenId),
+        string(abi.encodePacked(baseUri, theoricHashes[i - 1]))
+      );
+    }
+  }
 
   //   function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
   //     uint16 numberOfTiers,

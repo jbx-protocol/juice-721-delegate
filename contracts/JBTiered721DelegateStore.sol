@@ -338,30 +338,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return _numberOfReservedTokensOutstandingFor(_nft, _tierId, _storedTierOf[_nft][_tierId]);
   }
 
-  /** 
-    @notice 
-    The total number of tokens owned by the given owner. 
-
-    @param _nft The NFT to get a balance from.
-    @param _owner The address to check the balance of.
-
-    @return balance The number of tokens owners by the owner accross all tiers.
-  */
-  function balanceOf(address _nft, address _owner) public view override returns (uint256 balance) {
-    // Keep a reference to the greatest tier ID.
-    uint256 _maxTierId = maxTierId[_nft];
-
-    // Loop through all tiers.
-    for (uint256 _i = _maxTierId; _i != 0; ) {
-      // Get a reference to the account's balance in this tier.
-      balance += tierBalanceOf[_nft][_owner][_i];
-
-      unchecked {
-        --_i;
-      }
-    }
-  }
-
   /**
     @notice
     The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
@@ -399,9 +375,51 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     }
   }
 
+  /**
+    @notice
+    Resolves the encoded tier IPFS URI of the tier for the given token.
+
+    @param _nft The NFT contract to which the encoded upfs uri belongs.
+    @param _tokenId the ID of the token.
+
+    @return The encoded IPFS URI.
+  */
+  function encodedTierIPFSUriOf(address _nft, uint256 _tokenId)
+    external
+    view
+    override
+    returns (bytes32)
+  {
+    return encodedIPFSUriOf[_nft][tierIdOfToken(_tokenId)];
+  }
+
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
+
+  /** 
+    @notice 
+    The total number of tokens owned by the given owner. 
+
+    @param _nft The NFT to get a balance from.
+    @param _owner The address to check the balance of.
+
+    @return balance The number of tokens owners by the owner accross all tiers.
+  */
+  function balanceOf(address _nft, address _owner) public view override returns (uint256 balance) {
+    // Keep a reference to the greatest tier ID.
+    uint256 _maxTierId = maxTierId[_nft];
+
+    // Loop through all tiers.
+    for (uint256 _i = _maxTierId; _i != 0; ) {
+      // Get a reference to the account's balance in this tier.
+      balance += tierBalanceOf[_nft][_owner][_i];
+
+      unchecked {
+        --_i;
+      }
+    }
+  }
 
   /**
     @notice

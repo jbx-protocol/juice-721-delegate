@@ -100,7 +100,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     return
       JBIpfsDecoder.decode(
         store.baseUriOf(address(this)),
-        store.encodedIPFSUriOf(address(this), _tokenId)
+        store.encodedTierIPFSUriOf(address(this), _tokenId)
       );
   }
 

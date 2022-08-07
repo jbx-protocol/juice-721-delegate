@@ -74,6 +74,8 @@ interface IJBTiered721DelegateStore {
 
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
+  function encodedTierIPFSUriOf(address _nft, uint256 _tokenId) external view returns (bytes32);
+
   function recordAddTierData(JB721TierParams[] memory _tierData)
     external
     returns (uint256[] memory tierIds);
