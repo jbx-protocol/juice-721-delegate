@@ -1136,15 +1136,23 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
-  function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
-    uint8 initialNumberOfTiers,
-    uint8[] memory floorTiersToAdd
-  ) public {
+  function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers() public {
     // Include adding X new tiers when 0 preexisting ones
+    uint8 initialNumberOfTiers = 3;
+
+    uint8[] memory floorTiersToAdd = new uint8[](3);
+    floorTiersToAdd[0] = 1;
+    floorTiersToAdd[1] = 2;
+    floorTiersToAdd[2] = 3;
+
     vm.assume(initialNumberOfTiers < 15);
     vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
 
+    // No 0 floor
     for (uint256 i; i < floorTiersToAdd.length; i++) vm.assume(floorTiersToAdd[i] != 0);
+
+    // Floor are sorted in ascending order
+    floorTiersToAdd = _sortArray(floorTiersToAdd);
 
     JB721TierData[] memory _tierData = new JB721TierData[](initialNumberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
@@ -1185,7 +1193,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierDataToAdd[i] = JB721TierData({
-        contributionFloor: uint80((i + 1) * 100),
+        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
@@ -2599,6 +2607,24 @@ contract TestJBTieredNFTRewardDelegate is Test {
       first.data.votingUnits == second.data.votingUnits &&
       first.data.reservedRate == second.data.reservedRate &&
       first.data.tokenUri == second.data.tokenUri);
+  }
+
+  function _sortArray(uint8[] memory _in) internal returns (uint8[] memory) {
+    for (uint256 i; i < _in.length; i++) {
+      uint256 minIndex = i;
+      uint8 minValue = _in[i];
+
+      for (uint256 j = i; j < _in.length; j++) {
+        if (_in[j] < minValue) {
+          minIndex = j;
+          minValue = _in[j];
+        }
+      }
+
+      if (minIndex != i) (_in[i], _in[minIndex]) = (_in[minIndex], _in[i]);
+    }
+
+    return _in;
   }
 }
 
