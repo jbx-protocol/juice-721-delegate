@@ -454,7 +454,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _data = _tierData[_i - 1];
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
-      if (_i != _numberOfNewTiers && _data.contributionFloor >= _tierData[_i].contributionFloor)
+      if (_i != _numberOfNewTiers && _data.contributionFloor > _tierData[_i].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
       // Make sure there are no voting units or reserved rates if they're not allowed.
