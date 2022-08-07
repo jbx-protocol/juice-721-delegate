@@ -44,15 +44,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
-    When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS hashes stripped down.
-
-    _nft The NFT contract to which the encoded upfs uri belongs.
-    _tierId the ID of the tier
-  */
-  mapping(address => mapping(uint256 => bytes32)) internal _encodedIpfsUriOf;
-
-  /**
-    @notice
     An optionnal beneficiary for the reserved token of a given tier.
 
     _nft The NFT contract to which the reserved token beneficiary belongs.
@@ -166,6 +157,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => bool) public override lockVotingUnitChangesFor;
 
+  /**
+    @notice
+    When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS hashes stripped down.
+
+    _nft The NFT contract to which the encoded upfs uri belongs.
+    _tierId the ID of the tier
+  */
+  mapping(address => mapping(uint256 => bytes32)) public view override encodedIPFSUriOf;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -213,8 +213,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           initialQuantity: _storedTier.initialQuantity,
           votingUnits: _storedTier.votingUnits,
           reservedRate: _storedTier.reservedRate,
-          reservedTokenBeneficiary: _reservedTokenBeneficiaryOf[_nft][_currentSortIndex],
-          encodedIPFSUri: _encodedIpfsUriOf[_nft][_currentSortIndex]
+          reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
+          encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex]
         });
       }
 
@@ -251,8 +251,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
-        reservedTokenBeneficiary: _reservedTokenBeneficiaryOf[_nft][_id],
-        encodedIPFSUri: _encodedIpfsUriOf[_nft][_id]
+        reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
+        encodedIPFSUri: encodedIPFSUriOf[_nft][_id]
       });
   }
 
@@ -287,8 +287,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
-        reservedTokenBeneficiary: _reservedTokenBeneficiaryOf[_nft][_tierId],
-        encodedIPFSUri: _encodedIpfsUriOf[_nft][_tierId]
+        reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+        encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
       });
   }
 
@@ -336,32 +336,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     returns (uint256)
   {
     return _numberOfReservedTokensOutstandingFor(_nft, _tierId, _storedTierOf[_nft][_tierId]);
-  }
-
-  /** 
-    @notice
-    The reserved token beneficiary for each tier. 
-
-    @param _nft The NFT to get the reserved token beneficiary within.
-    @param _tierId The ID of the tier to get a reserved token beneficiary of.
-
-    @return The reserved token benficiary.
-  */
-  function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
-    external
-    view
-    override
-    returns (address)
-  {
-    // Get the stored reserved token beneficiary.
-    address _storedReservedTokenBeneficiaryOfTier = _reservedTokenBeneficiaryOf[_nft][_tierId];
-
-    // If the tier has a beneficiary return it.
-    if (_storedReservedTokenBeneficiaryOfTier != address(0))
-      return _storedReservedTokenBeneficiaryOfTier;
-
-    // Return the default.
-    return defaultReservedTokenBeneficiaryOf[_nft];
   }
 
   /** 
@@ -424,6 +398,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
     }
   }
+
+  //*********************************************************************//
+  // -------------------------- public views --------------------------- //
+  //*********************************************************************//
 
   /**
     @notice
@@ -498,6 +476,32 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   function tierIdOfToken(uint256 _tokenId) public pure override returns (uint256) {
     // The tier ID is in the first 8 bits.
     return uint256(uint8(_tokenId));
+  }
+
+  /** 
+    @notice
+    The reserved token beneficiary for each tier. 
+
+    @param _nft The NFT to get the reserved token beneficiary within.
+    @param _tierId The ID of the tier to get a reserved token beneficiary of.
+
+    @return The reserved token benficiary.
+  */
+  function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
+    public
+    view
+    override
+    returns (address)
+  {
+    // Get the stored reserved token beneficiary.
+    address _storedReservedTokenBeneficiaryOfTier = _reservedTokenBeneficiaryOf[_nft][_tierId];
+
+    // If the tier has a beneficiary return it.
+    if (_storedReservedTokenBeneficiaryOfTier != address(0))
+      return _storedReservedTokenBeneficiaryOfTier;
+
+    // Return the default.
+    return defaultReservedTokenBeneficiaryOf[_nft];
   }
 
   //*********************************************************************//
@@ -577,7 +581,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
-        _encodedIpfsUriOf[msg.sender][_tierId] = _tierToAdd.encodedIPFSUri;
+        encodedIPFSUriOf[msg.sender][_tierId] = _tierToAdd.encodedIPFSUri;
 
       if (_startSortIndex != 0) {
         // Keep track of the sort index.
