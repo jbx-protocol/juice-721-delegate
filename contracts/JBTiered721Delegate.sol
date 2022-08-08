@@ -36,6 +36,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   IJBTiered721DelegateStore public immutable override store;
 
+  /** 
+    @notice
+    The token address that is accepted. 
+  */
+  address public immutable override contributionToken = JBTokens.ETH;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -327,7 +333,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function _processPayment(JBDidPayData calldata _data) internal override {
     // Make sure the contribution is being made in the expected token.
-    if (_data.amount.token != JBTokens.ETH) return;
+    if (_data.amount.token != contributionToken) return;
 
     // Set the leftover amount as the initial value.
     uint256 _leftoverAmount = _data.amount.value;

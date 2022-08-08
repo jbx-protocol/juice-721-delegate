@@ -30,6 +30,8 @@ interface IJBTiered721Delegate {
 
   function store() external view returns (IJBTiered721DelegateStore);
 
+  function contributionToken() external view returns (address);
+
   function contractURI() external view returns (string memory);
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
