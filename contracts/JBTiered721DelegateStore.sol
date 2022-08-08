@@ -449,12 +449,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // If there's no sort index, start with the first index.
     uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _firstSortIndexOf(msg.sender);
 
-    for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
+    for (uint256 _i; _i < _numberOfNewTiers; ) {
       // Set the tier being iterated on.
-      _data = _tierData[_i - 1];
+      _data = _tierData[_i];
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
-      if (_i != _numberOfNewTiers && _data.contributionFloor > _tierData[_i].contributionFloor)
+      if (_i != 0 && _data.contributionFloor < _tierData[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
       // Make sure there are no voting units or reserved rates if they're not allowed.
@@ -470,7 +470,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _data.remainingQuantity = _data.initialQuantity;
 
       // Get a reference to the tier ID.
-      uint256 _tierId = _currentMaxTierId + _i;
+      uint256 _tierId = _currentMaxTierId + _i + 1;
 
       // Add the tier with the iterative ID.
       tierData[msg.sender][_tierId] = _data;
@@ -496,6 +496,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             // For the next tier being added, start at this current index.
             _startSortIndex = _currentSortIndex;
 
+            // The tier just added is the previous for the next tier being added.
+            _previous = _tierId;
+
             // Set current to zero to break out of the loop.
             _currentSortIndex = 0;
           } else {
@@ -508,10 +511,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Set the tier ID in the returned value.
-      tierIds[_numberOfNewTiers - _i] = _tierId;
+      tierIds[_i] = _tierId;
 
       unchecked {
-        --_i;
+        ++_i;
       }
     }
 
