@@ -526,8 +526,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     while (_next != 0) {
       emit Idx(_next);
       emit Next(_next, tierData[msg.sender][_next].contributionFloor);
-      _next = _tierIdAfter[msg.sender][_next] == 0
-        ? _tierIdAfter[msg.sender][_next] == maxTierId[msg.sender] ? 0 : _next + 1
+      _next = _next == maxTierId[msg.sender] ? 0 : _tierIdAfter[msg.sender][_next] == 0
+        ? _next + 1
         : _tierIdAfter[msg.sender][_next];
     }
     // ------------------------------
