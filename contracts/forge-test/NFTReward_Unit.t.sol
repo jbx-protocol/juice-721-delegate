@@ -1139,24 +1139,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers() public {
     // Include adding X new tiers when 0 preexisting ones
     uint8 initialNumberOfTiers = 3;
-
     uint8[] memory floorTiersToAdd = new uint8[](3);
     floorTiersToAdd[0] = 1;
     floorTiersToAdd[1] = 2;
     floorTiersToAdd[2] = 3;
-
     vm.assume(initialNumberOfTiers < 15);
     vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
-
     // No 0 floor
     for (uint256 i; i < floorTiersToAdd.length; i++) vm.assume(floorTiersToAdd[i] != 0);
-
     // Floor are sorted in ascending order
     floorTiersToAdd = _sortArray(floorTiersToAdd);
-
     JB721TierData[] memory _tierData = new JB721TierData[](initialNumberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
-
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierData[i] = JB721TierData({
         contributionFloor: uint80((i + 1) * 10),
@@ -1167,10 +1161,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         tokenUri: tokenUris[0]
       });
-
       _tiers[i] = JB721Tier({id: i + 1, data: _tierData[i]});
     }
-
     JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
     JBTiered721Delegate _delegate = new JBTiered721Delegate(
       projectId,
@@ -1185,12 +1177,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       false,
       false
     );
-
     _delegate.transferOwnership(owner);
-
     JB721TierData[] memory _tierDataToAdd = new JB721TierData[](floorTiersToAdd.length);
     JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
-
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierDataToAdd[i] = JB721TierData({
         contributionFloor: uint80(floorTiersToAdd[i]) * 10,
@@ -1201,29 +1190,22 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         tokenUri: tokenUris[0]
       });
-
-      _tiersAdded[i] = JB721Tier({id: _tiers.length + (i + 1), data: _tierDataToAdd[i]});
-
+      _tiersAdded[i] = JB721Tier({id: _tiers.length + i + 1, data: _tierDataToAdd[i]});
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierDataToAdd[i], owner);
     }
-
     vm.prank(owner);
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
-
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
       0,
       initialNumberOfTiers + floorTiersToAdd.length
     );
-
     // Check: Expected number of tiers?
     assertEq(_storedTiers.length, _tiers.length + _tiersAdded.length);
-
     // Check: Are all tiers in the new tiers (unsorted)?
     assertTrue(_isIn(_tiers, _storedTiers)); // Original tiers
     assertTrue(_isIn(_tiersAdded, _storedTiers)); // New tiers
-
     // Check: Are all the tiers sorted?
     for (uint256 i = 1; i < _storedTiers.length; i++) {
       assertLe(_storedTiers[i - 1].data.contributionFloor, _storedTiers[i].data.contributionFloor);

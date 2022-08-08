@@ -189,7 +189,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_currentSortIndex, _maxTierId);
+      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierId);
     }
 
     // Resize the array if there are removed tiers
@@ -418,10 +418,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
-  event StartSort(uint256);
-  event MaxTierId(uint256);
-  event CurrentSortIndex(uint256);
-  event NewTierIndex(uint256);
 
   /** 
     @notice
@@ -445,8 +441,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the greatest tier ID.
     uint256 _currentMaxTierId = maxTierId[msg.sender];
 
-    emit MaxTierId(_currentMaxTierId);
-
     // Initialize an array with the appropriate length.
     tierIds = new uint256[](_numberOfNewTiers);
 
@@ -454,9 +448,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
     uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _firstSortIndexOf(msg.sender);
-    emit StartSort(_startSortIndex);
+    // Keep track of the previous index.
+    uint256 _previous;
+
     for (uint256 _i; _i < _numberOfNewTiers; ) {
-      emit NewTierIndex(_i);
       // Set the tier being iterated on.
       _data = _tierData[_i];
 
@@ -486,23 +481,24 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep track of the sort index.
         uint256 _currentSortIndex = _startSortIndex;
 
-        // Keep track of the previous index.
-        uint256 _previous;
+        // Keep a reference to the idex to iterate on next.
+        uint256 _next;
 
         while (_currentSortIndex != 0) {
-          emit CurrentSortIndex(_currentSortIndex);
+          // Set the next index.
+          _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentMaxTierId);
+
           // If the contribution floor is less than the tier being iterated on, set the
           if (_data.contributionFloor < tierData[msg.sender][_currentSortIndex].contributionFloor) {
             // If the index being iterated on isn't the next index, set the after.
             if (_currentSortIndex != _tierId + 1)
-              // Set the tier after the tier being added as the one being iterated on.
               _tierIdAfter[msg.sender][_tierId] = _currentSortIndex;
             // If the previous after index was set to something else, set the previous after.
             if (_previous != _tierId - 1)
               // Set the tier after the previous one being iterated on as the tier being added.
               _tierIdAfter[msg.sender][_previous] = _tierId;
 
-            // For the next tier being added, start at this current index.
+            // for the next tier being added, start at this current index. if the tierid is the last tier, start there.
             _startSortIndex = _currentSortIndex;
 
             // The tier just added is the previous for the next tier being added.
@@ -510,11 +506,25 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Set current to zero to break out of the loop.
             _currentSortIndex = 0;
-          } else {
+          }
+          // If the tier being iterated on is the last tier, add the tier after it.
+          else if (_next == 0) {
+            if (_tierId != _currentSortIndex + 1)
+              _tierIdAfter[msg.sender][_currentSortIndex] = _tierId;
+
+            // For the next tier being added, start at this current index.
+            _startSortIndex = _tierId;
+
+            // Break out.
+            _currentSortIndex = 0;
+          }
+          // If iterating on the last element,
+          else {
             // Set the previous index to be the current index.
             _previous = _currentSortIndex;
-            // Set the next sort index.
-            _currentSortIndex = _nextSortIndex(_currentSortIndex, _currentMaxTierId);
+
+            // Set current to zero to break out of the loop.
+            _currentSortIndex = _next;
           }
         }
       }
@@ -528,22 +538,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     }
 
     maxTierId[msg.sender] = _currentMaxTierId + _numberOfNewTiers;
-    // ---------- cut here ------------
-    // DEBUG: dump linked list
-    // uint256 _index = _tierIdAfter[msg.sender][0] == 0 ? 1 : _tierIdAfter[msg.sender][0];
-    // uint256 _nbIter;
-    // uint256 _maxIter = 20;
-
-    // while (_index != 0 && _nbIter < _maxIter) {
-    //   emit Idx(_index);
-    //   emit Next(_index, tierData[msg.sender][_index].contributionFloor);
-    //   _index = _index == maxTierId[msg.sender] ? 0 : _tierIdAfter[msg.sender][_index] == 0
-    //     ? _index + 1
-    //     : _tierIdAfter[msg.sender][_index];
-
-    //   _nbIter++;
-    // }
-    // ------------------------------
   }
 
   /** 
@@ -706,7 +700,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         ) tierId = _currentSortIndex;
 
         // Set the next sort index.
-        _currentSortIndex = _nextSortIndex(_currentSortIndex, _maxTierId);
+        _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _maxTierId);
       }
     }
 
@@ -890,7 +884,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _previous = _currentSortIndex;
       }
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_currentSortIndex, _maxTierId);
+      _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _maxTierId);
     }
 
     emit CleanTiers(_nft, msg.sender);
@@ -971,17 +965,22 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice 
     The next sorted index. 
 
+    @param _nft The NFT for which the sort index applies.
     @param _index The index relative to which the next sorted index will be returned.
     @param _max The maximum possible index.
 
     @return The index.
   */
-  function _nextSortIndex(uint256 _index, uint256 _max) internal view returns (uint256) {
+  function _nextSortIndex(
+    address _nft,
+    uint256 _index,
+    uint256 _max
+  ) internal view returns (uint256) {
     // Update the current index to be the one saved to be after, if it exists.
-    uint256 _storedNext = _tierIdAfter[msg.sender][_index];
+    uint256 _storedNext = _tierIdAfter[_nft][_index];
     if (_storedNext != 0) return _storedNext;
     // Otherwise if this is the last tier, set current to zero to break out of the loop.
-    else if (_index == _max) return 0;
+    else if (_index >= _max) return 0;
     // Otherwise increment the current.
     else return _index + 1;
   }
