@@ -1131,260 +1131,301 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
   }
 
-  //   function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft() public {
-  //     uint256 initialQuantity = 200;
-  //     uint256 totalMinted = 120;
-  //     uint256 reservedMinted = 1;
-  //     uint256 reservedRate = 4000;
+  function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft() public {
+    uint256 initialQuantity = 200;
+    uint256 totalMinted = 120;
+    uint256 reservedMinted = 1;
+    uint256 reservedRate = 4000;
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](10);
+    JB721TierParams[] memory _tiers = new JB721TierParams[](10);
 
-  //     for (uint256 i; i < 10; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[i]
-  //       });
-  //     }
+    for (uint256 i; i < 10; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     for (uint256 i; i < 10; i++) {
-  //       _delegate.test_store().ForTest_setTier(
-  //         address(_delegate),
-  //         i + 1,
-  //         JB721TierData({
-  //           contributionFloor: uint80((i + 1) * 10),
-  //           lockedUntil: uint48(0),
-  //           remainingQuantity: uint40(initialQuantity - totalMinted),
-  //           initialQuantity: uint40(initialQuantity),
-  //           votingUnits: uint16(0),
-  //           reservedRate: uint16(reservedRate),
-  //           tokenUri: tokenUris[i]
-  //         })
-  //       );
+    for (uint256 i; i < 10; i++) {
+      _delegate.test_store().ForTest_setTier(
+        address(_delegate),
+        i + 1,
+        JBStored721Tier({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(initialQuantity - totalMinted),
+          initialQuantity: uint40(initialQuantity),
+          votingUnits: uint16(0),
+          reservedRate: uint16(reservedRate)
+        })
+      );
 
-  //       _delegate.test_store().ForTest_setReservesMintedFor(
-  //         address(_delegate),
-  //         i + 1,
-  //         reservedMinted
-  //       );
-  //     }
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
+    }
 
-  //     for (uint256 i = 1; i <= 10; i++) {
-  //       // Get the amount that we can mint successfully
-  //       uint256 amount = _delegate.test_store().numberOfReservedTokensOutstandingFor(
-  //         address(_delegate),
-  //         i
-  //       );
-  //       // Increase it by 1 to cause an error
-  //       amount++;
+    for (uint256 i = 1; i <= 10; i++) {
+      // Get the amount that we can mint successfully
+      uint256 amount = _delegate.test_store().numberOfReservedTokensOutstandingFor(
+        address(_delegate),
+        i
+      );
+      // Increase it by 1 to cause an error
+      amount++;
 
-  //       vm.expectRevert(
-  //         abi.encodeWithSelector(JBTiered721DelegateStore.INSUFFICIENT_RESERVES.selector)
-  //       );
-  //       vm.prank(owner);
-  //       _delegate.mintReservesFor(i, amount);
-  //     }
-  //   }
+      vm.expectRevert(
+        abi.encodeWithSelector(JBTiered721DelegateStore.INSUFFICIENT_RESERVES.selector)
+      );
+      vm.prank(owner);
+      _delegate.mintReservesFor(i, amount);
+    }
+  }
 
-  //   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
-  //     uint16 initialNumberOfTiers,
-  //     uint16 numberTiersToAdd
-  //   ) public {
-  //     // Include adding X new tiers when 0 preexisting ones
-  //     vm.assume(initialNumberOfTiers < 15);
-  //     vm.assume(numberTiersToAdd > 0 && numberTiersToAdd < 15);
+  function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
+    uint16 initialNumberOfTiers,
+    uint16 numberTiersToAdd
+  ) public {
+    // Include adding X new tiers when 0 preexisting ones
+    vm.assume(initialNumberOfTiers < 15);
+    vm.assume(numberTiersToAdd > 0 && numberTiersToAdd < 15);
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](initialNumberOfTiers);
-  //     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+    JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
 
-  //     for (uint256 i; i < initialNumberOfTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(i),
-  //         tokenUri: tokenUris[0]
-  //       });
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        shouldUseBeneficiaryAsDefault: false
+      });
 
-  //       _tiers[i] = JB721Tier({id: i + 1, data: _tierData[i]});
-  //     }
+      _tiers[i] = JB721Tier({
+        id: i + 1,
+        contributionFloor: _tierParams[i].contributionFloor,
+        lockedUntil: _tierParams[i].lockedUntil,
+        remainingQuantity: _tierParams[i].initialQuantity,
+        initialQuantity: _tierParams[i].initialQuantity,
+        votingUnits: _tierParams[i].votingUnits,
+        reservedRate: _tierParams[i].reservedRate,
+        reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+      });
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     JB721TierData[] memory _tierDataToAdd = new JB721TierData[](numberTiersToAdd);
-  //     JB721Tier[] memory _tiersAdded = new JB721Tier[](numberTiersToAdd);
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](numberTiersToAdd);
+    JB721Tier[] memory _tiersAdded = new JB721Tier[](numberTiersToAdd);
 
-  //     for (uint256 i; i < numberTiersToAdd; i++) {
-  //       _tierDataToAdd[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 100),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(0),
-  //         tokenUri: tokenUris[0]
-  //       });
+    for (uint256 i; i < numberTiersToAdd; i++) {
+      _tierParamsToAdd[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 100),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        shouldUseBeneficiaryAsDefault: false
+      });
 
-  //       _tiersAdded[i] = JB721Tier({id: _tiers.length + (i + 1), data: _tierDataToAdd[i]});
+      _tiersAdded[i] = JB721Tier({
+        id: _tiers.length + (i + 1),
+        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil,
+        remainingQuantity: _tierParamsToAdd[i].initialQuantity,
+        initialQuantity: _tierParamsToAdd[i].initialQuantity,
+        votingUnits: _tierParamsToAdd[i].votingUnits,
+        reservedRate: _tierParamsToAdd[i].reservedRate,
+        reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri
+      });
 
-  //       vm.expectEmit(true, true, true, true, address(_delegate));
-  //       emit AddTier(_tiersAdded[i].id, _tierDataToAdd[i], owner);
-  //     }
+      vm.expectEmit(true, true, true, true, address(_delegate));
+      emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
+    }
 
-  //     vm.prank(owner);
-  //     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
 
-  //     JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
-  //       address(_delegate),
-  //       0,
-  //       initialNumberOfTiers + numberTiersToAdd
-  //     );
+    JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
+      address(_delegate),
+      0,
+      initialNumberOfTiers + numberTiersToAdd
+    );
 
-  //     // Check: Expected number of tiers?
-  //     assertEq(_storedTiers.length, _tiers.length + _tiersAdded.length);
+    // Check: Expected number of tiers?
+    assertEq(_storedTiers.length, _tiers.length + _tiersAdded.length);
 
-  //     // Check: Are all tiers in the new tiers (unsorted)?
-  //     assertTrue(_isIn(_tiers, _storedTiers));
-  //     assertTrue(_isIn(_tiersAdded, _storedTiers));
-  //   }
+    // Check: Are all tiers in the new tiers (unsorted)?
+    assertTrue(_isIn(_tiers, _storedTiers));
+    assertTrue(_isIn(_tiersAdded, _storedTiers));
+  }
 
-  //   function testJBTieredNFTRewardDelegate_adjustTiers_removeTiers(
-  //     uint16 initialNumberOfTiers,
-  //     uint16 numberTiersToRemove
-  //   ) public {
-  //     // Include adding X new tiers when 0 preexisting ones
-  //     vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
-  //     vm.assume(numberTiersToRemove > 0 && numberTiersToRemove < initialNumberOfTiers);
+  function testJBTieredNFTRewardDelegate_adjustTiers_removeTiers(
+    uint16 initialNumberOfTiers,
+    uint16 numberTiersToRemove
+  ) public {
+    // Include adding X new tiers when 0 preexisting ones
+    vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
+    vm.assume(numberTiersToRemove > 0 && numberTiersToRemove < initialNumberOfTiers);
 
-  //     JB721TierData[] memory _tierData = new JB721TierData[](initialNumberOfTiers);
-  //     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+    JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
 
-  //     for (uint256 i; i < initialNumberOfTiers; i++) {
-  //       _tierData[i] = JB721TierData({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(100),
-  //         initialQuantity: uint40(100),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(i),
-  //         tokenUri: tokenUris[0]
-  //       });
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        shouldUseBeneficiaryAsDefault: false
+      });
 
-  //       _tiers[i] = JB721Tier({id: i + 1, data: _tierData[i]});
-  //     }
+      _tiers[i] = JB721Tier({
+        id: i + 1,
+        contributionFloor: _tierParams[i].contributionFloor,
+        lockedUntil: _tierParams[i].lockedUntil,
+        remainingQuantity: _tierParams[i].initialQuantity,
+        initialQuantity: _tierParams[i].initialQuantity,
+        votingUnits: _tierParams[i].votingUnits,
+        reservedRate: _tierParams[i].reservedRate,
+        reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+      });
+    }
 
-  //     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //       projectId,
-  //       IJBDirectory(mockJBDirectory),
-  //       name,
-  //       symbol,
-  //       baseUri,
-  //       IJBTokenUriResolver(mockTokenUriResolver),
-  //       contractUri,
-  //       _tierData,
-  //       IJBTiered721DelegateStore(address(_ForTest_store)),
-  //       false,
-  //       false
-  //     );
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      false,
+      false
+    );
 
-  //     _delegate.transferOwnership(owner);
+    _delegate.transferOwnership(owner);
 
-  //     uint256[] memory _tiersToRemove = new uint256[](numberTiersToRemove);
+    uint256[] memory _tiersToRemove = new uint256[](numberTiersToRemove);
 
-  //     JB721TierData[] memory _tierDataRemaining = new JB721TierData[](
-  //       initialNumberOfTiers - numberTiersToRemove
-  //     );
-  //     JB721Tier[] memory _tiersRemaining = new JB721Tier[](
-  //       initialNumberOfTiers - numberTiersToRemove
-  //     );
+    JB721TierParams[] memory _tierDataRemaining = new JB721TierParams[](
+      initialNumberOfTiers - numberTiersToRemove
+    );
+    JB721Tier[] memory _tiersRemaining = new JB721Tier[](
+      initialNumberOfTiers - numberTiersToRemove
+    );
 
-  //     for (uint256 i; i < initialNumberOfTiers; i++) {
-  //       if (i >= numberTiersToRemove) {
-  //         uint256 _arrayIndex = i - numberTiersToRemove;
-  //         _tierDataRemaining[_arrayIndex] = JB721TierData({
-  //           contributionFloor: uint80((i + 1) * 10),
-  //           lockedUntil: uint48(0),
-  //           remainingQuantity: uint40(100),
-  //           initialQuantity: uint40(100),
-  //           votingUnits: uint16(0),
-  //           reservedRate: uint16(i),
-  //           tokenUri: tokenUris[0]
-  //         });
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      if (i >= numberTiersToRemove) {
+        uint256 _arrayIndex = i - numberTiersToRemove;
+        _tierDataRemaining[_arrayIndex] = JB721TierParams({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
+          initialQuantity: uint40(100),
+          votingUnits: uint16(0),
+          reservedRate: uint16(i),
+          reservedTokenBeneficiary: reserveBeneficiary,
+          encodedIPFSUri: tokenUris[0],
+          shouldUseBeneficiaryAsDefault: false
+        });
 
-  //         _tiersRemaining[_arrayIndex] = JB721Tier({
-  //           id: i + 1,
-  //           data: _tierDataRemaining[_arrayIndex]
-  //         });
-  //       } else {
-  //         _tiersToRemove[i] = i + 1;
+        _tiersRemaining[_arrayIndex] = JB721Tier({
+          id: i + 1,
+          contributionFloor: _tierDataRemaining[_arrayIndex].contributionFloor,
+          lockedUntil: _tierDataRemaining[_arrayIndex].lockedUntil,
+          remainingQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
+          initialQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
+          votingUnits: _tierDataRemaining[_arrayIndex].votingUnits,
+          reservedRate: _tierDataRemaining[_arrayIndex].reservedRate,
+          reservedTokenBeneficiary: _tierDataRemaining[_arrayIndex].reservedTokenBeneficiary,
+          encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri
+        });
+      } else {
+        _tiersToRemove[i] = i + 1;
 
-  //         // Check: correct event params?
-  //         vm.expectEmit(true, false, false, true, address(_delegate));
-  //         emit RemoveTier(_tiersToRemove[i], owner);
-  //       }
-  //     }
+        // Check: correct event params?
+        vm.expectEmit(true, false, false, true, address(_delegate));
+        emit RemoveTier(_tiersToRemove[i], owner);
+      }
+    }
 
-  //     vm.prank(owner);
-  //     _delegate.adjustTiers(new JB721TierData[](0), _tiersToRemove);
+    vm.prank(owner);
+    _delegate.adjustTiers(new JB721TierParams[](0), _tiersToRemove);
 
-  //     JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
-  //       address(_delegate),
-  //       0,
-  //       initialNumberOfTiers - numberTiersToRemove
-  //     );
+    JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
+      address(_delegate),
+      0,
+      initialNumberOfTiers - numberTiersToRemove
+    );
 
-  //     // Check expected number of tiers remainings
-  //     assertEq(_storedTiers.length, _tiers.length - numberTiersToRemove);
+    // Check expected number of tiers remainings
+    assertEq(_storedTiers.length, _tiers.length - numberTiersToRemove);
 
-  //     // Check that all the remaining tiers still exist
-  //     assertTrue(_isIn(_tiersRemaining, _storedTiers));
+    // Check that all the remaining tiers still exist
+    assertTrue(_isIn(_tiersRemaining, _storedTiers));
 
-  //     // Check that none of the removed tiers still exist
-  //     for (uint256 i; i < _tiersToRemove.length; i++) {
-  //       JB721Tier[] memory _removedTier = new JB721Tier[](1);
-  //       _removedTier[0] = _tiers[i];
-  //       assertTrue(!_isIn(_removedTier, _storedTiers));
-  //     }
-  //   }
+    // Check that none of the removed tiers still exist
+    for (uint256 i; i < _tiersToRemove.length; i++) {
+      JB721Tier[] memory _removedTier = new JB721Tier[](1);
+      _removedTier[0] = _tiers[i];
+      assertTrue(!_isIn(_removedTier, _storedTiers));
+    }
+  }
 
   //   function testJBTieredNFTRewardDelegate_adjustTiers_revertIfAddingWithVotingPower(
   //     uint16 initialNumberOfTiers,
