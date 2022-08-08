@@ -418,9 +418,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
-  event Test(uint256);
-  event Next(uint256, uint256);
-  event Idx(uint256);
+  event StartSort(uint256);
+  event MaxTierId(uint256);
+  event CurrentSortIndex(uint256);
+  event NewTierIndex(uint256);
 
   /** 
     @notice
@@ -444,6 +445,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the greatest tier ID.
     uint256 _currentMaxTierId = maxTierId[msg.sender];
 
+    emit MaxTierId(_currentMaxTierId);
+
     // Initialize an array with the appropriate length.
     tierIds = new uint256[](_numberOfNewTiers);
 
@@ -451,8 +454,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
     uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _firstSortIndexOf(msg.sender);
-
+    emit StartSort(_startSortIndex);
     for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
+      emit NewTierIndex(_i);
       // Set the tier being iterated on.
       _data = _tierData[_i - 1];
 
@@ -485,6 +489,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         uint256 _previous;
 
         while (_currentSortIndex != 0) {
+          emit CurrentSortIndex(_currentSortIndex);
           // If the contribution floor is less than the tier being iterated on, set the
           if (_data.contributionFloor < tierData[msg.sender][_currentSortIndex].contributionFloor) {
             // If the index being iterated on isn't the next index, set the after.
@@ -521,15 +526,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     maxTierId[msg.sender] = _currentMaxTierId + _numberOfNewTiers;
     // ---------- cut here ------------
     // DEBUG: dump linked list
-    uint256 _next = _tierIdAfter[msg.sender][0] == 0 ? 1 : _tierIdAfter[msg.sender][0];
+    // uint256 _index = _tierIdAfter[msg.sender][0] == 0 ? 1 : _tierIdAfter[msg.sender][0];
+    // uint256 _nbIter;
+    // uint256 _maxIter = 20;
 
-    while (_next != 0) {
-      emit Idx(_next);
-      emit Next(_next, tierData[msg.sender][_next].contributionFloor);
-      _next = _next == maxTierId[msg.sender] ? 0 : _tierIdAfter[msg.sender][_next] == 0
-        ? _next + 1
-        : _tierIdAfter[msg.sender][_next];
-    }
+    // while (_index != 0 && _nbIter < _maxIter) {
+    //   emit Idx(_index);
+    //   emit Next(_index, tierData[msg.sender][_index].contributionFloor);
+    //   _index = _index == maxTierId[msg.sender] ? 0 : _tierIdAfter[msg.sender][_index] == 0
+    //     ? _index + 1
+    //     : _tierIdAfter[msg.sender][_index];
+
+    //   _nbIter++;
+    // }
     // ------------------------------
   }
 
