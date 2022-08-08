@@ -485,6 +485,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_startSortIndex != 0) {
         // Keep track of the sort index.
         uint256 _currentSortIndex = _startSortIndex;
+
         // Keep track of the previous index.
         uint256 _previous;
 

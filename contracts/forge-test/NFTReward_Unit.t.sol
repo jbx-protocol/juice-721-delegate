@@ -1171,8 +1171,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({id: i + 1, data: _tierData[i]});
     }
 
-    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+    JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+    JBTiered721Delegate _delegate = new JBTiered721Delegate(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
@@ -1181,7 +1181,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierData,
-      IJBTiered721DelegateStore(address(_ForTest_store)),
+      IJBTiered721DelegateStore(address(_store)),
       false,
       false
     );
@@ -1211,7 +1211,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(owner);
     _delegate.adjustTiers(_tierDataToAdd, new uint256[](0));
 
-    JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
+    JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
       0,
       initialNumberOfTiers + floorTiersToAdd.length
