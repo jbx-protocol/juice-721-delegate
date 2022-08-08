@@ -418,6 +418,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
+  event Test(uint256);
+  event Next(uint256, uint256);
+  event Idx(uint256);
 
   /** 
     @notice
@@ -449,12 +452,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // If there's no sort index, start with the first index.
     uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _firstSortIndexOf(msg.sender);
 
-    for (uint256 _i; _i < _numberOfNewTiers; ) {
+    for (uint256 _i = _numberOfNewTiers; _i != 0; ) {
       // Set the tier being iterated on.
-      _data = _tierData[_i];
+      _data = _tierData[_i - 1];
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
-      if (_i != 0 && _data.contributionFloor < _tierData[_i - 1].contributionFloor)
+      if (_i != _numberOfNewTiers && _data.contributionFloor > _tierData[_i].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
       // Make sure there are no voting units or reserved rates if they're not allowed.
@@ -470,7 +473,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _data.remainingQuantity = _data.initialQuantity;
 
       // Get a reference to the tier ID.
-      uint256 _tierId = _currentMaxTierId + _i + 1;
+      uint256 _tierId = _currentMaxTierId + _i;
 
       // Add the tier with the iterative ID.
       tierData[msg.sender][_tierId] = _data;
@@ -496,9 +499,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             // For the next tier being added, start at this current index.
             _startSortIndex = _currentSortIndex;
 
-            // The tier just added is the previous for the next tier being added.
-            _previous = _tierId;
-
             // Set current to zero to break out of the loop.
             _currentSortIndex = 0;
           } else {
@@ -511,14 +511,26 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Set the tier ID in the returned value.
-      tierIds[_i] = _tierId;
+      tierIds[_numberOfNewTiers - _i] = _tierId;
 
       unchecked {
-        ++_i;
+        --_i;
       }
     }
 
     maxTierId[msg.sender] = _currentMaxTierId + _numberOfNewTiers;
+    // ---------- cut here ------------
+    // DEBUG: dump linked list
+    uint256 _next = _tierIdAfter[msg.sender][0] == 0 ? 1 : _tierIdAfter[msg.sender][0];
+
+    while (_next != 0) {
+      emit Idx(_next);
+      emit Next(_next, tierData[msg.sender][_next].contributionFloor);
+      _next = _tierIdAfter[msg.sender][_next] == 0
+        ? _tierIdAfter[msg.sender][_next] == maxTierId[msg.sender] ? 0 : _next + 1
+        : _tierIdAfter[msg.sender][_next];
+    }
+    // ------------------------------
   }
 
   /** 
