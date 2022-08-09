@@ -1144,6 +1144,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.assume(initialNumberOfTiers < 15);
     vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
 
+    // Remove identical tiers to add
+    // uint8[] memory _check = new uint8[](floorTiersToAdd.length);
+    // for (uint256 i; i < floorTiersToAdd.length; i++) {
+    //   for (uint256 j; j < i; j++) {
+    //     vm.assume(floorTiersToAdd[i] != _check[j]);
+    //   }
+    //   _check[i] = floorTiersToAdd[i];
+    // }
+
     // No 0 floor
     for (uint256 i; i < floorTiersToAdd.length; i++) vm.assume(floorTiersToAdd[i] != 0);
 
