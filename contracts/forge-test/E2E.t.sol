@@ -78,8 +78,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       launchProjectData
     );
     // Craft the metadata: claim from the highest tier
-    uint8[] memory rawMetadata = new uint8[](1);
-    rawMetadata[0] = uint8(highestTier);
+    uint16[] memory rawMetadata = new uint16[](1);
+    rawMetadata[0] = uint16(highestTier);
     bytes memory metadata = abi.encode(
       bytes32(0),
       type(IJB721Delegate).interfaceId,
@@ -146,10 +146,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
     // 5 first tier floors
     uint256 _amountNeeded = 50 + 40 + 30 + 20 + 10;
-    uint8[] memory rawMetadata = new uint8[](5);
+    uint16[] memory rawMetadata = new uint16[](5);
     // Mint one per tier for the first 5 tiers
     for (uint256 i = 0; i < 5; i++) {
-      rawMetadata[i] = uint8(i + 1); // Not the tier 0
+      rawMetadata[i] = uint16(i + 1); // Not the tier 0
       // Check: correct tiers and ids?
       vm.expectEmit(true, true, true, true);
       emit Mint(
@@ -198,7 +198,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
   }
 
-  function testMintOnPayUsingFallbackTiers(uint8 valueSent) external {
+  function testMintOnPayUsingFallbackTiers(uint16 valueSent) external {
     vm.assume(valueSent >= 10 && valueSent < 2000);
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
@@ -217,7 +217,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _generateTokenId(highestTier, 1),
       highestTier,
       _beneficiary,
-      NFTRewardDeployerData.tierData[highestTier - 1].contributionFloor,
+      NFTRewardDeployerData.tiers[highestTier - 1].contributionFloor,
       address(_jbETHPaymentTerminal) // msg.sender
     );
     vm.prank(_caller);
@@ -255,7 +255,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
     // _payAmount has to be at least the lowest tier
-    vm.assume(_payAmount >= NFTRewardDeployerData.tierData[0].contributionFloor);
+    vm.assume(_payAmount >= NFTRewardDeployerData.tiers[0].contributionFloor);
     // Pay and mint an NFT
     vm.deal(_user, _payAmount);
     vm.prank(_user);
@@ -277,19 +277,20 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _tiersToRemove[_i] = _originalTiers[_i].id;
     }
     // Add 1 new tier
-    JB721TierData[] memory _tierDataToAdd = new JB721TierData[](1);
-    _tierDataToAdd[0] = JB721TierData({
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](1);
+    _tierParamsToAdd[0] = JB721TierParams({
       contributionFloor: _payAmount,
       lockedUntil: uint48(0),
-      remainingQuantity: uint40(100),
       initialQuantity: uint40(100),
       votingUnits: uint16(0),
       reservedRate: uint16(0),
-      tokenUri: tokenUris[0]
+      reservedTokenBeneficiary: reserveBeneficiary,
+      encodedIPFSUri: tokenUris[0],
+      shouldUseBeneficiaryAsDefault: false
     });
     // Remove all the existing tiers and add a new one at the previous paid price
     vm.prank(_projectOwner);
-    _delegate.adjustTiers(_tierDataToAdd, _tiersToRemove);
+    _delegate.adjustTiers(_tierParamsToAdd, _tiersToRemove);
     // We now pay the exact same amount and expect to receive the new tier and not the old one
     vm.deal(_user, _payAmount);
     vm.prank(_user);
@@ -319,9 +320,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       launchProjectData
     );
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
-    // Set the reserved token beneficiary
-    vm.prank(_projectOwner);
-    IJBTiered721Delegate(NFTRewardDataSource).setReservedTokenBeneficiary(_projectOwner);
     // Check: 1 reserved token before any mint from a contribution?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
@@ -334,7 +332,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     vm.prank(_projectOwner);
     IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
     // Check: NFT received?
-    assertEq(IERC721(NFTRewardDataSource).balanceOf(_projectOwner), 1);
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 1);
     // Check: no more reserved token to mint?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
@@ -349,8 +347,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
     vm.prank(_projectOwner);
     IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
-    uint8[] memory rawMetadata = new uint8[](1);
-    rawMetadata[0] = uint8(highestTier); // reward tier
+    uint16[] memory rawMetadata = new uint16[](1);
+    rawMetadata[0] = uint16(highestTier); // reward tier
     bytes memory metadata = abi.encode(
       bytes32(0),
       type(IJB721Delegate).interfaceId,
@@ -395,7 +393,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     vm.prank(_projectOwner);
     IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
     // Check: NFT received?
-    assertEq(IERC721(NFTRewardDataSource).balanceOf(_projectOwner), 2);
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 2);
     // Check: no more reserved token to mint?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
@@ -421,16 +419,17 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       JBLaunchProjectData memory launchProjectData
     )
   {
-    JB721TierData[] memory tierData = new JB721TierData[](10);
+    JB721TierParams[] memory tierParams = new JB721TierParams[](10);
     for (uint256 i; i < 10; i++) {
-      tierData[i] = JB721TierData({
+      tierParams[i] = JB721TierParams({
         contributionFloor: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
-        remainingQuantity: uint40(10),
         initialQuantity: uint40(10),
         votingUnits: uint16(0),
         reservedRate: uint16(JBConstants.MAX_RESERVED_RATE),
-        tokenUri: tokenUris[i]
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
       });
     }
     NFTRewardDeployerData = JBDeployTiered721DelegateData({
@@ -441,7 +440,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       contractUri: contractUri,
       baseUri: baseUri,
       owner: _projectOwner,
-      tierData: tierData,
+      tiers: tierParams,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: new JBTiered721DelegateStore(),
       lockReservedTokenChanges: true,
@@ -465,9 +464,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     pure
     returns (uint256 tokenId)
   {
-    // The tier ID in the first 8 bits.
+    // The tier ID in the first 16 bits.
     tokenId = _tierId;
     // The token number in the rest.
-    tokenId |= _tokenNumber << 8;
+    tokenId |= _tokenNumber << 16;
   }
 }

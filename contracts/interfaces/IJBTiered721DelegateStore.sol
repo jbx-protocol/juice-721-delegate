@@ -2,7 +2,7 @@
 pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
-import './../structs/JB721TierData.sol';
+import './../structs/JB721TierParams.sol';
 import './../structs/JB721Tier.sol';
 
 interface IJBTiered721DelegateStore {
@@ -35,6 +35,8 @@ interface IJBTiered721DelegateStore {
 
   function tierIdOfToken(uint256 _tokenId) external pure returns (uint256);
 
+  function encodedIPFSUriOf(address _nft, uint256 _tierId) external view returns (bytes32);
+
   function firstOwnerOf(address _nft, uint256 _tokenId) external view returns (address);
 
   function redemptionWeightOf(address _nft, uint256[] memory _tokenIds)
@@ -65,7 +67,12 @@ interface IJBTiered721DelegateStore {
     uint256 _tierId
   ) external view returns (uint256 units);
 
-  function reservedTokenBeneficiary(address _nft) external view returns (address);
+  function defaultReservedTokenBeneficiaryOf(address _nft) external view returns (address);
+
+  function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
+    external
+    view
+    returns (address);
 
   function baseUriOf(address _nft) external view returns (string memory);
 
@@ -73,7 +80,9 @@ interface IJBTiered721DelegateStore {
 
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
-  function recordAddTierData(JB721TierData[] memory _tierData)
+  function encodedTierIPFSUriOf(address _nft, uint256 _tokenId) external view returns (bytes32);
+
+  function recordAddTierData(JB721TierParams[] memory _tierData)
     external
     returns (uint256[] memory tierIds);
 
@@ -89,9 +98,9 @@ interface IJBTiered721DelegateStore {
       uint256 leftoverAmount
     );
 
-  function recordSetReservedTokenBeneficiary(address _beneficiary) external;
+  function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;
 
-  function recordMint(uint256 _amount, uint8[] calldata _tierIds)
+  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
     external
     returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 

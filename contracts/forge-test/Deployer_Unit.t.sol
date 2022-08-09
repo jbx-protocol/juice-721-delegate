@@ -132,17 +132,18 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     JBGroupedSplits[] memory groupedSplits;
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
-    JB721TierData[] memory tierData = new JB721TierData[](10);
+    JB721TierParams[] memory tierParams = new JB721TierParams[](10);
 
     for (uint256 i; i < 10; i++) {
-      tierData[i] = JB721TierData({
+      tierParams[i] = JB721TierParams({
         contributionFloor: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
-        remainingQuantity: uint40(100),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
-        tokenUri: tokenUris[i]
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
       });
     }
 
@@ -154,7 +155,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       contractUri: contractUri,
       baseUri: baseUri,
       owner: owner,
-      tierData: tierData,
+      tiers: tierParams,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
       lockReservedTokenChanges: true,

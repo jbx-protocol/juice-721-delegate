@@ -52,7 +52,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       _deployTieredNFTRewardDataSourceData.baseUri,
       _deployTieredNFTRewardDataSourceData.tokenUriResolver,
       _deployTieredNFTRewardDataSourceData.contractUri,
-      _deployTieredNFTRewardDataSourceData.tierData,
+      _deployTieredNFTRewardDataSourceData.tiers,
       _deployTieredNFTRewardDataSourceData.store,
       _deployTieredNFTRewardDataSourceData.lockReservedTokenChanges,
       _deployTieredNFTRewardDataSourceData.lockVotingUnitChanges

@@ -123,17 +123,18 @@ contract RinkebyLaunchProjectFor is Script {
     );
 
     // NFT Reward parameters
-    JB721TierData[] memory tiers = new JB721TierData[](3);
+    JB721TierParams[] memory tiers = new JB721TierParams[](3);
 
     for (uint256 i; i < 3; i++) {
-      tiers[i] = JB721TierData({
+      tiers[i] = JB721TierParams({
         contributionFloor: uint80(i * 0.001 ether),
         lockedUntil: uint48(0),
-        remainingQuantity: 100,
         initialQuantity: 100,
         votingUnits: uint16(10 * i),
         reservedRate: 1,
-        tokenUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89
+        reservedTokenBeneficiary: address(0),
+        encodedIPFSUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89,
+        shouldUseBeneficiaryAsDefault: true
       });
     }
 
@@ -145,7 +146,7 @@ contract RinkebyLaunchProjectFor is Script {
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
       owner: _projectOwner,
-      tierData: tiers,
+      tiers: tiers,
       reservedTokenBeneficiary: msg.sender,
       store: IJBTiered721DelegateStore(STORE),
       lockReservedTokenChanges: true,
