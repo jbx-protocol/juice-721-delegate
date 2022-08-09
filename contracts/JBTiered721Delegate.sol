@@ -20,11 +20,16 @@ import './libraries/JBIpfsDecoder.sol';
   Intended use is to incentivize initial project support by minting a limited number of NFTs to the first N contributors among various price tiers.
 */
 contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Ownable {
+  using Checkpoints for Checkpoints.History;
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
   error OVERSPENDING();
+
+  mapping(address => mapping(uint256 => address)) private _tierDelegation;
+  mapping(address => mapping(uint256 => Checkpoints.History)) private _delegateTierCheckpoints;
+  mapping(uint256 => Checkpoints.History) private _totalTierCheckpoints;
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -312,6 +317,14 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
   }
 
+  /**
+   * @dev Delegates votes from the sender to `delegatee`.
+   */
+  function delegateTier(address delegatee, uint256 _tierId) public virtual override {
+    address account = _msgSender();
+    _delegateTier(account, delegatee, _tierId);
+  }
+
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
@@ -495,6 +508,15 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     return store.votingUnitsOf(address(this), _account);
   }
 
+  function _getTierVotingUnits(address _account, uint256 _tierId)
+    internal
+    view
+    virtual
+    returns (uint256 units)
+  {
+    return store.tierVotingUnitsOf(address(this), _account, _tierId);
+  }
+
   /**
     @notice
     User the hook to register the first owner if it's not yet regitered.
@@ -529,10 +551,83 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     store.recordTransferForTier(_tier.id, _from, _to);
 
-    if (_tier.data.votingUnits != 0)
+    if (_tier.data.votingUnits != 0) {
       // Transfer the voting units.
       _transferVotingUnits(_from, _to, _tier.data.votingUnits);
+      _transferTierVotingUnits(_from, _to, _tier.id, _tier.data.votingUnits);
+    }
 
     super._afterTokenTransfer(_from, _to, _tokenId);
+  }
+
+  /**
+   * @dev Delegate all of `account`'s voting units to `delegatee`.
+   *
+   * Emits events {DelegateChanged} and {DelegateVotesChanged}.
+   */
+  function _delegateTier(
+    address account,
+    address delegatee,
+    uint256 _tierId
+  ) internal virtual {
+    address oldDelegate = delegates(account);
+    _tierDelegation[account][_tierId] = delegatee;
+
+    emit DelegateChanged(account, oldDelegate, delegatee);
+    _moveTierDelegateVotes(oldDelegate, delegatee, _tierId, _getTierVotingUnits(account, _tierId));
+  }
+
+  /**
+   * @dev Moves delegated votes from one delegate to another.
+   */
+  function _moveTierDelegateVotes(
+    address from,
+    address to,
+    uint256 _tierId,
+    uint256 amount
+  ) private {
+    if (from != to && amount > 0) {
+      if (from != address(0)) {
+        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[from][_tierId].push(
+          __subtract,
+          amount
+        );
+        emit TierDelegateVotesChanged(from, oldValue, newValue, _tierId, msg.sender);
+      }
+      if (to != address(0)) {
+        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[to][_tierId].push(
+          __add,
+          amount
+        );
+        emit TierDelegateVotesChanged(to, _tierId, oldValue, newValue, msg.sender);
+      }
+    }
+  }
+
+  /**
+   * @dev Transfers, mints, or burns voting units. To register a mint, `from` should be zero. To register a burn, `to`
+   * should be zero. Total supply of voting units will be adjusted with mints and burns.
+   */
+  function _transferTierVotingUnits(
+    address from,
+    address to,
+    uint256 _tierId,
+    uint256 amount
+  ) internal virtual {
+    if (from == address(0)) {
+      _totalTierCheckpoints[_tierId].push(__add, amount);
+    }
+    if (to == address(0)) {
+      _totalTierCheckpoints[_tierId].push(__subtract, amount);
+    }
+    _moveTierDelegateVotes(delegates(from), delegates(to), _tierId, amount);
+  }
+
+  function __add(uint256 a, uint256 b) private pure returns (uint256) {
+    return a + b;
+  }
+
+  function __subtract(uint256 a, uint256 b) private pure returns (uint256) {
+    return a - b;
   }
 }

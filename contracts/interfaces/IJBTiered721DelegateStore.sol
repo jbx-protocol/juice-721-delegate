@@ -59,6 +59,12 @@ interface IJBTiered721DelegateStore {
 
   function votingUnitsOf(address _nft, address _account) external view returns (uint256 units);
 
+  function tierVotingUnitsOf(
+    address _nft,
+    address _account,
+    uint256 _tierId
+  ) external view returns (uint256 units);
+
   function reservedTokenBeneficiary(address _nft) external view returns (address);
 
   function baseUriOf(address _nft) external view returns (string memory);

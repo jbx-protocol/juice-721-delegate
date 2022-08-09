@@ -212,8 +212,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return JB721Tier({id: _id, data: tierData[_nft][_id]});
   }
 
-  /** 
-  
+  /**  
     @notice
     Return the tier for the specified token ID. 
 
@@ -339,6 +338,30 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         --_i;
       }
     }
+  }
+
+  /**
+    @notice
+    The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
+
+    @param _nft The NFT to get voting units within.
+    @param _account The account to get voting units for.
+    @param _tierId asdf
+
+    @return The voting units for the account.
+  */
+  function tierVotingUnitsOf(
+    address _nft,
+    address _account,
+    uint256 _tierId
+  ) external view virtual override returns (uint256) {
+    // Get a reference to the account's balance in this tier.
+    uint256 _balance = tierBalanceOf[_nft][_account][_tierId];
+
+    if (_balance == 0) return 0;
+
+    // Add the tier's voting units.
+    return _balance * tierData[_nft][_tierId].votingUnits;
   }
 
   /**
