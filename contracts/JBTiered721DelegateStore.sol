@@ -418,6 +418,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
+  event Test(uint256);
 
   /** 
     @notice
@@ -491,12 +492,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // If the contribution floor is less than the tier being iterated on, set the
           if (_data.contributionFloor < tierData[msg.sender][_currentSortIndex].contributionFloor) {
             // If the index being iterated on isn't the next index, set the after.
-            if (_currentSortIndex != _tierId + 1)
+            if (_currentSortIndex != _tierId + 1) {
               _tierIdAfter[msg.sender][_tierId] = _currentSortIndex;
+            }
             // If the previous after index was set to something else, set the previous after.
-            if (_previous != _tierId - 1)
-              // Set the tier after the previous one being iterated on as the tier being added.
-              _tierIdAfter[msg.sender][_previous] = _tierId;
+            // if (_previous != _tierId - 1)
+            // Set the tier after the previous one being iterated on as the tier being added.
+            _tierIdAfter[msg.sender][_previous] = _tierId;
 
             // for the next tier being added, start at this current index. if the tierid is the last tier, start there.
             _startSortIndex = _currentSortIndex;
