@@ -172,7 +172,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
-    _store.recordAddTierData(_tiers);
+    _store.recordAddTiers(_tiers);
 
     if (_lockReservedTokenChanges) _store.recordLockReservedTokenChanges(_lockReservedTokenChanges);
     if (_lockVotingUnitChanges) _store.recordLockVotingUnitChanges(_lockVotingUnitChanges);
@@ -231,7 +231,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     // Add tiers.
     if (_numberOfTiersToAdd != 0) {
-      uint256[] memory _tierIdsAdded = store.recordAddTierData(_tiersToAdd);
+      uint256[] memory _tierIdsAdded = store.recordAddTiers(_tiersToAdd);
 
       for (uint256 _i; _i < _numberOfTiersToAdd; ) {
         emit AddTier(_tierIdsAdded[_i], _tiersToAdd[_i], msg.sender);

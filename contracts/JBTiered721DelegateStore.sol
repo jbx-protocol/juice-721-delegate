@@ -195,7 +195,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _numberOfIncludedTiers;
 
     // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(msg.sender);
+    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(_nft);
 
     // Keep a referecen to the tier being iterated on.
     JBStored721Tier memory _storedTier;
@@ -525,7 +525,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
-  event Test(uint256);
 
   /** 
     @notice
@@ -535,7 +534,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return tierIds The IDs of the tiers added.
   */
-  function recordAddTierData(JB721TierParams[] memory _tiersToAdd)
+  function recordAddTiers(JB721TierParams[] memory _tiersToAdd)
     external
     override
     returns (uint256[] memory tierIds)
@@ -553,6 +552,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
     uint256 _startSortIndex = _currentMaxTierId == 0 ? 0 : _firstSortIndexOf(msg.sender);
+
     // Keep track of the previous index.
     uint256 _previous;
 

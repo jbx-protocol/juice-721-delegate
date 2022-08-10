@@ -1215,9 +1215,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.assume(initialNumberOfTiers < 15);
     vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
 
-    // No 0 floor
-    for (uint256 i; i < floorTiersToAdd.length; i++) vm.assume(floorTiersToAdd[i] != 0);
-
     // Floor are sorted in ascending order
     floorTiersToAdd = _sortArray(floorTiersToAdd);
 
