@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import '@paulrberg/contracts/math/PRBMath.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
+import '@paulrberg/contracts/math/PRBMath.sol';
 import './ERC721.sol';
 import '../interfaces/IJB721Delegate.sol';
 
@@ -14,7 +14,7 @@ import '../interfaces/IJB721Delegate.sol';
   JB721Delegate
 
   @notice 
-  Delegate that offers project contributors NFTs upon payment and the ability to redeem NFTs for treasury assets based.
+  Delegate that offers project contributors NFTs upon payment and the ability to redeem NFTs for treasury assets.
 
   @dev
   Adheres to -

@@ -84,7 +84,7 @@ interface IJBTiered721DelegateStore {
     external
     returns (uint256[] memory tokenIds);
 
-  function recordMintBestAvailableTier(uint256 _amount, bool _expectMint)
+  function recordMintBestAvailableTier(uint256 _amount)
     external
     returns (
       uint256 tokenId,

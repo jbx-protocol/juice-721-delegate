@@ -18,7 +18,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INSUFFICIENT_RESERVES();
   error INVALID_TIER();
   error NO_QUANTITY();
-  error NOT_AVAILABLE();
   error OUT();
   error RESERVED_RATE_NOT_ALLOWED();
   error TIER_LOCKED();
@@ -791,13 +790,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.
-    @param _expectMint A flag indicating if a mint is expected.
 
     @return tokenId The token ID minted.
     @return tierId The ID of the tier minted from.
     @return leftoverAmount The amount leftover after the mint. 
   */
-  function recordMintBestAvailableTier(uint256 _amount, bool _expectMint)
+  function recordMintBestAvailableTier(uint256 _amount)
     external
     override
     returns (
@@ -839,11 +837,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     }
 
     // If there's no best tier, return.
-    if (tierId == 0) {
-      // Make sure a mint was not expected.
-      if (_expectMint) revert NOT_AVAILABLE();
-      leftoverAmount = _amount;
-    } else {
+    if (tierId == 0) leftoverAmount = _amount;
+    else {
       // Keep a reference to the best tier.
       JBStored721Tier storage _bestStoredTier = _storedTierOf[msg.sender][tierId];
 
