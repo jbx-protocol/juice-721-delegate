@@ -1434,32 +1434,29 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertTrue(_isIn(_storedTiers, _tiersRemaining));
   }
 
-  function testJBTieredNFTRewardDelegate_adjustTiers_addAndRemoveTiers(
-    uint8 initialNumberOfTiers,
-    uint8[] memory floorTiersToAdd,
-    uint256[] memory floorTiersToRemove
-  ) public {
-    // Include adding X new tiers when 0 preexisting ones
-    //vm.assume(initialNumberOfTiers < 30);
-    //vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 20);
-    //vm.assume(floorTiersToRemove.length > 0 && floorTiersToRemove.length < 20);
+  function testJBTieredNFTRewardDelegate_adjustTiers_addAndRemoveTiers() public {
+    // // Include 0 preexisting ones
+    // vm.assume(initialNumberOfTiers < 30);
+    // vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 20);
+    // vm.assume(numberTiersToRemove > 0 && numberTiersToRemove < initialNumberOfTiers);
 
-    // No 0 floor
-    for (uint256 i; i < floorTiersToAdd.length; i++) vm.assume(floorTiersToAdd[i] != 0);
+    uint256 initialNumberOfTiers = 5;
+    uint256 numberOfTiersToAdd = 5;
+    uint256 numberOfTiersToRemove = 3;
 
-    // Floor are sorted in ascending order
-    floorTiersToAdd = _sortArray(floorTiersToAdd);
+    uint256[] memory floorTiersToAdd = new uint256[](numberOfTiersToAdd);
+    floorTiersToAdd[0] = 1;
+    floorTiersToAdd[1] = 4;
+    floorTiersToAdd[2] = 5;
+    floorTiersToAdd[3] = 6;
+    floorTiersToAdd[4] = 10;
 
-    // tiers to remove are in the existing tiers and there are no double values in the array
-    uint256[] memory _check = new uint256[](floorTiersToRemove.length);
-    for (uint256 i; i < floorTiersToRemove.length; i++) {
-      vm.assume(floorTiersToRemove[i] <= initialNumberOfTiers && floorTiersToRemove[i] != 0);
-      for (uint256 j; j < i; j++) {
-        vm.assume(floorTiersToRemove[i] != _check[j]);
-      }
-      _check[i] = floorTiersToRemove[i];
-    }
+    uint256[] memory tierIdToRemove = new uint256[](numberOfTiersToRemove);
+    tierIdToRemove[0] = 1;
+    tierIdToRemove[1] = 3;
+    tierIdToRemove[2] = 4;
 
+    // Initial tiers data
     JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
     for (uint256 i; i < initialNumberOfTiers; i++) {
@@ -1487,6 +1484,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
     }
 
+    //  Deploy the delegate with the initial tiers
     JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
     JBTiered721Delegate _delegate = new JBTiered721Delegate(
       projectId,
@@ -1504,11 +1502,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     _delegate.transferOwnership(owner);
 
-    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
-    JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
-    for (uint256 i; i < floorTiersToAdd.length; i++) {
+    // -- Build expected added tiers --
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](numberOfTiersToAdd);
+    JB721Tier[] memory _tiersAdded = new JB721Tier[](numberOfTiersToAdd);
+    for (uint256 i; i < numberOfTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        contributionFloor: uint80(floorTiersToAdd[i]) * 11,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1534,24 +1533,67 @@ contract TestJBTieredNFTRewardDelegate is Test {
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
     }
 
+    // -- Build expected removed/remaining tiers --
+    JB721TierParams[] memory _tierDataRemaining = new JB721TierParams[](2);
+    JB721Tier[] memory _tiersRemaining = new JB721Tier[](2);
+
+    uint256 _arrayIndex;
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      // Tiers which will remain
+      if (i + 1 != 1 && i + 1 != 3 && i + 1 != 4) {
+        _tierDataRemaining[_arrayIndex] = JB721TierParams({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
+          initialQuantity: uint40(100),
+          votingUnits: uint16(0),
+          reservedRate: uint16(i),
+          reservedTokenBeneficiary: reserveBeneficiary,
+          encodedIPFSUri: tokenUris[0],
+          shouldUseBeneficiaryAsDefault: false
+        });
+
+        _tiersRemaining[_arrayIndex] = JB721Tier({
+          id: i + 1,
+          contributionFloor: _tierDataRemaining[_arrayIndex].contributionFloor,
+          lockedUntil: _tierDataRemaining[_arrayIndex].lockedUntil,
+          remainingQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
+          initialQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
+          votingUnits: _tierDataRemaining[_arrayIndex].votingUnits,
+          reservedRate: _tierDataRemaining[_arrayIndex].reservedRate,
+          reservedTokenBeneficiary: _tierDataRemaining[_arrayIndex].reservedTokenBeneficiary,
+          encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri
+        });
+        _arrayIndex++;
+      } else {
+        // Otherwise, part of the tiers removed:
+        // Check: correct event params?
+        vm.expectEmit(true, false, false, true, address(_delegate));
+        emit RemoveTier(i + 1, owner);
+      }
+    }
+
     vm.prank(owner);
-    _delegate.adjustTiers(_tierParamsToAdd, floorTiersToRemove);
+    _delegate.adjustTiers(_tierParamsToAdd, tierIdToRemove);
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
       0,
-      initialNumberOfTiers + floorTiersToAdd.length
+      7 // 7 tiers remaining - Hardcoded to avoid stack too deep
     );
 
-    // Check: Expected number of tiers?
-    assertEq(_storedTiers.length, _tiers.length + _tiersAdded.length);
+    // Check: Expected number of remaining tiers?
+    assertEq(_storedTiers.length, 7);
 
-    // Check: Are all tiers in the new tiers (unsorted)?
-    assertTrue(_isIn(_tiers, _storedTiers)); // Original tiers
+    // // Check: Are all non-deleted and added tiers in the new tiers (unsorted)?
+    assertTrue(_isIn(_tiersRemaining, _storedTiers)); // Original tiers
     assertTrue(_isIn(_tiersAdded, _storedTiers)); // New tiers
 
+    // Check: Are all the deleted tiers removed (remaining is tested supra)?
+    assertFalse(_isIn(_tiers, _storedTiers)); // Will emit _isIn: incomplete inclusion but without failing assertion
+
     // Check: Are all the tiers sorted?
-    for (uint256 i = 1; i < _storedTiers.length; i++) {
-      assertLe(_storedTiers[i - 1].contributionFloor, _storedTiers[i].contributionFloor);
+    for (uint256 j = 1; j < _storedTiers.length; j++) {
+      assertLe(_storedTiers[j - 1].contributionFloor, _storedTiers[j].contributionFloor);
     }
   }
 
@@ -2886,7 +2928,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Insure all the smoll indexes have been iterated on (ie we've seen (smoll.length)! elements)
     if (count == (smol.length * (smol.length + 1)) / 2) return true;
     else {
-      fail('_isIn: incomplete inclusion');
+      emit log('_isIn: incomplete inclusion');
+      return false;
     }
   }
 
