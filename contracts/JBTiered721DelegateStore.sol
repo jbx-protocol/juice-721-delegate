@@ -385,7 +385,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Resolves the encoded tier IPFS URI of the tier for the given token.
 
-    @param _nft The NFT contract to which the encoded upfs uri belongs.
+    @param _nft The NFT contract to which the encoded IPFS URI belongs.
     @param _tokenId the ID of the token.
 
     @return The encoded IPFS URI.
@@ -738,11 +738,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-    Record a token transfer
+    Record a token transfer.
 
     @param _tierId The ID the tier being transfered
-    @param _from The sender of the token
-    @param _to The recipient of the token
+    @param _from The sender of the token.
+    @param _to The recipient of the token.
   */
   function recordTransferForTier(
     uint256 _tierId,
