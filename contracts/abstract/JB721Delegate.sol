@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-import '@openzeppelin/contracts/access/Ownable.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol';
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
 import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol';
-
 import './ERC721.sol';
 import '../interfaces/IJB721Delegate.sol';
 
@@ -18,10 +14,7 @@ import '../interfaces/IJB721Delegate.sol';
   JB721Delegate
 
   @notice 
-  Data source that offers project contributors NFTs.
-
-  @dev 
-  This JBFundingCycleDataSource implementation will simply through the weight, reclaimAmount, and memos they are called with.
+  Delegate that offers project contributors NFTs upon payment and the ability to redeem NFTs for treasury assets based.
 
   @dev
   Adheres to -
@@ -32,9 +25,7 @@ import '../interfaces/IJB721Delegate.sol';
 
   @dev
   Inherits from -
-  todo
-  ERC721Votes: A checkpointable standard definition for non-fungible tokens (NFTs).
-  Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
+  ERC721: A standard definition for non-fungible tokens (NFTs).
 */
 abstract contract JB721Delegate is
   IJB721Delegate,
@@ -58,7 +49,7 @@ abstract contract JB721Delegate is
 
   /**
     @notice
-    The ID of the project this NFT should be distributed for.
+    The ID of the project this contract's functionality applies to.
   */
   uint256 public immutable override projectId;
 
@@ -76,12 +67,9 @@ abstract contract JB721Delegate is
     @notice 
     Part of IJBFundingCycleDataSource, this function gets called when the project receives a payment. It will set itself as the delegate to get a callback from the terminal.
 
-    @dev 
-    This function will revert if the contract calling it is not the store of one of the project's terminals. 
-
     @param _data The Juicebox standard project payment data.
 
-    @return weight The weight that tokens should get minted in accordance to 
+    @return weight The weight that tokens should get minted in accordance with.
     @return memo The memo that should be forwarded to the event.
     @return delegate A delegate to call once the payment has taken place.
   */
@@ -101,7 +89,7 @@ abstract contract JB721Delegate is
 
   /**
     @notice 
-    Part of IJBFundingCycleDataSource, this function gets called when a project's token holders redeem. It will return the standard properties.
+    Part of IJBFundingCycleDataSource, this function gets called when a project's token holders redeem.
 
     @param _data The Juicebox standard project redemption data.
 
@@ -191,7 +179,7 @@ abstract contract JB721Delegate is
   //*********************************************************************//
 
   /**
-    @param _projectId The ID of the project for which this NFT should be minted in response to payments made. 
+    @param _projectId The ID of the project this contract's functionality applies to.
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
@@ -246,7 +234,7 @@ abstract contract JB721Delegate is
       _data.projectId != projectId
     ) revert INVALID_REDEMPTION_EVENT();
 
-    // Decode the metadata
+    // Decode the metadata.
     uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
 
     // Get a reference to the number of token IDs being checked.
