@@ -14,6 +14,16 @@ import './libraries/JBIpfsDecoder.sol';
 
   @notice
   Delegate that offers project contributors NFTs with tiered price floors upon payment and the ability to redeem NFTs for treasury assets based based on price floor.
+
+  @dev
+  Adheres to -
+  IJBTiered721Delegate: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
+
+  @dev
+  Inherits from -
+  JB721Delegate: A generic NFT delegate.
+  Votes: A helper for voting balance snapshots.
+  Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
 contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Ownable {
   //*********************************************************************//
@@ -225,7 +235,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     Adjust the tiers mintable through this contract, adhering to any locked tier constraints. 
 
     @dev
-    Only a project's owner or operator can adjust the tiers.
+    Only the contract's owner can adjust the tiers.
 
     @param _tiersToAdd An array of tier data to add.
     @param _tierIdsToRemove An array of tier IDs to remove.

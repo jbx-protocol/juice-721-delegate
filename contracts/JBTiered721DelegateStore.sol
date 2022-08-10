@@ -8,6 +8,13 @@ import './structs/JBStored721Tier.sol';
 /**
   @title
   JBTiered721DelegateStore
+
+  @notice
+  The contract that stores and manages the NFT's data.
+
+  @dev
+  Adheres to -
+  IJBTiered721DelegateStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
 */
 contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
@@ -36,14 +43,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @dev
     If empty, assume the next index should come after. 
 
-    _nft The NFT contract to get ther order index from.
+    _nft The NFT contract to get tier order index from.
     _index The index to get a tier after relative to.
   */
   mapping(address => mapping(uint256 => uint256)) internal _tierIdAfter;
 
   /**
     @notice
-    An optionnal beneficiary for the reserved token of a given tier.
+    An optional beneficiary for the reserved token of a given tier.
 
     _nft The NFT contract to which the reserved token beneficiary belongs.
     _tierId the ID of the tier.
@@ -52,7 +59,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-    The reward tier data. 
+    The stored reward tier. 
 
     _nft The NFT contract to which the tier data belong.
     _tierId The incremental ID of the tier, starting with 1.
@@ -65,9 +72,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-    The total number of tiers there are. 
+    The biggest tier ID used. 
 
-    _nft The NFT contract to get the number of tiers of.
+    _nft The NFT contract to get the number of tiers.
   */
   mapping(address => uint256) public override maxTierId;
 
@@ -75,7 +82,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Each account's balance within a specific tier.
 
-    _nft The NFT contract to which the tier data belong.
+    _nft The NFT contract to which the tier balances belong.
     _owner The address to get a balance for. 
     _tierId The ID of the tier to get a balance within.
   */
@@ -85,14 +92,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice 
     The number of reserved tokens that have been minted for each tier. 
 
-    _nft The NFT contract to which the tier data belong.
+    _nft The NFT contract to which the reserve data belong.
     _tierId The ID of the tier to get a minted reserved token count for.
    */
   mapping(address => mapping(uint256 => uint256)) public override numberOfReservesMintedFor;
 
   /** 
     @notice
-    For each tier ID, a flag indicating if the tier has been paused. 
+    For each tier ID, a flag indicating if the tier has been removed. 
 
     _nft The NFT contract to which the tier data belong.
     _tierId The ID of the tier to check.
@@ -101,7 +108,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-    The beneficiary of reserved tokens.
+    The beneficiary of reserved tokens when the tier doesn't specify a beneficiary.
 
     _nft The NFT contract to which the reserved token beneficiary applies.
   */
