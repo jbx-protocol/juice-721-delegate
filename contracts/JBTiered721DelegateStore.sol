@@ -1127,11 +1127,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-    The first sorted index of an NFT.
+    The first sorted tier index of an NFT.
 
-    @param _nft The NFT to get the first index of.
+    @param _nft The NFT to get the first sorted tier index of.
 
-    @return index The first index.
+    @return index The first sorted tier index.
   */
   function _firstSortIndexOf(address _nft) internal view returns (uint256 index) {
     index = _tierIdAfter[_nft][0];
