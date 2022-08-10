@@ -10,15 +10,11 @@ import './interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**
   @notice
-  Deploys a project with a tiered limited NFT reward data source attached.
+  Deploys a tier delegate.
 
   @dev
   Adheres to -
-  IJBTiered721DelegateProjectDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
-
-  @dev
-  Inherits from -
-  JBOperatable: Several functions in this contract can only be accessed by a project owner, or an address that has been preconfifigured to be an operator of the project.
+  IJBTiered721DelegateDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
 */
 contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   //*********************************************************************//
@@ -33,34 +29,35 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
   /** 
     @notice
-    Deploys a Tiered limited NFT reward data source.
+    Deploys a delegate.
 
-    @param _projectId The ID of the project for which the data source should apply.
-    @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
+    @param _projectId The ID of the project this contract's functionality applies to.
+    @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
 
     @return newDataSource The address of the newly deployed data source.
   */
   function deployDataSourceFor(
     uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
+    // Deploy the delegate contract.
     JBTiered721Delegate newDataSource = new JBTiered721Delegate(
       _projectId,
-      _deployTieredNFTRewardDataSourceData.directory,
-      _deployTieredNFTRewardDataSourceData.name,
-      _deployTieredNFTRewardDataSourceData.symbol,
-      _deployTieredNFTRewardDataSourceData.baseUri,
-      _deployTieredNFTRewardDataSourceData.tokenUriResolver,
-      _deployTieredNFTRewardDataSourceData.contractUri,
-      _deployTieredNFTRewardDataSourceData.tiers,
-      _deployTieredNFTRewardDataSourceData.store,
-      _deployTieredNFTRewardDataSourceData.lockReservedTokenChanges,
-      _deployTieredNFTRewardDataSourceData.lockVotingUnitChanges
+      _deployTiered721DelegateData.directory,
+      _deployTiered721DelegateData.name,
+      _deployTiered721DelegateData.symbol,
+      _deployTiered721DelegateData.baseUri,
+      _deployTiered721DelegateData.tokenUriResolver,
+      _deployTiered721DelegateData.contractUri,
+      _deployTiered721DelegateData.tiers,
+      _deployTiered721DelegateData.store,
+      _deployTiered721DelegateData.lockReservedTokenChanges,
+      _deployTiered721DelegateData.lockVotingUnitChanges
     );
 
     // Transfer the ownership to the specified address.
-    if (_deployTieredNFTRewardDataSourceData.owner != address(0))
-      newDataSource.transferOwnership(_deployTieredNFTRewardDataSourceData.owner);
+    if (_deployTiered721DelegateData.owner != address(0))
+      newDataSource.transferOwnership(_deployTiered721DelegateData.owner);
 
     emit DatasourceDeployed(_projectId, newDataSource);
 
