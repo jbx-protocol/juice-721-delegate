@@ -79,6 +79,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   event RemoveTier(uint256 indexed tierId, address caller);
 
+  event CleanTiers(address indexed nft, address caller);
+
   function setUp() public {
     _accessJBLib = new AccessJBLib();
     vm.label(beneficiary, 'beneficiary');
@@ -1882,10 +1884,43 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_cleanTiers_removeTheInactiveTiers(
     uint16 initialNumberOfTiers,
-    uint16 numberTiersToRemove
+    uint256 seed,
+    uint8 numberOfTiersToRemove
   ) public {
+    // Include adding X new tiers when 0 preexisting ones
     vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
-    vm.assume(numberTiersToRemove > 0 && numberTiersToRemove < initialNumberOfTiers);
+    vm.assume(numberOfTiersToRemove > 0 && numberOfTiersToRemove < initialNumberOfTiers);
+
+    // Create random tiers to remove
+    uint256[] memory tiersToRemove = new uint256[](numberOfTiersToRemove);
+
+    // seed to generate new random tiers, i to iterate to fill the tiersToRemove array
+    for (uint256 i; i < numberOfTiersToRemove; ) {
+      uint256 _newTierCandidate = uint256(keccak256(abi.encode(seed))) % initialNumberOfTiers;
+      bool _invalidTier;
+
+      if (_newTierCandidate != 0) {
+        for (uint256 j; j < numberOfTiersToRemove; j++)
+          // Same value twice?
+          if (_newTierCandidate == tiersToRemove[j]) {
+            _invalidTier = true;
+            break;
+          }
+
+        if (!_invalidTier) {
+          tiersToRemove[i] = _newTierCandidate;
+          i++;
+        }
+      }
+
+      // Overflow to loop over (seed is fuzzed, can be starting at max(uint256))
+      unchecked {
+        seed++;
+      }
+    }
+
+    // Order the tiers to remove for event matching (which are ordered too)
+    tiersToRemove = _sortArray(tiersToRemove);
 
     JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
@@ -1932,77 +1967,64 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     _delegate.transferOwnership(owner);
 
-    uint256[] memory _tiersToRemove = new uint256[](numberTiersToRemove);
+    // Will be resized later
+    JB721TierParams[] memory tierParamsRemaining = new JB721TierParams[](initialNumberOfTiers);
+    JB721Tier[] memory tiersRemaining = new JB721Tier[](initialNumberOfTiers);
 
-    JB721TierParams[] memory _tierDataRemaining = new JB721TierParams[](
-      initialNumberOfTiers - numberTiersToRemove
-    );
-    JB721Tier[] memory _tiersRemaining = new JB721Tier[](
-      initialNumberOfTiers - numberTiersToRemove
-    );
+    for (uint256 i; i < _tiers.length; i++) {
+      tierParamsRemaining[i] = _tierParams[i];
+      tiersRemaining[i] = _tiers[i];
+    }
 
-    for (uint256 i; i < initialNumberOfTiers; i++) {
-      if (i >= numberTiersToRemove) {
-        uint256 _arrayIndex = i - numberTiersToRemove;
+    for (uint256 i; i < tiersRemaining.length; ) {
+      bool _swappedAndPopped;
 
-        _tierDataRemaining[_arrayIndex] = JB721TierParams({
-          contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
-          initialQuantity: uint40(100),
-          votingUnits: uint16(0),
-          reservedRate: uint16(i),
-          reservedTokenBeneficiary: reserveBeneficiary,
-          encodedIPFSUri: tokenUris[0],
-          shouldUseBeneficiaryAsDefault: false
-        });
+      for (uint256 j; j < tiersToRemove.length; j++)
+        if (tiersRemaining[i].id == tiersToRemove[j]) {
+          // Swap and pop tiers removed
+          tiersRemaining[i] = tiersRemaining[tiersRemaining.length - 1];
+          tierParamsRemaining[i] = tierParamsRemaining[tierParamsRemaining.length - 1];
 
-        _tiersRemaining[_arrayIndex] = JB721Tier({
-          id: i + 1,
-          contributionFloor: _tierDataRemaining[_arrayIndex].contributionFloor,
-          lockedUntil: _tierDataRemaining[_arrayIndex].lockedUntil,
-          remainingQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
-          initialQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
-          votingUnits: _tierDataRemaining[_arrayIndex].votingUnits,
-          reservedRate: _tierDataRemaining[_arrayIndex].reservedRate,
-          reservedTokenBeneficiary: _tierDataRemaining[_arrayIndex].reservedTokenBeneficiary,
-          encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri
-        });
-      } else {
-        _tiersToRemove[i] = i + 1;
+          // Remove the last elelment / reduce array length by 1
+          assembly {
+            mstore(tiersRemaining, sub(mload(tiersRemaining), 1))
+            mstore(tierParamsRemaining, sub(mload(tierParamsRemaining), 1))
+          }
+          _swappedAndPopped = true;
 
-        // Check: correct event params?
-        vm.expectEmit(true, false, false, true, address(_delegate));
-        emit RemoveTier(_tiersToRemove[i], owner);
-      }
+          break;
+        }
+
+      if (!_swappedAndPopped) i++;
     }
 
     vm.prank(owner);
-    _delegate.adjustTiers(new JB721TierParams[](0), _tiersToRemove);
+    _delegate.adjustTiers(new JB721TierParams[](0), tiersToRemove);
 
-    JB721Tier[] memory _dumpTiersList = _delegate.test_store().ForTest_dumpTiersList(
+    JB721Tier[] memory _tiersListDump = _delegate.test_store().ForTest_dumpTiersList(
       address(_delegate)
     );
 
-    // Check: expected number of tiers remainings, including inactive ones?
-    assertEq(_dumpTiersList.length, _tiers.length);
+    // Check: all the tiers are still in the linked list (both active and inactives)
+    assertTrue(_isIn(_tiers, _tiersListDump));
 
-    // Check: all the tiers are still existing (_tiers was already sorted)
-    assertEq(_dumpTiersList, _tiers);
+    // Check: the linked list include only the tiers (active and inactives)
+    assertTrue(_isIn(_tiersListDump, _tiers));
 
-    // DEBUG
-    _delegate.test_store().tiers(address(_delegate), 0, initialNumberOfTiers - numberTiersToRemove);
+    // Check: correct event
+    vm.expectEmit(true, false, false, true, address(_delegate.test_store()));
+    emit CleanTiers(address(_delegate), beneficiary);
 
-    // Clean the tiers
+    vm.startPrank(beneficiary);
     _delegate.test_store().cleanTiers(address(_delegate));
 
-    // Dump the new list
-    _dumpTiersList = _delegate.test_store().ForTest_dumpTiersList(address(_delegate));
+    _tiersListDump = _delegate.test_store().ForTest_dumpTiersList(address(_delegate));
 
-    // Check that all the remaining tiers still exist
-    assertTrue(_isIn(_tiersRemaining, _dumpTiersList));
+    // Check: the activer tiers are in the likned list
+    assertTrue(_isIn(tiersRemaining, _tiersListDump));
 
-    // Check that none of the removed tiers still exist
-    assertTrue(_isIn(_dumpTiersList, _tiersRemaining));
+    // Check: the linked list is only the active tiers
+    assertTrue(_isIn(_tiersListDump, tiersRemaining));
   }
 
   // ----------------
