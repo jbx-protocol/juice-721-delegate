@@ -1003,7 +1003,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function cleanTiers(address _nft) external override {
     // Keep a reference to the greatest tier ID.
-    uint256 _maxTierId = maxTierId[msg.sender];
+    uint256 _maxTierId = maxTierId[_nft];
 
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _firstSortIndexOf(_nft);
@@ -1023,7 +1023,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _previous = _currentSortIndex;
       }
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _maxTierId);
+      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierId);
     }
 
     emit CleanTiers(_nft, msg.sender);
