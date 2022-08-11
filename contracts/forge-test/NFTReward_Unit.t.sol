@@ -3285,6 +3285,15 @@ contract ForTest_JBTiered721DelegateStore is
       // Set the next sort index.
       _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierId);
     }
+
+    // Drop the empty tiers at the end of the array (coming from maxTierId which *might* be bigger than actual bigger tier)
+    for (uint256 i = _tiers.length - 1; i >= 0; i--) {
+      if (_tiers[i].id == 0) {
+        assembly {
+          mstore(_tiers, sub(mload(_tiers), 1))
+        }
+      } else break;
+    }
   }
 
   function ForTest_setTier(
