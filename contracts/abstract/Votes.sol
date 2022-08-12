@@ -2,7 +2,6 @@
 // OpenZeppelin Contracts (last updated v4.6.0) (governance/utils/Votes.sol)
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/utils/Context.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Checkpoints.sol';
 import '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol';
@@ -28,7 +27,7 @@ import '@openzeppelin/contracts/governance/utils/IVotes.sol';
  *
  * _Available since v4.5._
  */
-abstract contract Votes is IVotes, Context, EIP712 {
+abstract contract Votes is IVotes, EIP712 {
   using Checkpoints for Checkpoints.History;
   using Counters for Counters.Counter;
 
@@ -103,8 +102,7 @@ abstract contract Votes is IVotes, Context, EIP712 {
    * @dev Delegates votes from the sender to `delegatee`.
    */
   function delegate(address delegatee) public virtual override {
-    address account = _msgSender();
-    _delegate(account, delegatee);
+    _delegate(msg.sender, delegatee);
   }
 
   /**
