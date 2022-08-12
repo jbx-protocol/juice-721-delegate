@@ -12,7 +12,6 @@ import 'forge-std/Test.sol';
 
 contract TestJBTiered721DelegateProjectDeployer is Test {
   using stdStorage for StdStorage;
-
   address owner = address(bytes20(keccak256('owner')));
   address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
   address mockJBDirectory = address(bytes20(keccak256('mockJBDirectory')));
@@ -21,14 +20,11 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
   address mockJBController = address(bytes20(keccak256('mockJBController')));
   address mockJBOperatorStore = address(bytes20(keccak256('mockJBOperatorStore')));
   address mockJBProjects = address(bytes20(keccak256('mockJBProjects')));
-
   uint256 projectId = 69;
-
   string name = 'NAME';
   string symbol = 'SYM';
   string baseUri = 'http://www.null.com/';
   string contractUri = 'ipfs://null';
-
   //QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz
   bytes32[] tokenUris = [
     bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
@@ -42,9 +38,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
     bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
   ];
-
   string fcMemo = 'meemoo';
-
   IJBTiered721DelegateStore store;
   IJBTiered721DelegateProjectDeployer deployer;
   IJBTiered721DelegateDeployer delegateDeployer;
@@ -62,10 +56,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     vm.etch(mockTokenUriResolver, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
-
     store = new JBTiered721DelegateStore();
     delegateDeployer = new JBTiered721DelegateDeployer();
-
     deployer = new JBTiered721DelegateProjectDeployer(
       IJBController(mockJBController),
       delegateDeployer,
@@ -133,7 +125,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
     JB721TierParams[] memory tierParams = new JB721TierParams[](10);
-
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
         contributionFloor: uint80((i + 1) * 10),
@@ -146,7 +137,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         shouldUseBeneficiaryAsDefault: false
       });
     }
-
     NFTRewardDeployerData = JBDeployTiered721DelegateData({
       directory: IJBDirectory(mockJBDirectory),
       name: name,
@@ -161,7 +151,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       lockReservedTokenChanges: true,
       lockVotingUnitChanges: true
     });
-
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
     data = JBFundingCycleData({
       duration: 14,
@@ -169,7 +158,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       discountRate: 450000000,
       ballot: IJBFundingCycleBallot(address(0))
     });
-
     metadata = JBFundingCycleMetadata({
       global: JBGlobalFundingCycleMetadata({allowSetTerminals: false, allowSetController: false}),
       reservedRate: 5000, //50%
@@ -189,7 +177,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       useDataSourceForRedeem: false,
       dataSource: address(0)
     });
-
     launchProjectData = JBLaunchProjectData({
       projectMetadata: projectMetadata,
       data: data,
