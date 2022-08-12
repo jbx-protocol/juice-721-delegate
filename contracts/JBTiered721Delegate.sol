@@ -617,12 +617,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     address _delegatee,
     uint256 _tierId
   ) internal virtual {
-    address oldDelegate = delegates(_account);
+    address _oldDelegate = delegates(_account);
     _tierDelegation[_account][_tierId] = _delegatee;
 
-    emit DelegateChanged(_account, oldDelegate, _delegatee);
+    emit DelegateChanged(_account, _oldDelegate, _delegatee);
     _moveTierDelegateVotes(
-      oldDelegate,
+      _oldDelegate,
       _delegatee,
       _tierId,
       _getTierVotingUnits(_account, _tierId)
@@ -666,18 +666,18 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   ) private {
     if (_from != _to && _amount > 0) {
       if (_from != address(0)) {
-        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[_from][_tierId].push(
+        (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_from][_tierId].push(
           _subtract,
           _amount
         );
-        emit TierDelegateVotesChanged(_from, oldValue, newValue, _tierId, msg.sender);
+        emit TierDelegateVotesChanged(_from, _oldValue, _newValue, _tierId, msg.sender);
       }
       if (_to != address(0)) {
-        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[_to][_tierId].push(
+        (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_to][_tierId].push(
           _add,
           _amount
         );
-        emit TierDelegateVotesChanged(_to, _tierId, oldValue, newValue, msg.sender);
+        emit TierDelegateVotesChanged(_to, _tierId, _oldValue, _newValue, msg.sender);
       }
     }
   }
