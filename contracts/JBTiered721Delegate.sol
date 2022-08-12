@@ -350,11 +350,15 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   }
 
   /**
-   * @dev Delegates votes from the sender to `delegatee`.
+    @notice 
+    Delegates votes from the sender to `delegatee`.
+
+    @param _delegatee The account to delegate tier voting units to.
+    @param _tierId The ID of the tier to delegate voting units for.
    */
-  function delegateTier(address delegatee, uint256 _tierId) public virtual override {
+  function delegateTier(address _delegatee, uint256 _tierId) public virtual override {
     address account = _msgSender();
-    _delegateTier(account, delegatee, _tierId);
+    _delegateTier(account, _delegatee, _tierId);
   }
 
   //*********************************************************************//
