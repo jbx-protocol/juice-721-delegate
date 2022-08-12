@@ -1014,10 +1014,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Make the sorted array.
     while (_currentSortIndex != 0) {
       if (!isTierRemoved[_nft][_currentSortIndex]) {
-        // If the correct after index isn't already stored, store it.
-        if (
-          _currentSortIndex != _previous + 1 && _tierIdAfter[_nft][_previous] != _currentSortIndex
-        ) _tierIdAfter[_nft][_previous] = _currentSortIndex;
+        // If the current index being iterated on isn't an increment of the previous, set the correct tier after if needed.
+        if (_currentSortIndex != _previous + 1) {
+          if (_tierIdAfter[_nft][_previous] != _currentSortIndex)
+            _tierIdAfter[_nft][_previous] = _currentSortIndex;
+          // Otherwise if the current index is an increment of the previous and the after index isn't 0, set it to 0.
+        } else if (_tierIdAfter[_nft][_previous] != 0) _tierIdAfter[_nft][_previous] = 0;
 
         // Set the previous index to be the current index.
         _previous = _currentSortIndex;
