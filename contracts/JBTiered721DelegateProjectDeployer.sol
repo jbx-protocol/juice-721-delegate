@@ -10,7 +10,7 @@ import './interfaces/IJBTiered721DelegateProjectDeployer.sol';
 
 /**
   @notice
-  Deploys a project with a tiered limited NFT reward data source attached.
+  Deploys a project with a tiered tier delegate.
 
   @dev
   Adheres to -
@@ -41,6 +41,11 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
+  /**
+    @param _controller The controller with which new projects should be deployed. 
+    @param _delegateDeployer The deployer of delegates.
+    @param _operatorStore A contract storing operator assignments.
+  */
   constructor(
     IJBController _controller,
     IJBTiered721DelegateDeployer _delegateDeployer,
@@ -59,27 +64,27 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     Launches a new project with a tiered NFT rewards data source attached.
 
     @param _owner The address to set as the owner of the project. The project ERC-721 will be owned by this address.
-    @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
+    @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
     @param _launchProjectData Data necessary to fulfill the transaction to launch a project.
 
     @return projectId The ID of the newly configured project.
   */
   function launchProjectFor(
     address _owner,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData,
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
     JBLaunchProjectData memory _launchProjectData
   ) external override returns (uint256 projectId) {
     // Get the project ID, optimistically knowing it will be one greater than the current count.
     projectId = controller.projects().count() + 1;
 
-    // Deploy the data source contract.
-    IJBTiered721Delegate _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    // Deploy the delegate contract.
+    IJBTiered721Delegate _delegate = delegateDeployer.deployDataSourceFor(
       projectId,
-      _deployTieredNFTRewardDataSourceData
+      _deployTiered721DelegateData
     );
 
-    // Set the data source address as the data source of the provided metadata.
-    _launchProjectData.metadata.dataSource = address(_dataSourceAddress);
+    // Set the delegate address as the data source of the provided metadata.
+    _launchProjectData.metadata.dataSource = address(_delegate);
 
     // Set the project to use the data source for it's pay function.
     _launchProjectData.metadata.useDataSourceForPay = true;
@@ -90,20 +95,20 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
 
   /**
     @notice
-    Launches funding cycle's for a project with a tiered NFT rewards data source attached.
+    Launches funding cycle's for a project with a delegate attached.
 
     @dev
     Only a project owner or operator can launch its funding cycles.
 
     @param _projectId The ID of the project having funding cycles launched.
-    @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
+    @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
     @param _launchFundingCyclesData Data necessary to fulfill the transaction to launch funding cycles for the project.
 
     @return configuration The configuration of the funding cycle that was successfully created.
   */
   function launchFundingCyclesFor(
     uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData,
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
     JBLaunchFundingCyclesData memory _launchFundingCyclesData
   )
     external
@@ -115,14 +120,14 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     )
     returns (uint256 configuration)
   {
-    // Deploy the data source contract.
-    IJBTiered721Delegate _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    // Deploy the delegate contract.
+    IJBTiered721Delegate _delegate = delegateDeployer.deployDataSourceFor(
       _projectId,
-      _deployTieredNFTRewardDataSourceData
+      _deployTiered721DelegateData
     );
 
-    // Set the data source address as the data source of the provided metadata.
-    _launchFundingCyclesData.metadata.dataSource = address(_dataSourceAddress);
+    // Set the delegate address as the data source of the provided metadata.
+    _launchFundingCyclesData.metadata.dataSource = address(_delegate);
 
     // Set the project to use the data source for it's pay function.
     _launchFundingCyclesData.metadata.useDataSourceForPay = true;
@@ -133,20 +138,20 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
 
   /**
     @notice
-    Reconfigures funding cycles for a project with a tiered NFT rewards data source attached.
+    Reconfigures funding cycles for a project with a delegate attached.
 
     @dev
     Only a project's owner or a designated operator can configure its funding cycles.
 
-    @param _projectId The ID of the project having funding cycles launched.
-    @param _deployTieredNFTRewardDataSourceData Data necessary to fulfill the transaction to deploy a tiered limited NFT rewward data source.
+    @param _projectId The ID of the project having funding cycles reconfigured.
+    @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
     @param _reconfigureFundingCyclesData Data necessary to fulfill the transaction to reconfigure funding cycles for the project.
 
     @return configuration The configuration of the funding cycle that was successfully reconfigured.
   */
   function reconfigureFundingCyclesOf(
     uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDataSourceData,
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
     JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData
   )
     external
@@ -158,14 +163,14 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     )
     returns (uint256 configuration)
   {
-    // Deploy the data source contract.
-    IJBTiered721Delegate _dataSourceAddress = delegateDeployer.deployDataSourceFor(
+    // Deploy the delegate contract.
+    IJBTiered721Delegate _delegate = delegateDeployer.deployDataSourceFor(
       _projectId,
-      _deployTieredNFTRewardDataSourceData
+      _deployTiered721DelegateData
     );
 
-    // Set the data source address as the data source of the provided metadata.
-    _reconfigureFundingCyclesData.metadata.dataSource = address(_dataSourceAddress);
+    // Set the delegate address as the data source of the provided metadata.
+    _reconfigureFundingCyclesData.metadata.dataSource = address(_delegate);
 
     // Set the project to use the data source for it's pay function.
     _reconfigureFundingCyclesData.metadata.useDataSourceForPay = true;
@@ -182,7 +187,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     @notice
     Launches a project.
 
-    @param _owner The address to set as the owner of the project. The project ERC-721 will be owned by this address.
+    @param _owner The address to set as the owner of the project. 
     @param _launchProjectData Data necessary to fulfill the transaction to launch the project.
   */
   function _launchProjectFor(address _owner, JBLaunchProjectData memory _launchProjectData)
