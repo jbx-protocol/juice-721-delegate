@@ -618,9 +618,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256 _tierId
   ) internal virtual {
     address _oldDelegate = delegates(_account);
+    // Store the delegatee.
     _tierDelegation[_account][_tierId] = _delegatee;
 
     emit DelegateChanged(_account, _oldDelegate, _delegatee);
+
+    // Move the votes.
     _moveTierDelegateVotes(
       _oldDelegate,
       _delegatee,
@@ -644,8 +647,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256 _tierId,
     uint256 _amount
   ) internal virtual {
+    // If minting, add to the total tier checkpoints.
     if (_from == address(0)) _totalTierCheckpoints[_tierId].push(_add, _amount);
+
+    // If burning, subtract from the total tier checkpoints.
     if (_to == address(0)) _totalTierCheckpoints[_tierId].push(_subtract, _amount);
+
+    // Move delegated votes.
     _moveTierDelegateVotes(delegates(_from), delegates(_to), _tierId, _amount);
   }
 
@@ -664,21 +672,25 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256 _tierId,
     uint256 _amount
   ) private {
-    if (_from != _to && _amount > 0) {
-      if (_from != address(0)) {
-        (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_from][_tierId].push(
-          _subtract,
-          _amount
-        );
-        emit TierDelegateVotesChanged(_from, _oldValue, _newValue, _tierId, msg.sender);
-      }
-      if (_to != address(0)) {
-        (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_to][_tierId].push(
-          _add,
-          _amount
-        );
-        emit TierDelegateVotesChanged(_to, _tierId, _oldValue, _newValue, msg.sender);
-      }
+    // Nothing to do if moving to the same account, or no amount is being moved.
+    if (_from == _to || _amount == 0) return;
+
+    // If not moving from the zero address, update the checkpoints to subtract the amount.
+    if (_from != address(0)) {
+      (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_from][_tierId].push(
+        _subtract,
+        _amount
+      );
+      emit TierDelegateVotesChanged(_from, _oldValue, _newValue, _tierId, msg.sender);
+    }
+
+    // If not moving to the zero address, update the checkpoints to add the amount.
+    if (_to != address(0)) {
+      (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_to][_tierId].push(
+        _add,
+        _amount
+      );
+      emit TierDelegateVotesChanged(_to, _tierId, _oldValue, _newValue, msg.sender);
     }
   }
 }
