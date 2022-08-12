@@ -3,8 +3,8 @@ pragma solidity 0.8.6;
 
 import '@jbx-protocol/contracts-v2/contracts/libraries/JBTokens.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
-import '@openzeppelin/contracts/governance/utils/Votes.sol';
 import './abstract/JB721Delegate.sol';
+import './abstract/Votes.sol';
 import './interfaces/IJBTiered721Delegate.sol';
 import './libraries/JBIpfsDecoder.sol';
 
@@ -602,69 +602,80 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   }
 
   /**
-   * @dev Delegate all of `account`'s voting units to `delegatee`.
-   *
-   * Emits events {DelegateChanged} and {DelegateVotesChanged}.
+    @notice 
+    Delegate all of `account`'s voting units for the specified tier to `delegatee`.
+
+    @param _account The account delegating tier voting units.
+    @param _delegatee The account to delegate tier voting units to.
+    @param _tierId The ID of the tier for which voting units are being transfered.
    */
   function _delegateTier(
-    address account,
-    address delegatee,
+    address _account,
+    address _delegatee,
     uint256 _tierId
   ) internal virtual {
-    address oldDelegate = delegates(account);
-    _tierDelegation[account][_tierId] = delegatee;
+    address oldDelegate = delegates(_account);
+    _tierDelegation[_account][_tierId] = _delegatee;
 
-    emit DelegateChanged(account, oldDelegate, delegatee);
-    _moveTierDelegateVotes(oldDelegate, delegatee, _tierId, _getTierVotingUnits(account, _tierId));
+    emit DelegateChanged(_account, oldDelegate, _delegatee);
+    _moveTierDelegateVotes(
+      oldDelegate,
+      _delegatee,
+      _tierId,
+      _getTierVotingUnits(_account, _tierId)
+    );
   }
 
   /**
-   * @dev Moves delegated votes from one delegate to another.
-   */
-  function _moveTierDelegateVotes(
-    address from,
-    address to,
-    uint256 _tierId,
-    uint256 amount
-  ) private {
-    if (from != to && amount > 0) {
-      if (from != address(0)) {
-        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[from][_tierId].push(
-          __subtract,
-          amount
-        );
-        emit TierDelegateVotesChanged(from, oldValue, newValue, _tierId, msg.sender);
-      }
-      if (to != address(0)) {
-        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[to][_tierId].push(
-          __add,
-          amount
-        );
-        emit TierDelegateVotesChanged(to, _tierId, oldValue, newValue, msg.sender);
-      }
-    }
-  }
+    @notice 
+    Transfers, mints, or burns tier voting units. To register a mint, `from` should be zero. To register a burn, `to` should be zero. Total supply of voting units will be adjusted with mints and burns.
 
-  /**
-   * @dev Transfers, mints, or burns voting units. To register a mint, `from` should be zero. To register a burn, `to`
-   * should be zero. Total supply of voting units will be adjusted with mints and burns.
+    @param _from The account to transfer tier voting units from.
+    @param _to The account to transfer tier voting units to.
+    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _amount The amount of voting units to delegate.
    */
   function _transferTierVotingUnits(
-    address from,
-    address to,
+    address _from,
+    address _to,
     uint256 _tierId,
-    uint256 amount
+    uint256 _amount
   ) internal virtual {
-    if (from == address(0)) _totalTierCheckpoints[_tierId].push(__add, amount);
-    if (to == address(0)) _totalTierCheckpoints[_tierId].push(__subtract, amount);
-    _moveTierDelegateVotes(delegates(from), delegates(to), _tierId, amount);
+    if (_from == address(0)) _totalTierCheckpoints[_tierId].push(_add, _amount);
+    if (_to == address(0)) _totalTierCheckpoints[_tierId].push(_subtract, _amount);
+    _moveTierDelegateVotes(delegates(_from), delegates(_to), _tierId, _amount);
   }
 
-  function __add(uint256 a, uint256 b) private pure returns (uint256) {
-    return a + b;
-  }
+  /**
+    @notice 
+    Moves delegated tier votes from one delegate to another.
 
-  function __subtract(uint256 a, uint256 b) private pure returns (uint256) {
-    return a - b;
+    @param _from The account to transfer tier voting units from.
+    @param _to The account to transfer tier voting units to.
+    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _amount The amount of voting units to delegate.
+  */
+  function _moveTierDelegateVotes(
+    address _from,
+    address _to,
+    uint256 _tierId,
+    uint256 _amount
+  ) private {
+    if (_from != _to && _amount > 0) {
+      if (_from != address(0)) {
+        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[_from][_tierId].push(
+          _subtract,
+          _amount
+        );
+        emit TierDelegateVotesChanged(_from, oldValue, newValue, _tierId, msg.sender);
+      }
+      if (_to != address(0)) {
+        (uint256 oldValue, uint256 newValue) = _delegateTierCheckpoints[_to][_tierId].push(
+          _add,
+          _amount
+        );
+        emit TierDelegateVotesChanged(_to, _tierId, oldValue, newValue, msg.sender);
+      }
+    }
   }
 }
