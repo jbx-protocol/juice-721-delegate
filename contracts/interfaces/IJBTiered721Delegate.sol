@@ -21,6 +21,22 @@ interface IJBTiered721Delegate {
     address caller
   );
 
+  event TierDelegateChanged(
+    address indexed delegator,
+    address indexed fromDelegate,
+    address indexed toDelegate,
+    uint256 tierId,
+    address caller
+  );
+
+  event TierDelegateVotesChanged(
+    address indexed delegate,
+    uint256 indexed tierId,
+    uint256 previousBalance,
+    uint256 newBalance,
+    address callre
+  );
+
   event AddTier(uint256 indexed tierId, JB721TierParams data, address caller);
 
   event RemoveTier(uint256 indexed tierId, address caller);
@@ -37,6 +53,8 @@ interface IJBTiered721Delegate {
 
   function adjustTiers(JB721TierParams[] memory _tierDataToAdd, uint256[] memory _tierIdsToRemove)
     external;
+
+  function delegateTier(address _delegatee, uint256 _tierId) external;
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
