@@ -134,6 +134,76 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
+    Returns the delegate for specific tier of a user
+
+    @param _account the user to check
+    @param _tier the tier to check the delegate for
+   */
+  function getTierDelegate(address _account, uint256 _tier)
+    external
+    view
+    override
+    returns (address)
+  {
+    return _tierDelegation[_account][_tier];
+  }
+
+  /**
+    @notice
+    Returns the current voting power of a specific tier for a user
+
+    @param _account the user to check
+    @param _tier the tier to check the delegate for
+  */
+  function getTierVotes(address _account, uint256 _tier) external view override returns (uint256) {
+    return _delegateTierCheckpoints[_account][_tier].latest();
+  }
+
+  /**
+    @notice
+    Returns the past voting power of a specific tier for a user
+
+    @param _account the user to check
+    @param _tier the tier to check the voting power of
+    @param _blockNumber the blocknumber to check the voting power at 
+  */
+  function getPastTierVotes(
+    address _account,
+    uint256 _tier,
+    uint256 _blockNumber
+  ) external view override returns (uint256) {
+    return _delegateTierCheckpoints[_account][_tier].getAtBlock(_blockNumber);
+  }
+
+  /**
+    @notice
+    Returns the total amount of voting power that exists for a tier
+
+    @param _tier the tier to check
+  */
+  function getTierTotalVotes(uint256 _tier) external view override returns (uint256) {
+    return _totalTierCheckpoints[_tier].latest();
+  }
+
+  /**
+    @notice
+    Returns the total amount of voting power that exists for a tier
+
+    @param _tier the tier to check
+    @param _blockNumber the blocknumber to check the total voting power at 
+  */
+  function getPastTierTotalVotes(uint256 _tier, uint256 _blockNumber)
+    external
+    view
+    override
+    returns (uint256)
+  {
+    if (_blockNumber >= block.number) revert BLOCK_NOT_YET_MINED();
+    return _totalTierCheckpoints[_tier].getAtBlock(_blockNumber);
+  }
+
+  /**
+    @notice
     Indicates if this contract adheres to the specified interface.
 
     @dev
@@ -356,7 +426,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _delegatee The account to delegate tier voting units to.
     @param _tierId The ID of the tier to delegate voting units for.
    */
-  function delegateTier(address _delegatee, uint256 _tierId) public virtual override {
+  function setTierDelegate(address _delegatee, uint256 _tierId) public virtual override {
     _delegateTier(msg.sender, _delegatee, _tierId);
   }
 
@@ -617,8 +687,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     address _delegatee,
     uint256 _tierId
   ) internal virtual {
-    address _oldDelegate = delegates(_account);
-    // Store the delegatee.
+    // Get the current delegatee
+    address _oldDelegate = _tierDelegation[_account][_tierId];
+
+    // Store the new delegatee
     _tierDelegation[_account][_tierId] = _delegatee;
 
     emit DelegateChanged(_account, _oldDelegate, _delegatee);
@@ -654,7 +726,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_to == address(0)) _totalTierCheckpoints[_tierId].push(_subtract, _amount);
 
     // Move delegated votes.
-    _moveTierDelegateVotes(delegates(_from), delegates(_to), _tierId, _amount);
+    _moveTierDelegateVotes(
+      _tierDelegation[_from][_tierId],
+      _tierDelegation[_to][_tierId],
+      _tierId,
+      _amount
+    );
   }
 
   /**

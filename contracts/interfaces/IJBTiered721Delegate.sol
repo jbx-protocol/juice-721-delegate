@@ -51,10 +51,27 @@ interface IJBTiered721Delegate {
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
+  function getTierDelegate(address _account, uint256 _tier) external view returns (address);
+
+  function getTierVotes(address _account, uint256 _tier) external view returns (uint256);
+
+  function getPastTierVotes(
+    address _account,
+    uint256 _tier,
+    uint256 _blockNumber
+  ) external view returns (uint256);
+
+  function getTierTotalVotes(uint256 _tier) external view returns (uint256);
+
+  function getPastTierTotalVotes(uint256 _tier, uint256 _blockNumber)
+    external
+    view
+    returns (uint256);
+
   function adjustTiers(JB721TierParams[] memory _tierDataToAdd, uint256[] memory _tierIdsToRemove)
     external;
 
-  function delegateTier(address _delegatee, uint256 _tierId) external;
+  function setTierDelegate(address _delegatee, uint256 _tierId) external;
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
