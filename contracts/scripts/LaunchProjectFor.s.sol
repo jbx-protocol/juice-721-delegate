@@ -5,10 +5,10 @@ import '../JBTiered721DelegateStore.sol';
 import 'forge-std/Script.sol';
 
 // Latest NFTProjectDeployer
-address constant PROJECT_DEPLOYER = 0xB36538f5399B83F669095e7EbBC315f858D8CB2a;
+address constant PROJECT_DEPLOYER = 0x36F2Edc39d593dF81e7B311a9Dd74De28A6B38B1;
 
 // JBTiered721DelegateStore
-address constant STORE = 0x69C131362A7c472A343A0434F2C0C6B6B85A5721;
+address constant STORE = 0x41126eC99F8A989fEB503ac7bB4c5e5D40E06FA4;
 
 // Change values in setUp() and createData()
 contract RinkebyLaunchProjectFor is Script {
