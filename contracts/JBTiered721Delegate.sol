@@ -134,11 +134,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
-    Returns the delegate for specific tier of a user
+    Returns the delegate of an account for specific tier.
 
-    @param _account the user to check
-    @param _tier the tier to check the delegate for
-   */
+    @param _account The account to check for a delegate of.
+    @param _tier the tier to check within.
+  */
   function getTierDelegate(address _account, uint256 _tier)
     external
     view
@@ -150,10 +150,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
-    Returns the current voting power of a specific tier for a user
+    Returns the current voting power of an address for a specific tier.
 
-    @param _account the user to check
-    @param _tier the tier to check the delegate for
+    @param _account The address to check.
+    @param _tier The tier to check within.
   */
   function getTierVotes(address _account, uint256 _tier) external view override returns (uint256) {
     return _delegateTierCheckpoints[_account][_tier].latest();
@@ -161,11 +161,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
-    Returns the past voting power of a specific tier for a user
+    Returns the past voting power of a specific address for a specific tier.
 
-    @param _account the user to check
-    @param _tier the tier to check the voting power of
-    @param _blockNumber the blocknumber to check the voting power at 
+    @param _account The address to check.
+    @param _tier The tier to check within.
+    @param _blockNumber the blocknumber to check the voting power at.
   */
   function getPastTierVotes(
     address _account,
@@ -177,9 +177,9 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
-    Returns the total amount of voting power that exists for a tier
+    Returns the total amount of voting power that exists for a tier.
 
-    @param _tier the tier to check
+    @param _tier The tier to check.
   */
   function getTierTotalVotes(uint256 _tier) external view override returns (uint256) {
     return _totalTierCheckpoints[_tier].latest();
@@ -187,10 +187,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
-    Returns the total amount of voting power that exists for a tier
+    Returns the total amount of voting power that exists for a tier.
 
-    @param _tier the tier to check
-    @param _blockNumber the blocknumber to check the total voting power at 
+    @param _tier The tier to check.
+    @param _blockNumber The blocknumber to check the total voting power at.
   */
   function getPastTierTotalVotes(uint256 _tier, uint256 _blockNumber)
     external
