@@ -36,7 +36,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
     @return newDataSource The address of the newly deployed data source.
   */
-  function deployDataSourceFor(
+  function deployDelegateFor(
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
