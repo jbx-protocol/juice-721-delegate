@@ -3,6 +3,7 @@ pragma solidity 0.8.6;
 import '../JBTiered721DelegateDeployer.sol';
 import '../JBTiered721DelegateProjectDeployer.sol';
 import '../JBTiered721DelegateStore.sol';
+import '../JBTokenUriResolver.sol';
 import 'forge-std/Script.sol';
 
 contract DeployMainnet is Script {
@@ -45,5 +46,14 @@ contract DeployRinkeby is Script {
 
     console.log(address(jbTieredLimitedNFTRewardDataSourceProjectDeployer));
     console.log(address(jbTieredLimitedNFTRewardDataSourceStore));
+  }
+}
+
+contract DeployMockUriResolver is Script {
+  function run() external {
+    vm.startBroadcast();
+    JBTokenUriResolver _resolver = new JBTokenUriResolver();
+    _resolver.setGeneric()
+    console.log(address(_resolver));
   }
 }
