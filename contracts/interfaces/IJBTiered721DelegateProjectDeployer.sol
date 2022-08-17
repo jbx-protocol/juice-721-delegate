@@ -11,8 +11,6 @@ import '../structs/JBReconfigureFundingCyclesData.sol';
 import './IJBTiered721DelegateDeployer.sol';
 
 interface IJBTiered721DelegateProjectDeployer {
-  event DatasourceDeployed(uint256 indexed projectId, address newDatasource);
-
   function controller() external view returns (IJBController);
 
   function delegateDeployer() external view returns (IJBTiered721DelegateDeployer);

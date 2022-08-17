@@ -306,6 +306,162 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
   }
 
+  function testMintAndTransferVotingUnits(uint8 _tier, bool _recipientDelegated) public {
+    address _user = address(bytes20(keccak256('user')));
+    address _userFren = address(bytes20(keccak256('user_fren')));
+    (
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBLaunchProjectData memory launchProjectData
+    ) = createData();
+    uint256 projectId = deployer.launchProjectFor(
+      _projectOwner,
+      NFTRewardDeployerData,
+      launchProjectData
+    );
+    // Get the dataSource
+    JBTiered721Delegate _delegate = JBTiered721Delegate(
+      _jbFundingCycleStore.currentOf(projectId).dataSource()
+    );
+    // _tier has to be a valid tier
+    vm.assume(_tier < NFTRewardDeployerData.tiers.length);
+    uint256 _payAmount = NFTRewardDeployerData.tiers[_tier].contributionFloor;
+
+    vm.prank(_user);
+    _delegate.setTierDelegate(_user, _tier + 1);
+    vm.prank(_user);
+    _delegate.delegate(_user);
+
+    // Pay and mint an NFT
+    vm.deal(_user, _payAmount);
+    vm.prank(_user);
+
+    _jbETHPaymentTerminal.pay{value: _payAmount}(
+      projectId,
+      100,
+      address(0),
+      _user,
+      0,
+      false,
+      'Take my money!',
+      new bytes(0)
+    );
+
+    // Assert that the user received the votingUnits
+    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.tiers[_tier].votingUnits);
+    assertEq(
+      _delegate.getTierVotes(_user, _tier + 1),
+      NFTRewardDeployerData.tiers[_tier].votingUnits
+    );
+
+    uint256 _frenExpectedVotes = 0;
+    // Have the user delegate to themselves
+    if (_recipientDelegated) {
+      _frenExpectedVotes = NFTRewardDeployerData.tiers[_tier].votingUnits;
+
+      vm.prank(_userFren);
+      _delegate.setTierDelegate(_userFren, _tier + 1);
+      vm.prank(_userFren);
+      _delegate.delegate(_userFren);
+    }
+
+    // Transfer NFT to fren
+    vm.prank(_user);
+    ERC721(address(_delegate)).transferFrom(_user, _userFren, _generateTokenId(_tier + 1, 1));
+
+    // Assert that the user lost their voting units
+    assertEq(_delegate.getVotes(_user), 0);
+    assertEq(_delegate.getTierVotes(_user, _tier + 1), 0);
+
+    // Assert that fren received the voting units
+    assertEq(
+      _delegate.getVotes(_userFren),
+      _frenExpectedVotes
+    );
+    assertEq(
+      _delegate.getTierVotes(_userFren, _tier + 1),
+      _frenExpectedVotes
+    );
+  }
+
+  function testMintAndDelegateVotingUnits(uint8 _tier, bool _selfDelegateBeforeReceive) public {
+    address _user = address(bytes20(keccak256('user')));
+    address _userFren = address(bytes20(keccak256('user_fren')));
+    (
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBLaunchProjectData memory launchProjectData
+    ) = createData();
+    uint256 projectId = deployer.launchProjectFor(
+      _projectOwner,
+      NFTRewardDeployerData,
+      launchProjectData
+    );
+    // Get the dataSource
+    JBTiered721Delegate _delegate = JBTiered721Delegate(
+      _jbFundingCycleStore.currentOf(projectId).dataSource()
+    );
+    // _tier has to be a valid tier
+    vm.assume(_tier < NFTRewardDeployerData.tiers.length);
+    uint256 _payAmount = NFTRewardDeployerData.tiers[_tier].contributionFloor;
+
+    // Delegate NFT to fren
+    vm.prank(_user);
+    _delegate.setTierDelegate(_userFren, _tier + 1);
+
+    // Delegate NFT to self
+    if (_selfDelegateBeforeReceive) {
+      vm.prank(_user);
+      _delegate.setTierDelegate(_user, _tier + 1);
+      vm.prank(_user);
+      _delegate.delegate(_user);
+    }
+
+    // Pay and mint an NFT
+    vm.deal(_user, _payAmount);
+    vm.prank(_user);
+    _jbETHPaymentTerminal.pay{value: _payAmount}(
+      projectId,
+      100,
+      address(0),
+      _user,
+      0,
+      false,
+      'Take my money!',
+      new bytes(0)
+    );
+
+    // Delegate NFT to self
+    if (!_selfDelegateBeforeReceive) {
+      vm.prank(_user);
+      _delegate.setTierDelegate(_user, _tier + 1);
+      vm.prank(_user);
+      _delegate.delegate(_user);
+    }
+
+    // Assert that the user received the votingUnits
+    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.tiers[_tier].votingUnits);
+    assertEq(
+      _delegate.getTierVotes(_user, _tier + 1),
+      NFTRewardDeployerData.tiers[_tier].votingUnits
+    );
+
+    // Delegate to the users fren
+    vm.prank(_user);
+    _delegate.setTierDelegate(_userFren, _tier + 1);
+    vm.prank(_user);
+    _delegate.delegate(_userFren);
+
+    // Assert that the user lost their voting units
+    assertEq(_delegate.getVotes(_user), 0);
+    assertEq(_delegate.getTierVotes(_user, _tier + 1), 0);
+
+    // Assert that fren received the voting units
+    assertEq(_delegate.getVotes(_userFren), NFTRewardDeployerData.tiers[_tier].votingUnits);
+    assertEq(
+      _delegate.getTierVotes(_userFren, _tier + 1),
+      NFTRewardDeployerData.tiers[_tier].votingUnits
+    );
+  }
+
   function testMintReservedToken() external {
     uint16 valueSent = 1500;
     vm.assume(valueSent >= 10 && valueSent < 2000);
@@ -425,7 +581,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         contributionFloor: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(10),
-        votingUnits: uint16(0),
+        votingUnits: uint16((i + 1) * 10),
         reservedRate: uint16(JBConstants.MAX_RESERVED_RATE),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],

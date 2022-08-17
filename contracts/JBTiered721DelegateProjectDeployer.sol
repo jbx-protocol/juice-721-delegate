@@ -78,7 +78,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     projectId = controller.projects().count() + 1;
 
     // Deploy the delegate contract.
-    IJBTiered721Delegate _delegate = delegateDeployer.deployDataSourceFor(
+    IJBTiered721Delegate _delegate = delegateDeployer.deployDelegateFor(
       projectId,
       _deployTiered721DelegateData
     );
@@ -121,7 +121,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     returns (uint256 configuration)
   {
     // Deploy the delegate contract.
-    IJBTiered721Delegate _delegate = delegateDeployer.deployDataSourceFor(
+    IJBTiered721Delegate _delegate = delegateDeployer.deployDelegateFor(
       _projectId,
       _deployTiered721DelegateData
     );
@@ -164,7 +164,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     returns (uint256 configuration)
   {
     // Deploy the delegate contract.
-    IJBTiered721Delegate _delegate = delegateDeployer.deployDataSourceFor(
+    IJBTiered721Delegate _delegate = delegateDeployer.deployDelegateFor(
       _projectId,
       _deployTiered721DelegateData
     );
