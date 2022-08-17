@@ -59,7 +59,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     if (_deployTiered721DelegateData.owner != address(0))
       newDataSource.transferOwnership(_deployTiered721DelegateData.owner);
 
-    emit DatasourceDeployed(_projectId, newDataSource);
+    emit DelegateDeployed(_projectId, newDataSource);
 
     return newDataSource;
   }

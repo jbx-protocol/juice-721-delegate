@@ -11,7 +11,7 @@ import '../structs/JBReconfigureFundingCyclesData.sol';
 import './IJBTiered721Delegate.sol';
 
 interface IJBTiered721DelegateDeployer {
-  event DatasourceDeployed(uint256 indexed projectId, IJBTiered721Delegate newDatasource);
+  event DelegateDeployed(uint256 indexed projectId, IJBTiered721Delegate newDatasource);
 
   function deployDelegateFor(
     uint256 _projectId,
