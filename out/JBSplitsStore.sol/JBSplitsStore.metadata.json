@@ -1,0 +1,574 @@
+{
+  "compiler": {
+    "version": "0.8.6+commit.11564f7e"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract IJBOperatorStore",
+            "name": "_operatorStore",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IJBProjects",
+            "name": "_projects",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IJBDirectory",
+            "name": "_directory",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_LOCKED_UNTIL",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_PROJECT_ID",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_SPLIT_PERCENT",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_TOTAL_PERCENT",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "PREVIOUS_LOCKED_SPLITS_NOT_INCLUDED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UNAUTHORIZED",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "domain",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "group",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "preferClaimed",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "preferAddToBalance",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "percent",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address payable",
+                "name": "beneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBSplitAllocator",
+                "name": "allocator",
+                "type": "address"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct JBSplit",
+            "name": "split",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetSplit",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "directory",
+        "outputs": [
+          {
+            "internalType": "contract IJBDirectory",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "operatorStore",
+        "outputs": [
+          {
+            "internalType": "contract IJBOperatorStore",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "projects",
+        "outputs": [
+          {
+            "internalType": "contract IJBProjects",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_domain",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_group",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "preferClaimed",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "preferAddToBalance",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "percent",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address payable",
+                "name": "beneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBSplitAllocator",
+                "name": "allocator",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct JBSplit[]",
+            "name": "_splits",
+            "type": "tuple[]"
+          }
+        ],
+        "name": "set",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_domain",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_group",
+            "type": "uint256"
+          }
+        ],
+        "name": "splitsOf",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "preferClaimed",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "preferAddToBalance",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "percent",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address payable",
+                "name": "beneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBSplitAllocator",
+                "name": "allocator",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct JBSplit[]",
+            "name": "",
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "details": "Adheres to - IJBSplitsStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.Inherits from - JBOperatable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.",
+      "kind": "dev",
+      "methods": {
+        "constructor": {
+          "params": {
+            "_directory": "A contract storing directories of terminals and controllers for each project.",
+            "_operatorStore": "A contract storing operator assignments.",
+            "_projects": "A contract which mints ERC-721's that represent project ownership and transfers."
+          }
+        },
+        "set(uint256,uint256,uint256,(bool,bool,uint256,uint256,address,uint256,address)[])": {
+          "details": "Only the owner or operator of a project, or the current controller contract of the project, can set its splits.The new splits must include any currently set splits that are locked.",
+          "params": {
+            "_domain": "An identifier within which the splits should be considered active.",
+            "_group": "An identifier between of splits being set. All splits within this _group must add up to within 100%.",
+            "_projectId": "The ID of the project for which splits are being added.",
+            "_splits": "The splits to set."
+          }
+        },
+        "splitsOf(uint256,uint256,uint256)": {
+          "params": {
+            "_domain": "An identifier within which the returned splits should be considered active.",
+            "_group": "The identifying group of the splits.",
+            "_projectId": "The ID of the project to get splits for."
+          },
+          "returns": {
+            "_0": "An array of all splits for the project."
+          }
+        }
+      },
+      "stateVariables": {
+        "_packedSplitParts2Of": {
+          "details": "This packed data is often 0. _projectId The ID of the project to get packed splits data for. _domain An identifier within which the returned splits should be considered active. _group The identifying group of the splits. _index The indexed order that the split was set at."
+        }
+      },
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {
+        "directory()": {
+          "notice": " The directory of terminals and controllers for projects."
+        },
+        "operatorStore()": {
+          "notice": " A contract storing operator assignments."
+        },
+        "projects()": {
+          "notice": " Mints ERC-721's that represent project ownership and transfers."
+        },
+        "set(uint256,uint256,uint256,(bool,bool,uint256,uint256,address,uint256,address)[])": {
+          "notice": " Sets a project's splits."
+        },
+        "splitsOf(uint256,uint256,uint256)": {
+          "notice": " Get all splits for the specified project ID, within the specified domain, for the specified group."
+        }
+      },
+      "notice": "Stores splits for each project.",
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "node_modules/@jbx-protocol/contracts-v2/contracts/JBSplitsStore.sol": "JBSplitsStore"
+    },
+    "evmVersion": "berlin",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      ":@jbx-protocol/=node_modules/@jbx-protocol/",
+      ":@openzeppelin/=node_modules/@openzeppelin/",
+      ":@paulrberg/=node_modules/@paulrberg/",
+      ":ds-test/=lib/forge-std/lib/ds-test/src/",
+      ":forge-std/=lib/forge-std/src/",
+      ":prb-math/=node_modules/prb-math/"
+    ]
+  },
+  "sources": {
+    "node_modules/@jbx-protocol/contracts-v2/contracts/JBSplitsStore.sol": {
+      "keccak256": "0xbba27f1594fb126d02d0e98b1c7ee3e2dc714261488c4e8e274ceca2eca88255",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e3f0e9f2534d91239566e072a8aee2972babbe6bb592c7e19eb22c49ba673969",
+        "dweb:/ipfs/QmbHDqC7THD7NtWevR28xb7VLCRprrhWWRaKgyby8gD1Kx"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/abstract/JBOperatable.sol": {
+      "keccak256": "0x9a5781d40c6b8013249653253369cda2047aa35329a1fcd4dc6353cd2dde30a6",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1adb7facf833740d5cfe469d7e2172d73ee1424b518583fc6210955820c9f156",
+        "dweb:/ipfs/QmbLoiFcmLnqjQJ5JPyWRrrrg3Q79Vp2mLQcEngWTrAbXn"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/enums/JBBallotState.sol": {
+      "keccak256": "0xadf07fd49f7e0947006fa1921bc7fd8fb532e8fecf3b9266721a8b7e43907461",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7d4dd83fa3b7f679c9083eb172eb869a62dacf06eb5875dac7418fe3e5ceab1d",
+        "dweb:/ipfs/QmTjNHiqPw6k8xKxExt4hL4xvM3NpFkab3CzbfyTMPXuRD"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol": {
+      "keccak256": "0x9e7f0d3590b3ddc3b667fcdacaa53b627e4d2b3a912360597fb0ffa413518167",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7465d2352978a69eba9c4af7a88c54bf14476a1e76d14807f8722343b266b7fb",
+        "dweb:/ipfs/QmdsHrAVKtzESXe48953Z9MXurQkWa2rGnhKr2xzG5jtV4"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleBallot.sol": {
+      "keccak256": "0xdc8c8bed613f5759c958b7b0d646032b4337a349a8ecea5ffeb167623f2f29f5",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8d33d7214467f8d580781e24a87ffcfc98df6131dca0c0762ee4d2cedaba76d",
+        "dweb:/ipfs/QmTkdtenb47dwcZ76iHThKoyN8gaBCAuW4PZDgNVL8W7Uo"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleStore.sol": {
+      "keccak256": "0xf75791cd5b71bc6773cf56c92501e3f255a406eaedea781cb57cea2fa1e4ef20",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://697e21258b99ac2c4a2b73bcb8c8a47400737ecf5d3dfa6ca5a7b6f7d6be9c57",
+        "dweb:/ipfs/Qmcdg3mEvgbtBnWhjZFubqH8sZU791jtXrWWpohKzN9tkG"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBOperatable.sol": {
+      "keccak256": "0x150097e253a667d2336367445bea019bb3669ef7c82d358befe1f4cdd480e9aa",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://8cff4283a2b776710af351935f4473e15f4194a25042678e90c53b11aaa335be",
+        "dweb:/ipfs/QmaQwFkPMSc8uptuce7ESvGf9ex4Kfj5SqcUkAaXTfhzz3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBOperatorStore.sol": {
+      "keccak256": "0x50a26fddc575a50176df7deb9225ec1816b0158c9e9b8555e7921a3261254ed8",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://b3007fc795ddcbe208c0ff60617df9e4e3fbbd72614c3261cd834361c784bae1",
+        "dweb:/ipfs/Qmb59upN6TPHLBWXKQFweDwMfA6EKHB48RTasRvSmQ3ekA"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol": {
+      "keccak256": "0xf50279115f05568c12c254eb2c078b81a0c761f8cc985220e30ec15679118caa",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://48d3576fd54ae9b9c27338cba0ad91aec18606c55d32a85aeddf1b599834a6cb",
+        "dweb:/ipfs/QmUeqF8TRpzYC1MRNQXCWzVFvTQ7iBqfQQHpSQF7LbstFE"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol": {
+      "keccak256": "0x602bad7e8cce6e9d53fe5e3532c5d4428d02206f8df48b246aac7ee8a6dcc98d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8b66a1813167e248944b75bcd0af559284e4a2482e9e9ade3c6e8b1fd59eb6e",
+        "dweb:/ipfs/QmaNer7KD1EMensiJFABJ31ednVRnZcV3wfcx6FPFajoM9"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSplitAllocator.sol": {
+      "keccak256": "0x717575a0a4a20f8598f44d22a3fd3e282f34f4b33543a0d4b36ba3b59ed8cd04",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1821b7b022486b81a58fd86846d917173211a85fceaec19e2fe27052e79967f9",
+        "dweb:/ipfs/QmU6vL32otjX5CQbypVJN71qcJ4q7TBpcEoQj27YbnJfkB"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSplitsStore.sol": {
+      "keccak256": "0x11951e705a11eda101218c0996816ef39c89d0fde964f42dd67a89d00e4c7c69",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://fd7d1b7a74ec00f6dae52193deeb3ac405f704817821017bd5dc6ba52c2ac47e",
+        "dweb:/ipfs/QmT3J7jLqT1HjYgBQEStW4PAE6QXMzpNmRHpwZHFegbJpL"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol": {
+      "keccak256": "0xa64ece706d7ce399095f403b08383391c089da4995b5ee000b278d93d242a475",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://900eeb480ed168ada8a738381bb1ea9c92a007e7000a1f2e5d7da02b3010a19b",
+        "dweb:/ipfs/QmfKS6Mi6wGsT8gP3AETYKaXCiwFe9dzzFTEEkaFF7xoWg"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol": {
+      "keccak256": "0x31517dfd8accf961f247cefd72bf8a76c20747cd8ed65cedf817dd7aa9a0082f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://29186e669b1130e1f35347a51fb40ced9b7d42d504f2133b608f4ea49aae211d",
+        "dweb:/ipfs/QmduXpR7j1UroX94MCNA7zNBqAC3v18j2FMwki7T8rBEFv"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/libraries/JBOperations.sol": {
+      "keccak256": "0x828971de3d07c31e294c188335e250ee0b28919dd86f0dd570f89b97cca13932",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://dcdb505b12e4778d7edaa9e432b1cf52ac82615bd6b6732493a3ec511f8daa38",
+        "dweb:/ipfs/QmaYk88ursqk845GVXgdbE1NKgcc1KaAvXCoz5LSt61gXF"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycle.sol": {
+      "keccak256": "0x7e1ee378705e677298b955bd82b7c79b962e1c2e20f840eb8c491aba595e4905",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4d2361ccc893ff87555ba225a5518e7c54d26faf5f51111d3fdd6b9bb9a2a608",
+        "dweb:/ipfs/QmStFS5zKEbbbLZwBiNDBD7oqSKFzjZuYGReZrsnkzpuGR"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol": {
+      "keccak256": "0xfc1c73d1b01782bbdfdd73d5d25f075e6c33dd37414638b63664063a0d1692cc",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://751db5a5a4c7bb7b836a842688c8590c4557c660725df68e87c2935ed7fc995c",
+        "dweb:/ipfs/QmPnwDBtcUhgs3L9gnEcdFXpJEdu8QcTMUFMQfLcwU53YZ"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBOperatorData.sol": {
+      "keccak256": "0xc108ff9bbeef8783e332522b8bd1c17bba071c34051de72dc5bfe38dfd39a3a3",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://147b757b3ab9ccad9db039340d27cb222b2bc997b41419907388a5511e530744",
+        "dweb:/ipfs/QmPhyunneMUmkSVeF6nNZiik5Soh4KoR9eFLSQR6bMUNK3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol": {
+      "keccak256": "0x5ea56d46d07944aacfe540ee9290f10a70d77b537650a0b28975e2e88fa5b9a4",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://afdac58b0c0decc7576d5581757230f0d60c2415bb7a552e507e2833de7df9fa",
+        "dweb:/ipfs/QmcsdVf8MHP5J13feRQzPvUZZGyohYmqeTWZuvvLsi2Czw"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBSplit.sol": {
+      "keccak256": "0x03b5c632ad8c3b273d550bb334735d686fafa673b68ddb27fb77400d0de1eca1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4928af39a15e09d829fa8952c455b3559b04917be91d32d89b175704954a5a13",
+        "dweb:/ipfs/QmcL5gKwxhh2tujBvuw6KdiRUtKhSGuyvs4m7S6eacz2gn"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBSplitAllocationData.sol": {
+      "keccak256": "0x11f19479dc1d20cc07f52edc994d24b2ac08f8074d03a72ccee68af40f884b02",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://cfd92eebebaec9f468a5c509b5fc5611bdb705509f3e877ae78efd053384de1e",
+        "dweb:/ipfs/QmVGfbk2mEZa1WKW4kAmtcbx3JFGgoQS5Cuv6c5WvxX7S4"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "keccak256": "0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f",
+        "dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+        "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+      ]
+    }
+  },
+  "version": 1
+}

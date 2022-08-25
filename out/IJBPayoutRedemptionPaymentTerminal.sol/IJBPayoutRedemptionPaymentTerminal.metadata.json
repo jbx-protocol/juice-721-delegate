@@ -1,0 +1,1668 @@
+{
+  "compiler": {
+    "version": "0.8.6+commit.11564f7e"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "refundedFees",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "memo",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes",
+            "name": "metadata",
+            "type": "bytes"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "AddToBalance",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "contract IJBPayDelegate",
+            "name": "delegate",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "payer",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "currentFundingCycleConfiguration",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "token",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "decimals",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "currency",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct JBTokenAmount",
+                "name": "amount",
+                "type": "tuple"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectTokenCount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "beneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "preferClaimedTokens",
+                "type": "bool"
+              },
+              {
+                "internalType": "string",
+                "name": "memo",
+                "type": "string"
+              },
+              {
+                "internalType": "bytes",
+                "name": "metadata",
+                "type": "bytes"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct JBDidPayData",
+            "name": "data",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "DelegateDidPay",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "contract IJBRedemptionDelegate",
+            "name": "delegate",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "holder",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "currentFundingCycleConfiguration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectTokenCount",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "token",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "decimals",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "currency",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct JBTokenAmount",
+                "name": "reclaimedAmount",
+                "type": "tuple"
+              },
+              {
+                "internalType": "address payable",
+                "name": "beneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "memo",
+                "type": "string"
+              },
+              {
+                "internalType": "bytes",
+                "name": "metadata",
+                "type": "bytes"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct JBDidRedeemData",
+            "name": "data",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "DelegateDidRedeem",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleConfiguration",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleNumber",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "distributedAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "beneficiaryDistributionAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "memo",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "DistributePayouts",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "domain",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "group",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "preferClaimed",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "preferAddToBalance",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "percent",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "projectId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address payable",
+                "name": "beneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBSplitAllocator",
+                "name": "allocator",
+                "type": "address"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct JBSplit",
+            "name": "split",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "DistributeToPayoutSplit",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "feeDiscount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "HoldFee",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "contract IJBPaymentTerminal",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Migrate",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleConfiguration",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleNumber",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "payer",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "beneficiaryTokenCount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "memo",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes",
+            "name": "metadata",
+            "type": "bytes"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Pay",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "bool",
+            "name": "wasHeld",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "ProcessFee",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleConfiguration",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleNumber",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "holder",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "tokenCount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "reclaimedAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "memo",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes",
+            "name": "metadata",
+            "type": "bytes"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "RedeemTokens",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "refundedFees",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "leftoverAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "RefundHeldFees",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetFee",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "contract IJBFeeGauge",
+            "name": "feeGauge",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetFeeGauge",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "addrs",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "bool",
+            "name": "flag",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetFeelessAddress",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleConfiguration",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "fundingCycleNumber",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "distributedAmount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "netDistributedamount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "memo",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "UseAllowance",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "acceptsToken",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "_memo",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes",
+            "name": "_metadata",
+            "type": "bytes"
+          }
+        ],
+        "name": "addToBalanceOf",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "baseWeightCurrency",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          }
+        ],
+        "name": "currencyForToken",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "currentEthOverflowOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          }
+        ],
+        "name": "decimalsForToken",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "directory",
+        "outputs": [
+          {
+            "internalType": "contract IJBDirectory",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_currency",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_minReturnedTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_memo",
+            "type": "string"
+          }
+        ],
+        "name": "distributePayoutsOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "netLeftoverDistributionAmount",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "fee",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "feeGauge",
+        "outputs": [
+          {
+            "internalType": "contract IJBFeeGauge",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "heldFeesOf",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint32",
+                "name": "fee",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "feeDiscount",
+                "type": "uint32"
+              },
+              {
+                "internalType": "address",
+                "name": "beneficiary",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct JBFee[]",
+            "name": "",
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_contract",
+            "type": "address"
+          }
+        ],
+        "name": "isFeelessAddress",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "contract IJBPaymentTerminal",
+            "name": "_to",
+            "type": "address"
+          }
+        ],
+        "name": "migrate",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_beneficiary",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_minReturnedTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "_preferClaimedTokens",
+            "type": "bool"
+          },
+          {
+            "internalType": "string",
+            "name": "_memo",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes",
+            "name": "_metadata",
+            "type": "bytes"
+          }
+        ],
+        "name": "pay",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "beneficiaryTokenCount",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "payoutSplitsGroup",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "prices",
+        "outputs": [
+          {
+            "internalType": "contract IJBPrices",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "processFees",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "projects",
+        "outputs": [
+          {
+            "internalType": "contract IJBProjects",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_holder",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_count",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_minReturnedTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "_beneficiary",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "_memo",
+            "type": "string"
+          },
+          {
+            "internalType": "bytes",
+            "name": "_metadata",
+            "type": "bytes"
+          }
+        ],
+        "name": "redeemTokensOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "reclaimAmount",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_fee",
+            "type": "uint256"
+          }
+        ],
+        "name": "setFee",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "contract IJBFeeGauge",
+            "name": "_feeGauge",
+            "type": "address"
+          }
+        ],
+        "name": "setFeeGauge",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_contract",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "_flag",
+            "type": "bool"
+          }
+        ],
+        "name": "setFeelessAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "splitsStore",
+        "outputs": [
+          {
+            "internalType": "contract IJBSplitsStore",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "store",
+        "outputs": [
+          {
+            "internalType": "contract IJBSingleTokenPaymentTerminalStore",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "interfaceId",
+            "type": "bytes4"
+          }
+        ],
+        "name": "supportsInterface",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_currency",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_minReturnedTokens",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address payable",
+            "name": "_beneficiary",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "_memo",
+            "type": "string"
+          }
+        ],
+        "name": "useAllowanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "netDistributedAmount",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "kind": "dev",
+      "methods": {
+        "supportsInterface(bytes4)": {
+          "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
+        }
+      },
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {},
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol": "IJBPayoutRedemptionPaymentTerminal"
+    },
+    "evmVersion": "berlin",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      ":@jbx-protocol/=node_modules/@jbx-protocol/",
+      ":@openzeppelin/=node_modules/@openzeppelin/",
+      ":@paulrberg/=node_modules/@paulrberg/",
+      ":ds-test/=lib/forge-std/lib/ds-test/src/",
+      ":forge-std/=lib/forge-std/src/",
+      ":prb-math/=node_modules/prb-math/"
+    ]
+  },
+  "sources": {
+    "node_modules/@jbx-protocol/contracts-v2/contracts/enums/JBBallotState.sol": {
+      "keccak256": "0xadf07fd49f7e0947006fa1921bc7fd8fb532e8fecf3b9266721a8b7e43907461",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7d4dd83fa3b7f679c9083eb172eb869a62dacf06eb5875dac7418fe3e5ceab1d",
+        "dweb:/ipfs/QmTjNHiqPw6k8xKxExt4hL4xvM3NpFkab3CzbfyTMPXuRD"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBAllowanceTerminal.sol": {
+      "keccak256": "0xda5e7c0c0feb9cded1ff5e615cfd770f7917e1479c577382b3f1b552d19baf45",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://94a5a6da4717ab12330d6e8803f2dc4090fb571dd82cd9dda32b73d58e6ad325",
+        "dweb:/ipfs/QmXpkAdRVYoDZah53xTZ2AgRSZWHKpU1ZRvs2hwcTmkwHy"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol": {
+      "keccak256": "0x9e7f0d3590b3ddc3b667fcdacaa53b627e4d2b3a912360597fb0ffa413518167",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7465d2352978a69eba9c4af7a88c54bf14476a1e76d14807f8722343b266b7fb",
+        "dweb:/ipfs/QmdsHrAVKtzESXe48953Z9MXurQkWa2rGnhKr2xzG5jtV4"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFeeGauge.sol": {
+      "keccak256": "0xfef1aa95ca332c8b45edee6e393bacfc173d54f76b2a57b2d87119dfadd6650a",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://3fde1c58bbcb70414be71a74f64ecacfe6f676f088444e4d83b8f8e7798a6d7e",
+        "dweb:/ipfs/QmezydkF4BNGx7JEjwkjUimwgifPCGySuoeCwK5qe2XVJx"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleBallot.sol": {
+      "keccak256": "0xdc8c8bed613f5759c958b7b0d646032b4337a349a8ecea5ffeb167623f2f29f5",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8d33d7214467f8d580781e24a87ffcfc98df6131dca0c0762ee4d2cedaba76d",
+        "dweb:/ipfs/QmTkdtenb47dwcZ76iHThKoyN8gaBCAuW4PZDgNVL8W7Uo"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleStore.sol": {
+      "keccak256": "0xf75791cd5b71bc6773cf56c92501e3f255a406eaedea781cb57cea2fa1e4ef20",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://697e21258b99ac2c4a2b73bcb8c8a47400737ecf5d3dfa6ca5a7b6f7d6be9c57",
+        "dweb:/ipfs/Qmcdg3mEvgbtBnWhjZFubqH8sZU791jtXrWWpohKzN9tkG"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol": {
+      "keccak256": "0xf7a9ef2df665e1c85a461fadb3cd54f6270c181eac96064005bde19e54d0ffa9",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://521eafc73d727317a65c8a0a27522de68a62988d005b632dac5cff96983ce892",
+        "dweb:/ipfs/QmesPTKhG1T3X6H3QZx4JeYL17ebfahMoajPpAxrHLZdrr"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol": {
+      "keccak256": "0xf50279115f05568c12c254eb2c078b81a0c761f8cc985220e30ec15679118caa",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://48d3576fd54ae9b9c27338cba0ad91aec18606c55d32a85aeddf1b599834a6cb",
+        "dweb:/ipfs/QmUeqF8TRpzYC1MRNQXCWzVFvTQ7iBqfQQHpSQF7LbstFE"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutRedemptionPaymentTerminal.sol": {
+      "keccak256": "0x6377217bf0a3e1ed32ea529755a8b42790b8406415b5d46cb7e185698a497122",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://43ffaeb3f4bb236185289c07f745b15ed982a83e92d73a630b76a79a3248d61c",
+        "dweb:/ipfs/QmZNDHu9NkaYm8aYhyRAdWBjG9wU45NMYwny3WjntnuW9J"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayoutTerminal.sol": {
+      "keccak256": "0x3f0cd485e21e69b3a1954c8da8ab1a896efaaa1bbbb86d312b7ad7ebc8707d6b",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://b6d8259882813c5af1c6f64290d80284f96d0280840a431457d4d96728f619e2",
+        "dweb:/ipfs/QmTQM4hx2J95ZpQx1a3QmDHW5N3EnVSny6wTySXrheskFe"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPriceFeed.sol": {
+      "keccak256": "0xac22ef5e35cdd64b1467416fd142801856ce867ecde41582f3aa437c955c9be2",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://56907961729133f00949ac96c54b5f3a9b17450304de8f8d86b8ee29edbaacde",
+        "dweb:/ipfs/QmX72N8nCvE2vvuH3XrUptVNWTYWHFjeERp6Cnm6ViTN7r"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPrices.sol": {
+      "keccak256": "0x0d9c3fce264953aaeca00db1f8d8a3cf99876fa63366f5a2148f7966967b39b7",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://2dae5c36fbb60f884efc4eb6abe329fe15b9e63ee44c5d10795aacb6f842209a",
+        "dweb:/ipfs/QmQ1KBHAa7wRB881UMVX4Rb85mndktbuzEAtT8M8D7JNKY"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol": {
+      "keccak256": "0x602bad7e8cce6e9d53fe5e3532c5d4428d02206f8df48b246aac7ee8a6dcc98d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8b66a1813167e248944b75bcd0af559284e4a2482e9e9ade3c6e8b1fd59eb6e",
+        "dweb:/ipfs/QmaNer7KD1EMensiJFABJ31ednVRnZcV3wfcx6FPFajoM9"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBRedemptionDelegate.sol": {
+      "keccak256": "0xfc91761a568e60e1a1429ac11b0d1b57c627ef59f4011b17df4f9f540b7dd60d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://acf3264c04b881d7f59608c9f4e5c2e7333c2beb4c4f4468d6626c74aaa5e535",
+        "dweb:/ipfs/QmPv6rH6gPHSpbRCGuMnZyGjV5iSkfbKjJsmD5Cxegn5CK"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBRedemptionTerminal.sol": {
+      "keccak256": "0x23f72447557584b695717ac8e388b9b15113fdc50ca08b9ee25774650cb68d31",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://c6f61bcf7b422b00c8a765d9410c20ab7fae7d07fc547dff25b64c8a2c0944fb",
+        "dweb:/ipfs/QmbffLD3mepVtM9AGpzS9HatHtirZZM5CECXeJ3URuAsmx"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSingleTokenPaymentTerminal.sol": {
+      "keccak256": "0x72285da98154a8fdaa69728e6422587106aead823996b73c54d7a5bff0c52460",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://a6dfb2233856ab18ab05f8479e586eed6380de936d3237bb54262f64a4608ef8",
+        "dweb:/ipfs/QmNZeCQRngNSpjrKUgRPwFm36tECrcamhoyKDF2kVbnoWe"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSingleTokenPaymentTerminalStore.sol": {
+      "keccak256": "0x5ea8a6454764db9267174e769a7155b04448835b6c86daaa99ab3733cf55725f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://db4c70425b5c3529670987702500c0b8353c9500790f8d04ac112b3ed04c7b1a",
+        "dweb:/ipfs/QmeKq5wcM6eKQWLpFS6i3V9FWdkgnKCin7TWN6VU8Uioae"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSplitAllocator.sol": {
+      "keccak256": "0x717575a0a4a20f8598f44d22a3fd3e282f34f4b33543a0d4b36ba3b59ed8cd04",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1821b7b022486b81a58fd86846d917173211a85fceaec19e2fe27052e79967f9",
+        "dweb:/ipfs/QmU6vL32otjX5CQbypVJN71qcJ4q7TBpcEoQj27YbnJfkB"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSplitsStore.sol": {
+      "keccak256": "0x11951e705a11eda101218c0996816ef39c89d0fde964f42dd67a89d00e4c7c69",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://fd7d1b7a74ec00f6dae52193deeb3ac405f704817821017bd5dc6ba52c2ac47e",
+        "dweb:/ipfs/QmT3J7jLqT1HjYgBQEStW4PAE6QXMzpNmRHpwZHFegbJpL"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol": {
+      "keccak256": "0xa64ece706d7ce399095f403b08383391c089da4995b5ee000b278d93d242a475",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://900eeb480ed168ada8a738381bb1ea9c92a007e7000a1f2e5d7da02b3010a19b",
+        "dweb:/ipfs/QmfKS6Mi6wGsT8gP3AETYKaXCiwFe9dzzFTEEkaFF7xoWg"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBDidPayData.sol": {
+      "keccak256": "0x5466643df68a7bb1f88b781b7ac74379a1428d700edb1a22cd211c1fb8af458c",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://ddd2e26dbf3d79cee9ef14bb9671a18471f6c5ee0e8252dda24d17e0919882d8",
+        "dweb:/ipfs/QmYZknzBV5jzJXNJE4vAkxqBXfpi7WBS4XUqXPTGzEfftd"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBDidRedeemData.sol": {
+      "keccak256": "0x52e35ebfda7cf16c90d920c63e450663c0d2b3395554b313e742d8fe74dc187f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://5fb8b3da0c5dab17d5263562de358af381aa6114363a97953ef5a02432f34fec",
+        "dweb:/ipfs/QmSnnQwrGzXMvqjRsezL3rTgsvFpnm8QX9TjyCNY7cz3x3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFee.sol": {
+      "keccak256": "0x2b2e5c89f0e0f3ee9a2924a51d73e061ec742a06984c8901896579da7a7e95c4",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://0fbdc71efc6476705ed045914fc24255cb36645a36bf6aaa5838ddab36d81891",
+        "dweb:/ipfs/QmWbErNmoaPATkkhHycGYgNhb7kQzzRPVDhB4CY97CH2Qj"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycle.sol": {
+      "keccak256": "0x7e1ee378705e677298b955bd82b7c79b962e1c2e20f840eb8c491aba595e4905",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4d2361ccc893ff87555ba225a5518e7c54d26faf5f51111d3fdd6b9bb9a2a608",
+        "dweb:/ipfs/QmStFS5zKEbbbLZwBiNDBD7oqSKFzjZuYGReZrsnkzpuGR"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol": {
+      "keccak256": "0xfc1c73d1b01782bbdfdd73d5d25f075e6c33dd37414638b63664063a0d1692cc",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://751db5a5a4c7bb7b836a842688c8590c4557c660725df68e87c2935ed7fc995c",
+        "dweb:/ipfs/QmPnwDBtcUhgs3L9gnEcdFXpJEdu8QcTMUFMQfLcwU53YZ"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol": {
+      "keccak256": "0x5ea56d46d07944aacfe540ee9290f10a70d77b537650a0b28975e2e88fa5b9a4",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://afdac58b0c0decc7576d5581757230f0d60c2415bb7a552e507e2833de7df9fa",
+        "dweb:/ipfs/QmcsdVf8MHP5J13feRQzPvUZZGyohYmqeTWZuvvLsi2Czw"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBSplit.sol": {
+      "keccak256": "0x03b5c632ad8c3b273d550bb334735d686fafa673b68ddb27fb77400d0de1eca1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4928af39a15e09d829fa8952c455b3559b04917be91d32d89b175704954a5a13",
+        "dweb:/ipfs/QmcL5gKwxhh2tujBvuw6KdiRUtKhSGuyvs4m7S6eacz2gn"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBSplitAllocationData.sol": {
+      "keccak256": "0x11f19479dc1d20cc07f52edc994d24b2ac08f8074d03a72ccee68af40f884b02",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://cfd92eebebaec9f468a5c509b5fc5611bdb705509f3e877ae78efd053384de1e",
+        "dweb:/ipfs/QmVGfbk2mEZa1WKW4kAmtcbx3JFGgoQS5Cuv6c5WvxX7S4"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol": {
+      "keccak256": "0xc606ed3c46a59e2e037897d2d749867919756d01f8e75a495d2dd4e03c3535fc",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4d68ccb6e9c7cf11f214d3812a0cc8de9918b601c62f39950172375d4be415f9",
+        "dweb:/ipfs/QmRKhczPkxzVCKQ657EuLBftF5J2VVZKQknjWUa9sJ48rn"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "keccak256": "0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f",
+        "dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+        "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+      ]
+    }
+  },
+  "version": 1
+}

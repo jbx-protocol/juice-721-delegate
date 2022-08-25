@@ -1,0 +1,655 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "currency",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "base",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "contract IJBPriceFeed",
+          "name": "feed",
+          "type": "address"
+        }
+      ],
+      "name": "AddFeed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_currency",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_base",
+          "type": "uint256"
+        },
+        {
+          "internalType": "contract IJBPriceFeed",
+          "name": "_priceFeed",
+          "type": "address"
+        }
+      ],
+      "name": "addFeedFor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_currency",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_base",
+          "type": "uint256"
+        }
+      ],
+      "name": "feedFor",
+      "outputs": [
+        {
+          "internalType": "contract IJBPriceFeed",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_currency",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_base",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_decimals",
+          "type": "uint256"
+        }
+      ],
+      "name": "priceFor",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "addFeedFor(uint256,uint256,address)": "96364e6d",
+    "feedFor(uint256,uint256)": "15d63a91",
+    "priceFor(uint256,uint256,uint256)": "a4d0caf2"
+  },
+  "ast": {
+    "absolutePath": "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPrices.sol",
+    "id": 55462,
+    "exportedSymbols": {
+      "IJBPriceFeed": [
+        55417
+      ],
+      "IJBPrices": [
+        55461
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:485:66",
+    "nodes": [
+      {
+        "id": 55419,
+        "nodeType": "PragmaDirective",
+        "src": "32:22:66",
+        "literals": [
+          "solidity",
+          "0.8",
+          ".6"
+        ]
+      },
+      {
+        "id": 55420,
+        "nodeType": "ImportDirective",
+        "src": "56:28:66",
+        "absolutePath": "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPriceFeed.sol",
+        "file": "./IJBPriceFeed.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 55462,
+        "sourceUnit": 55418,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 55461,
+        "nodeType": "ContractDefinition",
+        "src": "86:430:66",
+        "nodes": [
+          {
+            "id": 55429,
+            "nodeType": "EventDefinition",
+            "src": "110:81:66",
+            "anonymous": false,
+            "name": "AddFeed",
+            "nameLocation": "116:7:66",
+            "parameters": {
+              "id": 55428,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55422,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "currency",
+                  "nameLocation": "140:8:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55429,
+                  "src": "124:24:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55421,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "124:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 55424,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "base",
+                  "nameLocation": "166:4:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55429,
+                  "src": "150:20:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55423,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "150:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 55427,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "feed",
+                  "nameLocation": "185:4:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55429,
+                  "src": "172:17:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IJBPriceFeed_$55417",
+                    "typeString": "contract IJBPriceFeed"
+                  },
+                  "typeName": {
+                    "id": 55426,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 55425,
+                      "name": "IJBPriceFeed",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 55417,
+                      "src": "172:12:66"
+                    },
+                    "referencedDeclaration": 55417,
+                    "src": "172:12:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IJBPriceFeed_$55417",
+                      "typeString": "contract IJBPriceFeed"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "123:67:66"
+            }
+          },
+          {
+            "id": 55439,
+            "nodeType": "FunctionDefinition",
+            "src": "195:88:66",
+            "functionSelector": "15d63a91",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "feedFor",
+            "nameLocation": "204:7:66",
+            "parameters": {
+              "id": 55434,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55431,
+                  "mutability": "mutable",
+                  "name": "_currency",
+                  "nameLocation": "220:9:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55439,
+                  "src": "212:17:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55430,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "212:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 55433,
+                  "mutability": "mutable",
+                  "name": "_base",
+                  "nameLocation": "239:5:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55439,
+                  "src": "231:13:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55432,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "231:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "211:34:66"
+            },
+            "returnParameters": {
+              "id": 55438,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55437,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55439,
+                  "src": "269:12:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IJBPriceFeed_$55417",
+                    "typeString": "contract IJBPriceFeed"
+                  },
+                  "typeName": {
+                    "id": 55436,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 55435,
+                      "name": "IJBPriceFeed",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 55417,
+                      "src": "269:12:66"
+                    },
+                    "referencedDeclaration": 55417,
+                    "src": "269:12:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IJBPriceFeed_$55417",
+                      "typeString": "contract IJBPriceFeed"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "268:14:66"
+            },
+            "scope": 55461,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 55450,
+            "nodeType": "FunctionDefinition",
+            "src": "287:119:66",
+            "functionSelector": "a4d0caf2",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "priceFor",
+            "nameLocation": "296:8:66",
+            "parameters": {
+              "id": 55446,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55441,
+                  "mutability": "mutable",
+                  "name": "_currency",
+                  "nameLocation": "318:9:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55450,
+                  "src": "310:17:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55440,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "310:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 55443,
+                  "mutability": "mutable",
+                  "name": "_base",
+                  "nameLocation": "341:5:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55450,
+                  "src": "333:13:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55442,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "333:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 55445,
+                  "mutability": "mutable",
+                  "name": "_decimals",
+                  "nameLocation": "360:9:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55450,
+                  "src": "352:17:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55444,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "352:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "304:69:66"
+            },
+            "returnParameters": {
+              "id": 55449,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55448,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55450,
+                  "src": "397:7:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55447,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "397:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "396:9:66"
+            },
+            "scope": 55461,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 55460,
+            "nodeType": "FunctionDefinition",
+            "src": "410:104:66",
+            "functionSelector": "96364e6d",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "addFeedFor",
+            "nameLocation": "419:10:66",
+            "parameters": {
+              "id": 55458,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 55452,
+                  "mutability": "mutable",
+                  "name": "_currency",
+                  "nameLocation": "443:9:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55460,
+                  "src": "435:17:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55451,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "435:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 55454,
+                  "mutability": "mutable",
+                  "name": "_base",
+                  "nameLocation": "466:5:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55460,
+                  "src": "458:13:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 55453,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "458:7:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 55457,
+                  "mutability": "mutable",
+                  "name": "_priceFeed",
+                  "nameLocation": "490:10:66",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 55460,
+                  "src": "477:23:66",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IJBPriceFeed_$55417",
+                    "typeString": "contract IJBPriceFeed"
+                  },
+                  "typeName": {
+                    "id": 55456,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 55455,
+                      "name": "IJBPriceFeed",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 55417,
+                      "src": "477:12:66"
+                    },
+                    "referencedDeclaration": 55417,
+                    "src": "477:12:66",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IJBPriceFeed_$55417",
+                      "typeString": "contract IJBPriceFeed"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "429:75:66"
+            },
+            "returnParameters": {
+              "id": 55459,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "513:0:66"
+            },
+            "scope": 55461,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          55461
+        ],
+        "name": "IJBPrices",
+        "nameLocation": "96:9:66",
+        "scope": 55462,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 66
+}

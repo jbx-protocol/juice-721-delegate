@@ -1,0 +1,1895 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "UNAUTHORIZED",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "operatorStore",
+      "outputs": [
+        {
+          "internalType": "contract IJBOperatorStore",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "operatorStore()": "ad007d63"
+  },
+  "ast": {
+    "absolutePath": "node_modules/@jbx-protocol/contracts-v2/contracts/abstract/JBOperatable.sol",
+    "id": 51704,
+    "exportedSymbols": {
+      "IJBOperatable": [
+        54905
+      ],
+      "IJBOperatorStore": [
+        54973
+      ],
+      "JBOperatable": [
+        51703
+      ],
+      "JBOperatorData": [
+        57194
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:4549:46",
+    "nodes": [
+      {
+        "id": 51559,
+        "nodeType": "PragmaDirective",
+        "src": "32:22:46",
+        "literals": [
+          "solidity",
+          "0.8",
+          ".6"
+        ]
+      },
+      {
+        "id": 51560,
+        "nodeType": "ImportDirective",
+        "src": "56:43:46",
+        "absolutePath": "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBOperatable.sol",
+        "file": "./../interfaces/IJBOperatable.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 51704,
+        "sourceUnit": 54906,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 51703,
+        "nodeType": "ContractDefinition",
+        "src": "375:4205:46",
+        "nodes": [
+          {
+            "id": 51565,
+            "nodeType": "ErrorDefinition",
+            "src": "656:21:46",
+            "name": "UNAUTHORIZED",
+            "nameLocation": "662:12:46",
+            "parameters": {
+              "id": 51564,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "674:2:46"
+            }
+          },
+          {
+            "id": 51582,
+            "nodeType": "ModifierDefinition",
+            "src": "1206:177:46",
+            "body": {
+              "id": 51581,
+              "nodeType": "Block",
+              "src": "1310:73:46",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 51575,
+                        "name": "_account",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51568,
+                        "src": "1335:8:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "id": 51576,
+                        "name": "_domain",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51570,
+                        "src": "1345:7:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 51577,
+                        "name": "_permissionIndex",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51572,
+                        "src": "1354:16:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 51574,
+                      "name": "_requirePermission",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 51658,
+                      "src": "1316:18:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$_t_address_$_t_uint256_$_t_uint256_$returns$__$",
+                        "typeString": "function (address,uint256,uint256) view"
+                      }
+                    },
+                    "id": 51578,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1316:55:46",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 51579,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1316:55:46"
+                },
+                {
+                  "id": 51580,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "1377:1:46"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 51566,
+              "nodeType": "StructuredDocumentation",
+              "src": "910:293:46",
+              "text": "@notice\nOnly allows the speficied account or an operator of the account to proceed. \n@param _account The account to check for.\n@param _domain The domain namespace to look for an operator within. \n@param _permissionIndex The index of the permission to check for. "
+            },
+            "name": "requirePermission",
+            "nameLocation": "1215:17:46",
+            "parameters": {
+              "id": 51573,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 51568,
+                  "mutability": "mutable",
+                  "name": "_account",
+                  "nameLocation": "1246:8:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51582,
+                  "src": "1238:16:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 51567,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1238:7:46",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51570,
+                  "mutability": "mutable",
+                  "name": "_domain",
+                  "nameLocation": "1268:7:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51582,
+                  "src": "1260:15:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51569,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1260:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51572,
+                  "mutability": "mutable",
+                  "name": "_permissionIndex",
+                  "nameLocation": "1289:16:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51582,
+                  "src": "1281:24:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51571,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1281:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1232:77:46"
+            },
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 51602,
+            "nodeType": "ModifierDefinition",
+            "src": "1765:240:46",
+            "body": {
+              "id": 51601,
+              "nodeType": "Block",
+              "src": "1905:100:46",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "id": 51594,
+                        "name": "_account",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51585,
+                        "src": "1946:8:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "id": 51595,
+                        "name": "_domain",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51587,
+                        "src": "1956:7:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 51596,
+                        "name": "_permissionIndex",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51589,
+                        "src": "1965:16:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      },
+                      {
+                        "id": 51597,
+                        "name": "_override",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51591,
+                        "src": "1983:9:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        },
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 51593,
+                      "name": "_requirePermissionAllowingOverride",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 51702,
+                      "src": "1911:34:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_view$_t_address_$_t_uint256_$_t_uint256_$_t_bool_$returns$__$",
+                        "typeString": "function (address,uint256,uint256,bool) view"
+                      }
+                    },
+                    "id": 51598,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1911:82:46",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 51599,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1911:82:46"
+                },
+                {
+                  "id": 51600,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "1999:1:46"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 51583,
+              "nodeType": "StructuredDocumentation",
+              "src": "1387:375:46",
+              "text": "@notice\nOnly allows the speficied account, an operator of the account to proceed, or a truthy override flag. \n@param _account The account to check for.\n@param _domain The domain namespace to look for an operator within. \n@param _permissionIndex The index of the permission to check for. \n@param _override A condition to force allowance for."
+            },
+            "name": "requirePermissionAllowingOverride",
+            "nameLocation": "1774:33:46",
+            "parameters": {
+              "id": 51592,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 51585,
+                  "mutability": "mutable",
+                  "name": "_account",
+                  "nameLocation": "1821:8:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51602,
+                  "src": "1813:16:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 51584,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1813:7:46",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51587,
+                  "mutability": "mutable",
+                  "name": "_domain",
+                  "nameLocation": "1843:7:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51602,
+                  "src": "1835:15:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51586,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1835:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51589,
+                  "mutability": "mutable",
+                  "name": "_permissionIndex",
+                  "nameLocation": "1864:16:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51602,
+                  "src": "1856:24:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51588,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1856:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51591,
+                  "mutability": "mutable",
+                  "name": "_override",
+                  "nameLocation": "1891:9:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51602,
+                  "src": "1886:14:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 51590,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1886:4:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1807:97:46"
+            },
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 51607,
+            "nodeType": "VariableDeclaration",
+            "src": "2308:56:46",
+            "baseFunctions": [
+              54904
+            ],
+            "constant": false,
+            "documentation": {
+              "id": 51603,
+              "nodeType": "StructuredDocumentation",
+              "src": "2238:67:46",
+              "text": "@notice \nA contract storing operator assignments."
+            },
+            "functionSelector": "ad007d63",
+            "mutability": "immutable",
+            "name": "operatorStore",
+            "nameLocation": "2351:13:46",
+            "overrides": {
+              "id": 51606,
+              "nodeType": "OverrideSpecifier",
+              "overrides": [],
+              "src": "2342:8:46"
+            },
+            "scope": 51703,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+              "typeString": "contract IJBOperatorStore"
+            },
+            "typeName": {
+              "id": 51605,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 51604,
+                "name": "IJBOperatorStore",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 54973,
+                "src": "2308:16:46"
+              },
+              "referencedDeclaration": 54973,
+              "src": "2308:16:46",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                "typeString": "contract IJBOperatorStore"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 51619,
+            "nodeType": "FunctionDefinition",
+            "src": "2677:86:46",
+            "body": {
+              "id": 51618,
+              "nodeType": "Block",
+              "src": "2722:41:46",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 51616,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 51614,
+                      "name": "operatorStore",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 51607,
+                      "src": "2728:13:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                        "typeString": "contract IJBOperatorStore"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 51615,
+                      "name": "_operatorStore",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 51611,
+                      "src": "2744:14:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                        "typeString": "contract IJBOperatorStore"
+                      }
+                    },
+                    "src": "2728:30:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                      "typeString": "contract IJBOperatorStore"
+                    }
+                  },
+                  "id": 51617,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2728:30:46"
+                }
+              ]
+            },
+            "documentation": {
+              "id": 51608,
+              "nodeType": "StructuredDocumentation",
+              "src": "2598:76:46",
+              "text": "@param _operatorStore A contract storing operator assignments."
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 51612,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 51611,
+                  "mutability": "mutable",
+                  "name": "_operatorStore",
+                  "nameLocation": "2706:14:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51619,
+                  "src": "2689:31:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                    "typeString": "contract IJBOperatorStore"
+                  },
+                  "typeName": {
+                    "id": 51610,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 51609,
+                      "name": "IJBOperatorStore",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 54973,
+                      "src": "2689:16:46"
+                    },
+                    "referencedDeclaration": 54973,
+                    "src": "2689:16:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                      "typeString": "contract IJBOperatorStore"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2688:33:46"
+            },
+            "returnParameters": {
+              "id": 51613,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2722:0:46"
+            },
+            "scope": 51703,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 51658,
+            "nodeType": "FunctionDefinition",
+            "src": "3359:359:46",
+            "body": {
+              "id": 51657,
+              "nodeType": "Block",
+              "src": "3478:240:46",
+              "statements": [
+                {
+                  "condition": {
+                    "commonType": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "id": 51652,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "commonType": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "id": 51642,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 51632,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "expression": {
+                            "id": 51629,
+                            "name": "msg",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": -15,
+                            "src": "3495:3:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_magic_message",
+                              "typeString": "msg"
+                            }
+                          },
+                          "id": 51630,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "sender",
+                          "nodeType": "MemberAccess",
+                          "src": "3495:10:46",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "!=",
+                        "rightExpression": {
+                          "id": 51631,
+                          "name": "_account",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 51622,
+                          "src": "3509:8:46",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "3495:22:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "&&",
+                      "rightExpression": {
+                        "id": 51641,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "UnaryOperation",
+                        "operator": "!",
+                        "prefix": true,
+                        "src": "3527:77:46",
+                        "subExpression": {
+                          "arguments": [
+                            {
+                              "expression": {
+                                "id": 51635,
+                                "name": "msg",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": -15,
+                                "src": "3556:3:46",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_magic_message",
+                                  "typeString": "msg"
+                                }
+                              },
+                              "id": 51636,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "memberName": "sender",
+                              "nodeType": "MemberAccess",
+                              "src": "3556:10:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            },
+                            {
+                              "id": 51637,
+                              "name": "_account",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51622,
+                              "src": "3568:8:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            },
+                            {
+                              "id": 51638,
+                              "name": "_domain",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51624,
+                              "src": "3578:7:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            },
+                            {
+                              "id": 51639,
+                              "name": "_permissionIndex",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51626,
+                              "src": "3587:16:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              },
+                              {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            ],
+                            "expression": {
+                              "id": 51633,
+                              "name": "operatorStore",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51607,
+                              "src": "3528:13:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                                "typeString": "contract IJBOperatorStore"
+                              }
+                            },
+                            "id": 51634,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "hasPermission",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 54945,
+                            "src": "3528:27:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_view$_t_address_$_t_address_$_t_uint256_$_t_uint256_$returns$_t_bool_$",
+                              "typeString": "function (address,address,uint256,uint256) view external returns (bool)"
+                            }
+                          },
+                          "id": 51640,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "3528:76:46",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "src": "3495:109:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "&&",
+                    "rightExpression": {
+                      "id": 51651,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "UnaryOperation",
+                      "operator": "!",
+                      "prefix": true,
+                      "src": "3614:71:46",
+                      "subExpression": {
+                        "arguments": [
+                          {
+                            "expression": {
+                              "id": 51645,
+                              "name": "msg",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": -15,
+                              "src": "3643:3:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_message",
+                                "typeString": "msg"
+                              }
+                            },
+                            "id": 51646,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "sender",
+                            "nodeType": "MemberAccess",
+                            "src": "3643:10:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "id": 51647,
+                            "name": "_account",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51622,
+                            "src": "3655:8:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "hexValue": "30",
+                            "id": 51648,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "number",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "3665:1:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_rational_0_by_1",
+                              "typeString": "int_const 0"
+                            },
+                            "value": "0"
+                          },
+                          {
+                            "id": 51649,
+                            "name": "_permissionIndex",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51626,
+                            "src": "3668:16:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_rational_0_by_1",
+                              "typeString": "int_const 0"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          ],
+                          "expression": {
+                            "id": 51643,
+                            "name": "operatorStore",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51607,
+                            "src": "3615:13:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                              "typeString": "contract IJBOperatorStore"
+                            }
+                          },
+                          "id": 51644,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "hasPermission",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 54945,
+                          "src": "3615:27:46",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_external_view$_t_address_$_t_address_$_t_uint256_$_t_uint256_$returns$_t_bool_$",
+                            "typeString": "function (address,address,uint256,uint256) view external returns (bool)"
+                          }
+                        },
+                        "id": 51650,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "3615:70:46",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "src": "3495:190:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 51656,
+                  "nodeType": "IfStatement",
+                  "src": "3484:229:46",
+                  "trueBody": {
+                    "errorCall": {
+                      "arguments": [],
+                      "expression": {
+                        "argumentTypes": [],
+                        "id": 51653,
+                        "name": "UNAUTHORIZED",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51565,
+                        "src": "3699:12:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_error_pure$__$returns$__$",
+                          "typeString": "function () pure"
+                        }
+                      },
+                      "id": 51654,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "3699:14:46",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_tuple$__$",
+                        "typeString": "tuple()"
+                      }
+                    },
+                    "id": 51655,
+                    "nodeType": "RevertStatement",
+                    "src": "3692:21:46"
+                  }
+                }
+              ]
+            },
+            "documentation": {
+              "id": 51620,
+              "nodeType": "StructuredDocumentation",
+              "src": "2996:360:46",
+              "text": "@notice\nRequire the message sender is either the account or has the specified permission.\n@param _account The account to allow.\n@param _domain The domain namespace within which the permission index will be checked.\n@param _permissionIndex The permission index that an operator must have within the specified domain to be allowed."
+            },
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_requirePermission",
+            "nameLocation": "3368:18:46",
+            "parameters": {
+              "id": 51627,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 51622,
+                  "mutability": "mutable",
+                  "name": "_account",
+                  "nameLocation": "3400:8:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51658,
+                  "src": "3392:16:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 51621,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3392:7:46",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51624,
+                  "mutability": "mutable",
+                  "name": "_domain",
+                  "nameLocation": "3422:7:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51658,
+                  "src": "3414:15:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51623,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3414:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51626,
+                  "mutability": "mutable",
+                  "name": "_permissionIndex",
+                  "nameLocation": "3443:16:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51658,
+                  "src": "3435:24:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51625,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3435:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3386:77:46"
+            },
+            "returnParameters": {
+              "id": 51628,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "3478:0:46"
+            },
+            "scope": 51703,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "internal"
+          },
+          {
+            "id": 51702,
+            "nodeType": "FunctionDefinition",
+            "src": "4163:415:46",
+            "body": {
+              "id": 51701,
+              "nodeType": "Block",
+              "src": "4318:260:46",
+              "statements": [
+                {
+                  "condition": {
+                    "commonType": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "id": 51696,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "commonType": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "id": 51686,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "leftExpression": {
+                        "commonType": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        "id": 51676,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "id": 51671,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "nodeType": "UnaryOperation",
+                          "operator": "!",
+                          "prefix": true,
+                          "src": "4335:10:46",
+                          "subExpression": {
+                            "id": 51670,
+                            "name": "_override",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51667,
+                            "src": "4336:9:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_bool",
+                              "typeString": "bool"
+                            }
+                          },
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "&&",
+                        "rightExpression": {
+                          "commonType": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          },
+                          "id": 51675,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftExpression": {
+                            "expression": {
+                              "id": 51672,
+                              "name": "msg",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": -15,
+                              "src": "4355:3:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_message",
+                                "typeString": "msg"
+                              }
+                            },
+                            "id": 51673,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "sender",
+                            "nodeType": "MemberAccess",
+                            "src": "4355:10:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          "nodeType": "BinaryOperation",
+                          "operator": "!=",
+                          "rightExpression": {
+                            "id": 51674,
+                            "name": "_account",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51661,
+                            "src": "4369:8:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          "src": "4355:22:46",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "src": "4335:42:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "nodeType": "BinaryOperation",
+                      "operator": "&&",
+                      "rightExpression": {
+                        "id": 51685,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "UnaryOperation",
+                        "operator": "!",
+                        "prefix": true,
+                        "src": "4387:77:46",
+                        "subExpression": {
+                          "arguments": [
+                            {
+                              "expression": {
+                                "id": 51679,
+                                "name": "msg",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": -15,
+                                "src": "4416:3:46",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_magic_message",
+                                  "typeString": "msg"
+                                }
+                              },
+                              "id": 51680,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "memberName": "sender",
+                              "nodeType": "MemberAccess",
+                              "src": "4416:10:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            },
+                            {
+                              "id": 51681,
+                              "name": "_account",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51661,
+                              "src": "4428:8:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              }
+                            },
+                            {
+                              "id": 51682,
+                              "name": "_domain",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51663,
+                              "src": "4438:7:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            },
+                            {
+                              "id": 51683,
+                              "name": "_permissionIndex",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51665,
+                              "src": "4447:16:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              },
+                              {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            ],
+                            "expression": {
+                              "id": 51677,
+                              "name": "operatorStore",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 51607,
+                              "src": "4388:13:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                                "typeString": "contract IJBOperatorStore"
+                              }
+                            },
+                            "id": 51678,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "hasPermission",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 54945,
+                            "src": "4388:27:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_external_view$_t_address_$_t_address_$_t_uint256_$_t_uint256_$returns$_t_bool_$",
+                              "typeString": "function (address,address,uint256,uint256) view external returns (bool)"
+                            }
+                          },
+                          "id": 51684,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "4388:76:46",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "src": "4335:129:46",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "&&",
+                    "rightExpression": {
+                      "id": 51695,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "UnaryOperation",
+                      "operator": "!",
+                      "prefix": true,
+                      "src": "4474:71:46",
+                      "subExpression": {
+                        "arguments": [
+                          {
+                            "expression": {
+                              "id": 51689,
+                              "name": "msg",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": -15,
+                              "src": "4503:3:46",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_magic_message",
+                                "typeString": "msg"
+                              }
+                            },
+                            "id": 51690,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "sender",
+                            "nodeType": "MemberAccess",
+                            "src": "4503:10:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "id": 51691,
+                            "name": "_account",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51661,
+                            "src": "4515:8:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          },
+                          {
+                            "hexValue": "30",
+                            "id": 51692,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "number",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "4525:1:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_rational_0_by_1",
+                              "typeString": "int_const 0"
+                            },
+                            "value": "0"
+                          },
+                          {
+                            "id": 51693,
+                            "name": "_permissionIndex",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51665,
+                            "src": "4528:16:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            },
+                            {
+                              "typeIdentifier": "t_rational_0_by_1",
+                              "typeString": "int_const 0"
+                            },
+                            {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          ],
+                          "expression": {
+                            "id": 51687,
+                            "name": "operatorStore",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 51607,
+                            "src": "4475:13:46",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_contract$_IJBOperatorStore_$54973",
+                              "typeString": "contract IJBOperatorStore"
+                            }
+                          },
+                          "id": 51688,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "hasPermission",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 54945,
+                          "src": "4475:27:46",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_external_view$_t_address_$_t_address_$_t_uint256_$_t_uint256_$returns$_t_bool_$",
+                            "typeString": "function (address,address,uint256,uint256) view external returns (bool)"
+                          }
+                        },
+                        "id": 51694,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "4475:70:46",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      }
+                    },
+                    "src": "4335:210:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "id": 51700,
+                  "nodeType": "IfStatement",
+                  "src": "4324:249:46",
+                  "trueBody": {
+                    "errorCall": {
+                      "arguments": [],
+                      "expression": {
+                        "argumentTypes": [],
+                        "id": 51697,
+                        "name": "UNAUTHORIZED",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 51565,
+                        "src": "4559:12:46",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_error_pure$__$returns$__$",
+                          "typeString": "function () pure"
+                        }
+                      },
+                      "id": 51698,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "4559:14:46",
+                      "tryCall": false,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_tuple$__$",
+                        "typeString": "tuple()"
+                      }
+                    },
+                    "id": 51699,
+                    "nodeType": "RevertStatement",
+                    "src": "4552:21:46"
+                  }
+                }
+              ]
+            },
+            "documentation": {
+              "id": 51659,
+              "nodeType": "StructuredDocumentation",
+              "src": "3722:438:46",
+              "text": "@notice\nRequire the message sender is either the account, has the specified permission, or the override condition is true.\n@param _account The account to allow.\n@param _domain The domain namespace within which the permission index will be checked.\n@param _domain The permission index that an operator must have within the specified domain to be allowed.\n@param _override The override condition to allow."
+            },
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "_requirePermissionAllowingOverride",
+            "nameLocation": "4172:34:46",
+            "parameters": {
+              "id": 51668,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 51661,
+                  "mutability": "mutable",
+                  "name": "_account",
+                  "nameLocation": "4220:8:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51702,
+                  "src": "4212:16:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 51660,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4212:7:46",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51663,
+                  "mutability": "mutable",
+                  "name": "_domain",
+                  "nameLocation": "4242:7:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51702,
+                  "src": "4234:15:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51662,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4234:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51665,
+                  "mutability": "mutable",
+                  "name": "_permissionIndex",
+                  "nameLocation": "4263:16:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51702,
+                  "src": "4255:24:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 51664,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4255:7:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 51667,
+                  "mutability": "mutable",
+                  "name": "_override",
+                  "nameLocation": "4290:9:46",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 51702,
+                  "src": "4285:14:46",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 51666,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4285:4:46",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4206:97:46"
+            },
+            "returnParameters": {
+              "id": 51669,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "4318:0:46"
+            },
+            "scope": 51703,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "abstract": true,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 51562,
+              "name": "IJBOperatable",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 54905,
+              "src": "409:13:46"
+            },
+            "id": 51563,
+            "nodeType": "InheritanceSpecifier",
+            "src": "409:13:46"
+          }
+        ],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 51561,
+          "nodeType": "StructuredDocumentation",
+          "src": "101:273:46",
+          "text": "@notice\nModifiers to allow access to functions based on the message sender's operator status.\n@dev\nAdheres to -\nIJBOperatable: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules."
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          51703,
+          54905
+        ],
+        "name": "JBOperatable",
+        "nameLocation": "393:12:46",
+        "scope": 51704,
+        "usedErrors": [
+          51565
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 46
+}

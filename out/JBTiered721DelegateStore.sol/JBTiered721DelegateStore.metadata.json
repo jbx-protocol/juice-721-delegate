@@ -1,0 +1,1499 @@
+{
+  "compiler": {
+    "version": "0.8.6+commit.11564f7e"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "inputs": [],
+        "name": "INSUFFICIENT_AMOUNT",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INSUFFICIENT_RESERVES",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_PRICE_SORT_ORDER",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_TIER",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NO_QUANTITY",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "OUT",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "RESERVED_RATE_NOT_ALLOWED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TIER_LOCKED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TIER_REMOVED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "VOTING_UNITS_NOT_ALLOWED",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "nft",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "CleanTiers",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_owner",
+            "type": "address"
+          }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "baseUriOf",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          }
+        ],
+        "name": "cleanTiers",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "contractUriOf",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "defaultReservedTokenBeneficiaryOf",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "encodedIPFSUriOf",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "encodedTierIPFSUriOf",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "firstOwnerOf",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "isTierRemoved",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "lockReservedTokenChangesFor",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "lockVotingUnitChangesFor",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "maxTierId",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_tierId",
+            "type": "uint256"
+          }
+        ],
+        "name": "numberOfReservedTokensOutstandingFor",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "numberOfReservesMintedFor",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "contributionFloor",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "initialQuantity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "votingUnits",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "reservedRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "reservedTokenBeneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "encodedIPFSUri",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "shouldUseBeneficiaryAsDefault",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct JB721TierParams[]",
+            "name": "_tiersToAdd",
+            "type": "tuple[]"
+          }
+        ],
+        "name": "recordAddTiers",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "tierIds",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bool",
+            "name": "_flag",
+            "type": "bool"
+          }
+        ],
+        "name": "recordLockReservedTokenChanges",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bool",
+            "name": "_flag",
+            "type": "bool"
+          }
+        ],
+        "name": "recordLockVotingUnitChanges",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16[]",
+            "name": "_tierIds",
+            "type": "uint16[]"
+          }
+        ],
+        "name": "recordMint",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "tokenIds",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "leftoverAmount",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "recordMintBestAvailableTier",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tierId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "leftoverAmount",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_tierId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_count",
+            "type": "uint256"
+          }
+        ],
+        "name": "recordMintReservesFor",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "tokenIds",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "_tierIds",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "recordRemoveTierIds",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_uri",
+            "type": "string"
+          }
+        ],
+        "name": "recordSetBaseUri",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "string",
+            "name": "_uri",
+            "type": "string"
+          }
+        ],
+        "name": "recordSetContractUri",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_beneficiary",
+            "type": "address"
+          }
+        ],
+        "name": "recordSetDefaultReservedTokenBeneficiary",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_owner",
+            "type": "address"
+          }
+        ],
+        "name": "recordSetFirstOwnerOf",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "contract IJBTokenUriResolver",
+            "name": "_resolver",
+            "type": "address"
+          }
+        ],
+        "name": "recordSetTokenUriResolver",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_tierId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_from",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_to",
+            "type": "address"
+          }
+        ],
+        "name": "recordTransferForTier",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "_tokenIds",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "redemptionWeightOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "weight",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_tierId",
+            "type": "uint256"
+          }
+        ],
+        "name": "reservedTokenBeneficiaryOf",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_id",
+            "type": "uint256"
+          }
+        ],
+        "name": "tier",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "contributionFloor",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "remainingQuantity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "initialQuantity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "votingUnits",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "reservedRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "reservedTokenBeneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "encodedIPFSUri",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct JB721Tier",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "tierBalanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "tierIdOfToken",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "tierOfTokenId",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "contributionFloor",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "remainingQuantity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "initialQuantity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "votingUnits",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "reservedRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "reservedTokenBeneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "encodedIPFSUri",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct JB721Tier",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_account",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_tierId",
+            "type": "uint256"
+          }
+        ],
+        "name": "tierVotingUnitsOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_startingId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_size",
+            "type": "uint256"
+          }
+        ],
+        "name": "tiers",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "contributionFloor",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "lockedUntil",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "remainingQuantity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "initialQuantity",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "votingUnits",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "reservedRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "reservedTokenBeneficiary",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "encodedIPFSUri",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct JB721Tier[]",
+            "name": "_tiers",
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "tokenUriResolverOf",
+        "outputs": [
+          {
+            "internalType": "contract IJBTokenUriResolver",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          }
+        ],
+        "name": "totalRedemptionWeight",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "weight",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          }
+        ],
+        "name": "totalSupply",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "supply",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_account",
+            "type": "address"
+          }
+        ],
+        "name": "votingUnitsOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "units",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "details": "Adheres to - IJBTiered721DelegateStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.",
+      "kind": "dev",
+      "methods": {
+        "balanceOf(address,address)": {
+          "params": {
+            "_nft": "The NFT to get a balance from.",
+            "_owner": "The address to check the balance of."
+          },
+          "returns": {
+            "balance": "The number of tokens owners by the owner accross all tiers."
+          }
+        },
+        "cleanTiers(address)": {
+          "params": {
+            "_nft": "The NFT contract to clean tiers for."
+          }
+        },
+        "encodedTierIPFSUriOf(address,uint256)": {
+          "params": {
+            "_nft": "The NFT contract to which the encoded IPFS URI belongs.",
+            "_tokenId": "the ID of the token."
+          },
+          "returns": {
+            "_0": "The encoded IPFS URI."
+          }
+        },
+        "numberOfReservedTokensOutstandingFor(address,uint256)": {
+          "params": {
+            "_nft": "The NFT to get a number of reserved tokens outstanding.",
+            "_tierId": "The ID of the tier to get a number of reserved tokens outstanding."
+          },
+          "returns": {
+            "_0": "The outstanding number of reserved tokens within the tier."
+          }
+        },
+        "recordAddTiers((uint256,uint256,uint256,uint256,uint256,address,bytes32,bool)[])": {
+          "params": {
+            "_tiersToAdd": "The tiers to add."
+          },
+          "returns": {
+            "tierIds": "The IDs of the tiers added."
+          }
+        },
+        "recordLockReservedTokenChanges(bool)": {
+          "params": {
+            "_flag": "The flag to set."
+          }
+        },
+        "recordLockVotingUnitChanges(bool)": {
+          "params": {
+            "_flag": "The flag to set."
+          }
+        },
+        "recordMint(uint256,uint16[])": {
+          "params": {
+            "_amount": "The amount to base the mints on. All mints' price floors must fit in this amount.",
+            "_tierIds": "The IDs of the tier to mint from."
+          },
+          "returns": {
+            "leftoverAmount": "The amount leftover after the mint.",
+            "tokenIds": "The IDs of the tokens minted."
+          }
+        },
+        "recordMintBestAvailableTier(uint256)": {
+          "params": {
+            "_amount": "The amount to base the mint on."
+          },
+          "returns": {
+            "leftoverAmount": "The amount leftover after the mint. ",
+            "tierId": "The ID of the tier minted from.",
+            "tokenId": "The token ID minted."
+          }
+        },
+        "recordMintReservesFor(uint256,uint256)": {
+          "details": "Only a project owner can mint tokens.",
+          "params": {
+            "_count": "The number of reserved tokens to mint. ",
+            "_tierId": "The ID of the tier to mint within."
+          },
+          "returns": {
+            "tokenIds": "The IDs of the tokens being minted as reserves."
+          }
+        },
+        "recordRemoveTierIds(uint256[])": {
+          "params": {
+            "_tierIds": "The tiers IDs to remove."
+          }
+        },
+        "recordSetBaseUri(string)": {
+          "params": {
+            "_uri": "The base URI to set."
+          }
+        },
+        "recordSetContractUri(string)": {
+          "params": {
+            "_uri": "The contract URI to set."
+          }
+        },
+        "recordSetDefaultReservedTokenBeneficiary(address)": {
+          "params": {
+            "_beneficiary": "The reservd token beneficiary."
+          }
+        },
+        "recordSetFirstOwnerOf(uint256,address)": {
+          "params": {
+            "_owner": "The owner to set as the first owner.",
+            "_tokenId": "The ID of the token having the first owner set."
+          }
+        },
+        "recordSetTokenUriResolver(address)": {
+          "params": {
+            "_resolver": "The resolver to set."
+          }
+        },
+        "recordTransferForTier(uint256,address,address)": {
+          "params": {
+            "_from": "The sender of the token.",
+            "_tierId": "The ID the tier being transfered",
+            "_to": "The recipient of the token."
+          }
+        },
+        "redemptionWeightOf(address,uint256[])": {
+          "params": {
+            "_nft": "The NFT for which the redemption weight is being calculated.",
+            "_tokenIds": "The IDs of the tokens to get the cumulative redemption weight of."
+          },
+          "returns": {
+            "weight": "The weight."
+          }
+        },
+        "reservedTokenBeneficiaryOf(address,uint256)": {
+          "params": {
+            "_nft": "The NFT to get the reserved token beneficiary within.",
+            "_tierId": "The ID of the tier to get a reserved token beneficiary of."
+          },
+          "returns": {
+            "_0": "The reserved token benficiary."
+          }
+        },
+        "tier(address,uint256)": {
+          "params": {
+            "_id": "The ID of the tier to get. ",
+            "_nft": "The NFT to get a tier within."
+          },
+          "returns": {
+            "_0": "The tier."
+          }
+        },
+        "tierIdOfToken(uint256)": {
+          "details": "Tier's are 1 indexed from the `tiers` array, meaning the 0th element of the array is tier 1.",
+          "params": {
+            "_tokenId": "The ID of the token to get the tier number of. "
+          },
+          "returns": {
+            "_0": "The tier number of the specified token ID."
+          }
+        },
+        "tierOfTokenId(address,uint256)": {
+          "params": {
+            "_nft": "The NFT to get a tier within.",
+            "_tokenId": "The ID of token to return the tier of. "
+          },
+          "returns": {
+            "_0": "The tier."
+          }
+        },
+        "tierVotingUnitsOf(address,address,uint256)": {
+          "params": {
+            "_account": "The account to get voting units for.",
+            "_nft": "The NFT to get voting units within.",
+            "_tierId": "The ID of the tier to get voting units for."
+          },
+          "returns": {
+            "_0": "The voting units for the account."
+          }
+        },
+        "tiers(address,uint256,uint256)": {
+          "params": {
+            "_nft": "The NFT contract to get tiers for.",
+            "_size": "The number of tiers to include.",
+            "_startingId": "The start index of the array of tiers sorted by contribution floor. Send 0 to start at the beginning."
+          },
+          "returns": {
+            "_tiers": "All the tiers."
+          }
+        },
+        "totalRedemptionWeight(address)": {
+          "params": {
+            "_nft": "The NFT for which the redemption weight is being calculated."
+          },
+          "returns": {
+            "weight": "The total weight."
+          }
+        },
+        "totalSupply(address)": {
+          "params": {
+            "_nft": "The NFT to get a total supply of."
+          },
+          "returns": {
+            "supply": "The total number of NFTs between all tiers."
+          }
+        },
+        "votingUnitsOf(address,address)": {
+          "params": {
+            "_account": "The account to get voting units for.",
+            "_nft": "The NFT to get voting units within."
+          },
+          "returns": {
+            "units": "The voting units for the account."
+          }
+        }
+      },
+      "stateVariables": {
+        "_tierIdAfter": {
+          "details": "If empty, assume the next index should come after.  _nft The NFT contract to get tier order index from. _index The index to get a tier after relative to."
+        }
+      },
+      "title": "JBTiered721DelegateStore",
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {
+        "balanceOf(address,address)": {
+          "notice": " The total number of tokens owned by the given owner. "
+        },
+        "baseUriOf(address)": {
+          "notice": "The common base for the tokenUri's _nft The NFT for which the base URI applies."
+        },
+        "cleanTiers(address)": {
+          "notice": "Removes removed tiers from sequencing."
+        },
+        "contractUriOf(address)": {
+          "notice": "Contract metadata uri. _nft The NFT for which the contract URI resolver applies."
+        },
+        "defaultReservedTokenBeneficiaryOf(address)": {
+          "notice": "The beneficiary of reserved tokens when the tier doesn't specify a beneficiary. _nft The NFT contract to which the reserved token beneficiary applies."
+        },
+        "encodedIPFSUriOf(address,uint256)": {
+          "notice": "When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS hashes stripped down. _nft The NFT contract to which the encoded upfs uri belongs. _tierId the ID of the tier"
+        },
+        "encodedTierIPFSUriOf(address,uint256)": {
+          "notice": "Resolves the encoded tier IPFS URI of the tier for the given token."
+        },
+        "firstOwnerOf(address,uint256)": {
+          "notice": "The first owner of each token ID, stored on first transfer out. _nft The NFT contract to which the token belongs. _tokenId The ID of the token to get the stored first owner of."
+        },
+        "isTierRemoved(address,uint256)": {
+          "notice": "For each tier ID, a flag indicating if the tier has been removed.  _nft The NFT contract to which the tier data belong. _tierId The ID of the tier to check."
+        },
+        "lockReservedTokenChangesFor(address)": {
+          "notice": "A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate. _nft The NFT for which the flag applies."
+        },
+        "lockVotingUnitChangesFor(address)": {
+          "notice": "A flag indicating if voting unit expectations can change over time by adding new tiers with voting units. _nft The NFT for which the flag applies."
+        },
+        "maxTierId(address)": {
+          "notice": "The biggest tier ID used.  _nft The NFT contract to get the number of tiers."
+        },
+        "numberOfReservedTokensOutstandingFor(address,uint256)": {
+          "notice": "The number of reserved tokens that can currently be minted within the tier. "
+        },
+        "numberOfReservesMintedFor(address,uint256)": {
+          "notice": " The number of reserved tokens that have been minted for each tier.  _nft The NFT contract to which the reserve data belong. _tierId The ID of the tier to get a minted reserved token count for."
+        },
+        "recordAddTiers((uint256,uint256,uint256,uint256,uint256,address,bytes32,bool)[])": {
+          "notice": "Adds tiers. "
+        },
+        "recordLockReservedTokenChanges(bool)": {
+          "notice": "Sets a flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate. "
+        },
+        "recordLockVotingUnitChanges(bool)": {
+          "notice": "Sets a flag indicating if voting unit expectations can change over time by adding new tiers with voting units."
+        },
+        "recordMint(uint256,uint16[])": {
+          "notice": "Mints a token in all provided tiers."
+        },
+        "recordMintBestAvailableTier(uint256)": {
+          "notice": "Mints a token in the best available tier."
+        },
+        "recordMintReservesFor(uint256,uint256)": {
+          "notice": "Mint a token within the tier for the provided value."
+        },
+        "recordRemoveTierIds(uint256[])": {
+          "notice": "Remove tiers. "
+        },
+        "recordSetBaseUri(string)": {
+          "notice": "Sets the base URI. "
+        },
+        "recordSetContractUri(string)": {
+          "notice": "Sets the contract URI. "
+        },
+        "recordSetDefaultReservedTokenBeneficiary(address)": {
+          "notice": "Sets the reserved token beneficiary."
+        },
+        "recordSetFirstOwnerOf(uint256,address)": {
+          "notice": "Sets the first owner of a token."
+        },
+        "recordSetTokenUriResolver(address)": {
+          "notice": "Sets the token URI resolver. "
+        },
+        "recordTransferForTier(uint256,address,address)": {
+          "notice": "Record a token transfer."
+        },
+        "redemptionWeightOf(address,uint256[])": {
+          "notice": "The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`."
+        },
+        "reservedTokenBeneficiaryOf(address,uint256)": {
+          "notice": "The reserved token beneficiary for each tier. "
+        },
+        "tier(address,uint256)": {
+          "notice": "Return the tier for the specified ID. "
+        },
+        "tierBalanceOf(address,address,uint256)": {
+          "notice": "Each account's balance within a specific tier. _nft The NFT contract to which the tier balances belong. _owner The address to get a balance for.  _tierId The ID of the tier to get a balance within."
+        },
+        "tierIdOfToken(uint256)": {
+          "notice": "The tier number of the provided token ID. "
+        },
+        "tierOfTokenId(address,uint256)": {
+          "notice": "Return the tier for the specified token ID. "
+        },
+        "tierVotingUnitsOf(address,address,uint256)": {
+          "notice": "The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. "
+        },
+        "tiers(address,uint256,uint256)": {
+          "notice": "Gets an array of all the active tiers. "
+        },
+        "tokenUriResolverOf(address)": {
+          "notice": "Custom token URI resolver, superceeds base URI. _nft The NFT for which the token URI resolver applies."
+        },
+        "totalRedemptionWeight(address)": {
+          "notice": "The cumulative weight that all token IDs have in redemptions."
+        },
+        "totalSupply(address)": {
+          "notice": " The total supply of issued NFTs from all tiers."
+        },
+        "votingUnitsOf(address,address)": {
+          "notice": "The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. "
+        }
+      },
+      "notice": "The contract that stores and manages the NFT's data.",
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "contracts/JBTiered721DelegateStore.sol": "JBTiered721DelegateStore"
+    },
+    "evmVersion": "berlin",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      ":@jbx-protocol/=node_modules/@jbx-protocol/",
+      ":@openzeppelin/=node_modules/@openzeppelin/",
+      ":@paulrberg/=node_modules/@paulrberg/",
+      ":ds-test/=lib/forge-std/lib/ds-test/src/",
+      ":forge-std/=lib/forge-std/src/",
+      ":prb-math/=node_modules/prb-math/"
+    ]
+  },
+  "sources": {
+    "contracts/JBTiered721DelegateStore.sol": {
+      "keccak256": "0x92d02440efd4eb735bbb64a851d905453704ff4315471087bd4ca36fa0fb75a6",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e1bbd7433268567db7c08fc2d6a182ac7e24381b6776473ea4918abbbe8c990b",
+        "dweb:/ipfs/QmfNbTndrGigiMaPyyYhnra2MpPHP742kZsGr6HPA8v5vY"
+      ]
+    },
+    "contracts/interfaces/IJBTiered721DelegateStore.sol": {
+      "keccak256": "0x7e46ef52d8a284117ff8072c1ce86b230b85f895ee5b1cb580589c0080794e64",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://d4153b1a6d30b74ee194081c9a30294474778f085ca2313f156a5490ab131e66",
+        "dweb:/ipfs/QmTKqpJxqnUDWk6HJFMfsAXynNCbpJxnCUUpyiBf9CL5h2"
+      ]
+    },
+    "contracts/structs/JB721Tier.sol": {
+      "keccak256": "0x762e3d7e88dafc55d12c50bfa22823694439fbf8e61f801dc4cff8612153b906",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://bcd6e04d755df0c675ed512ca15b69723fc5a0416bbd324162ac20254f074c53",
+        "dweb:/ipfs/Qmc9uj1S2fJTQA5h82K2abrhskSx1ZwaRkHVYxzuZQxsf6"
+      ]
+    },
+    "contracts/structs/JB721TierParams.sol": {
+      "keccak256": "0x76832dcf73a1925d1f7c67f9a2156279fbaeeb80f75dca08ad10eac92423eb55",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://afec181e38f927561eb32ff5a1098424162fb7e868ae57cefa599884c0cfcf6a",
+        "dweb:/ipfs/QmUz1R1K1h55Rt4qDCoW5Nuromo6YiECvKgQERncKdNCbs"
+      ]
+    },
+    "contracts/structs/JBStored721Tier.sol": {
+      "keccak256": "0xcacf63fc4c4b4c6e5959cc4247b3e1cbba0a2c4d080ce95879d210d10ca7698c",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://84bb1d365e9129ec249317c498244ff0870a355d2eb2099f9476be0a3a77fa61",
+        "dweb:/ipfs/QmUapNiAuWz8zr4WUhFKsxiDMbUFuRbGbKLMDhstDrJvtf"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol": {
+      "keccak256": "0xa64ece706d7ce399095f403b08383391c089da4995b5ee000b278d93d242a475",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://900eeb480ed168ada8a738381bb1ea9c92a007e7000a1f2e5d7da02b3010a19b",
+        "dweb:/ipfs/QmfKS6Mi6wGsT8gP3AETYKaXCiwFe9dzzFTEEkaFF7xoWg"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol": {
+      "keccak256": "0x31517dfd8accf961f247cefd72bf8a76c20747cd8ed65cedf817dd7aa9a0082f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://29186e669b1130e1f35347a51fb40ced9b7d42d504f2133b608f4ea49aae211d",
+        "dweb:/ipfs/QmduXpR7j1UroX94MCNA7zNBqAC3v18j2FMwki7T8rBEFv"
+      ]
+    }
+  },
+  "version": 1
+}

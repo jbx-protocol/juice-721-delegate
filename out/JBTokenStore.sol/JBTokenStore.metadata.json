@@ -1,0 +1,1171 @@
+{
+  "compiler": {
+    "version": "0.8.6+commit.11564f7e"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract IJBOperatorStore",
+            "name": "_operatorStore",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IJBProjects",
+            "name": "_projects",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IJBDirectory",
+            "name": "_directory",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "CANT_REMOVE_TOKEN_IF_ITS_REQUIRED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "CONTROLLER_UNAUTHORIZED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "EMPTY_NAME",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "EMPTY_SYMBOL",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INSUFFICIENT_FUNDS",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INSUFFICIENT_UNCLAIMED_TOKENS",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "PROJECT_ALREADY_HAS_TOKEN",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "RECIPIENT_ZERO_ADDRESS",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TOKENS_MUST_HAVE_18_DECIMALS",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TOKEN_ALREADY_IN_USE",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TOKEN_NOT_FOUND",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UNAUTHORIZED",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "holder",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "initialUnclaimedBalance",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "initialClaimedBalance",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "preferClaimedTokens",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Burn",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "contract IJBToken",
+            "name": "newToken",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "contract IJBToken",
+            "name": "oldToken",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Change",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "holder",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "initialUnclaimedBalance",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Claim",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "contract IJBToken",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Issue",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "holder",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "tokensWereClaimed",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "preferClaimedTokens",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Mint",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "bool",
+            "name": "flag",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "ShouldRequireClaim",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "holder",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "recipient",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Transfer",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_holder",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_holder",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "_preferClaimedTokens",
+            "type": "bool"
+          }
+        ],
+        "name": "burnFrom",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "contract IJBToken",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "changeFor",
+        "outputs": [
+          {
+            "internalType": "contract IJBToken",
+            "name": "oldToken",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_holder",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "claimFor",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "directory",
+        "outputs": [
+          {
+            "internalType": "contract IJBDirectory",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "_name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "_symbol",
+            "type": "string"
+          }
+        ],
+        "name": "issueFor",
+        "outputs": [
+          {
+            "internalType": "contract IJBToken",
+            "name": "token",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_holder",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "_preferClaimedTokens",
+            "type": "bool"
+          }
+        ],
+        "name": "mintFor",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "operatorStore",
+        "outputs": [
+          {
+            "internalType": "contract IJBOperatorStore",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "contract IJBToken",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "projectOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "projects",
+        "outputs": [
+          {
+            "internalType": "contract IJBProjects",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "requireClaimFor",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "_flag",
+            "type": "bool"
+          }
+        ],
+        "name": "shouldRequireClaimingFor",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "tokenOf",
+        "outputs": [
+          {
+            "internalType": "contract IJBToken",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "totalSupplyOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_holder",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_recipient",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "transferFrom",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "unclaimedBalanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "unclaimedTotalSupplyOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "details": "Token balances can be either represented internally or claimed as ERC-20s into wallets. This contract manages these two representations and allows claiming.The total supply of a project's tokens and the balance of each account are calculated in this contract.Each project can bring their own token if they prefer, and swap between tokens at any time.Adheres to - IJBTokenStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.Inherits from - JBControllerUtility: Includes convenience functionality for checking if the message sender is the current controller of the project whose data is being manipulated. JBOperatable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.",
+      "kind": "dev",
+      "methods": {
+        "balanceOf(address,uint256)": {
+          "params": {
+            "_holder": "The token holder to get a balance for.",
+            "_projectId": "The project to get the `_holder`s balance of."
+          },
+          "returns": {
+            "balance": "The project token balance of the `_holder"
+          }
+        },
+        "burnFrom(address,uint256,uint256,bool)": {
+          "details": "Only a project's current controller can burn its tokens.",
+          "params": {
+            "_amount": "The amount of tokens to burn.",
+            "_holder": "The address that owns the tokens being burned.",
+            "_preferClaimedTokens": "A flag indicating whether there's a preference for tokens to burned from the `_holder`s wallet if the project currently has a token contract attached.",
+            "_projectId": "The ID of the project to which the burned tokens belong."
+          }
+        },
+        "changeFor(uint256,address,address)": {
+          "details": "Only a project's current controller can change its token.This contract must have access to all of the token's `IJBToken` interface functions.Can't change to a token that's currently being used by another project.Changing to the zero address will remove the current token without adding a new one.",
+          "params": {
+            "_newOwner": "An address to transfer the current token's ownership to. This is optional, but it cannot be done later.",
+            "_projectId": "The ID of the project to which the changed token belongs.",
+            "_token": "The new token. Send an empty address to remove the project's current token without adding a new one, if claiming tokens isn't currency required by the project"
+          },
+          "returns": {
+            "oldToken": "The token that was removed as the project's token."
+          }
+        },
+        "claimFor(address,uint256,uint256)": {
+          "details": "Only a token holder or an operator specified by the token holder can claim its unclaimed tokens.",
+          "params": {
+            "_amount": "The amount of tokens to claim.",
+            "_holder": "The owner of the tokens being claimed.",
+            "_projectId": "The ID of the project whose tokens are being claimed."
+          }
+        },
+        "constructor": {
+          "params": {
+            "_directory": "A contract storing directories of terminals and controllers for each project.",
+            "_operatorStore": "A contract storing operator assignments.",
+            "_projects": "A contract which mints ERC-721's that represent project ownership and transfers."
+          }
+        },
+        "issueFor(uint256,string,string)": {
+          "details": "Deploys a project's ERC-20 token contract.Only a project's current controller can issue its token.",
+          "params": {
+            "_name": "The ERC-20's name.",
+            "_projectId": "The ID of the project being issued tokens.",
+            "_symbol": "The ERC-20's symbol."
+          },
+          "returns": {
+            "token": "The token that was issued."
+          }
+        },
+        "mintFor(address,uint256,uint256,bool)": {
+          "details": "Only a project's current controller can mint its tokens.",
+          "params": {
+            "_amount": "The amount of tokens to mint.",
+            "_holder": "The address receiving the new tokens.",
+            "_preferClaimedTokens": "A flag indicating whether there's a preference for minted tokens to be claimed automatically into the `_holder`s wallet if the project currently has a token contract attached.",
+            "_projectId": "The ID of the project to which the tokens belong."
+          }
+        },
+        "shouldRequireClaimingFor(uint256,bool)": {
+          "details": "Only a token holder or an operator can require claimed token.",
+          "params": {
+            "_flag": "A flag indicating whether or not claiming should be required.",
+            "_projectId": "The ID of the project being affected."
+          }
+        },
+        "totalSupplyOf(uint256)": {
+          "params": {
+            "_projectId": "The ID of the project to get the total token supply of."
+          },
+          "returns": {
+            "totalSupply": "The total supply of the project's tokens."
+          }
+        },
+        "transferFrom(address,uint256,address,uint256)": {
+          "details": "Only a token holder or an operator can transfer its unclaimed tokens.",
+          "params": {
+            "_amount": "The amount of tokens to transfer.",
+            "_holder": "The address to transfer tokens from.",
+            "_projectId": "The ID of the project whose tokens are being transferred.",
+            "_recipient": "The recipient of the tokens."
+          }
+        }
+      },
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {
+        "balanceOf(address,uint256)": {
+          "notice": "The total balance of tokens a holder has for a specified project, including claimed and unclaimed tokens."
+        },
+        "burnFrom(address,uint256,uint256,bool)": {
+          "notice": "Burns a project's tokens."
+        },
+        "changeFor(uint256,address,address)": {
+          "notice": "Swap the current project's token for another, and transfer ownership of the current token to another address if needed."
+        },
+        "claimFor(address,uint256,uint256)": {
+          "notice": "Claims internally accounted for tokens into a holder's wallet."
+        },
+        "directory()": {
+          "notice": " The directory of terminals and controllers for projects."
+        },
+        "issueFor(uint256,string,string)": {
+          "notice": "Issues a project's ERC-20 tokens that'll be used when claiming tokens."
+        },
+        "mintFor(address,uint256,uint256,bool)": {
+          "notice": "Mint new project tokens."
+        },
+        "operatorStore()": {
+          "notice": " A contract storing operator assignments."
+        },
+        "projectOf(address)": {
+          "notice": "The ID of the project that each token belongs to. _token The token to check the project association of."
+        },
+        "projects()": {
+          "notice": "Mints ERC-721's that represent project ownership and transfers."
+        },
+        "requireClaimFor(uint256)": {
+          "notice": "A flag indicating if tokens are required to be issued as claimed for a particular project. _projectId The ID of the project to which the requirement applies."
+        },
+        "shouldRequireClaimingFor(uint256,bool)": {
+          "notice": "Allows a project to force all future mints of its tokens to be claimed into the holder's wallet, or revoke the flag if it's already set."
+        },
+        "tokenOf(uint256)": {
+          "notice": "Each project's attached token contract. _projectId The ID of the project to which the token belongs."
+        },
+        "totalSupplyOf(uint256)": {
+          "notice": "The total supply of tokens for each project, including claimed and unclaimed tokens."
+        },
+        "transferFrom(address,uint256,address,uint256)": {
+          "notice": "Allows a holder to transfer unclaimed tokens to another account."
+        },
+        "unclaimedBalanceOf(address,uint256)": {
+          "notice": "Each holder's balance of unclaimed tokens for each project. _holder The holder of balance. _projectId The ID of the project to which the token belongs."
+        },
+        "unclaimedTotalSupplyOf(uint256)": {
+          "notice": "The total supply of unclaimed tokens for each project. _projectId The ID of the project to which the token belongs."
+        }
+      },
+      "notice": "Manage token minting, burning, and account balances.",
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "node_modules/@jbx-protocol/contracts-v2/contracts/JBTokenStore.sol": "JBTokenStore"
+    },
+    "evmVersion": "berlin",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      ":@jbx-protocol/=node_modules/@jbx-protocol/",
+      ":@openzeppelin/=node_modules/@openzeppelin/",
+      ":@paulrberg/=node_modules/@paulrberg/",
+      ":ds-test/=lib/forge-std/lib/ds-test/src/",
+      ":forge-std/=lib/forge-std/src/",
+      ":prb-math/=node_modules/prb-math/"
+    ]
+  },
+  "sources": {
+    "node_modules/@jbx-protocol/contracts-v2/contracts/JBToken.sol": {
+      "keccak256": "0xb1ee4ff88a17f9d85f947f8849fe0963e513cdbae1a0bbd29cd0a8a2cd1c728b",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://c8870573e521ffa301726e1864c146a565c96f18cfe2bcd9f3c01e7b7b37d30d",
+        "dweb:/ipfs/QmXPdfvUEbueWpG9Sh9UuQuTCAqLo5Uq6gV7rZkS5ry1HJ"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/JBTokenStore.sol": {
+      "keccak256": "0x5a187df8cae2869508fc84954fead55fe4e31ca1af0c3bb7558ed1b92c03cc86",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://92818a613bf6b8db21b8030e5c2722d4cd224c19318b5d61b71ba2a79d93338d",
+        "dweb:/ipfs/QmVy81BYsKAYV55huHvgfpYG7yoN4X7GGGeG1ZftexfhHW"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/abstract/JBControllerUtility.sol": {
+      "keccak256": "0x7103f60c7279bd7db41b9ed10588c98fee960038f165705ad226d5c2cbedfa6a",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://821eb572a360a7b42a704acb8b613380e7dc03ce0cb38e575ec8f20f6917d34a",
+        "dweb:/ipfs/QmUmRUHBGmfMQHv8Ekf4ojGenSheX2GrmjVdrXJUkRrV5f"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/abstract/JBOperatable.sol": {
+      "keccak256": "0x9a5781d40c6b8013249653253369cda2047aa35329a1fcd4dc6353cd2dde30a6",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1adb7facf833740d5cfe469d7e2172d73ee1424b518583fc6210955820c9f156",
+        "dweb:/ipfs/QmbLoiFcmLnqjQJ5JPyWRrrrg3Q79Vp2mLQcEngWTrAbXn"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/enums/JBBallotState.sol": {
+      "keccak256": "0xadf07fd49f7e0947006fa1921bc7fd8fb532e8fecf3b9266721a8b7e43907461",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7d4dd83fa3b7f679c9083eb172eb869a62dacf06eb5875dac7418fe3e5ceab1d",
+        "dweb:/ipfs/QmTjNHiqPw6k8xKxExt4hL4xvM3NpFkab3CzbfyTMPXuRD"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBControllerUtility.sol": {
+      "keccak256": "0xb280df3e7bd6abc2fb533073a806a9b3edfea8f5be2791c6eb1767c79dd98f88",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://c57051f5293bdb4b8c40542118a35c5cc71be247aed57a71a2cadaaf95fac124",
+        "dweb:/ipfs/QmfG9bNUdSpGiShuNLCRH9R3EJVM4LNzcyt4MrxVZorvk7"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol": {
+      "keccak256": "0x9e7f0d3590b3ddc3b667fcdacaa53b627e4d2b3a912360597fb0ffa413518167",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7465d2352978a69eba9c4af7a88c54bf14476a1e76d14807f8722343b266b7fb",
+        "dweb:/ipfs/QmdsHrAVKtzESXe48953Z9MXurQkWa2rGnhKr2xzG5jtV4"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleBallot.sol": {
+      "keccak256": "0xdc8c8bed613f5759c958b7b0d646032b4337a349a8ecea5ffeb167623f2f29f5",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8d33d7214467f8d580781e24a87ffcfc98df6131dca0c0762ee4d2cedaba76d",
+        "dweb:/ipfs/QmTkdtenb47dwcZ76iHThKoyN8gaBCAuW4PZDgNVL8W7Uo"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleStore.sol": {
+      "keccak256": "0xf75791cd5b71bc6773cf56c92501e3f255a406eaedea781cb57cea2fa1e4ef20",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://697e21258b99ac2c4a2b73bcb8c8a47400737ecf5d3dfa6ca5a7b6f7d6be9c57",
+        "dweb:/ipfs/Qmcdg3mEvgbtBnWhjZFubqH8sZU791jtXrWWpohKzN9tkG"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBOperatable.sol": {
+      "keccak256": "0x150097e253a667d2336367445bea019bb3669ef7c82d358befe1f4cdd480e9aa",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://8cff4283a2b776710af351935f4473e15f4194a25042678e90c53b11aaa335be",
+        "dweb:/ipfs/QmaQwFkPMSc8uptuce7ESvGf9ex4Kfj5SqcUkAaXTfhzz3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBOperatorStore.sol": {
+      "keccak256": "0x50a26fddc575a50176df7deb9225ec1816b0158c9e9b8555e7921a3261254ed8",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://b3007fc795ddcbe208c0ff60617df9e4e3fbbd72614c3261cd834361c784bae1",
+        "dweb:/ipfs/Qmb59upN6TPHLBWXKQFweDwMfA6EKHB48RTasRvSmQ3ekA"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol": {
+      "keccak256": "0xf50279115f05568c12c254eb2c078b81a0c761f8cc985220e30ec15679118caa",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://48d3576fd54ae9b9c27338cba0ad91aec18606c55d32a85aeddf1b599834a6cb",
+        "dweb:/ipfs/QmUeqF8TRpzYC1MRNQXCWzVFvTQ7iBqfQQHpSQF7LbstFE"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol": {
+      "keccak256": "0x602bad7e8cce6e9d53fe5e3532c5d4428d02206f8df48b246aac7ee8a6dcc98d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8b66a1813167e248944b75bcd0af559284e4a2482e9e9ade3c6e8b1fd59eb6e",
+        "dweb:/ipfs/QmaNer7KD1EMensiJFABJ31ednVRnZcV3wfcx6FPFajoM9"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBToken.sol": {
+      "keccak256": "0xf5ec0861b067a5e58f2bcca44892ea8d4a42ab8a7c95bd4d3bbddad33c8727f5",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://649724a0fd8c695fcd4ad4ffdb620a9309f951989eef22abd7bcaa86837b7e98",
+        "dweb:/ipfs/Qmf1VZsz5gyMHohWndAx2gfSSpzAuKLSEHrtaW2kdYe3ng"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenStore.sol": {
+      "keccak256": "0x2b7a6cdb457e710161079a46683e9804d66d4cc7d18be8f64de25ba7bfadf9ef",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4fb05089e0fb440fea54a457dc31940c46a7bdcaacc449ca816c4f55f36bccdd",
+        "dweb:/ipfs/QmdpnuaWGngJd5a5x3MQDTQhF3VYHnbM9FTsiS6DwVtjRe"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol": {
+      "keccak256": "0xa64ece706d7ce399095f403b08383391c089da4995b5ee000b278d93d242a475",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://900eeb480ed168ada8a738381bb1ea9c92a007e7000a1f2e5d7da02b3010a19b",
+        "dweb:/ipfs/QmfKS6Mi6wGsT8gP3AETYKaXCiwFe9dzzFTEEkaFF7xoWg"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/libraries/JBOperations.sol": {
+      "keccak256": "0x828971de3d07c31e294c188335e250ee0b28919dd86f0dd570f89b97cca13932",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://dcdb505b12e4778d7edaa9e432b1cf52ac82615bd6b6732493a3ec511f8daa38",
+        "dweb:/ipfs/QmaYk88ursqk845GVXgdbE1NKgcc1KaAvXCoz5LSt61gXF"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycle.sol": {
+      "keccak256": "0x7e1ee378705e677298b955bd82b7c79b962e1c2e20f840eb8c491aba595e4905",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4d2361ccc893ff87555ba225a5518e7c54d26faf5f51111d3fdd6b9bb9a2a608",
+        "dweb:/ipfs/QmStFS5zKEbbbLZwBiNDBD7oqSKFzjZuYGReZrsnkzpuGR"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol": {
+      "keccak256": "0xfc1c73d1b01782bbdfdd73d5d25f075e6c33dd37414638b63664063a0d1692cc",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://751db5a5a4c7bb7b836a842688c8590c4557c660725df68e87c2935ed7fc995c",
+        "dweb:/ipfs/QmPnwDBtcUhgs3L9gnEcdFXpJEdu8QcTMUFMQfLcwU53YZ"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBOperatorData.sol": {
+      "keccak256": "0xc108ff9bbeef8783e332522b8bd1c17bba071c34051de72dc5bfe38dfd39a3a3",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://147b757b3ab9ccad9db039340d27cb222b2bc997b41419907388a5511e530744",
+        "dweb:/ipfs/QmPhyunneMUmkSVeF6nNZiik5Soh4KoR9eFLSQR6bMUNK3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol": {
+      "keccak256": "0x5ea56d46d07944aacfe540ee9290f10a70d77b537650a0b28975e2e88fa5b9a4",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://afdac58b0c0decc7576d5581757230f0d60c2415bb7a552e507e2833de7df9fa",
+        "dweb:/ipfs/QmcsdVf8MHP5J13feRQzPvUZZGyohYmqeTWZuvvLsi2Czw"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "keccak256": "0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2",
+        "dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
+      "keccak256": "0x24b04b8aacaaf1a4a0719117b29c9c3647b1f479c5ac2a60f5ff1bb6d839c238",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://43e46da9d9f49741ecd876a269e71bc7494058d7a8e9478429998adb5bc3eaa0",
+        "dweb:/ipfs/QmUtp4cqzf22C5rJ76AabKADquGWcjsc33yjYXxXC4sDvy"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+      "keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+        "dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
+      "keccak256": "0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://5a376d3dda2cb70536c0a45c208b29b34ac560c4cb4f513a42079f96ba47d2dd",
+        "dweb:/ipfs/QmZQg6gn1sUpM8wHzwNvSnihumUCAhxD119MpXeKp8B9s8"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol": {
+      "keccak256": "0x07536242e24ee7067295d32c08e495a33e605f3c52f8ee4ec3bdcb7a351313d2",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://01f99dbf2ce567a64a03fc4d38b76d64d52bf1a2302922971446b1cf777220ec",
+        "dweb:/ipfs/QmSiotbcG2KMuXfbKyKTcHu9ujBp67jmbULJyYLDpsrpC1"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol": {
+      "keccak256": "0xf41ca991f30855bf80ffd11e9347856a517b977f0a6c2d52e6421a99b7840329",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://b2717fd2bdac99daa960a6de500754ea1b932093c946388c381da48658234b95",
+        "dweb:/ipfs/QmP6QVMn6UeA3ByahyJbYQr5M6coHKBKsf3ySZSfbyA8R7"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "keccak256": "0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f",
+        "dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+        "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/Counters.sol": {
+      "keccak256": "0xf0018c2440fbe238dd3a8732fa8e17a0f9dce84d31451dc8a32f6d62b349c9f1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://59e1c62884d55b70f3ae5432b44bb3166ad71ae3acd19c57ab6ddc3c87c325ee",
+        "dweb:/ipfs/QmezuXg5GK5oeA4F91EZhozBFekhq5TD966bHPH18cCqhu"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/Strings.sol": {
+      "keccak256": "0xaf159a8b1923ad2a26d516089bceca9bdeaeacd04be50983ea00ba63070f08a3",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://6f2cf1c531122bc7ca96b8c8db6a60deae60441e5223065e792553d4849b5638",
+        "dweb:/ipfs/QmPBdJmBBABMDCfyDjCbdxgiqRavgiSL88SYPGibgbPas9"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol": {
+      "keccak256": "0x84ac2d2f343df1e683da7a12bbcf70db542a7a7a0cea90a5d70fcb5e5d035481",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://73ae8e0c6f975052973265113d762629002ce33987b1933c2a378667e2816f2f",
+        "dweb:/ipfs/QmQAootkVfoe4PLaYbT4Xob2dJRm3bZfbCffEHRbCYXNPF"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol": {
+      "keccak256": "0x6688fad58b9ec0286d40fa957152e575d5d8bd4c3aa80985efdb11b44f776ae7",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://8bc00ab7f133cdaafd212a5cc6a16c8d37319721105d130c8e5af0c4e8f170ba",
+        "dweb:/ipfs/QmVmf6LVMfFiEkvKYLzSv3bGHzymEW93AcUuFrNUdY3NtT"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+        "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+      ]
+    }
+  },
+  "version": 1
+}

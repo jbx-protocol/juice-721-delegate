@@ -1,0 +1,874 @@
+{
+  "compiler": {
+    "version": "0.8.6+commit.11564f7e"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract IJBOperatorStore",
+            "name": "_operatorStore",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IJBProjects",
+            "name": "_projects",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IJBFundingCycleStore",
+            "name": "_fundingCycleStore",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_owner",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "DUPLICATE_TERMINALS",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_PROJECT_ID_IN_DIRECTORY",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "SET_CONTROLLER_NOT_ALLOWED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "SET_TERMINALS_NOT_ALLOWED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TOKEN_NOT_ACCEPTED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UNAUTHORIZED",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "contract IJBPaymentTerminal",
+            "name": "terminal",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "AddTerminal",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "previousOwner",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetController",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "addr",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "bool",
+            "name": "flag",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetIsAllowedToSetFirstController",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "contract IJBPaymentTerminal",
+            "name": "terminal",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetPrimaryTerminal",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "contract IJBPaymentTerminal[]",
+            "name": "terminals",
+            "type": "address[]"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "SetTerminals",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "controllerOf",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "fundingCycleStore",
+        "outputs": [
+          {
+            "internalType": "contract IJBFundingCycleStore",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "isAllowedToSetFirstController",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "contract IJBPaymentTerminal",
+            "name": "_terminal",
+            "type": "address"
+          }
+        ],
+        "name": "isTerminalOf",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "operatorStore",
+        "outputs": [
+          {
+            "internalType": "contract IJBOperatorStore",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          }
+        ],
+        "name": "primaryTerminalOf",
+        "outputs": [
+          {
+            "internalType": "contract IJBPaymentTerminal",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "projects",
+        "outputs": [
+          {
+            "internalType": "contract IJBProjects",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_controller",
+            "type": "address"
+          }
+        ],
+        "name": "setControllerOf",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_address",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "_flag",
+            "type": "bool"
+          }
+        ],
+        "name": "setIsAllowedToSetFirstController",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "_token",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IJBPaymentTerminal",
+            "name": "_terminal",
+            "type": "address"
+          }
+        ],
+        "name": "setPrimaryTerminalOf",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "contract IJBPaymentTerminal[]",
+            "name": "_terminals",
+            "type": "address[]"
+          }
+        ],
+        "name": "setTerminalsOf",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "terminalsOf",
+        "outputs": [
+          {
+            "internalType": "contract IJBPaymentTerminal[]",
+            "name": "",
+            "type": "address[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "newOwner",
+            "type": "address"
+          }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "details": "Adheres to - IJBDirectory: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.Inherits from - JBOperatable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions. Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.",
+      "kind": "dev",
+      "methods": {
+        "constructor": {
+          "params": {
+            "_fundingCycleStore": "A contract storing all funding cycle configurations.",
+            "_operatorStore": "A contract storing operator assignments.",
+            "_owner": "The address that will own the contract.",
+            "_projects": "A contract which mints ERC-721's that represent project ownership and transfers."
+          }
+        },
+        "isTerminalOf(uint256,address)": {
+          "params": {
+            "_projectId": "The ID of the project to check within.",
+            "_terminal": "The address of the terminal to check for."
+          },
+          "returns": {
+            "_0": "A flag indicating whether or not the specified terminal is a terminal of the specified project."
+          }
+        },
+        "owner()": {
+          "details": "Returns the address of the current owner."
+        },
+        "primaryTerminalOf(uint256,address)": {
+          "details": "The zero address is returned if a terminal isn't found for the specified token.",
+          "params": {
+            "_projectId": "The ID of the project to get a terminal for.",
+            "_token": "The token the terminal accepts."
+          },
+          "returns": {
+            "_0": "The primary terminal for the project for the specified token."
+          }
+        },
+        "renounceOwnership()": {
+          "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+        },
+        "setControllerOf(uint256,address)": {
+          "details": "A controller can be set if: - the message sender is the project owner or an operator having the correct authorization. - the message sender is the project's current controller. - or, an allowedlisted address is setting a controller for a project that doesn't already have a controller.",
+          "params": {
+            "_controller": "The new controller to set.",
+            "_projectId": "The ID of the project to set a new controller for."
+          }
+        },
+        "setIsAllowedToSetFirstController(address,bool)": {
+          "details": "The owner can add addresses which are allowed to change projects' first controllers.  These addresses are known and vetted controllers as well as contracts designed to launch new projects.  A project can set its own controller without it being on the allow list.If you would like an address/contract allowlisted, please reach out to the contract owner.",
+          "params": {
+            "_address": "The address to allow or revoke allowance from.",
+            "_flag": "Whether allowance is being added or revoked."
+          }
+        },
+        "setPrimaryTerminalOf(uint256,address,address)": {
+          "details": "The terminal will be set as the primary terminal where ecosystem contracts should route tokens.If setting a newly added terminal and the funding cycle doesn't allow new terminals, the caller must be the current controller.",
+          "params": {
+            "_projectId": "The ID of the project for which a primary token is being set.",
+            "_terminal": "The terminal to make primary.",
+            "_token": "The token to set the primary terminal of."
+          }
+        },
+        "setTerminalsOf(uint256,address[])": {
+          "details": "Only a project owner, an operator, or its controller can set its terminals.",
+          "params": {
+            "_projectId": "The ID of the project having terminals set.",
+            "_terminals": "The terminal to set."
+          }
+        },
+        "terminalsOf(uint256)": {
+          "params": {
+            "_projectId": "The ID of the project to get terminals of."
+          },
+          "returns": {
+            "_0": "An array of terminal addresses."
+          }
+        },
+        "transferOwnership(address)": {
+          "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+        }
+      },
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {
+        "controllerOf(uint256)": {
+          "notice": " For each project ID, the controller that manages how terminals interact with tokens and funding cycles. _projectId The ID of the project to get the controller of."
+        },
+        "fundingCycleStore()": {
+          "notice": "The contract storing all funding cycle configurations."
+        },
+        "isAllowedToSetFirstController(address)": {
+          "notice": "Addresses that can set a project's first controller on their behalf. These addresses/contracts have been vetted and verified by this contract's owner. _address The address that is either allowed or not."
+        },
+        "isTerminalOf(uint256,address)": {
+          "notice": "Whether or not a specified terminal is a terminal of the specified project."
+        },
+        "operatorStore()": {
+          "notice": " A contract storing operator assignments."
+        },
+        "primaryTerminalOf(uint256,address)": {
+          "notice": "The primary terminal that is managing funds for a project for a specified token."
+        },
+        "projects()": {
+          "notice": "Mints ERC-721's that represent project ownership and transfers."
+        },
+        "setControllerOf(uint256,address)": {
+          "notice": "Update the controller that manages how terminals interact with the ecosystem."
+        },
+        "setIsAllowedToSetFirstController(address,bool)": {
+          "notice": " Set a contract to the list of trusted addresses that can set a first controller for any project.\t"
+        },
+        "setPrimaryTerminalOf(uint256,address,address)": {
+          "notice": "Project's can set which terminal should be their primary for a particular token. This is useful in case a project has several terminals connected for a particular token."
+        },
+        "setTerminalsOf(uint256,address[])": {
+          "notice": " Set a project's terminals."
+        },
+        "terminalsOf(uint256)": {
+          "notice": "For each project ID, the terminals that are currently managing its funds."
+        }
+      },
+      "notice": "Keeps a reference of which terminal contracts each project is currently accepting funds through, and which controller contract is managing each project's tokens and funding cycles.",
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "node_modules/@jbx-protocol/contracts-v2/contracts/JBDirectory.sol": "JBDirectory"
+    },
+    "evmVersion": "berlin",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      ":@jbx-protocol/=node_modules/@jbx-protocol/",
+      ":@openzeppelin/=node_modules/@openzeppelin/",
+      ":@paulrberg/=node_modules/@paulrberg/",
+      ":ds-test/=lib/forge-std/lib/ds-test/src/",
+      ":forge-std/=lib/forge-std/src/",
+      ":prb-math/=node_modules/prb-math/"
+    ]
+  },
+  "sources": {
+    "node_modules/@jbx-protocol/contracts-v2/contracts/JBDirectory.sol": {
+      "keccak256": "0xa753e8e1910a62fa58d2119aa124eec01de00689dc01eaab70f35e68a995dce6",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e7ffa69b0993b9cfda3ed104766c7c02cd3b1fabbbef03347a10f696757a93cb",
+        "dweb:/ipfs/QmVX9juFK2F13Ah5KVU74Feg6w29za9EoZX5vEY2C2abvs"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/abstract/JBOperatable.sol": {
+      "keccak256": "0x9a5781d40c6b8013249653253369cda2047aa35329a1fcd4dc6353cd2dde30a6",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1adb7facf833740d5cfe469d7e2172d73ee1424b518583fc6210955820c9f156",
+        "dweb:/ipfs/QmbLoiFcmLnqjQJ5JPyWRrrrg3Q79Vp2mLQcEngWTrAbXn"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/enums/JBBallotState.sol": {
+      "keccak256": "0xadf07fd49f7e0947006fa1921bc7fd8fb532e8fecf3b9266721a8b7e43907461",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7d4dd83fa3b7f679c9083eb172eb869a62dacf06eb5875dac7418fe3e5ceab1d",
+        "dweb:/ipfs/QmTjNHiqPw6k8xKxExt4hL4xvM3NpFkab3CzbfyTMPXuRD"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol": {
+      "keccak256": "0x9e7f0d3590b3ddc3b667fcdacaa53b627e4d2b3a912360597fb0ffa413518167",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7465d2352978a69eba9c4af7a88c54bf14476a1e76d14807f8722343b266b7fb",
+        "dweb:/ipfs/QmdsHrAVKtzESXe48953Z9MXurQkWa2rGnhKr2xzG5jtV4"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleBallot.sol": {
+      "keccak256": "0xdc8c8bed613f5759c958b7b0d646032b4337a349a8ecea5ffeb167623f2f29f5",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8d33d7214467f8d580781e24a87ffcfc98df6131dca0c0762ee4d2cedaba76d",
+        "dweb:/ipfs/QmTkdtenb47dwcZ76iHThKoyN8gaBCAuW4PZDgNVL8W7Uo"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol": {
+      "keccak256": "0x8fe4fdc2cd71cd0b7202bddb7078f16c8eea746c8481ee9b3b06a0e01e8e7d6b",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://f08117bf36e3b2ea9349c49d2ed8961bba73566d162e779a052d9fa0db2a3c9e",
+        "dweb:/ipfs/Qme6w3qHHvmYYEo2v8ez9fNFWTThSuiFVJ2rLYwqNhhtc6"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleStore.sol": {
+      "keccak256": "0xf75791cd5b71bc6773cf56c92501e3f255a406eaedea781cb57cea2fa1e4ef20",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://697e21258b99ac2c4a2b73bcb8c8a47400737ecf5d3dfa6ca5a7b6f7d6be9c57",
+        "dweb:/ipfs/Qmcdg3mEvgbtBnWhjZFubqH8sZU791jtXrWWpohKzN9tkG"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBOperatable.sol": {
+      "keccak256": "0x150097e253a667d2336367445bea019bb3669ef7c82d358befe1f4cdd480e9aa",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://8cff4283a2b776710af351935f4473e15f4194a25042678e90c53b11aaa335be",
+        "dweb:/ipfs/QmaQwFkPMSc8uptuce7ESvGf9ex4Kfj5SqcUkAaXTfhzz3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBOperatorStore.sol": {
+      "keccak256": "0x50a26fddc575a50176df7deb9225ec1816b0158c9e9b8555e7921a3261254ed8",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://b3007fc795ddcbe208c0ff60617df9e4e3fbbd72614c3261cd834361c784bae1",
+        "dweb:/ipfs/Qmb59upN6TPHLBWXKQFweDwMfA6EKHB48RTasRvSmQ3ekA"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol": {
+      "keccak256": "0xf7a9ef2df665e1c85a461fadb3cd54f6270c181eac96064005bde19e54d0ffa9",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://521eafc73d727317a65c8a0a27522de68a62988d005b632dac5cff96983ce892",
+        "dweb:/ipfs/QmesPTKhG1T3X6H3QZx4JeYL17ebfahMoajPpAxrHLZdrr"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol": {
+      "keccak256": "0xf50279115f05568c12c254eb2c078b81a0c761f8cc985220e30ec15679118caa",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://48d3576fd54ae9b9c27338cba0ad91aec18606c55d32a85aeddf1b599834a6cb",
+        "dweb:/ipfs/QmUeqF8TRpzYC1MRNQXCWzVFvTQ7iBqfQQHpSQF7LbstFE"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol": {
+      "keccak256": "0x602bad7e8cce6e9d53fe5e3532c5d4428d02206f8df48b246aac7ee8a6dcc98d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://e8b66a1813167e248944b75bcd0af559284e4a2482e9e9ade3c6e8b1fd59eb6e",
+        "dweb:/ipfs/QmaNer7KD1EMensiJFABJ31ednVRnZcV3wfcx6FPFajoM9"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBRedemptionDelegate.sol": {
+      "keccak256": "0xfc91761a568e60e1a1429ac11b0d1b57c627ef59f4011b17df4f9f540b7dd60d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://acf3264c04b881d7f59608c9f4e5c2e7333c2beb4c4f4468d6626c74aaa5e535",
+        "dweb:/ipfs/QmPv6rH6gPHSpbRCGuMnZyGjV5iSkfbKjJsmD5Cxegn5CK"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol": {
+      "keccak256": "0xa64ece706d7ce399095f403b08383391c089da4995b5ee000b278d93d242a475",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://900eeb480ed168ada8a738381bb1ea9c92a007e7000a1f2e5d7da02b3010a19b",
+        "dweb:/ipfs/QmfKS6Mi6wGsT8gP3AETYKaXCiwFe9dzzFTEEkaFF7xoWg"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol": {
+      "keccak256": "0x31517dfd8accf961f247cefd72bf8a76c20747cd8ed65cedf817dd7aa9a0082f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://29186e669b1130e1f35347a51fb40ced9b7d42d504f2133b608f4ea49aae211d",
+        "dweb:/ipfs/QmduXpR7j1UroX94MCNA7zNBqAC3v18j2FMwki7T8rBEFv"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/libraries/JBGlobalFundingCycleMetadataResolver.sol": {
+      "keccak256": "0x95f1c7c968a209c9f7b76d2e508332001ebbfb308b565cd222cae4d7396cbe0b",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://cd909a46a899b238ac52022f91a8c23d2e1967ebc23109c0b5571f274a65ff64",
+        "dweb:/ipfs/QmPKLaiyVhs8viaW4mUPNWqQWfAd26QnvaFJ9LdrRhDzZX"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/libraries/JBOperations.sol": {
+      "keccak256": "0x828971de3d07c31e294c188335e250ee0b28919dd86f0dd570f89b97cca13932",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://dcdb505b12e4778d7edaa9e432b1cf52ac82615bd6b6732493a3ec511f8daa38",
+        "dweb:/ipfs/QmaYk88ursqk845GVXgdbE1NKgcc1KaAvXCoz5LSt61gXF"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBDidPayData.sol": {
+      "keccak256": "0x5466643df68a7bb1f88b781b7ac74379a1428d700edb1a22cd211c1fb8af458c",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://ddd2e26dbf3d79cee9ef14bb9671a18471f6c5ee0e8252dda24d17e0919882d8",
+        "dweb:/ipfs/QmYZknzBV5jzJXNJE4vAkxqBXfpi7WBS4XUqXPTGzEfftd"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBDidRedeemData.sol": {
+      "keccak256": "0x52e35ebfda7cf16c90d920c63e450663c0d2b3395554b313e742d8fe74dc187f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://5fb8b3da0c5dab17d5263562de358af381aa6114363a97953ef5a02432f34fec",
+        "dweb:/ipfs/QmSnnQwrGzXMvqjRsezL3rTgsvFpnm8QX9TjyCNY7cz3x3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycle.sol": {
+      "keccak256": "0x7e1ee378705e677298b955bd82b7c79b962e1c2e20f840eb8c491aba595e4905",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4d2361ccc893ff87555ba225a5518e7c54d26faf5f51111d3fdd6b9bb9a2a608",
+        "dweb:/ipfs/QmStFS5zKEbbbLZwBiNDBD7oqSKFzjZuYGReZrsnkzpuGR"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol": {
+      "keccak256": "0xfc1c73d1b01782bbdfdd73d5d25f075e6c33dd37414638b63664063a0d1692cc",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://751db5a5a4c7bb7b836a842688c8590c4557c660725df68e87c2935ed7fc995c",
+        "dweb:/ipfs/QmPnwDBtcUhgs3L9gnEcdFXpJEdu8QcTMUFMQfLcwU53YZ"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleMetadata.sol": {
+      "keccak256": "0xbcf89f0855dc558c7761c6eb6942bd06c3ba9bf0cd1650c55930bfea33c3036f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://6c34df7dbb636876505753545213008e39fe20f04b76bc257689359b96f3d7fd",
+        "dweb:/ipfs/QmVyh1bzmh98V4bxB2C6jQSxY4u9hBSNURYM1uJyR89whq"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBGlobalFundingCycleMetadata.sol": {
+      "keccak256": "0x7f7855ebb0bc3ad0454c183a15730e2623a4a871aee5dbc98223050f35b224a3",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://39c0f9b5a013cbb6cddb2da6c6a733bd218601c7a1c7ea4611246effcaa94b05",
+        "dweb:/ipfs/QmcfCXpiorzoUnJNd55tNGXqPPaVJLYx6mypD6NwW1N296"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBOperatorData.sol": {
+      "keccak256": "0xc108ff9bbeef8783e332522b8bd1c17bba071c34051de72dc5bfe38dfd39a3a3",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://147b757b3ab9ccad9db039340d27cb222b2bc997b41419907388a5511e530744",
+        "dweb:/ipfs/QmPhyunneMUmkSVeF6nNZiik5Soh4KoR9eFLSQR6bMUNK3"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol": {
+      "keccak256": "0x1e36a8a71ed2274fd31b0475e69943acc6a2091397a0d6c4fa99db05d9aaa0fd",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://217ed226bf196ab19dd8e9fb340c1553b9f3a749ba450f9b6a36b42cb277e8a3",
+        "dweb:/ipfs/Qmb89jN5p3wEVCRx2BaUizHyDZJcihPoPKCNF3Ww3TX9by"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol": {
+      "keccak256": "0x5ea56d46d07944aacfe540ee9290f10a70d77b537650a0b28975e2e88fa5b9a4",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://afdac58b0c0decc7576d5581757230f0d60c2415bb7a552e507e2833de7df9fa",
+        "dweb:/ipfs/QmcsdVf8MHP5J13feRQzPvUZZGyohYmqeTWZuvvLsi2Czw"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBRedeemParamsData.sol": {
+      "keccak256": "0xefe0290796bd282e478bdcfc1eb91c1bb02a3c910edd89b67db9c7d7f566c069",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://dacda7ca85d6b4b832c40eae79e2362475d7111d397aaff3fb31c5811a9854a7",
+        "dweb:/ipfs/QmQ2TymkG7wacEuGMCC2Ep2HWXRgAexhMt75YJbe9z19Mt"
+      ]
+    },
+    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol": {
+      "keccak256": "0xc606ed3c46a59e2e037897d2d749867919756d01f8e75a495d2dd4e03c3535fc",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4d68ccb6e9c7cf11f214d3812a0cc8de9918b601c62f39950172375d4be415f9",
+        "dweb:/ipfs/QmRKhczPkxzVCKQ657EuLBftF5J2VVZKQknjWUa9sJ48rn"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "keccak256": "0xa94b34880e3c1b0b931662cb1c09e5dfa6662f31cba80e07c5ee71cd135c9673",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://40fb1b5102468f783961d0af743f91b9980cf66b50d1d12009f6bb1869cea4d2",
+        "dweb:/ipfs/QmYqEbJML4jB1GHbzD4cUZDtJg5wVwNm3vDJq1GbyDus8y"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "keccak256": "0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f",
+        "dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "keccak256": "0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://6df0ddf21ce9f58271bdfaa85cde98b200ef242a05a3f85c2bc10a8294800a92",
+        "dweb:/ipfs/QmRK2Y5Yc6BK7tGKkgsgn3aJEQGi5aakeSPZvS65PV8Xp3"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+        "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+      ]
+    }
+  },
+  "version": 1
+}
