@@ -34,14 +34,14 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     @param _projectId The ID of the project this contract's functionality applies to.
     @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
 
-    @return newDataSource The address of the newly deployed data source.
+    @return newDelegate The address of the newly deployed delegate.
   */
   function deployDelegateFor(
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
     // Deploy the delegate contract.
-    JBTiered721Delegate newDataSource = new JBTiered721Delegate(
+    JBTiered721Delegate newDelegate = new JBTiered721Delegate(
       _projectId,
       _deployTiered721DelegateData.directory,
       _deployTiered721DelegateData.name,
@@ -57,10 +57,10 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
     // Transfer the ownership to the specified address.
     if (_deployTiered721DelegateData.owner != address(0))
-      newDataSource.transferOwnership(_deployTiered721DelegateData.owner);
+      newDelegate.transferOwnership(_deployTiered721DelegateData.owner);
 
-    emit DelegateDeployed(_projectId, newDataSource);
+    emit DelegateDeployed(_projectId, newDelegate);
 
-    return newDataSource;
+    return newDelegate;
   }
 }
