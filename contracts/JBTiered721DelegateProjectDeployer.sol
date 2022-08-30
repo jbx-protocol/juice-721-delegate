@@ -86,7 +86,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     // Set the delegate address as the data source of the provided metadata.
     _launchProjectData.metadata.dataSource = address(_delegate);
 
-    // Set the project to use the data source for it's pay function.
+    // Set the project to use the data source for its pay function.
     _launchProjectData.metadata.useDataSourceForPay = true;
 
     // Launch the project.
@@ -129,7 +129,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     // Set the delegate address as the data source of the provided metadata.
     _launchFundingCyclesData.metadata.dataSource = address(_delegate);
 
-    // Set the project to use the data source for it's pay function.
+    // Set the project to use the data source for its pay function.
     _launchFundingCyclesData.metadata.useDataSourceForPay = true;
 
     // Launch the funding cycles.
@@ -172,7 +172,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
     // Set the delegate address as the data source of the provided metadata.
     _reconfigureFundingCyclesData.metadata.dataSource = address(_delegate);
 
-    // Set the project to use the data source for it's pay function.
+    // Set the project to use the data source for its pay function.
     _reconfigureFundingCyclesData.metadata.useDataSourceForPay = true;
 
     // Reconfigure the funding cycles.
