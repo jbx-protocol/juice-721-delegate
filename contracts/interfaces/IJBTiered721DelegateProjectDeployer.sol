@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.0;
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol';
 import '../structs/JBDeployTiered721DelegateData.sol';
 import '../structs/JBLaunchProjectData.sol';
 import '../structs/JBLaunchFundingCyclesData.sol';

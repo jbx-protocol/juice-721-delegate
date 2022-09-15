@@ -1,4 +1,4 @@
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 
@@ -373,14 +373,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(_delegate.getTierVotes(_user, _tier + 1), 0);
 
     // Assert that fren received the voting units
-    assertEq(
-      _delegate.getVotes(_userFren),
-      _frenExpectedVotes
-    );
-    assertEq(
-      _delegate.getTierVotes(_userFren, _tier + 1),
-      _frenExpectedVotes
-    );
+    assertEq(_delegate.getVotes(_userFren), _frenExpectedVotes);
+    assertEq(_delegate.getTierVotes(_userFren, _tier + 1), _frenExpectedVotes);
   }
 
   function testMintAndDelegateVotingUnits(uint8 _tier, bool _selfDelegateBeforeReceive) public {

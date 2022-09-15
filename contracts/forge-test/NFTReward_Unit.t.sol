@@ -1,4 +1,4 @@
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
 import '../JBTiered721Delegate.sol';
 import '../JBTiered721DelegateStore.sol';

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol';
-import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import './ERC721.sol';
 import '../interfaces/IJB721Delegate.sol';
@@ -71,7 +72,7 @@ abstract contract JB721Delegate is
 
     @return weight The weight that tokens should get minted in accordance with.
     @return memo The memo that should be forwarded to the event.
-    @return delegate A delegate to call once the payment has taken place.
+    @return delegateAllocations The amount to send to delegates instead of adding to the local balance.
   */
   function payParams(JBPayParamsData calldata _data)
     external
@@ -80,11 +81,13 @@ abstract contract JB721Delegate is
     returns (
       uint256 weight,
       string memory memo,
-      IJBPayDelegate delegate
+      JBPayDelegateAllocation[] memory delegateAllocations
     )
   {
     // Forward the recieved weight and memo, and use this contract as a pay delegate.
-    return (_data.weight, _data.memo, IJBPayDelegate(address(this)));
+    weight = _data.weight;
+    memo = _data.memo;
+    delegateAllocations[0] = JBPayDelegateAllocation(this, 0);
   }
 
   /**
@@ -95,7 +98,7 @@ abstract contract JB721Delegate is
 
     @return reclaimAmount The amount that should be reclaimed from the treasury.
     @return memo The memo that should be forwarded to the event.
-    @return delegate A delegate to call once the redemption has taken place.
+    @return delegateAllocations The amount to send to delegates instead of adding to the beneficiary.
   */
   function redeemParams(JBRedeemParamsData calldata _data)
     external
@@ -104,14 +107,17 @@ abstract contract JB721Delegate is
     returns (
       uint256 reclaimAmount,
       string memory memo,
-      IJBRedemptionDelegate delegate
+      JBRedemptionDelegateAllocation[] memory delegateAllocations
     )
   {
+    // Set the only delegate allocation to be a callback to this contract.
+    delegateAllocations[0] = JBRedemptionDelegateAllocation(this, 0);
+
     // Make sure fungible project tokens aren't being redeemed too.
     if (_data.tokenCount > 0) revert UNEXPECTED();
 
     // If redemption rate is 0, nothing can be reclaimed from the treasury
-    if (_data.redemptionRate == 0) return (0, _data.memo, IJBRedemptionDelegate(address(this)));
+    if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
 
     // Get a reference to the redemption rate of the provided tokens.
     uint256 _redemptionWeight = _redemptionWeightOf(
@@ -127,7 +133,7 @@ abstract contract JB721Delegate is
 
     // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
     if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE)
-      return (_base, _data.memo, IJBRedemptionDelegate(address(this)));
+      return (_base, _data.memo, delegateAllocations);
 
     // Return the weighted overflow, and this contract as the delegate so that tokens can be deleted.
     return (
@@ -142,7 +148,7 @@ abstract contract JB721Delegate is
         JBConstants.MAX_REDEMPTION_RATE
       ),
       _data.memo,
-      IJBRedemptionDelegate(address(this))
+      delegateAllocations
     );
   }
 
@@ -207,9 +213,10 @@ abstract contract JB721Delegate is
 
     @param _data The Juicebox standard project payment data.
   */
-  function didPay(JBDidPayData calldata _data) external virtual override {
+  function didPay(JBDidPayData calldata _data) external payable virtual override {
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
+      msg.value != 0 ||
       !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
       _data.projectId != projectId
     ) revert INVALID_PAYMENT_EVENT();
@@ -227,9 +234,10 @@ abstract contract JB721Delegate is
 
     @param _data The Juicebox standard project redemption data.
   */
-  function didRedeem(JBDidRedeemData calldata _data) external virtual override {
+  function didRedeem(JBDidRedeemData calldata _data) external payable virtual override {
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
+      msg.value != 0 ||
       !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
       _data.projectId != projectId
     ) revert INVALID_REDEMPTION_EVENT();

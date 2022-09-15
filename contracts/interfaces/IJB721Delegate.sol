@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.0;
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBDirectory.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 
 interface IJB721Delegate {
   event SetBaseUri(string indexed baseUri, address caller);

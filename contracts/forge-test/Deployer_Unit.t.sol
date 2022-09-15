@@ -1,6 +1,6 @@
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBController.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
 
 import '../JBTiered721DelegateProjectDeployer.sol';
 import '../JBTiered721DelegateDeployer.sol';
