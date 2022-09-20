@@ -76,7 +76,11 @@ contract RinkebyLaunchProjectFor is Script {
     });
 
     JBFundingCycleMetadata memory _metadata = JBFundingCycleMetadata({
-      global: JBGlobalFundingCycleMetadata({allowSetTerminals: false, allowSetController: false}),
+      global: JBGlobalFundingCycleMetadata({
+        allowSetTerminals: false,
+        allowSetController: false,
+        pauseTransfers: false
+      }),
       reservedRate: 5000,
       redemptionRate: 5000, //50%
       ballotRedemptionRate: 5000,
@@ -85,14 +89,15 @@ contract RinkebyLaunchProjectFor is Script {
       pauseRedeem: false,
       pauseBurn: false,
       allowMinting: true,
-      allowChangeToken: true,
       allowTerminalMigration: false,
       allowControllerMigration: false,
       holdFees: false,
+      preferClaimedTokenOverride: false,
       useTotalOverflowForRedemptions: false,
       useDataSourceForPay: true,
       useDataSourceForRedeem: true,
-      dataSource: address(0) // Will get overriden during deployment
+      dataSource: address(0), // Will get overriden during deployment
+      metadata: 0
     });
 
     JBSplit[] memory _splits = new JBSplit[](1);
