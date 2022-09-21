@@ -1,6 +1,6 @@
 {
   "compiler": {
-    "version": "0.8.6+commit.11564f7e"
+    "version": "0.8.16+commit.07a7930e"
   },
   "language": "Solidity",
   "output": {
@@ -52,6 +52,33 @@
                 "type": "tuple"
               },
               {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "token",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "decimals",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "currency",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct JBTokenAmount",
+                "name": "forwardedAmount",
+                "type": "tuple"
+              },
+              {
                 "internalType": "uint256",
                 "name": "projectTokenCount",
                 "type": "uint256"
@@ -84,7 +111,7 @@
         ],
         "name": "didPay",
         "outputs": [],
-        "stateMutability": "nonpayable",
+        "stateMutability": "payable",
         "type": "function"
       },
       {
@@ -108,25 +135,38 @@
       }
     ],
     "devdoc": {
+      "details": "Adheres to: IERC165 for adequate interface integration",
       "kind": "dev",
       "methods": {
+        "didPay((address,uint256,uint256,(address,uint256,uint256,uint256),(address,uint256,uint256,uint256),uint256,address,bool,string,bytes))": {
+          "details": "Critical business logic should be protected by an appropriate access control",
+          "params": {
+            "_data": "the data passed by the terminal, as a JBDidPayData struct: address payer; uint256 projectId; uint256 currentFundingCycleConfiguration; JBTokenAmount amount; JBTokenAmount forwardedAmount; uint256 projectTokenCount; address beneficiary; bool preferClaimedTokens; string memo; bytes metadata;"
+          }
+        },
         "supportsInterface(bytes4)": {
           "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
         }
       },
+      "title": "Pay delegate",
       "version": 1
     },
     "userdoc": {
       "kind": "user",
-      "methods": {},
+      "methods": {
+        "didPay((address,uint256,uint256,(address,uint256,uint256,uint256),(address,uint256,uint256,uint256),uint256,address,bool,string,bytes))": {
+          "notice": "This function is called by JBPaymentTerminal.pay(..), after the execution of its logic"
+        }
+      },
+      "notice": "Delegate called after JBTerminal.pay(..) logic completion (if passed by the funding cycle datasource)",
       "version": 1
     }
   },
   "settings": {
     "compilationTarget": {
-      "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol": "IJBPayDelegate"
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol": "IJBPayDelegate"
     },
-    "evmVersion": "berlin",
+    "evmVersion": "london",
     "libraries": {},
     "metadata": {
       "bytecodeHash": "ipfs"
@@ -145,28 +185,28 @@
     ]
   },
   "sources": {
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol": {
-      "keccak256": "0xf7a9ef2df665e1c85a461fadb3cd54f6270c181eac96064005bde19e54d0ffa9",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol": {
+      "keccak256": "0xa797de18b69eceba117e1f0b3810cf3cc2d2791417d580a5bdc510d1b868ab26",
       "license": "MIT",
       "urls": [
-        "bzz-raw://521eafc73d727317a65c8a0a27522de68a62988d005b632dac5cff96983ce892",
-        "dweb:/ipfs/QmesPTKhG1T3X6H3QZx4JeYL17ebfahMoajPpAxrHLZdrr"
+        "bzz-raw://36b214c091c62c54d22cbedb606c29919cb56f1c29acf9c397c948247a29dcc0",
+        "dweb:/ipfs/QmSzxHs8xNFqNfxZb1igvPHk7vXA5vUsGQ6AMfJ8jx8Ktu"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBDidPayData.sol": {
-      "keccak256": "0x5466643df68a7bb1f88b781b7ac74379a1428d700edb1a22cd211c1fb8af458c",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol": {
+      "keccak256": "0xf3c664309b37790f16047ae97b0459889ae0242dfcde7fc8902c8d10c7f8e6b6",
       "license": "MIT",
       "urls": [
-        "bzz-raw://ddd2e26dbf3d79cee9ef14bb9671a18471f6c5ee0e8252dda24d17e0919882d8",
-        "dweb:/ipfs/QmYZknzBV5jzJXNJE4vAkxqBXfpi7WBS4XUqXPTGzEfftd"
+        "bzz-raw://ea74b762604ffa0e45181d8ec31b130198546014f6360d15076af79952bc5874",
+        "dweb:/ipfs/QmdukMbucvU75BpK4TsYKoqjpQ2Nhs9yjFVzcKGkG3SpSV"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol": {
-      "keccak256": "0xc606ed3c46a59e2e037897d2d749867919756d01f8e75a495d2dd4e03c3535fc",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBTokenAmount.sol": {
+      "keccak256": "0x4a778e779ba257ba5638c5469e07a4d21b55a3128d56db5a0fdfacb1f3301c51",
       "license": "MIT",
       "urls": [
-        "bzz-raw://4d68ccb6e9c7cf11f214d3812a0cc8de9918b601c62f39950172375d4be415f9",
-        "dweb:/ipfs/QmRKhczPkxzVCKQ657EuLBftF5J2VVZKQknjWUa9sJ48rn"
+        "bzz-raw://fdb8302e06c5b4e1e91d204ed735d8d5db5bb3648200c144d7c545678010a44d",
+        "dweb:/ipfs/QmTpffbt3FShkk8LDjsonVGnecbbNMUL8QHYQM7AFcMa54"
       ]
     },
     "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {

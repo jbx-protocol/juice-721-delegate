@@ -1,6 +1,6 @@
 {
   "compiler": {
-    "version": "0.8.6+commit.11564f7e"
+    "version": "0.8.16+commit.07a7930e"
   },
   "language": "Solidity",
   "output": {
@@ -108,25 +108,38 @@
       }
     ],
     "devdoc": {
+      "details": "Adheres to: IERC165 for adequate interface integrationThe contract address should be set as an allocator in the adequate split",
       "kind": "dev",
       "methods": {
+        "allocate((address,uint256,uint256,uint256,uint256,(bool,bool,uint256,uint256,address,uint256,address)))": {
+          "details": "Critical business logic should be protected by an appropriate access control. The token and/or eth are optimistically transfered to the allocator for its logic.",
+          "params": {
+            "_data": "the data passed by the terminal, as a JBSplitAllocationData struct: address token; uint256 amount; uint256 decimals; uint256 projectId; uint256 group; JBSplit split;"
+          }
+        },
         "supportsInterface(bytes4)": {
           "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
         }
       },
+      "title": "Split allocator",
       "version": 1
     },
     "userdoc": {
       "kind": "user",
-      "methods": {},
+      "methods": {
+        "allocate((address,uint256,uint256,uint256,uint256,(bool,bool,uint256,uint256,address,uint256,address)))": {
+          "notice": "This function is called by JBPaymentTerminal.distributePayoutOf(..), during the processing of the split including it"
+        }
+      },
+      "notice": "Provide a way to process a single split with extra logic",
       "version": 1
     }
   },
   "settings": {
     "compilationTarget": {
-      "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSplitAllocator.sol": "IJBSplitAllocator"
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitAllocator.sol": "IJBSplitAllocator"
     },
-    "evmVersion": "berlin",
+    "evmVersion": "london",
     "libraries": {},
     "metadata": {
       "bytecodeHash": "ipfs"
@@ -145,28 +158,28 @@
     ]
   },
   "sources": {
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSplitAllocator.sol": {
-      "keccak256": "0x717575a0a4a20f8598f44d22a3fd3e282f34f4b33543a0d4b36ba3b59ed8cd04",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitAllocator.sol": {
+      "keccak256": "0x5efb6f51fc161f42ff58989386ad99028e4039a0ba897d66f358c3dfcf686105",
       "license": "MIT",
       "urls": [
-        "bzz-raw://1821b7b022486b81a58fd86846d917173211a85fceaec19e2fe27052e79967f9",
-        "dweb:/ipfs/QmU6vL32otjX5CQbypVJN71qcJ4q7TBpcEoQj27YbnJfkB"
+        "bzz-raw://171df7cf5285170894d7d7d00ecb14271204b55d330fa65e1bf9ebfb21741c29",
+        "dweb:/ipfs/QmXBmzjVVgGd1hZoStw2qoypJnqyWgYeMXMLyYS7f6Zonu"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBSplit.sol": {
-      "keccak256": "0x03b5c632ad8c3b273d550bb334735d686fafa673b68ddb27fb77400d0de1eca1",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplit.sol": {
+      "keccak256": "0xc80a16606da8abf76d0f73abc38aee041e24f29342c1939018f70c286e89f105",
       "license": "MIT",
       "urls": [
-        "bzz-raw://4928af39a15e09d829fa8952c455b3559b04917be91d32d89b175704954a5a13",
-        "dweb:/ipfs/QmcL5gKwxhh2tujBvuw6KdiRUtKhSGuyvs4m7S6eacz2gn"
+        "bzz-raw://d257df1f322904fdbf34a0d28880cc96a1ba3905d19488d83156a7d3476d820f",
+        "dweb:/ipfs/QmP6WFuoK6ePEQ2zxRnpu1kWDdFSUTGaEV57eZ4gs9FqC8"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBSplitAllocationData.sol": {
-      "keccak256": "0x11f19479dc1d20cc07f52edc994d24b2ac08f8074d03a72ccee68af40f884b02",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol": {
+      "keccak256": "0x39f5c41bd31d36774744698ac94484b6cab62d7038df2f29d947668959782e63",
       "license": "MIT",
       "urls": [
-        "bzz-raw://cfd92eebebaec9f468a5c509b5fc5611bdb705509f3e877ae78efd053384de1e",
-        "dweb:/ipfs/QmVGfbk2mEZa1WKW4kAmtcbx3JFGgoQS5Cuv6c5WvxX7S4"
+        "bzz-raw://cf81d025aa0f6f93bdcd0b863730f7c574de7c3c4a595ba88e342f46c4b724e4",
+        "dweb:/ipfs/QmaQ1frbYciPVV1Qmsfmgts9fgbXKZLQ8jGf9XRikHSmci"
       ]
     },
     "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {

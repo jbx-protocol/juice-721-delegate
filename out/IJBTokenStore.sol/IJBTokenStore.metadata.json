@@ -1,6 +1,6 @@
 {
   "compiler": {
-    "version": "0.8.6+commit.11564f7e"
+    "version": "0.8.16+commit.07a7930e"
   },
   "language": "Solidity",
   "output": {
@@ -52,43 +52,6 @@
           }
         ],
         "name": "Burn",
-        "type": "event"
-      },
-      {
-        "anonymous": false,
-        "inputs": [
-          {
-            "indexed": true,
-            "internalType": "uint256",
-            "name": "projectId",
-            "type": "uint256"
-          },
-          {
-            "indexed": true,
-            "internalType": "contract IJBToken",
-            "name": "newToken",
-            "type": "address"
-          },
-          {
-            "indexed": true,
-            "internalType": "contract IJBToken",
-            "name": "oldToken",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "indexed": false,
-            "internalType": "address",
-            "name": "caller",
-            "type": "address"
-          }
-        ],
-        "name": "Change",
         "type": "event"
       },
       {
@@ -219,9 +182,9 @@
           },
           {
             "indexed": true,
-            "internalType": "bool",
-            "name": "flag",
-            "type": "bool"
+            "internalType": "contract IJBToken",
+            "name": "newToken",
+            "type": "address"
           },
           {
             "indexed": false,
@@ -230,7 +193,7 @@
             "type": "address"
           }
         ],
-        "name": "ShouldRequireClaim",
+        "name": "Set",
         "type": "event"
       },
       {
@@ -325,35 +288,6 @@
       {
         "inputs": [
           {
-            "internalType": "uint256",
-            "name": "_projectId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "contract IJBToken",
-            "name": "_token",
-            "type": "address"
-          },
-          {
-            "internalType": "address",
-            "name": "_newOwner",
-            "type": "address"
-          }
-        ],
-        "name": "changeFor",
-        "outputs": [
-          {
-            "internalType": "contract IJBToken",
-            "name": "oldToken",
-            "type": "address"
-          }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
             "internalType": "address",
             "name": "_holder",
             "type": "address"
@@ -372,6 +306,19 @@
         "name": "claimFor",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "fundingCycleStore",
+        "outputs": [
+          {
+            "internalType": "contract IJBFundingCycleStore",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -432,25 +379,6 @@
         "type": "function"
       },
       {
-        "inputs": [
-          {
-            "internalType": "contract IJBToken",
-            "name": "_token",
-            "type": "address"
-          }
-        ],
-        "name": "projectOf",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
         "inputs": [],
         "name": "projects",
         "outputs": [
@@ -469,33 +397,14 @@
             "internalType": "uint256",
             "name": "_projectId",
             "type": "uint256"
-          }
-        ],
-        "name": "requireClaimFor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "_projectId",
-            "type": "uint256"
           },
           {
-            "internalType": "bool",
-            "name": "_flag",
-            "type": "bool"
+            "internalType": "contract IJBToken",
+            "name": "_token",
+            "type": "address"
           }
         ],
-        "name": "shouldRequireClaimingFor",
+        "name": "setFor",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -623,9 +532,9 @@
   },
   "settings": {
     "compilationTarget": {
-      "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenStore.sol": "IJBTokenStore"
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenStore.sol": "IJBTokenStore"
     },
-    "evmVersion": "berlin",
+    "evmVersion": "london",
     "libraries": {},
     "metadata": {
       "bytecodeHash": "ipfs"
@@ -644,44 +553,84 @@
     ]
   },
   "sources": {
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBProjects.sol": {
-      "keccak256": "0x602bad7e8cce6e9d53fe5e3532c5d4428d02206f8df48b246aac7ee8a6dcc98d",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/enums/JBBallotState.sol": {
+      "keccak256": "0x891fcac63470398b3a11239da7feba6b07d640809fcefd2404303b823d7378f8",
       "license": "MIT",
       "urls": [
-        "bzz-raw://e8b66a1813167e248944b75bcd0af559284e4a2482e9e9ade3c6e8b1fd59eb6e",
-        "dweb:/ipfs/QmaNer7KD1EMensiJFABJ31ednVRnZcV3wfcx6FPFajoM9"
+        "bzz-raw://6e6adfceaf284b669a8c1cbcf2da7f18ab31a2d1066f9db8bc914349e7401de7",
+        "dweb:/ipfs/QmXLHVRPPZdXUkgAHQbHUtEzAvCJk1P6rJ7wrwfTcfW6fw"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBToken.sol": {
-      "keccak256": "0xf5ec0861b067a5e58f2bcca44892ea8d4a42ab8a7c95bd4d3bbddad33c8727f5",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol": {
+      "keccak256": "0x49553a56209237846bc400cf27f260824a6bd06fd8094a7eb5abb9de75779598",
       "license": "MIT",
       "urls": [
-        "bzz-raw://649724a0fd8c695fcd4ad4ffdb620a9309f951989eef22abd7bcaa86837b7e98",
-        "dweb:/ipfs/Qmf1VZsz5gyMHohWndAx2gfSSpzAuKLSEHrtaW2kdYe3ng"
+        "bzz-raw://559372746f94f28b385bc336df263f583dca5377350645c0b28110b083bdb41a",
+        "dweb:/ipfs/QmeQRYqPjXBQCtMKXSFtHVD2ewEPoUAPDxLh4oWTRSKbmx"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenStore.sol": {
-      "keccak256": "0x2b7a6cdb457e710161079a46683e9804d66d4cc7d18be8f64de25ba7bfadf9ef",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol": {
+      "keccak256": "0xaead823851433be0c2ddc8f8086813e6cd647de3a1bc0f7570a5d6b38c378b5a",
       "license": "MIT",
       "urls": [
-        "bzz-raw://4fb05089e0fb440fea54a457dc31940c46a7bdcaacc449ca816c4f55f36bccdd",
-        "dweb:/ipfs/QmdpnuaWGngJd5a5x3MQDTQhF3VYHnbM9FTsiS6DwVtjRe"
+        "bzz-raw://7f11fd52ba9ef67b40811d8a2298ae8b69447d2565b3f1069cbb8f0f13bc65e7",
+        "dweb:/ipfs/QmVbBzpTxZWar9xvj6x1vW91hJDv2iPVq7aG6waMxaHUPQ"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBTokenUriResolver.sol": {
-      "keccak256": "0xa64ece706d7ce399095f403b08383391c089da4995b5ee000b278d93d242a475",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol": {
+      "keccak256": "0x7cfc021d0bd7e73b1ba8f4845d7d35e3419d6a14d3d25ca3a8010e7f91062fe4",
       "license": "MIT",
       "urls": [
-        "bzz-raw://900eeb480ed168ada8a738381bb1ea9c92a007e7000a1f2e5d7da02b3010a19b",
-        "dweb:/ipfs/QmfKS6Mi6wGsT8gP3AETYKaXCiwFe9dzzFTEEkaFF7xoWg"
+        "bzz-raw://ff265e13e60da56b93104260ed69ab01153437ec2af9d453781f22ca295eaef9",
+        "dweb:/ipfs/QmfGCSLX2Wy26ojf4U12udsdtjSSacbLcZGwCjTw7MjWF8"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol": {
-      "keccak256": "0x5ea56d46d07944aacfe540ee9290f10a70d77b537650a0b28975e2e88fa5b9a4",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBToken.sol": {
+      "keccak256": "0xe8969210417736c85d71101bf1c0bd8ebbf9d1e62a93e758148bd5709a6c7097",
       "license": "MIT",
       "urls": [
-        "bzz-raw://afdac58b0c0decc7576d5581757230f0d60c2415bb7a552e507e2833de7df9fa",
-        "dweb:/ipfs/QmcsdVf8MHP5J13feRQzPvUZZGyohYmqeTWZuvvLsi2Czw"
+        "bzz-raw://214c67c2ebeabd1b412ac9b0b6de4c02765c8311a3dc258568a2aa7322d58fb7",
+        "dweb:/ipfs/QmeEbk8YWRVtMpxWQGfYbMrgYc2qsPhQF5jpufK26RrCXY"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenStore.sol": {
+      "keccak256": "0x98459e3af050d41dfeffdc97f1c93330207ba450f8ff3613224b49a89eeca9c6",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://0e98bda797088b1bb2a756eaed911ab12b092ffdad5467e82650bfa9bf8dd046",
+        "dweb:/ipfs/QmbuKq4xSC8LL62smwrHWCWKiWawEu8Ne2n7q8DhKHKvtD"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol": {
+      "keccak256": "0xd267fd8ca7c21c2c71794acdb9a98314c33a35fc559e0bf0897a6686d196d174",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://aa7053d4300ed1374f3f993e6e2163d0a05ee780e4e99eb007b55eabc93c724e",
+        "dweb:/ipfs/QmYZAUn7VCwqpDWYZNCXLNYMRQpD334YgPRiGCfxQApzuT"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol": {
+      "keccak256": "0xcdd3ac9b6fa67e62ada88d09b73bc35ade1cd77d43db712289266a788928b4c2",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://8ba0be407022bbeb0e9272884653209ee262b8a4e00ffbba1298c3b119feccba",
+        "dweb:/ipfs/QmbtLQzSN3hut4jYVsYPiYDfRkDdGkZmTWBnV2wJKrdM3K"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol": {
+      "keccak256": "0x2aa6368bf4dfc5797e8b02a978293de0c777fae2658de2c825a103587240f3b0",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://2d7a980ab9b67ad1569d4407b747903cab668a332214117f5ad44feb50af0a3a",
+        "dweb:/ipfs/QmSuEzmrmDSihrTKYCk8miq7VQi7WD6jmQePkjDyzt7UpC"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol": {
+      "keccak256": "0x90ad7b1014c0a9f945fe7a2efde9d5de41e40574fa27969070b1d2ff52033ea0",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1fafc65a9fd74605b7d6c6f0a92b3237a8e3efdd160affb8c117bad00dcf9494",
+        "dweb:/ipfs/QmQkcVt11WLqrxHVrcDCF6dNxzg2kKHEghAgSbfLF6CHkt"
       ]
     },
     "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {

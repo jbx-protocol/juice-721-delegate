@@ -1,6 +1,6 @@
 {
   "compiler": {
-    "version": "0.8.6+commit.11564f7e"
+    "version": "0.8.16+commit.07a7930e"
   },
   "language": "Solidity",
   "output": {
@@ -100,9 +100,21 @@
             "type": "string"
           },
           {
-            "internalType": "contract IJBPayDelegate",
-            "name": "delegate",
-            "type": "address"
+            "components": [
+              {
+                "internalType": "contract IJBPayDelegate",
+                "name": "delegate",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct JBPayDelegateAllocation[]",
+            "name": "delegateAllocations",
+            "type": "tuple[]"
           }
         ],
         "stateMutability": "nonpayable",
@@ -185,11 +197,6 @@
                 "type": "uint256"
               },
               {
-                "internalType": "uint256",
-                "name": "ballotRedemptionRate",
-                "type": "uint256"
-              },
-              {
                 "internalType": "string",
                 "name": "memo",
                 "type": "string"
@@ -218,9 +225,21 @@
             "type": "string"
           },
           {
-            "internalType": "contract IJBRedemptionDelegate",
-            "name": "delegate",
-            "type": "address"
+            "components": [
+              {
+                "internalType": "contract IJBRedemptionDelegate",
+                "name": "delegate",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct JBRedemptionDelegateAllocation[]",
+            "name": "delegateAllocations",
+            "type": "tuple[]"
           }
         ],
         "stateMutability": "nonpayable",
@@ -247,25 +266,55 @@
       }
     ],
     "devdoc": {
+      "details": "Adheres to: IERC165 for adequate interface integration",
       "kind": "dev",
       "methods": {
+        "payParams((address,address,(address,uint256,uint256,uint256),uint256,uint256,address,uint256,uint256,string,bytes))": {
+          "params": {
+            "_data": "the data passed to the data source in terminal.pay(..), as a JBPayParamsData struct: IJBPaymentTerminal terminal; address payer; JBTokenAmount amount; uint256 projectId; uint256 currentFundingCycleConfiguration; address beneficiary; uint256 weight; uint256 reservedRate; string memo; bytes metadata;"
+          },
+          "returns": {
+            "delegateAllocations": "The amount to send to delegates instead of adding to the local balance.",
+            "memo": "the memo to override the pay(..) memo",
+            "weight": "the weight to use to override the funding cycle weight"
+          }
+        },
+        "redeemParams((address,address,uint256,uint256,uint256,uint256,uint256,(address,uint256,uint256,uint256),bool,uint256,string,bytes))": {
+          "params": {
+            "_data": "the data passed to the data source in terminal.redeemTokensOf(..), as a JBRedeemParamsData struct: IJBPaymentTerminal terminal; address holder; uint256 projectId; uint256 currentFundingCycleConfiguration; uint256 tokenCount; uint256 totalSupply; uint256 overflow; JBTokenAmount reclaimAmount; bool useTotalOverflow; uint256 redemptionRate; uint256 ballotRedemptionRate; string memo; bytes metadata;"
+          },
+          "returns": {
+            "delegateAllocations": "The amount to send to delegates instead of adding to the beneficiary.",
+            "memo": "The memo to override the redeemTokensOf(..) memo.",
+            "reclaimAmount": "The amount to claim, overriding the terminal logic."
+          }
+        },
         "supportsInterface(bytes4)": {
           "details": "Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas."
         }
       },
+      "title": "Datasource",
       "version": 1
     },
     "userdoc": {
       "kind": "user",
-      "methods": {},
+      "methods": {
+        "payParams((address,address,(address,uint256,uint256,uint256),uint256,uint256,address,uint256,uint256,string,bytes))": {
+          "notice": "The datasource implementation for JBPaymentTerminal.pay(..)"
+        },
+        "redeemParams((address,address,uint256,uint256,uint256,uint256,uint256,(address,uint256,uint256,uint256),bool,uint256,string,bytes))": {
+          "notice": "The datasource implementation for JBPaymentTerminal.redeemTokensOf(..)"
+        }
+      },
+      "notice": "The datasource is called by JBPaymentTerminal on pay and redemption, and provide an extra layer of logic to use  a custom weight, a custom memo and/or a pay/redeem delegate",
       "version": 1
     }
   },
   "settings": {
     "compilationTarget": {
-      "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol": "IJBFundingCycleDataSource"
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol": "IJBFundingCycleDataSource"
     },
-    "evmVersion": "berlin",
+    "evmVersion": "london",
     "libraries": {},
     "metadata": {
       "bytecodeHash": "ipfs"
@@ -284,116 +333,92 @@
     ]
   },
   "sources": {
-    "node_modules/@jbx-protocol/contracts-v2/contracts/enums/JBBallotState.sol": {
-      "keccak256": "0xadf07fd49f7e0947006fa1921bc7fd8fb532e8fecf3b9266721a8b7e43907461",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol": {
+      "keccak256": "0xa424abc146a61b69db83e511c064492da6fab6d8226e13d1580bc9fbc50d6738",
       "license": "MIT",
       "urls": [
-        "bzz-raw://7d4dd83fa3b7f679c9083eb172eb869a62dacf06eb5875dac7418fe3e5ceab1d",
-        "dweb:/ipfs/QmTjNHiqPw6k8xKxExt4hL4xvM3NpFkab3CzbfyTMPXuRD"
+        "bzz-raw://59c695ee79b9cd5447b83acb07c92627d747c6e6901e9145671c7ff12602f4c8",
+        "dweb:/ipfs/Qma43bK5qkRkcWP9KNwfZ54WuMJsT2TAYfMXkdT1R7vRoK"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleBallot.sol": {
-      "keccak256": "0xdc8c8bed613f5759c958b7b0d646032b4337a349a8ecea5ffeb167623f2f29f5",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol": {
+      "keccak256": "0xa797de18b69eceba117e1f0b3810cf3cc2d2791417d580a5bdc510d1b868ab26",
       "license": "MIT",
       "urls": [
-        "bzz-raw://e8d33d7214467f8d580781e24a87ffcfc98df6131dca0c0762ee4d2cedaba76d",
-        "dweb:/ipfs/QmTkdtenb47dwcZ76iHThKoyN8gaBCAuW4PZDgNVL8W7Uo"
+        "bzz-raw://36b214c091c62c54d22cbedb606c29919cb56f1c29acf9c397c948247a29dcc0",
+        "dweb:/ipfs/QmSzxHs8xNFqNfxZb1igvPHk7vXA5vUsGQ6AMfJ8jx8Ktu"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleDataSource.sol": {
-      "keccak256": "0x8fe4fdc2cd71cd0b7202bddb7078f16c8eea746c8481ee9b3b06a0e01e8e7d6b",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol": {
+      "keccak256": "0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2",
       "license": "MIT",
       "urls": [
-        "bzz-raw://f08117bf36e3b2ea9349c49d2ed8961bba73566d162e779a052d9fa0db2a3c9e",
-        "dweb:/ipfs/Qme6w3qHHvmYYEo2v8ez9fNFWTThSuiFVJ2rLYwqNhhtc6"
+        "bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95",
+        "dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBFundingCycleStore.sol": {
-      "keccak256": "0xf75791cd5b71bc6773cf56c92501e3f255a406eaedea781cb57cea2fa1e4ef20",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBRedemptionDelegate.sol": {
+      "keccak256": "0x172d2c0be65e72e54f71ae521907067f0fa30e8ca05c4f88826903208aa437e2",
       "license": "MIT",
       "urls": [
-        "bzz-raw://697e21258b99ac2c4a2b73bcb8c8a47400737ecf5d3dfa6ca5a7b6f7d6be9c57",
-        "dweb:/ipfs/Qmcdg3mEvgbtBnWhjZFubqH8sZU791jtXrWWpohKzN9tkG"
+        "bzz-raw://266a32bd8feea10051a4e243e14692c62e99de7048cda2f541998b4cc64cbd51",
+        "dweb:/ipfs/QmPfqsbSZdpQee4WbisK9ZnZRrXbUVvSpbfnrEKGfjzz9N"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPayDelegate.sol": {
-      "keccak256": "0xf7a9ef2df665e1c85a461fadb3cd54f6270c181eac96064005bde19e54d0ffa9",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol": {
+      "keccak256": "0xf3c664309b37790f16047ae97b0459889ae0242dfcde7fc8902c8d10c7f8e6b6",
       "license": "MIT",
       "urls": [
-        "bzz-raw://521eafc73d727317a65c8a0a27522de68a62988d005b632dac5cff96983ce892",
-        "dweb:/ipfs/QmesPTKhG1T3X6H3QZx4JeYL17ebfahMoajPpAxrHLZdrr"
+        "bzz-raw://ea74b762604ffa0e45181d8ec31b130198546014f6360d15076af79952bc5874",
+        "dweb:/ipfs/QmdukMbucvU75BpK4TsYKoqjpQ2Nhs9yjFVzcKGkG3SpSV"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol": {
-      "keccak256": "0xf50279115f05568c12c254eb2c078b81a0c761f8cc985220e30ec15679118caa",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol": {
+      "keccak256": "0xe2c401f39723a7ce915b8bef328744c66daaf57460843964b941456c2258a412",
       "license": "MIT",
       "urls": [
-        "bzz-raw://48d3576fd54ae9b9c27338cba0ad91aec18606c55d32a85aeddf1b599834a6cb",
-        "dweb:/ipfs/QmUeqF8TRpzYC1MRNQXCWzVFvTQ7iBqfQQHpSQF7LbstFE"
+        "bzz-raw://c3bddd802ff895aa54f047d2385c7c253f9e0cd5b23d4d84439c1590e7e66ccb",
+        "dweb:/ipfs/QmXdSDWgEWMtJDqMhHrBCZnBM4qETXRPteB1wEGZBRxuUb"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBRedemptionDelegate.sol": {
-      "keccak256": "0xfc91761a568e60e1a1429ac11b0d1b57c627ef59f4011b17df4f9f540b7dd60d",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol": {
+      "keccak256": "0xb4e558dc62231d89e9b48998012577d22c3e52b58e23401f22d9096827f6ea0c",
       "license": "MIT",
       "urls": [
-        "bzz-raw://acf3264c04b881d7f59608c9f4e5c2e7333c2beb4c4f4468d6626c74aaa5e535",
-        "dweb:/ipfs/QmPv6rH6gPHSpbRCGuMnZyGjV5iSkfbKjJsmD5Cxegn5CK"
+        "bzz-raw://b6617a7479709d2a68fbc6686c9087fd7339ffcbb4823010287eb2ad979f23dd",
+        "dweb:/ipfs/QmVT66SXpY9h5sD8nJq7VALbfWdeHwUxAeBPymaHg1TMNM"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBDidPayData.sol": {
-      "keccak256": "0x5466643df68a7bb1f88b781b7ac74379a1428d700edb1a22cd211c1fb8af458c",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol": {
+      "keccak256": "0x05007b26feb5d9a026b883c6d734a341b5a49ef7b8215fb40507882e2c14e24d",
       "license": "MIT",
       "urls": [
-        "bzz-raw://ddd2e26dbf3d79cee9ef14bb9671a18471f6c5ee0e8252dda24d17e0919882d8",
-        "dweb:/ipfs/QmYZknzBV5jzJXNJE4vAkxqBXfpi7WBS4XUqXPTGzEfftd"
+        "bzz-raw://52ef2d3c61f06243aead9afcb043299f362ff9f7b259386a88c4454b429436c0",
+        "dweb:/ipfs/QmVpCJ1NyBGBDgNQpmojhjPmqx2gryzopGLgawHE26mwPr"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBDidRedeemData.sol": {
-      "keccak256": "0x52e35ebfda7cf16c90d920c63e450663c0d2b3395554b313e742d8fe74dc187f",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol": {
+      "keccak256": "0x5065a824ebb34952f016c6dfa47e8a7ac28427b719470e74a41022c11ace7788",
       "license": "MIT",
       "urls": [
-        "bzz-raw://5fb8b3da0c5dab17d5263562de358af381aa6114363a97953ef5a02432f34fec",
-        "dweb:/ipfs/QmSnnQwrGzXMvqjRsezL3rTgsvFpnm8QX9TjyCNY7cz3x3"
+        "bzz-raw://0006b9aeb387a8866d9f619de374d7618159e6a25d562f2c8fca984e2a4b9fea",
+        "dweb:/ipfs/QmUfWBMHx6CxN921vM5RktJTP5AYEA3v2xpnMX5LGubhBC"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycle.sol": {
-      "keccak256": "0x7e1ee378705e677298b955bd82b7c79b962e1c2e20f840eb8c491aba595e4905",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation.sol": {
+      "keccak256": "0x10c29d33dd0d875a0d4692a2b9a9355c2ebf433cc06a9a60253d4366b60d4d31",
       "license": "MIT",
       "urls": [
-        "bzz-raw://4d2361ccc893ff87555ba225a5518e7c54d26faf5f51111d3fdd6b9bb9a2a608",
-        "dweb:/ipfs/QmStFS5zKEbbbLZwBiNDBD7oqSKFzjZuYGReZrsnkzpuGR"
+        "bzz-raw://76614755cf61b78b3d3263ddcbf7c7146986374e4cdf5cc2abb67c523d957142",
+        "dweb:/ipfs/QmVNGDmTCcfYxgbA83yURstmAU7vtAtjTh9zNFRwKMmTH1"
       ]
     },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol": {
-      "keccak256": "0xfc1c73d1b01782bbdfdd73d5d25f075e6c33dd37414638b63664063a0d1692cc",
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBTokenAmount.sol": {
+      "keccak256": "0x4a778e779ba257ba5638c5469e07a4d21b55a3128d56db5a0fdfacb1f3301c51",
       "license": "MIT",
       "urls": [
-        "bzz-raw://751db5a5a4c7bb7b836a842688c8590c4557c660725df68e87c2935ed7fc995c",
-        "dweb:/ipfs/QmPnwDBtcUhgs3L9gnEcdFXpJEdu8QcTMUFMQfLcwU53YZ"
-      ]
-    },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol": {
-      "keccak256": "0x1e36a8a71ed2274fd31b0475e69943acc6a2091397a0d6c4fa99db05d9aaa0fd",
-      "license": "MIT",
-      "urls": [
-        "bzz-raw://217ed226bf196ab19dd8e9fb340c1553b9f3a749ba450f9b6a36b42cb277e8a3",
-        "dweb:/ipfs/Qmb89jN5p3wEVCRx2BaUizHyDZJcihPoPKCNF3Ww3TX9by"
-      ]
-    },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBRedeemParamsData.sol": {
-      "keccak256": "0xefe0290796bd282e478bdcfc1eb91c1bb02a3c910edd89b67db9c7d7f566c069",
-      "license": "MIT",
-      "urls": [
-        "bzz-raw://dacda7ca85d6b4b832c40eae79e2362475d7111d397aaff3fb31c5811a9854a7",
-        "dweb:/ipfs/QmQ2TymkG7wacEuGMCC2Ep2HWXRgAexhMt75YJbe9z19Mt"
-      ]
-    },
-    "node_modules/@jbx-protocol/contracts-v2/contracts/structs/JBTokenAmount.sol": {
-      "keccak256": "0xc606ed3c46a59e2e037897d2d749867919756d01f8e75a495d2dd4e03c3535fc",
-      "license": "MIT",
-      "urls": [
-        "bzz-raw://4d68ccb6e9c7cf11f214d3812a0cc8de9918b601c62f39950172375d4be415f9",
-        "dweb:/ipfs/QmRKhczPkxzVCKQ657EuLBftF5J2VVZKQknjWUa9sJ48rn"
+        "bzz-raw://fdb8302e06c5b4e1e91d204ed735d8d5db5bb3648200c144d7c545678010a44d",
+        "dweb:/ipfs/QmTpffbt3FShkk8LDjsonVGnecbbNMUL8QHYQM7AFcMa54"
       ]
     },
     "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {

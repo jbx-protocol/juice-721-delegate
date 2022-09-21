@@ -45,13 +45,13 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       _deployTiered721DelegateData.directory,
       _deployTiered721DelegateData.name,
       _deployTiered721DelegateData.symbol,
+      _deployTiered721DelegateData.fundingCycleStore,
       _deployTiered721DelegateData.baseUri,
       _deployTiered721DelegateData.tokenUriResolver,
       _deployTiered721DelegateData.contractUri,
       _deployTiered721DelegateData.tiers,
       _deployTiered721DelegateData.store,
-      _deployTiered721DelegateData.lockReservedTokenChanges,
-      _deployTiered721DelegateData.lockVotingUnitChanges
+      _deployTiered721DelegateData.flags
     );
 
     // Transfer the ownership to the specified address.

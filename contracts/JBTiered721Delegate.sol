@@ -2,11 +2,14 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import './abstract/JB721Delegate.sol';
 import './abstract/Votes.sol';
 import './interfaces/IJBTiered721Delegate.sol';
 import './libraries/JBIpfsDecoder.sol';
+import './libraries/JBTiered721FundingCycleMetadataResolver.sol';
+import './structs/JBTiered721Flags.sol';
 
 /**
   @title
@@ -27,12 +30,15 @@ import './libraries/JBIpfsDecoder.sol';
 */
 contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Ownable {
   using Checkpoints for Checkpoints.History;
+
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
   error NOT_AVAILABLE();
   error OVERSPENDING();
+  error RESERVED_TOKEN_MINTING_PAUSED();
+  error TRANSFERS_PAUSED();
 
   mapping(address => mapping(uint256 => address)) private _tierDelegation;
   mapping(address => mapping(uint256 => Checkpoints.History)) private _delegateTierCheckpoints;
@@ -47,6 +53,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     The contract that stores and manages the NFT's data.
   */
   IJBTiered721DelegateStore public immutable override store;
+
+  /**
+    @notice
+    The contract storing all funding cycle configurations.
+  */
+  IJBFundingCycleStore public immutable override fundingCycleStore;
 
   /** 
     @notice
@@ -226,27 +238,28 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
+    @param _fundingCycleStore A contract storing all funding cycle configurations.
     @param _baseUri A URI to use as a base for full token URIs.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
     @param _tiers The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _store A contract that stores the NFT's data.
-    @param _lockReservedTokenChanges A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
-    @param _lockVotingUnitChanges A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+    @param _flags A set of flags that help define how this contract works.
   */
   constructor(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
+    IJBFundingCycleStore _fundingCycleStore,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
     JB721TierParams[] memory _tiers,
     IJBTiered721DelegateStore _store,
-    bool _lockReservedTokenChanges,
-    bool _lockVotingUnitChanges
+    JBTiered721Flags memory _flags
   ) JB721Delegate(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
+    fundingCycleStore = _fundingCycleStore;
     store = _store;
 
     // Store the base URI if provided.
@@ -263,10 +276,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_tiers.length > 0) _store.recordAddTiers(_tiers);
 
     // Set the locked reserved token change preference if needed.
-    if (_lockReservedTokenChanges) _store.recordLockReservedTokenChanges(_lockReservedTokenChanges);
+    if (_flags.lockReservedTokenChanges)
+      _store.recordLockReservedTokenChanges(_flags.lockReservedTokenChanges);
 
     // Set the locked voting unit change preference if needed.
-    if (_lockVotingUnitChanges) _store.recordLockVotingUnitChanges(_lockVotingUnitChanges);
+    if (_flags.lockVotingUnitChanges)
+      _store.recordLockVotingUnitChanges(_flags.lockVotingUnitChanges);
   }
 
   //*********************************************************************//
@@ -281,6 +296,16 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _count The number of reserved tokens to mint. 
   */
   function mintReservesFor(uint256 _tierId, uint256 _count) external override {
+    // Get a reference to the project's current funding cycle.
+    JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
+
+    // Minting reserves must not be paused.
+    if (
+      !JBTiered721FundingCycleMetadataResolver.mintingReservesPaused(
+        (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
+      )
+    ) revert RESERVED_TOKEN_MINTING_PAUSED();
+
     // Record the minted reserves for the tier.
     uint256[] memory _tokenIds = store.recordMintReservesFor(_tierId, _count);
 
@@ -639,6 +664,16 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     address _to,
     uint256 _tokenId
   ) internal virtual override {
+    // Get a reference to the project's current funding cycle.
+    JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
+
+    // Transfered must not be paused.
+    if (
+      !JBTiered721FundingCycleMetadataResolver.transfersPaused(
+        (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
+      )
+    ) revert TRANSFERS_PAUSED();
+
     // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
     if (_from != address(0) && store.firstOwnerOf(address(this), _tokenId) == address(0))
       store.recordSetFirstOwnerOf(_tokenId, _from);
