@@ -2331,6 +2331,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2376,6 +2377,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor + 10, 0, 0), // 10 above the floor
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2428,6 +2430,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           0,
           0
         ),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2476,6 +2479,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2547,6 +2551,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           0,
           0
         ),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2607,6 +2612,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           0,
           0
         ),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2664,6 +2670,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           0,
           0
         ),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2716,6 +2723,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           projectId,
           0,
           JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
+          JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
           0,
           msg.sender,
           false,
@@ -2757,6 +2765,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId,
         0,
         JBTokenAmount(address(0), 0, 0, 0),
+        JBTokenAmount(address(0), 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2792,6 +2801,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId,
         0,
         JBTokenAmount(token, 0, 0, 0),
+        JBTokenAmount(token, 0, 0, 0), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2879,8 +2889,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _weight += (i + 1) * 10;
     }
 
-    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _returnedDelegate) = _delegate
-      .redeemParams(
+    (
+      uint256 reclaimAmount,
+      string memory memo,
+      JBRedemptionDelegateAllocation[] memory _returnedDelegate
+    ) = _delegate.redeemParams(
         JBRedeemParamsData({
           terminal: IJBPaymentTerminal(address(0)),
           holder: beneficiary,
@@ -2892,7 +2905,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
-          ballotRedemptionRate: 0,
           memo: 'plz gib',
           metadata: abi.encode(_tokenList)
         })
@@ -2910,7 +2922,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     assertEq(reclaimAmount, _claimableOverflow);
     assertEq(memo, 'plz gib');
-    assertEq(address(_returnedDelegate), address(_delegate));
+    assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
   }
 
   function testJBTieredNFTRewardDelegate_redeemParams_returnsZeroAmountIfReservedRateIsZero()
@@ -2982,8 +2994,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _weight += (i + 1) * (i + 1) * 10;
     }
 
-    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _returnedDelegate) = _delegate
-      .redeemParams(
+    (
+      uint256 reclaimAmount,
+      string memory memo,
+      JBRedemptionDelegateAllocation[] memory _returnedDelegate
+    ) = _delegate.redeemParams(
         JBRedeemParamsData({
           terminal: IJBPaymentTerminal(address(0)),
           holder: beneficiary,
@@ -2995,7 +3010,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
-          ballotRedemptionRate: 0,
           memo: 'plz gib',
           metadata: abi.encode(_tokenList)
         })
@@ -3003,7 +3017,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     assertEq(reclaimAmount, 0);
     assertEq(memo, 'plz gib');
-    assertEq(address(_returnedDelegate), address(_delegate));
+    assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
   }
 
   function testJBTieredNFTRewardDelegate_redeemParams_returnsPartOfOverflowOwnedIfRedemptionRateIsMaximum()
@@ -3075,8 +3089,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _weight += (i + 1) * 10;
     }
 
-    (uint256 reclaimAmount, string memory memo, IJBRedemptionDelegate _returnedDelegate) = _delegate
-      .redeemParams(
+    (
+      uint256 reclaimAmount,
+      string memory memo,
+      JBRedemptionDelegateAllocation[] memory _returnedDelegate
+    ) = _delegate.redeemParams(
         JBRedeemParamsData({
           terminal: IJBPaymentTerminal(address(0)),
           holder: beneficiary,
@@ -3088,7 +3105,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
-          ballotRedemptionRate: 0,
           memo: 'plz gib',
           metadata: abi.encode(_tokenList)
         })
@@ -3099,7 +3115,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     assertEq(reclaimAmount, _base);
     assertEq(memo, 'plz gib');
-    assertEq(address(_returnedDelegate), address(_delegate));
+    assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
   }
 
   function testJBTieredNFTRewardDelegate_redeemParams_revertIfNonZeroTokenCount(uint256 _tokenCount)
@@ -3121,7 +3137,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
         useTotalOverflow: true,
         redemptionRate: 100,
-        ballotRedemptionRate: 0,
         memo: '',
         metadata: new bytes(0)
       })
@@ -3175,6 +3190,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           projectId,
           0,
           JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
+          JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
           0,
           _holder,
           false,
@@ -3197,6 +3213,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
         reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)
@@ -3236,6 +3253,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
         reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)
@@ -3271,6 +3289,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
         reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)
@@ -3324,6 +3343,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
         reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
         beneficiary: payable(_wrongHolder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)

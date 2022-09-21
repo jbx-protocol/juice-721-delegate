@@ -163,7 +163,7 @@ contract TestBaseWorkflow is Test {
         allowSetController: false,
         pauseTransfers: false
       }),
-      reservedRate: 5000,
+      reservedRate: 5000, //50%
       redemptionRate: 5000, //50%
       ballotRedemptionRate: 5000,
       pausePay: false,
@@ -171,14 +171,15 @@ contract TestBaseWorkflow is Test {
       pauseRedeem: false,
       pauseBurn: false,
       allowMinting: true,
-      allowChangeToken: true,
       allowTerminalMigration: false,
       allowControllerMigration: false,
       holdFees: false,
+      preferClaimedTokenOverride: false,
       useTotalOverflowForRedemptions: false,
       useDataSourceForPay: true,
       useDataSourceForRedeem: true,
-      dataSource: address(0)
+      dataSource: address(0),
+      metadata: 0x00
     });
 
     // ---- general setup ----
