@@ -14,6 +14,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   address owner = address(bytes20(keccak256('owner')));
   address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
   address mockJBDirectory = address(bytes20(keccak256('mockJBDirectory')));
+  address mockJBFundingCycleStore = address(bytes20(keccak256('mockJBFundingCycleStore')));
   address mockTokenUriResolver = address(bytes20(keccak256('mockTokenUriResolver')));
   address mockTerminalAddress = address(bytes20(keccak256('mockTerminalAddress')));
   address mockJBProjects = address(bytes20(keccak256('mockJBProjects')));
@@ -87,11 +88,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.label(owner, 'owner');
     vm.label(reserveBeneficiary, 'reserveBeneficiary');
     vm.label(mockJBDirectory, 'mockJBDirectory');
+    vm.label(mockJBFundingCycleStore, 'mockJBFundingCycleStore');
     vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
     vm.label(mockTerminalAddress, 'mockTerminalAddress');
     vm.label(mockJBProjects, 'mockJBProjects');
 
     vm.etch(mockJBDirectory, new bytes(0x69));
+    vm.etch(mockJBFundingCycleStore, new bytes(0x69));
     vm.etch(mockTokenUriResolver, new bytes(0x69));
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
@@ -117,13 +120,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       tiers,
       new JBTiered721DelegateStore(),
-      true,
-      true
+      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     );
 
     delegate.transferOwnership(owner);
@@ -166,13 +169,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     );
 
     _delegate.transferOwnership(owner);
@@ -236,13 +239,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -311,13 +314,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -390,13 +393,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -453,13 +456,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -507,13 +510,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -545,90 +548,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
   }
 
-  // function TOFIX_JBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_FuzzedreturnsOutstandingReserved(
-  //   uint16 initialQuantity,
-  //   uint16 totalMinted,
-  //   uint16 reservedMinted,
-  //   uint16 reservedRate
-  // ) public {
-  //   vm.assume(initialQuantity > totalMinted);
-  //   vm.assume(totalMinted > reservedMinted);
-  //   if (reservedRate != 0)
-  //     vm.assume(
-  //       uint256((totalMinted - reservedMinted) * reservedRate) / JBConstants.MAX_RESERVED_RATE >=
-  //         reservedMinted
-  //     );
-
-  //   JB721TierParams[] memory _tiers = new JB721TierParams[](10);
-
-  //   // Temp tiers, will get overwritten later
-  //   for (uint256 i; i < 10; i++) {
-  //     _tiers[i] = JB721TierParams({
-  //       contributionFloor: uint80((i + 1) * 10),
-  //       lockedUntil: uint48(0),
-  //       initialQuantity: uint40(100),
-  //       votingUnits: uint16(0),
-  //       reservedRate: uint16(0),
-  //       reservedTokenBeneficiary: reserveBeneficiary,
-  //       encodedIPFSUri: tokenUris[0],
-  //       shouldUseBeneficiaryAsDefault: false
-  //     });
-  //   }
-
-  //   ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-  //   ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-  //     projectId,
-  //     IJBDirectory(mockJBDirectory),
-  //     name,
-  //     symbol,
-  //     baseUri,
-  //     IJBTokenUriResolver(mockTokenUriResolver),
-  //     contractUri,
-  //     _tiers,
-  //     IJBTiered721DelegateStore(address(_ForTest_store)),
-  //     false,
-  //     false
-  //   );
-
-  //   _delegate.transferOwnership(owner);
-
-  //   for (uint256 i; i < 10; i++) {
-  //     _delegate.test_store().ForTest_setTier(
-  //       address(_delegate),
-  //       i + 1,
-  //       JBStored721Tier({
-  //         contributionFloor: uint80((i + 1) * 10),
-  //         lockedUntil: uint48(0),
-  //         remainingQuantity: uint40(initialQuantity - totalMinted),
-  //         initialQuantity: uint40(initialQuantity),
-  //         votingUnits: uint16(0),
-  //         reservedRate: uint16(reservedRate)
-  //       })
-  //     );
-  //     _delegate.test_store().ForTest_setReservesMintedFor(
-  //       address(_delegate),
-  //       i + 1,
-  //       reservedMinted
-  //     );
-  //   }
-
-  //   // No reserved token were available
-  //   if (reservedRate == 0 || initialQuantity == 0)
-  //     for (uint256 i; i < 10; i++)
-  //       assertEq(
-  //         _delegate.test_store().numberOfReservedTokensOutstandingFor(address(_delegate), i + 1),
-  //         0
-  //       );
-  //   else if (
-  //     reservedMinted != 0 && (totalMinted * reservedRate) / JBConstants.MAX_RESERVED_RATE > 0
-  //   )
-  //     for (uint256 i; i < 10; i++)
-  //       assertEq(
-  //         _delegate.test_store().numberOfReservedTokensOutstandingFor(address(_delegate), i + 1),
-  //         ((totalMinted - reservedMinted * reservedRate) / JBConstants.MAX_RESERVED_RATE)
-  //       );
-  // }
-
   function testJBTieredNFTRewardDelegate_getvotingUnits_returnsTheTotalVotingUnits(
     uint16 numberOfTiers,
     address holder
@@ -656,13 +575,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -718,13 +637,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -773,13 +692,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(address(0)),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -845,13 +764,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -897,13 +816,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -944,13 +863,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -979,13 +898,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -1015,13 +934,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -1074,13 +993,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       new JBTiered721DelegateStore(),
-      true,
-      true
+      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     );
 
     _delegate.transferOwnership(owner);
@@ -1139,13 +1058,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       _dataSourceStore,
-      true,
-      true
+      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     );
   }
 
@@ -1192,13 +1111,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -1323,13 +1242,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -1417,13 +1336,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -1563,13 +1482,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -1694,13 +1613,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -1842,13 +1761,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      true
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: true})
     );
 
     _delegate.transferOwnership(owner);
@@ -1936,13 +1855,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParam,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      true,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -2030,13 +1949,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -2119,13 +2038,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -2228,13 +2147,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -2851,13 +2770,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -2956,13 +2875,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -3051,13 +2970,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -3159,13 +3078,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -3311,13 +3230,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBDirectory(mockJBDirectory),
       name,
       symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      false,
-      false
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
 
     _delegate.transferOwnership(owner);
@@ -3546,29 +3465,29 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
+    IJBFundingCycleStore _fundingCycleStore,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
     JB721TierParams[] memory _tiers,
-    IJBTiered721DelegateStore _testStore,
-    bool _lockReservedTokenChanges,
-    bool _lockVotingUnitChanges
+    IJBTiered721DelegateStore _test_store,
+    JBTiered721Flags memory _flags
   )
     JBTiered721Delegate(
       _projectId,
       _directory,
       _name,
       _symbol,
+      _fundingCycleStore,
       _baseUri,
       _tokenUriResolver,
       _contractUri,
       _tiers,
-      _testStore,
-      _lockReservedTokenChanges,
-      _lockVotingUnitChanges
+      test_store,
+      _flags
     )
   {
-    test_store = IJBTiered721DelegateStore_ForTest(address(_testStore));
+    test_store = IJBTiered721DelegateStore_ForTest(address(_test_store));
   }
 
   function ForTest_setOwnerOf(uint256 tokenId, address _owner) public {

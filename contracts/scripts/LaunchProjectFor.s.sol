@@ -16,6 +16,7 @@ contract RinkebyLaunchProjectFor is Script {
     IJBTiered721DelegateProjectDeployer(PROJECT_DEPLOYER);
   IJBController jbController;
   IJBDirectory jbDirectory;
+  IJBFundingCycleStore jbFundingCycleStore;
   IJBPaymentTerminal[] _terminals;
   JBFundAccessConstraints[] _fundAccessConstraints;
 
@@ -32,6 +33,7 @@ contract RinkebyLaunchProjectFor is Script {
     _projectOwner = msg.sender; // Change me
     jbController = deployer.controller();
     jbDirectory = jbController.directory();
+    jbFundingCycleStore = jbController.fundingCycleStore();
     name = ''; // Change me
     symbol = '';
     baseUri = '';
@@ -147,6 +149,7 @@ contract RinkebyLaunchProjectFor is Script {
       directory: jbDirectory,
       name: name,
       symbol: symbol,
+      fundingCycleStore: jbFundingCycleStore,
       baseUri: baseUri,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
@@ -154,8 +157,7 @@ contract RinkebyLaunchProjectFor is Script {
       tiers: tiers,
       reservedTokenBeneficiary: msg.sender,
       store: IJBTiered721DelegateStore(STORE),
-      lockReservedTokenChanges: true,
-      lockVotingUnitChanges: true
+      flags: JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     });
 
     launchProjectData = JBLaunchProjectData({
