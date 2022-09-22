@@ -301,7 +301,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     // Minting reserves must not be paused.
     if (
-      !JBTiered721FundingCycleMetadataResolver.mintingReservesPaused(
+      JBTiered721FundingCycleMetadataResolver.mintingReservesPaused(
         (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
       )
     ) revert RESERVED_TOKEN_MINTING_PAUSED();
@@ -669,7 +669,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     // Transfered must not be paused.
     if (
-      !JBTiered721FundingCycleMetadataResolver.transfersPaused(
+      JBTiered721FundingCycleMetadataResolver.transfersPaused(
         (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
       )
     ) revert TRANSFERS_PAUSED();
