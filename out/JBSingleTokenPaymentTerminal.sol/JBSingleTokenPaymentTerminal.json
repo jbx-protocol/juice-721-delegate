@@ -249,93 +249,465 @@
     "supportsInterface(bytes4)": "01ffc9a7",
     "token()": "fc0c546a"
   },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"}],\"name\":\"acceptsToken\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"_memo\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"_metadata\",\"type\":\"bytes\"}],\"name\":\"addToBalanceOf\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"currency\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"}],\"name\":\"currencyForToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"}],\"name\":\"currentEthOverflowOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"}],\"name\":\"decimalsForToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"_token\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_beneficiary\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_minReturnedTokens\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_preferClaimedTokens\",\"type\":\"bool\"},{\"internalType\":\"string\",\"name\":\"_memo\",\"type\":\"string\"},{\"internalType\":\"bytes\",\"name\":\"_metadata\",\"type\":\"bytes\"}],\"name\":\"pay\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"beneficiaryTokenCount\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"_interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Adheres to - IJBSingleTokenPaymentTerminals: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.Inherits from - ERC165: Introspection on interface adherance. \",\"kind\":\"dev\",\"methods\":{\"acceptsToken(address,uint256)\":{\"params\":{\"_projectId\":\"The project ID to check for token acceptance.\",\"_token\":\"The token to check if this terminal accepts or not.\"},\"returns\":{\"_0\":\"The flag.\"}},\"constructor\":{\"params\":{\"_currency\":\"The currency that this terminal's token adheres to for price feeds.\",\"_decimals\":\"The number of decimals the token fixed point amounts are expected to have.\",\"_token\":\"The token that this terminal manages.\"}},\"currencyForToken(address)\":{\"params\":{\"_token\":\"The token to check for the currency of.\"},\"returns\":{\"_0\":\"The currency index.\"}},\"decimalsForToken(address)\":{\"params\":{\"_token\":\"The token to check for the decimals of.\"},\"returns\":{\"_0\":\"The number of decimals for the token.\"}},\"supportsInterface(bytes4)\":{\"details\":\" See {IERC165-supportsInterface}.\",\"params\":{\"_interfaceId\":\"The ID of the interface to check for adherance to.\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"acceptsToken(address,uint256)\":{\"notice\":\"A flag indicating if this terminal accepts the specified token.\"},\"currency()\":{\"notice\":\"The currency to use when resolving price feeds for this terminal.\"},\"currencyForToken(address)\":{\"notice\":\"The currency that should be used for the specified token.\"},\"decimals()\":{\"notice\":\"The number of decimals the token fixed point amounts are expected to have.\"},\"decimalsForToken(address)\":{\"notice\":\"The decimals that should be used in fixed number accounting for the specified token.\"},\"supportsInterface(bytes4)\":{\"notice\":\"Indicates if this contract adheres to the specified interface.\"},\"token()\":{\"notice\":\"The token that this terminal accepts.\"}},\"notice\":\"Generic terminal managing all inflows of funds into the protocol ecosystem for one token.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/abstract/JBSingleTokenPaymentTerminal.sol\":\"JBSingleTokenPaymentTerminal\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@jbx-protocol/=node_modules/@jbx-protocol/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@paulrberg/=node_modules/@paulrberg/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":prb-math/=node_modules/prb-math/\"]},\"sources\":{\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/abstract/JBSingleTokenPaymentTerminal.sol\":{\"keccak256\":\"0xdc82ad3e01b918d3d21ffea8c9f30950d81e225137c851599d028dcd22125f89\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://adfab423d72c9742feec01bca482cedc2648072a1fb49fad5d328890fdfeb119\",\"dweb:/ipfs/QmTrPfWjuBLjEojY2wKtUNrpY9gcw5fea2mK8JEE2MK1WP\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol\":{\"keccak256\":\"0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95\",\"dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSingleTokenPaymentTerminal.sol\":{\"keccak256\":\"0xf6e78323caa9af7bbf024f44b2032a83fed0394e0b3a242a6346e73c85b2e46f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63c9f3f0db323bd5492c76da3ae2bae7895e287a824729d125bfb650121d576c\",\"dweb:/ipfs/QmPWohiNJvv6JtH8yAtqomiwVheEvKXY4SfHjL98vd2mQY\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol\":{\"keccak256\":\"0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d\",\"dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.16+commit.07a7930e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_projectId",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "acceptsToken",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_projectId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "_memo",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_metadata",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "addToBalanceOf"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "currency",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "currencyForToken",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_projectId",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "currentEthOverflowOf",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "decimals",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "decimalsForToken",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_projectId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "_token",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "_beneficiary",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_minReturnedTokens",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "_preferClaimedTokens",
+              "type": "bool"
+            },
+            {
+              "internalType": "string",
+              "name": "_memo",
+              "type": "string"
+            },
+            {
+              "internalType": "bytes",
+              "name": "_metadata",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "pay",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "beneficiaryTokenCount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "_interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "token",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "acceptsToken(address,uint256)": {
+            "params": {
+              "_projectId": "The project ID to check for token acceptance.",
+              "_token": "The token to check if this terminal accepts or not."
+            },
+            "returns": {
+              "_0": "The flag."
+            }
+          },
+          "constructor": {
+            "params": {
+              "_currency": "The currency that this terminal's token adheres to for price feeds.",
+              "_decimals": "The number of decimals the token fixed point amounts are expected to have.",
+              "_token": "The token that this terminal manages."
+            }
+          },
+          "currencyForToken(address)": {
+            "params": {
+              "_token": "The token to check for the currency of."
+            },
+            "returns": {
+              "_0": "The currency index."
+            }
+          },
+          "decimalsForToken(address)": {
+            "params": {
+              "_token": "The token to check for the decimals of."
+            },
+            "returns": {
+              "_0": "The number of decimals for the token."
+            }
+          },
+          "supportsInterface(bytes4)": {
+            "details": " See {IERC165-supportsInterface}.",
+            "params": {
+              "_interfaceId": "The ID of the interface to check for adherance to."
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "acceptsToken(address,uint256)": {
+            "notice": "A flag indicating if this terminal accepts the specified token."
+          },
+          "currency()": {
+            "notice": "The currency to use when resolving price feeds for this terminal."
+          },
+          "currencyForToken(address)": {
+            "notice": "The currency that should be used for the specified token."
+          },
+          "decimals()": {
+            "notice": "The number of decimals the token fixed point amounts are expected to have."
+          },
+          "decimalsForToken(address)": {
+            "notice": "The decimals that should be used in fixed number accounting for the specified token."
+          },
+          "supportsInterface(bytes4)": {
+            "notice": "Indicates if this contract adheres to the specified interface."
+          },
+          "token()": {
+            "notice": "The token that this terminal accepts."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@jbx-protocol/=node_modules/@jbx-protocol/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":@paulrberg/=node_modules/@paulrberg/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":forge-std/=lib/forge-std/src/",
+        ":prb-math/=node_modules/prb-math/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "node_modules/@jbx-protocol/juice-contracts-v3/contracts/abstract/JBSingleTokenPaymentTerminal.sol": "JBSingleTokenPaymentTerminal"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/abstract/JBSingleTokenPaymentTerminal.sol": {
+        "keccak256": "0xdc82ad3e01b918d3d21ffea8c9f30950d81e225137c851599d028dcd22125f89",
+        "urls": [
+          "bzz-raw://adfab423d72c9742feec01bca482cedc2648072a1fb49fad5d328890fdfeb119",
+          "dweb:/ipfs/QmTrPfWjuBLjEojY2wKtUNrpY9gcw5fea2mK8JEE2MK1WP"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol": {
+        "keccak256": "0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2",
+        "urls": [
+          "bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95",
+          "dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSingleTokenPaymentTerminal.sol": {
+        "keccak256": "0xf6e78323caa9af7bbf024f44b2032a83fed0394e0b3a242a6346e73c85b2e46f",
+        "urls": [
+          "bzz-raw://63c9f3f0db323bd5492c76da3ae2bae7895e287a824729d125bfb650121d576c",
+          "dweb:/ipfs/QmPWohiNJvv6JtH8yAtqomiwVheEvKXY4SfHjL98vd2mQY"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol": {
+        "keccak256": "0xd10975de010d89fd1c78dc5e8a9a7e7f496198085c151648f20cba166b32582b",
+        "urls": [
+          "bzz-raw://fb0048dee081f6fffa5f74afc3fb328483c2a30504e94a0ddd2a5114d731ec4d",
+          "dweb:/ipfs/QmZptt1nmYoA5SgjwnSgWqgUSDgm4q52Yos3xhnMv3MV43"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+        "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+        "urls": [
+          "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+          "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
   "ast": {
-    "absolutePath": "node_modules/@jbx-protocol/contracts-v2/contracts/abstract/JBSingleTokenPaymentTerminal.sol",
-    "id": 54117,
+    "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/abstract/JBSingleTokenPaymentTerminal.sol",
+    "id": 54848,
     "exportedSymbols": {
       "ERC165": [
-        61404
+        63089
       ],
       "IERC165": [
-        61416
+        63101
       ],
       "IJBPaymentTerminal": [
-        55056
+        55769
       ],
       "IJBSingleTokenPaymentTerminal": [
-        55598
+        56315
       ],
       "JBSingleTokenPaymentTerminal": [
-        54116
+        54847
       ]
     },
     "nodeType": "SourceUnit",
-    "src": "32:4034:48",
+    "src": "32:4111:51",
     "nodes": [
       {
-        "id": 53996,
+        "id": 54727,
         "nodeType": "PragmaDirective",
-        "src": "32:22:48",
+        "src": "32:24:51",
         "literals": [
           "solidity",
+          "^",
           "0.8",
-          ".6"
+          ".16"
         ]
       },
       {
-        "id": 53997,
+        "id": 54728,
         "nodeType": "ImportDirective",
-        "src": "56:64:48",
+        "src": "58:64:51",
         "absolutePath": "node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol",
         "file": "@openzeppelin/contracts/utils/introspection/ERC165.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 54117,
-        "sourceUnit": 61405,
+        "scope": 54848,
+        "sourceUnit": 63090,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 53998,
+        "id": 54729,
         "nodeType": "ImportDirective",
-        "src": "121:59:48",
-        "absolutePath": "node_modules/@jbx-protocol/contracts-v2/contracts/interfaces/IJBSingleTokenPaymentTerminal.sol",
+        "src": "123:59:51",
+        "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSingleTokenPaymentTerminal.sol",
         "file": "./../interfaces/IJBSingleTokenPaymentTerminal.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 54117,
-        "sourceUnit": 55599,
+        "scope": 54848,
+        "sourceUnit": 56316,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 54116,
+        "id": 54847,
         "nodeType": "ContractDefinition",
-        "src": "476:3589:48",
+        "src": "553:3589:51",
         "nodes": [
           {
-            "id": 54007,
+            "id": 54738,
             "nodeType": "VariableDeclaration",
-            "src": "862:39:48",
+            "src": "939:39:51",
             "baseFunctions": [
-              55587
+              56304
             ],
             "constant": false,
             "documentation": {
-              "id": 54004,
+              "id": 54735,
               "nodeType": "StructuredDocumentation",
-              "src": "797:62:48",
+              "src": "874:62:51",
               "text": "@notice\nThe token that this terminal accepts."
             },
             "functionSelector": "fc0c546a",
             "mutability": "immutable",
             "name": "token",
-            "nameLocation": "896:5:48",
+            "nameLocation": "973:5:51",
             "overrides": {
-              "id": 54006,
+              "id": 54737,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "887:8:48"
+              "src": "964:8:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -343,10 +715,10 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 54005,
+              "id": 54736,
               "name": "address",
               "nodeType": "ElementaryTypeName",
-              "src": "862:7:48",
+              "src": "939:7:51",
               "stateMutability": "nonpayable",
               "typeDescriptions": {
                 "typeIdentifier": "t_address",
@@ -356,30 +728,30 @@
             "visibility": "public"
           },
           {
-            "id": 54011,
+            "id": 54742,
             "nodeType": "VariableDeclaration",
-            "src": "1008:42:48",
+            "src": "1085:42:51",
             "baseFunctions": [
-              55597
+              56314
             ],
             "constant": false,
             "documentation": {
-              "id": 54008,
+              "id": 54739,
               "nodeType": "StructuredDocumentation",
-              "src": "906:99:48",
+              "src": "983:99:51",
               "text": "@notice\nThe number of decimals the token fixed point amounts are expected to have."
             },
             "functionSelector": "313ce567",
             "mutability": "immutable",
             "name": "decimals",
-            "nameLocation": "1042:8:48",
+            "nameLocation": "1119:8:51",
             "overrides": {
-              "id": 54010,
+              "id": 54741,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "1033:8:48"
+              "src": "1110:8:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -387,10 +759,10 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 54009,
+              "id": 54740,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "1008:7:48",
+              "src": "1085:7:51",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -399,30 +771,30 @@
             "visibility": "public"
           },
           {
-            "id": 54015,
+            "id": 54746,
             "nodeType": "VariableDeclaration",
-            "src": "1148:42:48",
+            "src": "1225:42:51",
             "baseFunctions": [
-              55592
+              56309
             ],
             "constant": false,
             "documentation": {
-              "id": 54012,
+              "id": 54743,
               "nodeType": "StructuredDocumentation",
-              "src": "1055:90:48",
+              "src": "1132:90:51",
               "text": "@notice\nThe currency to use when resolving price feeds for this terminal."
             },
             "functionSelector": "e5a6b10f",
             "mutability": "immutable",
             "name": "currency",
-            "nameLocation": "1182:8:48",
+            "nameLocation": "1259:8:51",
             "overrides": {
-              "id": 54014,
+              "id": 54745,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "1173:8:48"
+              "src": "1250:8:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -430,10 +802,10 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 54013,
+              "id": 54744,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
-              "src": "1148:7:48",
+              "src": "1225:7:51",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint256",
                 "typeString": "uint256"
@@ -442,30 +814,30 @@
             "visibility": "public"
           },
           {
-            "id": 54033,
+            "id": 54764,
             "nodeType": "FunctionDefinition",
-            "src": "1678:202:48",
+            "src": "1755:202:51",
             "body": {
-              "id": 54032,
+              "id": 54763,
               "nodeType": "Block",
-              "src": "1774:106:48",
+              "src": "1851:106:51",
               "statements": [
                 {
                   "expression": {
-                    "id": 54026,
+                    "id": 54757,
                     "name": "_projectId",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 54020,
-                    "src": "1780:10:48",
+                    "referencedDeclaration": 54751,
+                    "src": "1857:10:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 54027,
+                  "id": 54758,
                   "nodeType": "ExpressionStatement",
-                  "src": "1780:10:48"
+                  "src": "1857:10:51"
                 },
                 {
                   "expression": {
@@ -473,18 +845,18 @@
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     },
-                    "id": 54030,
+                    "id": 54761,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 54028,
+                      "id": 54759,
                       "name": "_token",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54018,
-                      "src": "1860:6:48",
+                      "referencedDeclaration": 54749,
+                      "src": "1937:6:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
@@ -493,37 +865,37 @@
                     "nodeType": "BinaryOperation",
                     "operator": "==",
                     "rightExpression": {
-                      "id": 54029,
+                      "id": 54760,
                       "name": "token",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54007,
-                      "src": "1870:5:48",
+                      "referencedDeclaration": 54738,
+                      "src": "1947:5:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "src": "1860:15:48",
+                    "src": "1937:15:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 54025,
-                  "id": 54031,
+                  "functionReturnParameters": 54756,
+                  "id": 54762,
                   "nodeType": "Return",
-                  "src": "1853:22:48"
+                  "src": "1930:22:51"
                 }
               ]
             },
             "baseFunctions": [
-              55000
+              55713
             ],
             "documentation": {
-              "id": 54016,
+              "id": 54747,
               "nodeType": "StructuredDocumentation",
-              "src": "1424:251:48",
+              "src": "1501:251:51",
               "text": "@notice\nA flag indicating if this terminal accepts the specified token.\n@param _token The token to check if this terminal accepts or not.\n@param _projectId The project ID to check for token acceptance.\n@return The flag."
             },
             "functionSelector": "df21a7dd",
@@ -531,26 +903,26 @@
             "kind": "function",
             "modifiers": [],
             "name": "acceptsToken",
-            "nameLocation": "1687:12:48",
+            "nameLocation": "1764:12:51",
             "overrides": {
-              "id": 54022,
+              "id": 54753,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "1750:8:48"
+              "src": "1827:8:51"
             },
             "parameters": {
-              "id": 54021,
+              "id": 54752,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54018,
+                  "id": 54749,
                   "mutability": "mutable",
                   "name": "_token",
-                  "nameLocation": "1708:6:48",
+                  "nameLocation": "1785:6:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54033,
-                  "src": "1700:14:48",
+                  "scope": 54764,
+                  "src": "1777:14:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -558,10 +930,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 54017,
+                    "id": 54748,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1700:7:48",
+                    "src": "1777:7:51",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -572,13 +944,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 54020,
+                  "id": 54751,
                   "mutability": "mutable",
                   "name": "_projectId",
-                  "nameLocation": "1724:10:48",
+                  "nameLocation": "1801:10:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54033,
-                  "src": "1716:18:48",
+                  "scope": 54764,
+                  "src": "1793:18:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -586,10 +958,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 54019,
+                    "id": 54750,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1716:7:48",
+                    "src": "1793:7:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -598,21 +970,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1699:36:48"
+              "src": "1776:36:51"
             },
             "returnParameters": {
-              "id": 54025,
+              "id": 54756,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54024,
+                  "id": 54755,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54033,
-                  "src": "1768:4:48",
+                  "scope": 54764,
+                  "src": "1845:4:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -620,10 +992,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 54023,
+                    "id": 54754,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "1768:4:48",
+                    "src": "1845:4:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -632,66 +1004,66 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "1767:6:48"
+              "src": "1844:6:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 54047,
+            "id": 54778,
             "nodeType": "FunctionDefinition",
-            "src": "2107:178:48",
+            "src": "2184:178:51",
             "body": {
-              "id": 54046,
+              "id": 54777,
               "nodeType": "Block",
-              "src": "2190:95:48",
+              "src": "2267:95:51",
               "statements": [
                 {
                   "expression": {
-                    "id": 54042,
+                    "id": 54773,
                     "name": "_token",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 54036,
-                    "src": "2196:6:48",
+                    "referencedDeclaration": 54767,
+                    "src": "2273:6:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
-                  "id": 54043,
+                  "id": 54774,
                   "nodeType": "ExpressionStatement",
-                  "src": "2196:6:48"
+                  "src": "2273:6:51"
                 },
                 {
                   "expression": {
-                    "id": 54044,
+                    "id": 54775,
                     "name": "decimals",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 54011,
-                    "src": "2272:8:48",
+                    "referencedDeclaration": 54742,
+                    "src": "2349:8:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 54041,
-                  "id": 54045,
+                  "functionReturnParameters": 54772,
+                  "id": 54776,
                   "nodeType": "Return",
-                  "src": "2265:15:48"
+                  "src": "2342:15:51"
                 }
               ]
             },
             "baseFunctions": [
-              55014
+              55727
             ],
             "documentation": {
-              "id": 54034,
+              "id": 54765,
               "nodeType": "StructuredDocumentation",
-              "src": "1884:220:48",
+              "src": "1961:220:51",
               "text": "@notice\nThe decimals that should be used in fixed number accounting for the specified token.\n@param _token The token to check for the decimals of.\n@return The number of decimals for the token."
             },
             "functionSelector": "b7bad1b1",
@@ -699,26 +1071,26 @@
             "kind": "function",
             "modifiers": [],
             "name": "decimalsForToken",
-            "nameLocation": "2116:16:48",
+            "nameLocation": "2193:16:51",
             "overrides": {
-              "id": 54038,
+              "id": 54769,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "2163:8:48"
+              "src": "2240:8:51"
             },
             "parameters": {
-              "id": 54037,
+              "id": 54768,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54036,
+                  "id": 54767,
                   "mutability": "mutable",
                   "name": "_token",
-                  "nameLocation": "2141:6:48",
+                  "nameLocation": "2218:6:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54047,
-                  "src": "2133:14:48",
+                  "scope": 54778,
+                  "src": "2210:14:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -726,10 +1098,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 54035,
+                    "id": 54766,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2133:7:48",
+                    "src": "2210:7:51",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -739,21 +1111,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2132:16:48"
+              "src": "2209:16:51"
             },
             "returnParameters": {
-              "id": 54041,
+              "id": 54772,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54040,
+                  "id": 54771,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54047,
-                  "src": "2181:7:48",
+                  "scope": 54778,
+                  "src": "2258:7:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -761,10 +1133,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 54039,
+                    "id": 54770,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2181:7:48",
+                    "src": "2258:7:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -773,66 +1145,66 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2180:9:48"
+              "src": "2257:9:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 54061,
+            "id": 54792,
             "nodeType": "FunctionDefinition",
-            "src": "2467:178:48",
+            "src": "2544:178:51",
             "body": {
-              "id": 54060,
+              "id": 54791,
               "nodeType": "Block",
-              "src": "2550:95:48",
+              "src": "2627:95:51",
               "statements": [
                 {
                   "expression": {
-                    "id": 54056,
+                    "id": 54787,
                     "name": "_token",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 54050,
-                    "src": "2556:6:48",
+                    "referencedDeclaration": 54781,
+                    "src": "2633:6:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
-                  "id": 54057,
+                  "id": 54788,
                   "nodeType": "ExpressionStatement",
-                  "src": "2556:6:48"
+                  "src": "2633:6:51"
                 },
                 {
                   "expression": {
-                    "id": 54058,
+                    "id": 54789,
                     "name": "currency",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 54015,
-                    "src": "2632:8:48",
+                    "referencedDeclaration": 54746,
+                    "src": "2709:8:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 54055,
-                  "id": 54059,
+                  "functionReturnParameters": 54786,
+                  "id": 54790,
                   "nodeType": "Return",
-                  "src": "2625:15:48"
+                  "src": "2702:15:51"
                 }
               ]
             },
             "baseFunctions": [
-              55007
+              55720
             ],
             "documentation": {
-              "id": 54048,
+              "id": 54779,
               "nodeType": "StructuredDocumentation",
-              "src": "2289:175:48",
+              "src": "2366:175:51",
               "text": "@notice\nThe currency that should be used for the specified token.\n@param _token The token to check for the currency of.\n@return The currency index."
             },
             "functionSelector": "1982d679",
@@ -840,26 +1212,26 @@
             "kind": "function",
             "modifiers": [],
             "name": "currencyForToken",
-            "nameLocation": "2476:16:48",
+            "nameLocation": "2553:16:51",
             "overrides": {
-              "id": 54052,
+              "id": 54783,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
-              "src": "2523:8:48"
+              "src": "2600:8:51"
             },
             "parameters": {
-              "id": 54051,
+              "id": 54782,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54050,
+                  "id": 54781,
                   "mutability": "mutable",
                   "name": "_token",
-                  "nameLocation": "2501:6:48",
+                  "nameLocation": "2578:6:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54061,
-                  "src": "2493:14:48",
+                  "scope": 54792,
+                  "src": "2570:14:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -867,10 +1239,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 54049,
+                    "id": 54780,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2493:7:48",
+                    "src": "2570:7:51",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -880,21 +1252,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2492:16:48"
+              "src": "2569:16:51"
             },
             "returnParameters": {
-              "id": 54055,
+              "id": 54786,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54054,
+                  "id": 54785,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54061,
-                  "src": "2541:7:48",
+                  "scope": 54792,
+                  "src": "2618:7:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -902,10 +1274,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 54053,
+                    "id": 54784,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "2541:7:48",
+                    "src": "2618:7:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -914,21 +1286,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "2540:9:48"
+              "src": "2617:9:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 54092,
+            "id": 54823,
             "nodeType": "FunctionDefinition",
-            "src": "3092:327:48",
+            "src": "3169:327:51",
             "body": {
-              "id": 54091,
+              "id": 54822,
               "nodeType": "Block",
-              "src": "3223:196:48",
+              "src": "3300:196:51",
               "statements": [
                 {
                   "expression": {
@@ -936,7 +1308,7 @@
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     },
-                    "id": 54089,
+                    "id": 54820,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -946,7 +1318,7 @@
                         "typeIdentifier": "t_bool",
                         "typeString": "bool"
                       },
-                      "id": 54084,
+                      "id": 54815,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -956,18 +1328,18 @@
                           "typeIdentifier": "t_bytes4",
                           "typeString": "bytes4"
                         },
-                        "id": 54077,
+                        "id": 54808,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 54072,
+                          "id": 54803,
                           "name": "_interfaceId",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 54064,
-                          "src": "3242:12:48",
+                          "referencedDeclaration": 54795,
+                          "src": "3319:12:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes4",
                             "typeString": "bytes4"
@@ -979,14 +1351,14 @@
                           "expression": {
                             "arguments": [
                               {
-                                "id": 54074,
+                                "id": 54805,
                                 "name": "IJBPaymentTerminal",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 55056,
-                                "src": "3263:18:48",
+                                "referencedDeclaration": 55769,
+                                "src": "3340:18:51",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IJBPaymentTerminal_$55056_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IJBPaymentTerminal_$55769_$",
                                   "typeString": "type(contract IJBPaymentTerminal)"
                                 }
                               }
@@ -994,50 +1366,52 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_type$_t_contract$_IJBPaymentTerminal_$55056_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IJBPaymentTerminal_$55769_$",
                                   "typeString": "type(contract IJBPaymentTerminal)"
                                 }
                               ],
-                              "id": 54073,
+                              "id": 54804,
                               "name": "type",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": -27,
-                              "src": "3258:4:48",
+                              "src": "3335:4:51",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_metatype_pure$__$returns$__$",
                                 "typeString": "function () pure"
                               }
                             },
-                            "id": 54075,
+                            "id": 54806,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "functionCall",
                             "lValueRequested": false,
+                            "nameLocations": [],
                             "names": [],
                             "nodeType": "FunctionCall",
-                            "src": "3258:24:48",
+                            "src": "3335:24:51",
                             "tryCall": false,
                             "typeDescriptions": {
-                              "typeIdentifier": "t_magic_meta_type_t_contract$_IJBPaymentTerminal_$55056",
+                              "typeIdentifier": "t_magic_meta_type_t_contract$_IJBPaymentTerminal_$55769",
                               "typeString": "type(contract IJBPaymentTerminal)"
                             }
                           },
-                          "id": 54076,
+                          "id": 54807,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "lValueRequested": false,
+                          "memberLocation": "3360:11:51",
                           "memberName": "interfaceId",
                           "nodeType": "MemberAccess",
-                          "src": "3258:36:48",
+                          "src": "3335:36:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes4",
                             "typeString": "bytes4"
                           }
                         },
-                        "src": "3242:52:48",
+                        "src": "3319:52:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1050,18 +1424,18 @@
                           "typeIdentifier": "t_bytes4",
                           "typeString": "bytes4"
                         },
-                        "id": 54083,
+                        "id": 54814,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 54078,
+                          "id": 54809,
                           "name": "_interfaceId",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 54064,
-                          "src": "3304:12:48",
+                          "referencedDeclaration": 54795,
+                          "src": "3381:12:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes4",
                             "typeString": "bytes4"
@@ -1073,14 +1447,14 @@
                           "expression": {
                             "arguments": [
                               {
-                                "id": 54080,
+                                "id": 54811,
                                 "name": "IJBSingleTokenPaymentTerminal",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 55598,
-                                "src": "3325:29:48",
+                                "referencedDeclaration": 56315,
+                                "src": "3402:29:51",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IJBSingleTokenPaymentTerminal_$55598_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IJBSingleTokenPaymentTerminal_$56315_$",
                                   "typeString": "type(contract IJBSingleTokenPaymentTerminal)"
                                 }
                               }
@@ -1088,56 +1462,58 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_type$_t_contract$_IJBSingleTokenPaymentTerminal_$55598_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IJBSingleTokenPaymentTerminal_$56315_$",
                                   "typeString": "type(contract IJBSingleTokenPaymentTerminal)"
                                 }
                               ],
-                              "id": 54079,
+                              "id": 54810,
                               "name": "type",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": -27,
-                              "src": "3320:4:48",
+                              "src": "3397:4:51",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_metatype_pure$__$returns$__$",
                                 "typeString": "function () pure"
                               }
                             },
-                            "id": 54081,
+                            "id": 54812,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "kind": "functionCall",
                             "lValueRequested": false,
+                            "nameLocations": [],
                             "names": [],
                             "nodeType": "FunctionCall",
-                            "src": "3320:35:48",
+                            "src": "3397:35:51",
                             "tryCall": false,
                             "typeDescriptions": {
-                              "typeIdentifier": "t_magic_meta_type_t_contract$_IJBSingleTokenPaymentTerminal_$55598",
+                              "typeIdentifier": "t_magic_meta_type_t_contract$_IJBSingleTokenPaymentTerminal_$56315",
                               "typeString": "type(contract IJBSingleTokenPaymentTerminal)"
                             }
                           },
-                          "id": 54082,
+                          "id": 54813,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
                           "lValueRequested": false,
+                          "memberLocation": "3433:11:51",
                           "memberName": "interfaceId",
                           "nodeType": "MemberAccess",
-                          "src": "3320:47:48",
+                          "src": "3397:47:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes4",
                             "typeString": "bytes4"
                           }
                         },
-                        "src": "3304:63:48",
+                        "src": "3381:63:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
                         }
                       },
-                      "src": "3242:125:48",
+                      "src": "3319:125:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
                         "typeString": "bool"
@@ -1148,12 +1524,12 @@
                     "rightExpression": {
                       "arguments": [
                         {
-                          "id": 54087,
+                          "id": 54818,
                           "name": "_interfaceId",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 54064,
-                          "src": "3401:12:48",
+                          "referencedDeclaration": 54795,
+                          "src": "3478:12:51",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bytes4",
                             "typeString": "bytes4"
@@ -1168,67 +1544,69 @@
                           }
                         ],
                         "expression": {
-                          "id": 54085,
+                          "id": 54816,
                           "name": "super",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": -25,
-                          "src": "3377:5:48",
+                          "src": "3454:5:51",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_super$_JBSingleTokenPaymentTerminal_$54116_$",
+                            "typeIdentifier": "t_type$_t_super$_JBSingleTokenPaymentTerminal_$54847_$",
                             "typeString": "type(contract super JBSingleTokenPaymentTerminal)"
                           }
                         },
-                        "id": 54086,
+                        "id": 54817,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
+                        "memberLocation": "3460:17:51",
                         "memberName": "supportsInterface",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 61403,
-                        "src": "3377:23:48",
+                        "referencedDeclaration": 63088,
+                        "src": "3454:23:51",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_view$_t_bytes4_$returns$_t_bool_$",
                           "typeString": "function (bytes4) view returns (bool)"
                         }
                       },
-                      "id": 54088,
+                      "id": 54819,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "kind": "functionCall",
                       "lValueRequested": false,
+                      "nameLocations": [],
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "3377:37:48",
+                      "src": "3454:37:51",
                       "tryCall": false,
                       "typeDescriptions": {
                         "typeIdentifier": "t_bool",
                         "typeString": "bool"
                       }
                     },
-                    "src": "3242:172:48",
+                    "src": "3319:172:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 54071,
-                  "id": 54090,
+                  "functionReturnParameters": 54802,
+                  "id": 54821,
                   "nodeType": "Return",
-                  "src": "3229:185:48"
+                  "src": "3306:185:51"
                 }
               ]
             },
             "baseFunctions": [
-              61403,
-              61415
+              63088,
+              63100
             ],
             "documentation": {
-              "id": 54062,
+              "id": 54793,
               "nodeType": "StructuredDocumentation",
-              "src": "2878:211:48",
+              "src": "2955:211:51",
               "text": "@notice\nIndicates if this contract adheres to the specified interface.\n@dev \nSee {IERC165-supportsInterface}.\n@param _interfaceId The ID of the interface to check for adherance to."
             },
             "functionSelector": "01ffc9a7",
@@ -1236,41 +1614,47 @@
             "kind": "function",
             "modifiers": [],
             "name": "supportsInterface",
-            "nameLocation": "3101:17:48",
+            "nameLocation": "3178:17:51",
             "overrides": {
-              "id": 54068,
+              "id": 54799,
               "nodeType": "OverrideSpecifier",
               "overrides": [
                 {
-                  "id": 54066,
+                  "id": 54797,
                   "name": "ERC165",
+                  "nameLocations": [
+                    "3262:6:51"
+                  ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 61404,
-                  "src": "3185:6:48"
+                  "referencedDeclaration": 63089,
+                  "src": "3262:6:51"
                 },
                 {
-                  "id": 54067,
+                  "id": 54798,
                   "name": "IERC165",
+                  "nameLocations": [
+                    "3270:7:51"
+                  ],
                   "nodeType": "IdentifierPath",
-                  "referencedDeclaration": 61416,
-                  "src": "3193:7:48"
+                  "referencedDeclaration": 63101,
+                  "src": "3270:7:51"
                 }
               ],
-              "src": "3176:25:48"
+              "src": "3253:25:51"
             },
             "parameters": {
-              "id": 54065,
+              "id": 54796,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54064,
+                  "id": 54795,
                   "mutability": "mutable",
                   "name": "_interfaceId",
-                  "nameLocation": "3126:12:48",
+                  "nameLocation": "3203:12:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54092,
-                  "src": "3119:19:48",
+                  "scope": 54823,
+                  "src": "3196:19:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1278,10 +1662,10 @@
                     "typeString": "bytes4"
                   },
                   "typeName": {
-                    "id": 54063,
+                    "id": 54794,
                     "name": "bytes4",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3119:6:48",
+                    "src": "3196:6:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes4",
                       "typeString": "bytes4"
@@ -1290,21 +1674,21 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3118:21:48"
+              "src": "3195:21:51"
             },
             "returnParameters": {
-              "id": 54071,
+              "id": 54802,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54070,
+                  "id": 54801,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54092,
-                  "src": "3215:4:48",
+                  "scope": 54823,
+                  "src": "3292:4:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1312,10 +1696,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 54069,
+                    "id": 54800,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3215:4:48",
+                    "src": "3292:4:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -1324,36 +1708,36 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3214:6:48"
+              "src": "3291:6:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateMutability": "view",
             "virtual": true,
             "visibility": "public"
           },
           {
-            "id": 54115,
+            "id": 54846,
             "nodeType": "FunctionDefinition",
-            "src": "3904:159:48",
+            "src": "3981:159:51",
             "body": {
-              "id": 54114,
+              "id": 54845,
               "nodeType": "Block",
-              "src": "3986:77:48",
+              "src": "4063:77:51",
               "statements": [
                 {
                   "expression": {
-                    "id": 54104,
+                    "id": 54835,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 54102,
+                      "id": 54833,
                       "name": "token",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54007,
-                      "src": "3992:5:48",
+                      "referencedDeclaration": 54738,
+                      "src": "4069:5:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
@@ -1362,41 +1746,41 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 54103,
+                      "id": 54834,
                       "name": "_token",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54095,
-                      "src": "4000:6:48",
+                      "referencedDeclaration": 54826,
+                      "src": "4077:6:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_address",
                         "typeString": "address"
                       }
                     },
-                    "src": "3992:14:48",
+                    "src": "4069:14:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
                     }
                   },
-                  "id": 54105,
+                  "id": 54836,
                   "nodeType": "ExpressionStatement",
-                  "src": "3992:14:48"
+                  "src": "4069:14:51"
                 },
                 {
                   "expression": {
-                    "id": 54108,
+                    "id": 54839,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 54106,
+                      "id": 54837,
                       "name": "decimals",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54011,
-                      "src": "4012:8:48",
+                      "referencedDeclaration": 54742,
+                      "src": "4089:8:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1405,41 +1789,41 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 54107,
+                      "id": 54838,
                       "name": "_decimals",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54097,
-                      "src": "4023:9:48",
+                      "referencedDeclaration": 54828,
+                      "src": "4100:9:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "4012:20:48",
+                    "src": "4089:20:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 54109,
+                  "id": 54840,
                   "nodeType": "ExpressionStatement",
-                  "src": "4012:20:48"
+                  "src": "4089:20:51"
                 },
                 {
                   "expression": {
-                    "id": 54112,
+                    "id": 54843,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
-                      "id": 54110,
+                      "id": 54841,
                       "name": "currency",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54015,
-                      "src": "4038:8:48",
+                      "referencedDeclaration": 54746,
+                      "src": "4115:8:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -1448,33 +1832,33 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 54111,
+                      "id": 54842,
                       "name": "_currency",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 54099,
-                      "src": "4049:9:48",
+                      "referencedDeclaration": 54830,
+                      "src": "4126:9:51",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "4038:20:48",
+                    "src": "4115:20:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "id": 54113,
+                  "id": 54844,
                   "nodeType": "ExpressionStatement",
-                  "src": "4038:20:48"
+                  "src": "4115:20:51"
                 }
               ]
             },
             "documentation": {
-              "id": 54093,
+              "id": 54824,
               "nodeType": "StructuredDocumentation",
-              "src": "3652:249:48",
+              "src": "3729:249:51",
               "text": "@param _token The token that this terminal manages.\n@param _decimals The number of decimals the token fixed point amounts are expected to have.\n@param _currency The currency that this terminal's token adheres to for price feeds."
             },
             "implemented": true,
@@ -1483,18 +1867,18 @@
             "name": "",
             "nameLocation": "-1:-1:-1",
             "parameters": {
-              "id": 54100,
+              "id": 54831,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 54095,
+                  "id": 54826,
                   "mutability": "mutable",
                   "name": "_token",
-                  "nameLocation": "3929:6:48",
+                  "nameLocation": "4006:6:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54115,
-                  "src": "3921:14:48",
+                  "scope": 54846,
+                  "src": "3998:14:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1502,10 +1886,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 54094,
+                    "id": 54825,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3921:7:48",
+                    "src": "3998:7:51",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -1516,13 +1900,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 54097,
+                  "id": 54828,
                   "mutability": "mutable",
                   "name": "_decimals",
-                  "nameLocation": "3949:9:48",
+                  "nameLocation": "4026:9:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54115,
-                  "src": "3941:17:48",
+                  "scope": 54846,
+                  "src": "4018:17:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1530,10 +1914,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 54096,
+                    "id": 54827,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3941:7:48",
+                    "src": "4018:7:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1543,13 +1927,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 54099,
+                  "id": 54830,
                   "mutability": "mutable",
                   "name": "_currency",
-                  "nameLocation": "3972:9:48",
+                  "nameLocation": "4049:9:51",
                   "nodeType": "VariableDeclaration",
-                  "scope": 54115,
-                  "src": "3964:17:48",
+                  "scope": 54846,
+                  "src": "4041:17:51",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1557,10 +1941,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 54098,
+                    "id": 54829,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "3964:7:48",
+                    "src": "4041:7:51",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1569,15 +1953,15 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "3915:70:48"
+              "src": "3992:70:51"
             },
             "returnParameters": {
-              "id": 54101,
+              "id": 54832,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "3986:0:48"
+              "src": "4063:0:51"
             },
-            "scope": 54116,
+            "scope": 54847,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "internal"
@@ -1587,52 +1971,59 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 54000,
-              "name": "IJBSingleTokenPaymentTerminal",
+              "id": 54731,
+              "name": "ERC165",
+              "nameLocations": [
+                "603:6:51"
+              ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 55598,
-              "src": "526:29:48"
+              "referencedDeclaration": 63089,
+              "src": "603:6:51"
             },
-            "id": 54001,
+            "id": 54732,
             "nodeType": "InheritanceSpecifier",
-            "src": "526:29:48"
+            "src": "603:6:51"
           },
           {
             "baseName": {
-              "id": 54002,
-              "name": "ERC165",
+              "id": 54733,
+              "name": "IJBSingleTokenPaymentTerminal",
+              "nameLocations": [
+                "611:29:51"
+              ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 61404,
-              "src": "557:6:48"
+              "referencedDeclaration": 56315,
+              "src": "611:29:51"
             },
-            "id": 54003,
+            "id": 54734,
             "nodeType": "InheritanceSpecifier",
-            "src": "557:6:48"
+            "src": "611:29:51"
           }
         ],
+        "canonicalName": "JBSingleTokenPaymentTerminal",
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 53999,
+          "id": 54730,
           "nodeType": "StructuredDocumentation",
-          "src": "182:293:48",
-          "text": "@notice\nGeneric terminal managing all inflows of funds into the protocol ecosystem for one token.\n@dev\nAdheres to -\nIJBSingleTokenPaymentTerminals: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules."
+          "src": "184:368:51",
+          "text": "@notice\nGeneric terminal managing all inflows of funds into the protocol ecosystem for one token.\n@dev\nAdheres to -\nIJBSingleTokenPaymentTerminals: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.\n@dev\nInherits from -\nERC165: Introspection on interface adherance. "
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          54116,
-          61404,
-          55598,
-          55056,
-          61416
+          54847,
+          56315,
+          55769,
+          63089,
+          63101
         ],
         "name": "JBSingleTokenPaymentTerminal",
-        "nameLocation": "494:28:48",
-        "scope": 54117,
+        "nameLocation": "571:28:51",
+        "scope": 54848,
         "usedErrors": []
       }
     ],
     "license": "MIT"
   },
-  "id": 48
+  "id": 51
 }
