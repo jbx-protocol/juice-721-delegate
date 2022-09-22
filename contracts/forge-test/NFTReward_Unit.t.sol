@@ -3010,6 +3010,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
 
     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+
     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -3528,7 +3529,7 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
       _tokenUriResolver,
       _contractUri,
       _tiers,
-      test_store,
+      _test_store,
       _flags
     )
   {
