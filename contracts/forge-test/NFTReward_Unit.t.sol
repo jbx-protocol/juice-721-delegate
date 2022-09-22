@@ -6,6 +6,8 @@ import '../interfaces/IJBTiered721Delegate.sol';
 import './utils/AccessJBLib.sol';
 import 'forge-std/Test.sol';
 
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
+
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
   AccessJBLib internal _accessJBLib;
@@ -114,6 +116,49 @@ contract TestJBTieredNFTRewardDelegate is Test {
         })
       );
     }
+
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 0x00
+            })
+          )
+        })
+      )
+    );
 
     delegate = new JBTiered721Delegate(
       projectId,
