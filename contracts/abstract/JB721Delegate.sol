@@ -87,6 +87,7 @@ abstract contract JB721Delegate is
     // Forward the recieved weight and memo, and use this contract as a pay delegate.
     weight = _data.weight;
     memo = _data.memo;
+    delegateAllocations = new JBPayDelegateAllocation[](1);
     delegateAllocations[0] = JBPayDelegateAllocation(this, 0);
   }
 
@@ -111,6 +112,7 @@ abstract contract JB721Delegate is
     )
   {
     // Set the only delegate allocation to be a callback to this contract.
+    delegateAllocations = new JBRedemptionDelegateAllocation[](1);
     delegateAllocations[0] = JBRedemptionDelegateAllocation(this, 0);
 
     // Make sure fungible project tokens aren't being redeemed too.
