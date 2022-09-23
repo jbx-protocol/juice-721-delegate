@@ -53,6 +53,8 @@ interface IJBTiered721DelegateStore {
 
   function numberOfReservesMintedFor(address _nft, uint256 _tierId) external view returns (uint256);
 
+  function numberOfBurnedFor(address _nft, uint256 _tierId) external view returns (uint256);
+
   function isTierRemoved(address _nft, uint256 _tierId) external view returns (bool);
 
   function lockVotingUnitChangesFor(address _nft) external view returns (bool);
@@ -97,6 +99,8 @@ interface IJBTiered721DelegateStore {
       uint256 tierId,
       uint256 leftoverAmount
     );
+
+  function recordBurn(uint256[] memory _tokenIds) external;
 
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;
 

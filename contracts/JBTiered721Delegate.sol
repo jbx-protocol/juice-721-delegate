@@ -518,6 +518,17 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /** 
     @notice
+    A function that will run when a tokens are burned via redemption.
+
+    @param _tokenIds The IDs of the tokens that were burned.
+  */
+  function _didBurn(uint256[] memory _tokenIds) internal override {
+    // Add to burned counter.
+    store.recordBurn(_tokenIds);
+  }
+
+  /** 
+    @notice
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.

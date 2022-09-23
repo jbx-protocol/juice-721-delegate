@@ -268,6 +268,9 @@ abstract contract JB721Delegate is
         ++_i;
       }
     }
+
+    // Call the hook.
+    _didBurn(_decodedTokenIds);
   }
 
   //*********************************************************************//
@@ -282,6 +285,16 @@ abstract contract JB721Delegate is
   */
   function _processPayment(JBDidPayData calldata _data) internal virtual {
     _data; // Prevents unused var compiler and natspec complaints.
+  }
+
+  /** 
+    @notice
+    A function that will run when a tokens are burned via redemption.
+
+    @param _tokenIds The IDs of the tokens that were burned.
+  */
+  function _didBurn(uint256[] memory _tokenIds) internal virtual {
+    _tokenIds;
   }
 
   /** 

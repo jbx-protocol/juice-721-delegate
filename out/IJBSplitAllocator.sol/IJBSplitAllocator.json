@@ -309,26 +309,26 @@
   },
   "ast": {
     "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitAllocator.sol",
-    "id": 56537,
+    "id": 56641,
     "exportedSymbols": {
       "IERC165": [
-        63101
+        63205
       ],
       "IJBSplitAllocator": [
-        56536
+        56640
       ],
       "JBSplit": [
-        58047
+        58151
       ],
       "JBSplitAllocationData": [
-        58064
+        58168
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:1131:75",
     "nodes": [
       {
-        "id": 56523,
+        "id": 56627,
         "nodeType": "PragmaDirective",
         "src": "32:23:75",
         "literals": [
@@ -339,40 +339,40 @@
         ]
       },
       {
-        "id": 56524,
+        "id": 56628,
         "nodeType": "ImportDirective",
         "src": "57:65:75",
         "absolutePath": "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol",
         "file": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 56537,
-        "sourceUnit": 63102,
+        "scope": 56641,
+        "sourceUnit": 63206,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 56525,
+        "id": 56629,
         "nodeType": "ImportDirective",
         "src": "123:46:75",
         "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol",
         "file": "../structs/JBSplitAllocationData.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 56537,
-        "sourceUnit": 58065,
+        "scope": 56641,
+        "sourceUnit": 58169,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 56536,
+        "id": 56640,
         "nodeType": "ContractDefinition",
         "src": "425:737:75",
         "nodes": [
           {
-            "id": 56535,
+            "id": 56639,
             "nodeType": "FunctionDefinition",
             "src": "1087:73:75",
             "documentation": {
-              "id": 56529,
+              "id": 56633,
               "nodeType": "StructuredDocumentation",
               "src": "468:616:75",
               "text": "@notice\nThis function is called by JBPaymentTerminal.distributePayoutOf(..), during the processing of the split including it\n@dev\nCritical business logic should be protected by an appropriate access control. The token and/or eth are optimistically transfered\nto the allocator for its logic.\n@param _data the data passed by the terminal, as a JBSplitAllocationData struct:\naddress token;\nuint256 amount;\nuint256 decimals;\nuint256 projectId;\nuint256 group;\nJBSplit split;"
@@ -384,41 +384,41 @@
             "name": "allocate",
             "nameLocation": "1096:8:75",
             "parameters": {
-              "id": 56533,
+              "id": 56637,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 56532,
+                  "id": 56636,
                   "mutability": "mutable",
                   "name": "_data",
                   "nameLocation": "1136:5:75",
                   "nodeType": "VariableDeclaration",
-                  "scope": 56535,
+                  "scope": 56639,
                   "src": "1105:36:75",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBSplitAllocationData_$58064_calldata_ptr",
+                    "typeIdentifier": "t_struct$_JBSplitAllocationData_$58168_calldata_ptr",
                     "typeString": "struct JBSplitAllocationData"
                   },
                   "typeName": {
-                    "id": 56531,
+                    "id": 56635,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 56530,
+                      "id": 56634,
                       "name": "JBSplitAllocationData",
                       "nameLocations": [
                         "1105:21:75"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 58064,
+                      "referencedDeclaration": 58168,
                       "src": "1105:21:75"
                     },
-                    "referencedDeclaration": 58064,
+                    "referencedDeclaration": 58168,
                     "src": "1105:21:75",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBSplitAllocationData_$58064_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBSplitAllocationData_$58168_storage_ptr",
                       "typeString": "struct JBSplitAllocationData"
                     }
                   },
@@ -428,12 +428,12 @@
               "src": "1104:38:75"
             },
             "returnParameters": {
-              "id": 56534,
+              "id": 56638,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1159:0:75"
             },
-            "scope": 56536,
+            "scope": 56640,
             "stateMutability": "payable",
             "virtual": false,
             "visibility": "external"
@@ -443,16 +443,16 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 56527,
+              "id": 56631,
               "name": "IERC165",
               "nameLocations": [
                 "456:7:75"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 63101,
+              "referencedDeclaration": 63205,
               "src": "456:7:75"
             },
-            "id": 56528,
+            "id": 56632,
             "nodeType": "InheritanceSpecifier",
             "src": "456:7:75"
           }
@@ -461,19 +461,19 @@
         "contractDependencies": [],
         "contractKind": "interface",
         "documentation": {
-          "id": 56526,
+          "id": 56630,
           "nodeType": "StructuredDocumentation",
           "src": "171:253:75",
           "text": "@title\nSplit allocator\n@notice\nProvide a way to process a single split with extra logic\n@dev\nAdheres to:\nIERC165 for adequate interface integration\n@dev\nThe contract address should be set as an allocator in the adequate split"
         },
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          56536,
-          63101
+          56640,
+          63205
         ],
         "name": "IJBSplitAllocator",
         "nameLocation": "435:17:75",
-        "scope": 56537,
+        "scope": 56641,
         "usedErrors": []
       }
     ],

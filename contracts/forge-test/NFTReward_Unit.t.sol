@@ -3187,6 +3187,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Balance should be 0 again
     assertEq(_delegate.balanceOf(_holder), 0);
+
+    // Burn should be counted (_numberOfNft in first tier)
+    for (uint256 i; i < _numberOfNFT; i++)
+      assertEq(_ForTest_store.numberOfBurnedFor(address(_delegate), 1), _numberOfNFT);
   }
 
   function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT_coverage() public {
