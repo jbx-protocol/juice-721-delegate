@@ -97,6 +97,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
    */
   mapping(address => mapping(uint256 => uint256)) public override numberOfReservesMintedFor;
 
+  /**
+    @notice 
+    The number of tokens that have been burned for each tier. 
+
+    _nft The NFT contract to which the burned data belong.
+    _tierId The ID of the tier to get a burned token count for.
+   */
+  mapping(address => mapping(uint256 => uint256)) public override numberOfBurnedFor;
+
   /** 
     @notice
     For each tier ID, a flag indicating if the tier has been removed. 
@@ -959,6 +968,33 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
+    Records burned tokens.
+
+    @param _tokenIds The IDs of the tokens burned.
+  */
+  function recordBurn(uint256[] memory _tokenIds) external override {
+    // Get a reference to the number of token IDs provided.
+    uint256 _numberOfTokenIds = _tokenIds.length;
+
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
+
+    // Iterate through all tokens to increment the burn count.
+    for (uint256 _i; _i < _numberOfTokenIds; ) {
+      // Set the token's ID.
+      _tokenId = _tokenIds[_i];
+
+      // Increment the number burned for the tier.
+      numberOfBurnedFor[msg.sender][tierIdOfToken(_tokenId)]++;
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /** 
+    @notice
     Sets the first owner of a token.
 
     @param _tokenId The ID of the token having the first owner set.
@@ -1076,20 +1112,20 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Invalid tier or no reserved rate?
     if (_storedTier.initialQuantity == 0 || _storedTier.reservedRate == 0) return 0;
 
-    // No token minted yet? Round up to 1
+    // No token minted yet? Round up to 1.
     if (_storedTier.initialQuantity == _storedTier.remainingQuantity) return 1;
 
-    // The number of reserved token of the tier already minted
-    uint256 reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
+    // The number of reserved tokens of the tier already minted.
+    uint256 _reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
 
-    // If only the reserved token (from the rounding up) has been minted so far, return 0
-    if (_storedTier.initialQuantity - reserveTokensMinted == _storedTier.remainingQuantity)
+    // If only the reserved token (from the rounding up) has been minted so far, return 0.
+    if (_storedTier.initialQuantity - _reserveTokensMinted == _storedTier.remainingQuantity)
       return 0;
 
-    // Get a reference to the number of tokens already minted in the tier, not counting reserves.
+    // Get a reference to the number of tokens already minted in the tier, not counting reserves or burned tokens.
     uint256 _numberOfNonReservesMinted = _storedTier.initialQuantity -
-      _storedTier.remainingQuantity -
-      reserveTokensMinted;
+      (_storedTier.remainingQuantity + numberOfBurnedFor[_nft][_tierId]) -
+      _reserveTokensMinted;
 
     // Store the numerator common to the next two calculations.
     uint256 _numerator = uint256(_numberOfNonReservesMinted * _storedTier.reservedRate);
@@ -1102,7 +1138,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       ++_numberReservedTokensMintable;
 
     // Return the difference between the amount mintable and the amount already minted.
-    return _numberReservedTokensMintable - reserveTokensMinted;
+    return _numberReservedTokensMintable - _reserveTokensMinted;
   }
 
   /** 

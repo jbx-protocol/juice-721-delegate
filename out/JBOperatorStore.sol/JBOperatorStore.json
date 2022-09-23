@@ -217,342 +217,25 @@
     "setOperator((address,uint256,uint256[]))": "529cdd2e",
     "setOperators((address,uint256,uint256[])[])": "8d5f697f"
   },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.16+commit.07a7930e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"PERMISSION_INDEX_OUT_OF_BOUNDS\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"domain\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256[]\",\"name\":\"permissionIndexes\",\"type\":\"uint256[]\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"packed\",\"type\":\"uint256\"}],\"name\":\"SetOperator\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_operator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_domain\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_permissionIndex\",\"type\":\"uint256\"}],\"name\":\"hasPermission\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_operator\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_account\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_domain\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"_permissionIndexes\",\"type\":\"uint256[]\"}],\"name\":\"hasPermissions\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"permissionsOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"domain\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"permissionIndexes\",\"type\":\"uint256[]\"}],\"internalType\":\"struct JBOperatorData\",\"name\":\"_operatorData\",\"type\":\"tuple\"}],\"name\":\"setOperator\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"operator\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"domain\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"permissionIndexes\",\"type\":\"uint256[]\"}],\"internalType\":\"struct JBOperatorData[]\",\"name\":\"_operatorData\",\"type\":\"tuple[]\"}],\"name\":\"setOperators\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Adheres to - IJBOperatorStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.\",\"kind\":\"dev\",\"methods\":{\"hasPermission(address,address,uint256,uint256)\":{\"params\":{\"_account\":\"The account that has given out permissions to the operator.\",\"_domain\":\"The domain that the operator has been given permissions to operate.\",\"_operator\":\"The operator to check.\",\"_permissionIndex\":\"The permission index to check for.\"},\"returns\":{\"_0\":\"A flag indicating whether the operator has the specified permission.\"}},\"hasPermissions(address,address,uint256,uint256[])\":{\"params\":{\"_account\":\"The account that has given out permissions to the operator.\",\"_domain\":\"The domain that the operator has been given permissions to operate.\",\"_operator\":\"The operator to check.\",\"_permissionIndexes\":\"An array of permission indexes to check for.\"},\"returns\":{\"_0\":\"A flag indicating whether the operator has all specified permissions.\"}},\"setOperator((address,uint256,uint256[]))\":{\"details\":\"Only an address can set its own operators.\",\"params\":{\"_operatorData\":\"The data that specifies the params for the operator being set.\"}},\"setOperators((address,uint256,uint256[])[])\":{\"details\":\"Only an address can set its own operators.\",\"params\":{\"_operatorData\":\"The data that specify the params for each operator being set.\"}}},\"stateVariables\":{\"permissionsOf\":{\"details\":\"An account can give an operator permissions that only pertain to a specific domain namespace. There is no domain with a value of 0 \\u2013 accounts can use the 0 domain to give an operator permissions to all domains on their behalf.Permissions are stored in a packed `uint256`. Each 256 bits represents the on/off state of a permission. Applications can specify the significance of each index. _operator The address of the operator. _account The address of the account being operated. _domain The domain within which the permissions apply. Applications can use the domain namespace as they wish.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"hasPermission(address,address,uint256,uint256)\":{\"notice\":\" Whether or not an operator has the permission to take a certain action pertaining to the specified domain.\"},\"hasPermissions(address,address,uint256,uint256[])\":{\"notice\":\" Whether or not an operator has the permission to take certain actions pertaining to the specified domain.\"},\"permissionsOf(address,address,uint256)\":{\"notice\":\"The permissions that an operator has been given to operate on a specific domain.\"},\"setOperator((address,uint256,uint256[]))\":{\"notice\":\"Sets permissions for an operators.\"},\"setOperators((address,uint256,uint256[])[])\":{\"notice\":\"Sets permissions for many operators.\"}},\"notice\":\"Stores operator permissions for all addresses. Addresses can give permissions to any other address to take specific indexed actions on their behalf.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol\":\"JBOperatorStore\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@jbx-protocol/=node_modules/@jbx-protocol/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@paulrberg/=node_modules/@paulrberg/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":prb-math/=node_modules/prb-math/\"]},\"sources\":{\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol\":{\"keccak256\":\"0x8f8f1c0438d6bc6bdf666643939dc988ad300e6a3401158ec97700fb6ec2600e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://88132980fb0587b7e95ba7bab45677304490dc9a98a25f4eec32e8a8631a987a\",\"dweb:/ipfs/QmbTW3WbbFcUjx34yh8vg1v7aJnv6twhYmvzzUNggmMPqL\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol\":{\"keccak256\":\"0x17f4929812a356984795fafed8cb2be816a025c9a0771d85595ac0b5ff3cffc5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4379909df832d51d25ac6f863c12e5271c96f01c4fd399eaeb16be3db8786e4c\",\"dweb:/ipfs/QmTeGMNaf3KPT2A54sQ6HoZiBwfGRNqMZtvvci4oAN4z2s\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBOperatorData.sol\":{\"keccak256\":\"0x3b85be7b69515976ee10770776283911666aceca820b0cf4e201ea4dbffeb6f0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1a18afb385759e5440c645f2a5c581e42a7ac357c73c376fb34dbb5d5fd8f9af\",\"dweb:/ipfs/QmZziN5ixwUXpk185YrcneBEVq91gVqYoBD7MrbvTTpALP\"]}},\"version\":1}",
-  "metadata": {
-    "compiler": {
-      "version": "0.8.16+commit.07a7930e"
-    },
-    "language": "Solidity",
-    "output": {
-      "abi": [
-        {
-          "inputs": [],
-          "type": "error",
-          "name": "PERMISSION_INDEX_OUT_OF_BOUNDS"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "operator",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "internalType": "address",
-              "name": "account",
-              "type": "address",
-              "indexed": true
-            },
-            {
-              "internalType": "uint256",
-              "name": "domain",
-              "type": "uint256",
-              "indexed": true
-            },
-            {
-              "internalType": "uint256[]",
-              "name": "permissionIndexes",
-              "type": "uint256[]",
-              "indexed": false
-            },
-            {
-              "internalType": "uint256",
-              "name": "packed",
-              "type": "uint256",
-              "indexed": false
-            }
-          ],
-          "type": "event",
-          "name": "SetOperator",
-          "anonymous": false
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_operator",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "_account",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "_domain",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "_permissionIndex",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "hasPermission",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_operator",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "_account",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "_domain",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256[]",
-              "name": "_permissionIndexes",
-              "type": "uint256[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "hasPermissions",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            },
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "permissionsOf",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "struct JBOperatorData",
-              "name": "_operatorData",
-              "type": "tuple",
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "operator",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "domain",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "permissionIndexes",
-                  "type": "uint256[]"
-                }
-              ]
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setOperator"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "struct JBOperatorData[]",
-              "name": "_operatorData",
-              "type": "tuple[]",
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "operator",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "domain",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "permissionIndexes",
-                  "type": "uint256[]"
-                }
-              ]
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "setOperators"
-        }
-      ],
-      "devdoc": {
-        "kind": "dev",
-        "methods": {
-          "hasPermission(address,address,uint256,uint256)": {
-            "params": {
-              "_account": "The account that has given out permissions to the operator.",
-              "_domain": "The domain that the operator has been given permissions to operate.",
-              "_operator": "The operator to check.",
-              "_permissionIndex": "The permission index to check for."
-            },
-            "returns": {
-              "_0": "A flag indicating whether the operator has the specified permission."
-            }
-          },
-          "hasPermissions(address,address,uint256,uint256[])": {
-            "params": {
-              "_account": "The account that has given out permissions to the operator.",
-              "_domain": "The domain that the operator has been given permissions to operate.",
-              "_operator": "The operator to check.",
-              "_permissionIndexes": "An array of permission indexes to check for."
-            },
-            "returns": {
-              "_0": "A flag indicating whether the operator has all specified permissions."
-            }
-          },
-          "setOperator((address,uint256,uint256[]))": {
-            "details": "Only an address can set its own operators.",
-            "params": {
-              "_operatorData": "The data that specifies the params for the operator being set."
-            }
-          },
-          "setOperators((address,uint256,uint256[])[])": {
-            "details": "Only an address can set its own operators.",
-            "params": {
-              "_operatorData": "The data that specify the params for each operator being set."
-            }
-          }
-        },
-        "version": 1
-      },
-      "userdoc": {
-        "kind": "user",
-        "methods": {
-          "hasPermission(address,address,uint256,uint256)": {
-            "notice": " Whether or not an operator has the permission to take a certain action pertaining to the specified domain."
-          },
-          "hasPermissions(address,address,uint256,uint256[])": {
-            "notice": " Whether or not an operator has the permission to take certain actions pertaining to the specified domain."
-          },
-          "permissionsOf(address,address,uint256)": {
-            "notice": "The permissions that an operator has been given to operate on a specific domain."
-          },
-          "setOperator((address,uint256,uint256[]))": {
-            "notice": "Sets permissions for an operators."
-          },
-          "setOperators((address,uint256,uint256[])[])": {
-            "notice": "Sets permissions for many operators."
-          }
-        },
-        "version": 1
-      }
-    },
-    "settings": {
-      "remappings": [
-        ":@jbx-protocol/=node_modules/@jbx-protocol/",
-        ":@openzeppelin/=node_modules/@openzeppelin/",
-        ":@paulrberg/=node_modules/@paulrberg/",
-        ":ds-test/=lib/forge-std/lib/ds-test/src/",
-        ":forge-std/=lib/forge-std/src/",
-        ":prb-math/=node_modules/prb-math/"
-      ],
-      "optimizer": {
-        "enabled": true,
-        "runs": 200
-      },
-      "metadata": {
-        "bytecodeHash": "ipfs"
-      },
-      "compilationTarget": {
-        "node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol": "JBOperatorStore"
-      },
-      "libraries": {}
-    },
-    "sources": {
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol": {
-        "keccak256": "0x8f8f1c0438d6bc6bdf666643939dc988ad300e6a3401158ec97700fb6ec2600e",
-        "urls": [
-          "bzz-raw://88132980fb0587b7e95ba7bab45677304490dc9a98a25f4eec32e8a8631a987a",
-          "dweb:/ipfs/QmbTW3WbbFcUjx34yh8vg1v7aJnv6twhYmvzzUNggmMPqL"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol": {
-        "keccak256": "0x17f4929812a356984795fafed8cb2be816a025c9a0771d85595ac0b5ff3cffc5",
-        "urls": [
-          "bzz-raw://4379909df832d51d25ac6f863c12e5271c96f01c4fd399eaeb16be3db8786e4c",
-          "dweb:/ipfs/QmTeGMNaf3KPT2A54sQ6HoZiBwfGRNqMZtvvci4oAN4z2s"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBOperatorData.sol": {
-        "keccak256": "0x3b85be7b69515976ee10770776283911666aceca820b0cf4e201ea4dbffeb6f0",
-        "urls": [
-          "bzz-raw://1a18afb385759e5440c645f2a5c581e42a7ac357c73c376fb34dbb5d5fd8f9af",
-          "dweb:/ipfs/QmZziN5ixwUXpk185YrcneBEVq91gVqYoBD7MrbvTTpALP"
-        ],
-        "license": "MIT"
-      }
-    },
-    "version": 1
-  },
   "ast": {
     "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol",
-    "id": 48338,
+    "id": 48698,
     "exportedSymbols": {
       "IJBOperatorStore": [
-        55684
+        56044
       ],
       "JBOperatorData": [
-        57945
+        58305
       ],
       "JBOperatorStore": [
-        48337
+        48697
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:6465:41",
     "nodes": [
       {
-        "id": 48067,
+        "id": 48427,
         "nodeType": "PragmaDirective",
         "src": "32:24:41",
         "literals": [
@@ -563,46 +246,46 @@
         ]
       },
       {
-        "id": 48068,
+        "id": 48428,
         "nodeType": "ImportDirective",
         "src": "58:43:41",
         "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol",
         "file": "./interfaces/IJBOperatorStore.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 48338,
-        "sourceUnit": 55685,
+        "scope": 48698,
+        "sourceUnit": 56045,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 48337,
+        "id": 48697,
         "nodeType": "ContractDefinition",
         "src": "443:6053:41",
         "nodes": [
           {
-            "id": 48073,
+            "id": 48433,
             "nodeType": "ErrorDefinition",
             "src": "720:39:41",
             "errorSelector": "8e9503a9",
             "name": "PERMISSION_INDEX_OUT_OF_BOUNDS",
             "nameLocation": "726:30:41",
             "parameters": {
-              "id": 48072,
+              "id": 48432,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "756:2:41"
             }
           },
           {
-            "id": 48083,
+            "id": 48443,
             "nodeType": "VariableDeclaration",
             "src": "1747:97:41",
             "baseFunctions": [
-              55643
+              56003
             ],
             "constant": false,
             "documentation": {
-              "id": 48074,
+              "id": 48434,
               "nodeType": "StructuredDocumentation",
               "src": "992:752:41",
               "text": "@notice\nThe permissions that an operator has been given to operate on a specific domain.\n@dev\nAn account can give an operator permissions that only pertain to a specific domain namespace.\nThere is no domain with a value of 0 – accounts can use the 0 domain to give an operator\npermissions to all domains on their behalf.\n@dev\nPermissions are stored in a packed `uint256`. Each 256 bits represents the on/off state of a permission. Applications can specify the significance of each index.\n_operator The address of the operator.\n_account The address of the account being operated.\n_domain The domain within which the permissions apply. Applications can use the domain namespace as they wish."
@@ -612,12 +295,12 @@
             "name": "permissionsOf",
             "nameLocation": "1831:13:41",
             "overrides": {
-              "id": 48082,
+              "id": 48442,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1822:8:41"
             },
-            "scope": 48337,
+            "scope": 48697,
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -625,9 +308,9 @@
               "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
             },
             "typeName": {
-              "id": 48081,
+              "id": 48441,
               "keyType": {
-                "id": 48075,
+                "id": 48435,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "1755:7:41",
@@ -643,9 +326,9 @@
                 "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
               },
               "valueType": {
-                "id": 48080,
+                "id": 48440,
                 "keyType": {
-                  "id": 48076,
+                  "id": 48436,
                   "name": "address",
                   "nodeType": "ElementaryTypeName",
                   "src": "1774:7:41",
@@ -661,9 +344,9 @@
                   "typeString": "mapping(address => mapping(uint256 => uint256))"
                 },
                 "valueType": {
-                  "id": 48079,
+                  "id": 48439,
                   "keyType": {
-                    "id": 48077,
+                    "id": 48437,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1793:7:41",
@@ -679,7 +362,7 @@
                     "typeString": "mapping(uint256 => uint256)"
                   },
                   "valueType": {
-                    "id": 48078,
+                    "id": 48438,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1804:7:41",
@@ -694,11 +377,11 @@
             "visibility": "public"
           },
           {
-            "id": 48123,
+            "id": 48483,
             "nodeType": "FunctionDefinition",
             "src": "2571:331:41",
             "body": {
-              "id": 48122,
+              "id": 48482,
               "nodeType": "Block",
               "src": "2732:170:41",
               "statements": [
@@ -708,17 +391,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 48100,
+                    "id": 48460,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 48098,
+                      "id": 48458,
                       "name": "_permissionIndex",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 48092,
+                      "referencedDeclaration": 48452,
                       "src": "2742:16:41",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -729,7 +412,7 @@
                     "operator": ">",
                     "rightExpression": {
                       "hexValue": "323535",
-                      "id": 48099,
+                      "id": 48459,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -749,7 +432,7 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 48104,
+                  "id": 48464,
                   "nodeType": "IfStatement",
                   "src": "2738:67:41",
                   "trueBody": {
@@ -757,18 +440,18 @@
                       "arguments": [],
                       "expression": {
                         "argumentTypes": [],
-                        "id": 48101,
+                        "id": 48461,
                         "name": "PERMISSION_INDEX_OUT_OF_BOUNDS",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 48073,
+                        "referencedDeclaration": 48433,
                         "src": "2773:30:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_error_pure$__$returns$__$",
                           "typeString": "function () pure"
                         }
                       },
-                      "id": 48102,
+                      "id": 48462,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -784,7 +467,7 @@
                         "typeString": "tuple()"
                       }
                     },
-                    "id": 48103,
+                    "id": 48463,
                     "nodeType": "RevertStatement",
                     "src": "2766:39:41"
                   }
@@ -797,7 +480,7 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 48119,
+                        "id": 48479,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -809,7 +492,7 @@
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
                               },
-                              "id": 48116,
+                              "id": 48476,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -821,7 +504,7 @@
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
                                     },
-                                    "id": 48113,
+                                    "id": 48473,
                                     "isConstant": false,
                                     "isLValue": false,
                                     "isPure": false,
@@ -830,24 +513,24 @@
                                       "baseExpression": {
                                         "baseExpression": {
                                           "baseExpression": {
-                                            "id": 48105,
+                                            "id": 48465,
                                             "name": "permissionsOf",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 48083,
+                                            "referencedDeclaration": 48443,
                                             "src": "2822:13:41",
                                             "typeDescriptions": {
                                               "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_uint256_$_$_$",
                                               "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
                                             }
                                           },
-                                          "id": 48107,
+                                          "id": 48467,
                                           "indexExpression": {
-                                            "id": 48106,
+                                            "id": 48466,
                                             "name": "_operator",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 48086,
+                                            "referencedDeclaration": 48446,
                                             "src": "2836:9:41",
                                             "typeDescriptions": {
                                               "typeIdentifier": "t_address",
@@ -865,13 +548,13 @@
                                             "typeString": "mapping(address => mapping(uint256 => uint256))"
                                           }
                                         },
-                                        "id": 48109,
+                                        "id": 48469,
                                         "indexExpression": {
-                                          "id": 48108,
+                                          "id": 48468,
                                           "name": "_account",
                                           "nodeType": "Identifier",
                                           "overloadedDeclarations": [],
-                                          "referencedDeclaration": 48088,
+                                          "referencedDeclaration": 48448,
                                           "src": "2847:8:41",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_address",
@@ -889,13 +572,13 @@
                                           "typeString": "mapping(uint256 => uint256)"
                                         }
                                       },
-                                      "id": 48111,
+                                      "id": 48471,
                                       "indexExpression": {
-                                        "id": 48110,
+                                        "id": 48470,
                                         "name": "_domain",
                                         "nodeType": "Identifier",
                                         "overloadedDeclarations": [],
-                                        "referencedDeclaration": 48090,
+                                        "referencedDeclaration": 48450,
                                         "src": "2857:7:41",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_uint256",
@@ -916,11 +599,11 @@
                                     "nodeType": "BinaryOperation",
                                     "operator": ">>",
                                     "rightExpression": {
-                                      "id": 48112,
+                                      "id": 48472,
                                       "name": "_permissionIndex",
                                       "nodeType": "Identifier",
                                       "overloadedDeclarations": [],
-                                      "referencedDeclaration": 48092,
+                                      "referencedDeclaration": 48452,
                                       "src": "2869:16:41",
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_uint256",
@@ -934,7 +617,7 @@
                                     }
                                   }
                                 ],
-                                "id": 48114,
+                                "id": 48474,
                                 "isConstant": false,
                                 "isInlineArray": false,
                                 "isLValue": false,
@@ -951,7 +634,7 @@
                               "operator": "&",
                               "rightExpression": {
                                 "hexValue": "31",
-                                "id": 48115,
+                                "id": 48475,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": true,
@@ -972,7 +655,7 @@
                               }
                             }
                           ],
-                          "id": 48117,
+                          "id": 48477,
                           "isConstant": false,
                           "isInlineArray": false,
                           "isLValue": false,
@@ -989,7 +672,7 @@
                         "operator": "==",
                         "rightExpression": {
                           "hexValue": "31",
-                          "id": 48118,
+                          "id": 48478,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1010,7 +693,7 @@
                         }
                       }
                     ],
-                    "id": 48120,
+                    "id": 48480,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
@@ -1023,18 +706,18 @@
                       "typeString": "bool"
                     }
                   },
-                  "functionReturnParameters": 48097,
-                  "id": 48121,
+                  "functionReturnParameters": 48457,
+                  "id": 48481,
                   "nodeType": "Return",
                   "src": "2812:85:41"
                 }
               ]
             },
             "baseFunctions": [
-              55656
+              56016
             ],
             "documentation": {
-              "id": 48084,
+              "id": 48444,
               "nodeType": "StructuredDocumentation",
               "src": "2078:490:41",
               "text": "@notice \nWhether or not an operator has the permission to take a certain action pertaining to the specified domain.\n@param _operator The operator to check.\n@param _account The account that has given out permissions to the operator.\n@param _domain The domain that the operator has been given permissions to operate.\n@param _permissionIndex The permission index to check for.\n@return A flag indicating whether the operator has the specified permission."
@@ -1046,23 +729,23 @@
             "name": "hasPermission",
             "nameLocation": "2580:13:41",
             "overrides": {
-              "id": 48094,
+              "id": 48454,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "2708:8:41"
             },
             "parameters": {
-              "id": 48093,
+              "id": 48453,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48086,
+                  "id": 48446,
                   "mutability": "mutable",
                   "name": "_operator",
                   "nameLocation": "2607:9:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48123,
+                  "scope": 48483,
                   "src": "2599:17:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1071,7 +754,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 48085,
+                    "id": 48445,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2599:7:41",
@@ -1085,12 +768,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 48088,
+                  "id": 48448,
                   "mutability": "mutable",
                   "name": "_account",
                   "nameLocation": "2630:8:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48123,
+                  "scope": 48483,
                   "src": "2622:16:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1099,7 +782,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 48087,
+                    "id": 48447,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2622:7:41",
@@ -1113,12 +796,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 48090,
+                  "id": 48450,
                   "mutability": "mutable",
                   "name": "_domain",
                   "nameLocation": "2652:7:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48123,
+                  "scope": 48483,
                   "src": "2644:15:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1127,7 +810,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 48089,
+                    "id": 48449,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2644:7:41",
@@ -1140,12 +823,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 48092,
+                  "id": 48452,
                   "mutability": "mutable",
                   "name": "_permissionIndex",
                   "nameLocation": "2673:16:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48123,
+                  "scope": 48483,
                   "src": "2665:24:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1154,7 +837,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 48091,
+                    "id": 48451,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2665:7:41",
@@ -1169,17 +852,17 @@
               "src": "2593:100:41"
             },
             "returnParameters": {
-              "id": 48097,
+              "id": 48457,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48096,
+                  "id": 48456,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48123,
+                  "scope": 48483,
                   "src": "2726:4:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1188,7 +871,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 48095,
+                    "id": 48455,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "2726:4:41",
@@ -1202,39 +885,39 @@
               ],
               "src": "2725:6:41"
             },
-            "scope": 48337,
+            "scope": 48697,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 48186,
+            "id": 48546,
             "nodeType": "FunctionDefinition",
             "src": "3411:545:41",
             "body": {
-              "id": 48185,
+              "id": 48545,
               "nodeType": "Block",
               "src": "3586:370:41",
               "statements": [
                 {
                   "body": {
-                    "id": 48181,
+                    "id": 48541,
                     "nodeType": "Block",
                     "src": "3643:292:41",
                     "statements": [
                       {
                         "assignments": [
-                          48147
+                          48507
                         ],
                         "declarations": [
                           {
                             "constant": false,
-                            "id": 48147,
+                            "id": 48507,
                             "mutability": "mutable",
                             "name": "_permissionIndex",
                             "nameLocation": "3659:16:41",
                             "nodeType": "VariableDeclaration",
-                            "scope": 48181,
+                            "scope": 48541,
                             "src": "3651:24:41",
                             "stateVariable": false,
                             "storageLocation": "default",
@@ -1243,7 +926,7 @@
                               "typeString": "uint256"
                             },
                             "typeName": {
-                              "id": 48146,
+                              "id": 48506,
                               "name": "uint256",
                               "nodeType": "ElementaryTypeName",
                               "src": "3651:7:41",
@@ -1255,27 +938,27 @@
                             "visibility": "internal"
                           }
                         ],
-                        "id": 48151,
+                        "id": 48511,
                         "initialValue": {
                           "baseExpression": {
-                            "id": 48148,
+                            "id": 48508,
                             "name": "_permissionIndexes",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48133,
+                            "referencedDeclaration": 48493,
                             "src": "3678:18:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
                               "typeString": "uint256[] calldata"
                             }
                           },
-                          "id": 48150,
+                          "id": 48510,
                           "indexExpression": {
-                            "id": 48149,
+                            "id": 48509,
                             "name": "_i",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48140,
+                            "referencedDeclaration": 48500,
                             "src": "3697:2:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -1302,17 +985,17 @@
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           },
-                          "id": 48154,
+                          "id": 48514,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftExpression": {
-                            "id": 48152,
+                            "id": 48512,
                             "name": "_permissionIndex",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48147,
+                            "referencedDeclaration": 48507,
                             "src": "3713:16:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -1323,7 +1006,7 @@
                           "operator": ">",
                           "rightExpression": {
                             "hexValue": "323535",
-                            "id": 48153,
+                            "id": 48513,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1343,7 +1026,7 @@
                             "typeString": "bool"
                           }
                         },
-                        "id": 48158,
+                        "id": 48518,
                         "nodeType": "IfStatement",
                         "src": "3709:67:41",
                         "trueBody": {
@@ -1351,18 +1034,18 @@
                             "arguments": [],
                             "expression": {
                               "argumentTypes": [],
-                              "id": 48155,
+                              "id": 48515,
                               "name": "PERMISSION_INDEX_OUT_OF_BOUNDS",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 48073,
+                              "referencedDeclaration": 48433,
                               "src": "3744:30:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_error_pure$__$returns$__$",
                                 "typeString": "function () pure"
                               }
                             },
-                            "id": 48156,
+                            "id": 48516,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1378,7 +1061,7 @@
                               "typeString": "tuple()"
                             }
                           },
-                          "id": 48157,
+                          "id": 48517,
                           "nodeType": "RevertStatement",
                           "src": "3737:39:41"
                         }
@@ -1389,7 +1072,7 @@
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           },
-                          "id": 48173,
+                          "id": 48533,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1401,7 +1084,7 @@
                                   "typeIdentifier": "t_uint256",
                                   "typeString": "uint256"
                                 },
-                                "id": 48170,
+                                "id": 48530,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -1413,7 +1096,7 @@
                                         "typeIdentifier": "t_uint256",
                                         "typeString": "uint256"
                                       },
-                                      "id": 48167,
+                                      "id": 48527,
                                       "isConstant": false,
                                       "isLValue": false,
                                       "isPure": false,
@@ -1422,24 +1105,24 @@
                                         "baseExpression": {
                                           "baseExpression": {
                                             "baseExpression": {
-                                              "id": 48159,
+                                              "id": 48519,
                                               "name": "permissionsOf",
                                               "nodeType": "Identifier",
                                               "overloadedDeclarations": [],
-                                              "referencedDeclaration": 48083,
+                                              "referencedDeclaration": 48443,
                                               "src": "3791:13:41",
                                               "typeDescriptions": {
                                                 "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_uint256_$_$_$",
                                                 "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
                                               }
                                             },
-                                            "id": 48161,
+                                            "id": 48521,
                                             "indexExpression": {
-                                              "id": 48160,
+                                              "id": 48520,
                                               "name": "_operator",
                                               "nodeType": "Identifier",
                                               "overloadedDeclarations": [],
-                                              "referencedDeclaration": 48126,
+                                              "referencedDeclaration": 48486,
                                               "src": "3805:9:41",
                                               "typeDescriptions": {
                                                 "typeIdentifier": "t_address",
@@ -1457,13 +1140,13 @@
                                               "typeString": "mapping(address => mapping(uint256 => uint256))"
                                             }
                                           },
-                                          "id": 48163,
+                                          "id": 48523,
                                           "indexExpression": {
-                                            "id": 48162,
+                                            "id": 48522,
                                             "name": "_account",
                                             "nodeType": "Identifier",
                                             "overloadedDeclarations": [],
-                                            "referencedDeclaration": 48128,
+                                            "referencedDeclaration": 48488,
                                             "src": "3816:8:41",
                                             "typeDescriptions": {
                                               "typeIdentifier": "t_address",
@@ -1481,13 +1164,13 @@
                                             "typeString": "mapping(uint256 => uint256)"
                                           }
                                         },
-                                        "id": 48165,
+                                        "id": 48525,
                                         "indexExpression": {
-                                          "id": 48164,
+                                          "id": 48524,
                                           "name": "_domain",
                                           "nodeType": "Identifier",
                                           "overloadedDeclarations": [],
-                                          "referencedDeclaration": 48130,
+                                          "referencedDeclaration": 48490,
                                           "src": "3826:7:41",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_uint256",
@@ -1508,11 +1191,11 @@
                                       "nodeType": "BinaryOperation",
                                       "operator": ">>",
                                       "rightExpression": {
-                                        "id": 48166,
+                                        "id": 48526,
                                         "name": "_permissionIndex",
                                         "nodeType": "Identifier",
                                         "overloadedDeclarations": [],
-                                        "referencedDeclaration": 48147,
+                                        "referencedDeclaration": 48507,
                                         "src": "3838:16:41",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_uint256",
@@ -1526,7 +1209,7 @@
                                       }
                                     }
                                   ],
-                                  "id": 48168,
+                                  "id": 48528,
                                   "isConstant": false,
                                   "isInlineArray": false,
                                   "isLValue": false,
@@ -1543,7 +1226,7 @@
                                 "operator": "&",
                                 "rightExpression": {
                                   "hexValue": "31",
-                                  "id": 48169,
+                                  "id": 48529,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": true,
@@ -1564,7 +1247,7 @@
                                 }
                               }
                             ],
-                            "id": 48171,
+                            "id": 48531,
                             "isConstant": false,
                             "isInlineArray": false,
                             "isLValue": false,
@@ -1581,7 +1264,7 @@
                           "operator": "==",
                           "rightExpression": {
                             "hexValue": "30",
-                            "id": 48172,
+                            "id": 48532,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1601,13 +1284,13 @@
                             "typeString": "bool"
                           }
                         },
-                        "id": 48176,
+                        "id": 48536,
                         "nodeType": "IfStatement",
                         "src": "3785:102:41",
                         "trueBody": {
                           "expression": {
                             "hexValue": "66616c7365",
-                            "id": 48174,
+                            "id": 48534,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -1621,20 +1304,20 @@
                             },
                             "value": "false"
                           },
-                          "functionReturnParameters": 48138,
-                          "id": 48175,
+                          "functionReturnParameters": 48498,
+                          "id": 48535,
                           "nodeType": "Return",
                           "src": "3875:12:41"
                         }
                       },
                       {
-                        "id": 48180,
+                        "id": 48540,
                         "nodeType": "UncheckedBlock",
                         "src": "3896:33:41",
                         "statements": [
                           {
                             "expression": {
-                              "id": 48178,
+                              "id": 48538,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -1644,11 +1327,11 @@
                               "prefix": true,
                               "src": "3916:4:41",
                               "subExpression": {
-                                "id": 48177,
+                                "id": 48537,
                                 "name": "_i",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 48140,
+                                "referencedDeclaration": 48500,
                                 "src": "3918:2:41",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -1660,7 +1343,7 @@
                                 "typeString": "uint256"
                               }
                             },
-                            "id": 48179,
+                            "id": 48539,
                             "nodeType": "ExpressionStatement",
                             "src": "3916:4:41"
                           }
@@ -1673,17 +1356,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 48145,
+                    "id": 48505,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 48142,
+                      "id": 48502,
                       "name": "_i",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 48140,
+                      "referencedDeclaration": 48500,
                       "src": "3609:2:41",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1694,18 +1377,18 @@
                     "operator": "<",
                     "rightExpression": {
                       "expression": {
-                        "id": 48143,
+                        "id": 48503,
                         "name": "_permissionIndexes",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 48133,
+                        "referencedDeclaration": 48493,
                         "src": "3614:18:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
                           "typeString": "uint256[] calldata"
                         }
                       },
-                      "id": 48144,
+                      "id": 48504,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1725,20 +1408,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 48182,
+                  "id": 48542,
                   "initializationExpression": {
                     "assignments": [
-                      48140
+                      48500
                     ],
                     "declarations": [
                       {
                         "constant": false,
-                        "id": 48140,
+                        "id": 48500,
                         "mutability": "mutable",
                         "name": "_i",
                         "nameLocation": "3605:2:41",
                         "nodeType": "VariableDeclaration",
-                        "scope": 48182,
+                        "scope": 48542,
                         "src": "3597:10:41",
                         "stateVariable": false,
                         "storageLocation": "default",
@@ -1747,7 +1430,7 @@
                           "typeString": "uint256"
                         },
                         "typeName": {
-                          "id": 48139,
+                          "id": 48499,
                           "name": "uint256",
                           "nodeType": "ElementaryTypeName",
                           "src": "3597:7:41",
@@ -1759,7 +1442,7 @@
                         "visibility": "internal"
                       }
                     ],
-                    "id": 48141,
+                    "id": 48501,
                     "nodeType": "VariableDeclarationStatement",
                     "src": "3597:10:41"
                   },
@@ -1769,7 +1452,7 @@
                 {
                   "expression": {
                     "hexValue": "74727565",
-                    "id": 48183,
+                    "id": 48543,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -1783,18 +1466,18 @@
                     },
                     "value": "true"
                   },
-                  "functionReturnParameters": 48138,
-                  "id": 48184,
+                  "functionReturnParameters": 48498,
+                  "id": 48544,
                   "nodeType": "Return",
                   "src": "3940:11:41"
                 }
               ]
             },
             "baseFunctions": [
-              55670
+              56030
             ],
             "documentation": {
-              "id": 48124,
+              "id": 48484,
               "nodeType": "StructuredDocumentation",
               "src": "2906:502:41",
               "text": "@notice \nWhether or not an operator has the permission to take certain actions pertaining to the specified domain.\n@param _operator The operator to check.\n@param _account The account that has given out permissions to the operator.\n@param _domain The domain that the operator has been given permissions to operate.\n@param _permissionIndexes An array of permission indexes to check for.\n@return A flag indicating whether the operator has all specified permissions."
@@ -1806,23 +1489,23 @@
             "name": "hasPermissions",
             "nameLocation": "3420:14:41",
             "overrides": {
-              "id": 48135,
+              "id": 48495,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "3562:8:41"
             },
             "parameters": {
-              "id": 48134,
+              "id": 48494,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48126,
+                  "id": 48486,
                   "mutability": "mutable",
                   "name": "_operator",
                   "nameLocation": "3448:9:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48186,
+                  "scope": 48546,
                   "src": "3440:17:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1831,7 +1514,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 48125,
+                    "id": 48485,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3440:7:41",
@@ -1845,12 +1528,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 48128,
+                  "id": 48488,
                   "mutability": "mutable",
                   "name": "_account",
                   "nameLocation": "3471:8:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48186,
+                  "scope": 48546,
                   "src": "3463:16:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1859,7 +1542,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 48127,
+                    "id": 48487,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "3463:7:41",
@@ -1873,12 +1556,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 48130,
+                  "id": 48490,
                   "mutability": "mutable",
                   "name": "_domain",
                   "nameLocation": "3493:7:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48186,
+                  "scope": 48546,
                   "src": "3485:15:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1887,7 +1570,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 48129,
+                    "id": 48489,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "3485:7:41",
@@ -1900,12 +1583,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 48133,
+                  "id": 48493,
                   "mutability": "mutable",
                   "name": "_permissionIndexes",
                   "nameLocation": "3525:18:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48186,
+                  "scope": 48546,
                   "src": "3506:37:41",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1915,7 +1598,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 48131,
+                      "id": 48491,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "3506:7:41",
@@ -1924,7 +1607,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 48132,
+                    "id": 48492,
                     "nodeType": "ArrayTypeName",
                     "src": "3506:9:41",
                     "typeDescriptions": {
@@ -1938,17 +1621,17 @@
               "src": "3434:113:41"
             },
             "returnParameters": {
-              "id": 48138,
+              "id": 48498,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48137,
+                  "id": 48497,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48186,
+                  "scope": 48546,
                   "src": "3580:4:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1957,7 +1640,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 48136,
+                    "id": 48496,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "3580:4:41",
@@ -1971,33 +1654,33 @@
               ],
               "src": "3579:6:41"
             },
-            "scope": 48337,
+            "scope": 48697,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 48227,
+            "id": 48587,
             "nodeType": "FunctionDefinition",
             "src": "4397:473:41",
             "body": {
-              "id": 48226,
+              "id": 48586,
               "nodeType": "Block",
               "src": "4475:395:41",
               "statements": [
                 {
                   "assignments": [
-                    48195
+                    48555
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 48195,
+                      "id": 48555,
                       "mutability": "mutable",
                       "name": "_packed",
                       "nameLocation": "4529:7:41",
                       "nodeType": "VariableDeclaration",
-                      "scope": 48226,
+                      "scope": 48586,
                       "src": "4521:15:41",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -2006,7 +1689,7 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 48194,
+                        "id": 48554,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
                         "src": "4521:7:41",
@@ -2018,23 +1701,23 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 48200,
+                  "id": 48560,
                   "initialValue": {
                     "arguments": [
                       {
                         "expression": {
-                          "id": 48197,
+                          "id": 48557,
                           "name": "_operatorData",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 48190,
+                          "referencedDeclaration": 48550,
                           "src": "4558:13:41",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                            "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                             "typeString": "struct JBOperatorData calldata"
                           }
                         },
-                        "id": 48198,
+                        "id": 48558,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2042,7 +1725,7 @@
                         "memberLocation": "4572:17:41",
                         "memberName": "permissionIndexes",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 57944,
+                        "referencedDeclaration": 58304,
                         "src": "4558:31:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
@@ -2057,18 +1740,18 @@
                           "typeString": "uint256[] calldata"
                         }
                       ],
-                      "id": 48196,
+                      "id": 48556,
                       "name": "_packedPermissions",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 48336,
+                      "referencedDeclaration": 48696,
                       "src": "4539:18:41",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_pure$_t_array$_t_uint256_$dyn_calldata_ptr_$returns$_t_uint256_$",
                         "typeString": "function (uint256[] calldata) pure returns (uint256)"
                       }
                     },
-                    "id": 48199,
+                    "id": 48559,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2089,7 +1772,7 @@
                 },
                 {
                   "expression": {
-                    "id": 48212,
+                    "id": 48572,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2098,32 +1781,32 @@
                       "baseExpression": {
                         "baseExpression": {
                           "baseExpression": {
-                            "id": 48201,
+                            "id": 48561,
                             "name": "permissionsOf",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48083,
+                            "referencedDeclaration": 48443,
                             "src": "4625:13:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_uint256_$_$_$",
                               "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
                             }
                           },
-                          "id": 48208,
+                          "id": 48568,
                           "indexExpression": {
                             "expression": {
-                              "id": 48202,
+                              "id": 48562,
                               "name": "_operatorData",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 48190,
+                              "referencedDeclaration": 48550,
                               "src": "4639:13:41",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                                "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                                 "typeString": "struct JBOperatorData calldata"
                               }
                             },
-                            "id": 48203,
+                            "id": 48563,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -2131,7 +1814,7 @@
                             "memberLocation": "4653:8:41",
                             "memberName": "operator",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 57939,
+                            "referencedDeclaration": 58299,
                             "src": "4639:22:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -2149,10 +1832,10 @@
                             "typeString": "mapping(address => mapping(uint256 => uint256))"
                           }
                         },
-                        "id": 48209,
+                        "id": 48569,
                         "indexExpression": {
                           "expression": {
-                            "id": 48204,
+                            "id": 48564,
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
@@ -2163,7 +1846,7 @@
                               "typeString": "msg"
                             }
                           },
-                          "id": 48205,
+                          "id": 48565,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2188,21 +1871,21 @@
                           "typeString": "mapping(uint256 => uint256)"
                         }
                       },
-                      "id": 48210,
+                      "id": 48570,
                       "indexExpression": {
                         "expression": {
-                          "id": 48206,
+                          "id": 48566,
                           "name": "_operatorData",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 48190,
+                          "referencedDeclaration": 48550,
                           "src": "4675:13:41",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                            "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                             "typeString": "struct JBOperatorData calldata"
                           }
                         },
-                        "id": 48207,
+                        "id": 48567,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2210,7 +1893,7 @@
                         "memberLocation": "4689:6:41",
                         "memberName": "domain",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 57941,
+                        "referencedDeclaration": 58301,
                         "src": "4675:20:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2231,11 +1914,11 @@
                     "nodeType": "Assignment",
                     "operator": "=",
                     "rightHandSide": {
-                      "id": 48211,
+                      "id": 48571,
                       "name": "_packed",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 48195,
+                      "referencedDeclaration": 48555,
                       "src": "4699:7:41",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -2248,7 +1931,7 @@
                       "typeString": "uint256"
                     }
                   },
-                  "id": 48213,
+                  "id": 48573,
                   "nodeType": "ExpressionStatement",
                   "src": "4625:81:41"
                 },
@@ -2257,18 +1940,18 @@
                     "arguments": [
                       {
                         "expression": {
-                          "id": 48215,
+                          "id": 48575,
                           "name": "_operatorData",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 48190,
+                          "referencedDeclaration": 48550,
                           "src": "4737:13:41",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                            "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                             "typeString": "struct JBOperatorData calldata"
                           }
                         },
-                        "id": 48216,
+                        "id": 48576,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2276,7 +1959,7 @@
                         "memberLocation": "4751:8:41",
                         "memberName": "operator",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 57939,
+                        "referencedDeclaration": 58299,
                         "src": "4737:22:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -2285,7 +1968,7 @@
                       },
                       {
                         "expression": {
-                          "id": 48217,
+                          "id": 48577,
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
@@ -2296,7 +1979,7 @@
                             "typeString": "msg"
                           }
                         },
-                        "id": 48218,
+                        "id": 48578,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2312,18 +1995,18 @@
                       },
                       {
                         "expression": {
-                          "id": 48219,
+                          "id": 48579,
                           "name": "_operatorData",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 48190,
+                          "referencedDeclaration": 48550,
                           "src": "4785:13:41",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                            "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                             "typeString": "struct JBOperatorData calldata"
                           }
                         },
-                        "id": 48220,
+                        "id": 48580,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2331,7 +2014,7 @@
                         "memberLocation": "4799:6:41",
                         "memberName": "domain",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 57941,
+                        "referencedDeclaration": 58301,
                         "src": "4785:20:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2340,18 +2023,18 @@
                       },
                       {
                         "expression": {
-                          "id": 48221,
+                          "id": 48581,
                           "name": "_operatorData",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 48190,
+                          "referencedDeclaration": 48550,
                           "src": "4813:13:41",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                            "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                             "typeString": "struct JBOperatorData calldata"
                           }
                         },
-                        "id": 48222,
+                        "id": 48582,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -2359,7 +2042,7 @@
                         "memberLocation": "4827:17:41",
                         "memberName": "permissionIndexes",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 57944,
+                        "referencedDeclaration": 58304,
                         "src": "4813:31:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
@@ -2367,11 +2050,11 @@
                         }
                       },
                       {
-                        "id": 48223,
+                        "id": 48583,
                         "name": "_packed",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 48195,
+                        "referencedDeclaration": 48555,
                         "src": "4852:7:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2402,18 +2085,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 48214,
+                      "id": 48574,
                       "name": "SetOperator",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 55632,
+                      "referencedDeclaration": 55992,
                       "src": "4718:11:41",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$_t_uint256_$_t_array$_t_uint256_$dyn_memory_ptr_$_t_uint256_$returns$__$",
                         "typeString": "function (address,address,uint256,uint256[] memory,uint256)"
                       }
                     },
-                    "id": 48224,
+                    "id": 48584,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -2429,17 +2112,17 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 48225,
+                  "id": 48585,
                   "nodeType": "EmitStatement",
                   "src": "4713:152:41"
                 }
               ]
             },
             "baseFunctions": [
-              55676
+              56036
             ],
             "documentation": {
-              "id": 48187,
+              "id": 48547,
               "nodeType": "StructuredDocumentation",
               "src": "4189:205:41",
               "text": "@notice\nSets permissions for an operators.\n@dev\nOnly an address can set its own operators.\n@param _operatorData The data that specifies the params for the operator being set."
@@ -2451,47 +2134,47 @@
             "name": "setOperator",
             "nameLocation": "4406:11:41",
             "overrides": {
-              "id": 48192,
+              "id": 48552,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "4466:8:41"
             },
             "parameters": {
-              "id": 48191,
+              "id": 48551,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48190,
+                  "id": 48550,
                   "mutability": "mutable",
                   "name": "_operatorData",
                   "nameLocation": "4442:13:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48227,
+                  "scope": 48587,
                   "src": "4418:37:41",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                    "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                     "typeString": "struct JBOperatorData"
                   },
                   "typeName": {
-                    "id": 48189,
+                    "id": 48549,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 48188,
+                      "id": 48548,
                       "name": "JBOperatorData",
                       "nameLocations": [
                         "4418:14:41"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 57945,
+                      "referencedDeclaration": 58305,
                       "src": "4418:14:41"
                     },
-                    "referencedDeclaration": 57945,
+                    "referencedDeclaration": 58305,
                     "src": "4418:14:41",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBOperatorData_$57945_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBOperatorData_$58305_storage_ptr",
                       "typeString": "struct JBOperatorData"
                     }
                   },
@@ -2501,44 +2184,44 @@
               "src": "4417:39:41"
             },
             "returnParameters": {
-              "id": 48193,
+              "id": 48553,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "4475:0:41"
             },
-            "scope": 48337,
+            "scope": 48697,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 48294,
+            "id": 48654,
             "nodeType": "FunctionDefinition",
             "src": "5083:621:41",
             "body": {
-              "id": 48293,
+              "id": 48653,
               "nodeType": "Block",
               "src": "5164:540:41",
               "statements": [
                 {
                   "body": {
-                    "id": 48291,
+                    "id": 48651,
                     "nodeType": "Block",
                     "src": "5216:484:41",
                     "statements": [
                       {
                         "assignments": [
-                          48244
+                          48604
                         ],
                         "declarations": [
                           {
                             "constant": false,
-                            "id": 48244,
+                            "id": 48604,
                             "mutability": "mutable",
                             "name": "_packed",
                             "nameLocation": "5274:7:41",
                             "nodeType": "VariableDeclaration",
-                            "scope": 48291,
+                            "scope": 48651,
                             "src": "5266:15:41",
                             "stateVariable": false,
                             "storageLocation": "default",
@@ -2547,7 +2230,7 @@
                               "typeString": "uint256"
                             },
                             "typeName": {
-                              "id": 48243,
+                              "id": 48603,
                               "name": "uint256",
                               "nodeType": "ElementaryTypeName",
                               "src": "5266:7:41",
@@ -2559,30 +2242,30 @@
                             "visibility": "internal"
                           }
                         ],
-                        "id": 48251,
+                        "id": 48611,
                         "initialValue": {
                           "arguments": [
                             {
                               "expression": {
                                 "baseExpression": {
-                                  "id": 48246,
+                                  "id": 48606,
                                   "name": "_operatorData",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48232,
+                                  "referencedDeclaration": 48592,
                                   "src": "5303:13:41",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                                     "typeString": "struct JBOperatorData calldata[] calldata"
                                   }
                                 },
-                                "id": 48248,
+                                "id": 48608,
                                 "indexExpression": {
-                                  "id": 48247,
+                                  "id": 48607,
                                   "name": "_i",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48237,
+                                  "referencedDeclaration": 48597,
                                   "src": "5317:2:41",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
@@ -2596,11 +2279,11 @@
                                 "nodeType": "IndexAccess",
                                 "src": "5303:17:41",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                                  "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                                   "typeString": "struct JBOperatorData calldata"
                                 }
                               },
-                              "id": 48249,
+                              "id": 48609,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2608,7 +2291,7 @@
                               "memberLocation": "5321:17:41",
                               "memberName": "permissionIndexes",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 57944,
+                              "referencedDeclaration": 58304,
                               "src": "5303:35:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
@@ -2623,18 +2306,18 @@
                                 "typeString": "uint256[] calldata"
                               }
                             ],
-                            "id": 48245,
+                            "id": 48605,
                             "name": "_packedPermissions",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48336,
+                            "referencedDeclaration": 48696,
                             "src": "5284:18:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_internal_pure$_t_array$_t_uint256_$dyn_calldata_ptr_$returns$_t_uint256_$",
                               "typeString": "function (uint256[] calldata) pure returns (uint256)"
                             }
                           },
-                          "id": 48250,
+                          "id": 48610,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2655,7 +2338,7 @@
                       },
                       {
                         "expression": {
-                          "id": 48267,
+                          "id": 48627,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -2664,39 +2347,39 @@
                             "baseExpression": {
                               "baseExpression": {
                                 "baseExpression": {
-                                  "id": 48252,
+                                  "id": 48612,
                                   "name": "permissionsOf",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48083,
+                                  "referencedDeclaration": 48443,
                                   "src": "5378:13:41",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_mapping$_t_uint256_$_t_uint256_$_$_$",
                                     "typeString": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
                                   }
                                 },
-                                "id": 48263,
+                                "id": 48623,
                                 "indexExpression": {
                                   "expression": {
                                     "baseExpression": {
-                                      "id": 48253,
+                                      "id": 48613,
                                       "name": "_operatorData",
                                       "nodeType": "Identifier",
                                       "overloadedDeclarations": [],
-                                      "referencedDeclaration": 48232,
+                                      "referencedDeclaration": 48592,
                                       "src": "5392:13:41",
                                       "typeDescriptions": {
-                                        "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                                        "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                                         "typeString": "struct JBOperatorData calldata[] calldata"
                                       }
                                     },
-                                    "id": 48255,
+                                    "id": 48615,
                                     "indexExpression": {
-                                      "id": 48254,
+                                      "id": 48614,
                                       "name": "_i",
                                       "nodeType": "Identifier",
                                       "overloadedDeclarations": [],
-                                      "referencedDeclaration": 48237,
+                                      "referencedDeclaration": 48597,
                                       "src": "5406:2:41",
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_uint256",
@@ -2710,11 +2393,11 @@
                                     "nodeType": "IndexAccess",
                                     "src": "5392:17:41",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                                      "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                                       "typeString": "struct JBOperatorData calldata"
                                     }
                                   },
-                                  "id": 48256,
+                                  "id": 48616,
                                   "isConstant": false,
                                   "isLValue": false,
                                   "isPure": false,
@@ -2722,7 +2405,7 @@
                                   "memberLocation": "5410:8:41",
                                   "memberName": "operator",
                                   "nodeType": "MemberAccess",
-                                  "referencedDeclaration": 57939,
+                                  "referencedDeclaration": 58299,
                                   "src": "5392:26:41",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_address",
@@ -2740,10 +2423,10 @@
                                   "typeString": "mapping(address => mapping(uint256 => uint256))"
                                 }
                               },
-                              "id": 48264,
+                              "id": 48624,
                               "indexExpression": {
                                 "expression": {
-                                  "id": 48257,
+                                  "id": 48617,
                                   "name": "msg",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
@@ -2754,7 +2437,7 @@
                                     "typeString": "msg"
                                   }
                                 },
-                                "id": 48258,
+                                "id": 48618,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
@@ -2779,28 +2462,28 @@
                                 "typeString": "mapping(uint256 => uint256)"
                               }
                             },
-                            "id": 48265,
+                            "id": 48625,
                             "indexExpression": {
                               "expression": {
                                 "baseExpression": {
-                                  "id": 48259,
+                                  "id": 48619,
                                   "name": "_operatorData",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48232,
+                                  "referencedDeclaration": 48592,
                                   "src": "5432:13:41",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                                     "typeString": "struct JBOperatorData calldata[] calldata"
                                   }
                                 },
-                                "id": 48261,
+                                "id": 48621,
                                 "indexExpression": {
-                                  "id": 48260,
+                                  "id": 48620,
                                   "name": "_i",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48237,
+                                  "referencedDeclaration": 48597,
                                   "src": "5446:2:41",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
@@ -2814,11 +2497,11 @@
                                 "nodeType": "IndexAccess",
                                 "src": "5432:17:41",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                                  "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                                   "typeString": "struct JBOperatorData calldata"
                                 }
                               },
-                              "id": 48262,
+                              "id": 48622,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2826,7 +2509,7 @@
                               "memberLocation": "5450:6:41",
                               "memberName": "domain",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 57941,
+                              "referencedDeclaration": 58301,
                               "src": "5432:24:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -2847,11 +2530,11 @@
                           "nodeType": "Assignment",
                           "operator": "=",
                           "rightHandSide": {
-                            "id": 48266,
+                            "id": 48626,
                             "name": "_packed",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48244,
+                            "referencedDeclaration": 48604,
                             "src": "5460:7:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -2864,7 +2547,7 @@
                             "typeString": "uint256"
                           }
                         },
-                        "id": 48268,
+                        "id": 48628,
                         "nodeType": "ExpressionStatement",
                         "src": "5378:89:41"
                       },
@@ -2874,24 +2557,24 @@
                             {
                               "expression": {
                                 "baseExpression": {
-                                  "id": 48270,
+                                  "id": 48630,
                                   "name": "_operatorData",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48232,
+                                  "referencedDeclaration": 48592,
                                   "src": "5502:13:41",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                                     "typeString": "struct JBOperatorData calldata[] calldata"
                                   }
                                 },
-                                "id": 48272,
+                                "id": 48632,
                                 "indexExpression": {
-                                  "id": 48271,
+                                  "id": 48631,
                                   "name": "_i",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48237,
+                                  "referencedDeclaration": 48597,
                                   "src": "5516:2:41",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
@@ -2905,11 +2588,11 @@
                                 "nodeType": "IndexAccess",
                                 "src": "5502:17:41",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                                  "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                                   "typeString": "struct JBOperatorData calldata"
                                 }
                               },
-                              "id": 48273,
+                              "id": 48633,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2917,7 +2600,7 @@
                               "memberLocation": "5520:8:41",
                               "memberName": "operator",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 57939,
+                              "referencedDeclaration": 58299,
                               "src": "5502:26:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_address",
@@ -2926,7 +2609,7 @@
                             },
                             {
                               "expression": {
-                                "id": 48274,
+                                "id": 48634,
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
@@ -2937,7 +2620,7 @@
                                   "typeString": "msg"
                                 }
                               },
-                              "id": 48275,
+                              "id": 48635,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2954,24 +2637,24 @@
                             {
                               "expression": {
                                 "baseExpression": {
-                                  "id": 48276,
+                                  "id": 48636,
                                   "name": "_operatorData",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48232,
+                                  "referencedDeclaration": 48592,
                                   "src": "5558:13:41",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                                     "typeString": "struct JBOperatorData calldata[] calldata"
                                   }
                                 },
-                                "id": 48278,
+                                "id": 48638,
                                 "indexExpression": {
-                                  "id": 48277,
+                                  "id": 48637,
                                   "name": "_i",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48237,
+                                  "referencedDeclaration": 48597,
                                   "src": "5572:2:41",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
@@ -2985,11 +2668,11 @@
                                 "nodeType": "IndexAccess",
                                 "src": "5558:17:41",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                                  "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                                   "typeString": "struct JBOperatorData calldata"
                                 }
                               },
-                              "id": 48279,
+                              "id": 48639,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -2997,7 +2680,7 @@
                               "memberLocation": "5576:6:41",
                               "memberName": "domain",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 57941,
+                              "referencedDeclaration": 58301,
                               "src": "5558:24:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -3007,24 +2690,24 @@
                             {
                               "expression": {
                                 "baseExpression": {
-                                  "id": 48280,
+                                  "id": 48640,
                                   "name": "_operatorData",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48232,
+                                  "referencedDeclaration": 48592,
                                   "src": "5592:13:41",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                                     "typeString": "struct JBOperatorData calldata[] calldata"
                                   }
                                 },
-                                "id": 48282,
+                                "id": 48642,
                                 "indexExpression": {
-                                  "id": 48281,
+                                  "id": 48641,
                                   "name": "_i",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 48237,
+                                  "referencedDeclaration": 48597,
                                   "src": "5606:2:41",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
@@ -3038,11 +2721,11 @@
                                 "nodeType": "IndexAccess",
                                 "src": "5592:17:41",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_JBOperatorData_$57945_calldata_ptr",
+                                  "typeIdentifier": "t_struct$_JBOperatorData_$58305_calldata_ptr",
                                   "typeString": "struct JBOperatorData calldata"
                                 }
                               },
-                              "id": 48283,
+                              "id": 48643,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -3050,7 +2733,7 @@
                               "memberLocation": "5610:17:41",
                               "memberName": "permissionIndexes",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 57944,
+                              "referencedDeclaration": 58304,
                               "src": "5592:35:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
@@ -3058,11 +2741,11 @@
                               }
                             },
                             {
-                              "id": 48284,
+                              "id": 48644,
                               "name": "_packed",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 48244,
+                              "referencedDeclaration": 48604,
                               "src": "5637:7:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -3093,18 +2776,18 @@
                                 "typeString": "uint256"
                               }
                             ],
-                            "id": 48269,
+                            "id": 48629,
                             "name": "SetOperator",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 55632,
+                            "referencedDeclaration": 55992,
                             "src": "5481:11:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_address_$_t_uint256_$_t_array$_t_uint256_$dyn_memory_ptr_$_t_uint256_$returns$__$",
                               "typeString": "function (address,address,uint256,uint256[] memory,uint256)"
                             }
                           },
-                          "id": 48285,
+                          "id": 48645,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -3120,18 +2803,18 @@
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 48286,
+                        "id": 48646,
                         "nodeType": "EmitStatement",
                         "src": "5476:176:41"
                       },
                       {
-                        "id": 48290,
+                        "id": 48650,
                         "nodeType": "UncheckedBlock",
                         "src": "5661:33:41",
                         "statements": [
                           {
                             "expression": {
-                              "id": 48288,
+                              "id": 48648,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -3141,11 +2824,11 @@
                               "prefix": true,
                               "src": "5681:4:41",
                               "subExpression": {
-                                "id": 48287,
+                                "id": 48647,
                                 "name": "_i",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 48237,
+                                "referencedDeclaration": 48597,
                                 "src": "5683:2:41",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -3157,7 +2840,7 @@
                                 "typeString": "uint256"
                               }
                             },
-                            "id": 48289,
+                            "id": 48649,
                             "nodeType": "ExpressionStatement",
                             "src": "5681:4:41"
                           }
@@ -3170,17 +2853,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 48242,
+                    "id": 48602,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 48239,
+                      "id": 48599,
                       "name": "_i",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 48237,
+                      "referencedDeclaration": 48597,
                       "src": "5187:2:41",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3191,18 +2874,18 @@
                     "operator": "<",
                     "rightExpression": {
                       "expression": {
-                        "id": 48240,
+                        "id": 48600,
                         "name": "_operatorData",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 48232,
+                        "referencedDeclaration": 48592,
                         "src": "5192:13:41",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                          "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                           "typeString": "struct JBOperatorData calldata[] calldata"
                         }
                       },
-                      "id": 48241,
+                      "id": 48601,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3222,20 +2905,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 48292,
+                  "id": 48652,
                   "initializationExpression": {
                     "assignments": [
-                      48237
+                      48597
                     ],
                     "declarations": [
                       {
                         "constant": false,
-                        "id": 48237,
+                        "id": 48597,
                         "mutability": "mutable",
                         "name": "_i",
                         "nameLocation": "5183:2:41",
                         "nodeType": "VariableDeclaration",
-                        "scope": 48292,
+                        "scope": 48652,
                         "src": "5175:10:41",
                         "stateVariable": false,
                         "storageLocation": "default",
@@ -3244,7 +2927,7 @@
                           "typeString": "uint256"
                         },
                         "typeName": {
-                          "id": 48236,
+                          "id": 48596,
                           "name": "uint256",
                           "nodeType": "ElementaryTypeName",
                           "src": "5175:7:41",
@@ -3256,7 +2939,7 @@
                         "visibility": "internal"
                       }
                     ],
-                    "id": 48238,
+                    "id": 48598,
                     "nodeType": "VariableDeclarationStatement",
                     "src": "5175:10:41"
                   },
@@ -3266,10 +2949,10 @@
               ]
             },
             "baseFunctions": [
-              55683
+              56043
             ],
             "documentation": {
-              "id": 48228,
+              "id": 48588,
               "nodeType": "StructuredDocumentation",
               "src": "4874:206:41",
               "text": "@notice\nSets permissions for many operators.\n@dev\nOnly an address can set its own operators.\n@param _operatorData The data that specify the params for each operator being set."
@@ -3281,56 +2964,56 @@
             "name": "setOperators",
             "nameLocation": "5092:12:41",
             "overrides": {
-              "id": 48234,
+              "id": 48594,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "5155:8:41"
             },
             "parameters": {
-              "id": 48233,
+              "id": 48593,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48232,
+                  "id": 48592,
                   "mutability": "mutable",
                   "name": "_operatorData",
                   "nameLocation": "5131:13:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48294,
+                  "scope": 48654,
                   "src": "5105:39:41",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_calldata_ptr_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_calldata_ptr_$dyn_calldata_ptr",
                     "typeString": "struct JBOperatorData[]"
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 48230,
+                      "id": 48590,
                       "nodeType": "UserDefinedTypeName",
                       "pathNode": {
-                        "id": 48229,
+                        "id": 48589,
                         "name": "JBOperatorData",
                         "nameLocations": [
                           "5105:14:41"
                         ],
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 57945,
+                        "referencedDeclaration": 58305,
                         "src": "5105:14:41"
                       },
-                      "referencedDeclaration": 57945,
+                      "referencedDeclaration": 58305,
                       "src": "5105:14:41",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_JBOperatorData_$57945_storage_ptr",
+                        "typeIdentifier": "t_struct$_JBOperatorData_$58305_storage_ptr",
                         "typeString": "struct JBOperatorData"
                       }
                     },
-                    "id": 48231,
+                    "id": 48591,
                     "nodeType": "ArrayTypeName",
                     "src": "5105:16:41",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$57945_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_JBOperatorData_$58305_storage_$dyn_storage_ptr",
                       "typeString": "struct JBOperatorData[]"
                     }
                   },
@@ -3340,44 +3023,44 @@
               "src": "5104:41:41"
             },
             "returnParameters": {
-              "id": 48235,
+              "id": 48595,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "5164:0:41"
             },
-            "scope": 48337,
+            "scope": 48697,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 48336,
+            "id": 48696,
             "nodeType": "FunctionDefinition",
             "src": "6128:366:41",
             "body": {
-              "id": 48335,
+              "id": 48695,
               "nodeType": "Block",
               "src": "6223:271:41",
               "statements": [
                 {
                   "body": {
-                    "id": 48333,
+                    "id": 48693,
                     "nodeType": "Block",
                     "src": "6270:220:41",
                     "statements": [
                       {
                         "assignments": [
-                          48311
+                          48671
                         ],
                         "declarations": [
                           {
                             "constant": false,
-                            "id": 48311,
+                            "id": 48671,
                             "mutability": "mutable",
                             "name": "_index",
                             "nameLocation": "6286:6:41",
                             "nodeType": "VariableDeclaration",
-                            "scope": 48333,
+                            "scope": 48693,
                             "src": "6278:14:41",
                             "stateVariable": false,
                             "storageLocation": "default",
@@ -3386,7 +3069,7 @@
                               "typeString": "uint256"
                             },
                             "typeName": {
-                              "id": 48310,
+                              "id": 48670,
                               "name": "uint256",
                               "nodeType": "ElementaryTypeName",
                               "src": "6278:7:41",
@@ -3398,27 +3081,27 @@
                             "visibility": "internal"
                           }
                         ],
-                        "id": 48315,
+                        "id": 48675,
                         "initialValue": {
                           "baseExpression": {
-                            "id": 48312,
+                            "id": 48672,
                             "name": "_indexes",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48298,
+                            "referencedDeclaration": 48658,
                             "src": "6295:8:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
                               "typeString": "uint256[] calldata"
                             }
                           },
-                          "id": 48314,
+                          "id": 48674,
                           "indexExpression": {
-                            "id": 48313,
+                            "id": 48673,
                             "name": "_i",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48304,
+                            "referencedDeclaration": 48664,
                             "src": "6304:2:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -3445,17 +3128,17 @@
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           },
-                          "id": 48318,
+                          "id": 48678,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftExpression": {
-                            "id": 48316,
+                            "id": 48676,
                             "name": "_index",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48311,
+                            "referencedDeclaration": 48671,
                             "src": "6320:6:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -3466,7 +3149,7 @@
                           "operator": ">",
                           "rightExpression": {
                             "hexValue": "323535",
-                            "id": 48317,
+                            "id": 48677,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
@@ -3486,7 +3169,7 @@
                             "typeString": "bool"
                           }
                         },
-                        "id": 48322,
+                        "id": 48682,
                         "nodeType": "IfStatement",
                         "src": "6316:57:41",
                         "trueBody": {
@@ -3494,18 +3177,18 @@
                             "arguments": [],
                             "expression": {
                               "argumentTypes": [],
-                              "id": 48319,
+                              "id": 48679,
                               "name": "PERMISSION_INDEX_OUT_OF_BOUNDS",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 48073,
+                              "referencedDeclaration": 48433,
                               "src": "6341:30:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_error_pure$__$returns$__$",
                                 "typeString": "function () pure"
                               }
                             },
-                            "id": 48320,
+                            "id": 48680,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -3521,24 +3204,24 @@
                               "typeString": "tuple()"
                             }
                           },
-                          "id": 48321,
+                          "id": 48681,
                           "nodeType": "RevertStatement",
                           "src": "6334:39:41"
                         }
                       },
                       {
                         "expression": {
-                          "id": 48327,
+                          "id": 48687,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 48323,
+                            "id": 48683,
                             "name": "packed",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 48301,
+                            "referencedDeclaration": 48661,
                             "src": "6421:6:41",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint256",
@@ -3552,14 +3235,14 @@
                               "typeIdentifier": "t_uint256",
                               "typeString": "uint256"
                             },
-                            "id": 48326,
+                            "id": 48686,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
                             "lValueRequested": false,
                             "leftExpression": {
                               "hexValue": "31",
-                              "id": 48324,
+                              "id": 48684,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -3576,11 +3259,11 @@
                             "nodeType": "BinaryOperation",
                             "operator": "<<",
                             "rightExpression": {
-                              "id": 48325,
+                              "id": 48685,
                               "name": "_index",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 48311,
+                              "referencedDeclaration": 48671,
                               "src": "6436:6:41",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -3599,18 +3282,18 @@
                             "typeString": "uint256"
                           }
                         },
-                        "id": 48328,
+                        "id": 48688,
                         "nodeType": "ExpressionStatement",
                         "src": "6421:21:41"
                       },
                       {
-                        "id": 48332,
+                        "id": 48692,
                         "nodeType": "UncheckedBlock",
                         "src": "6451:33:41",
                         "statements": [
                           {
                             "expression": {
-                              "id": 48330,
+                              "id": 48690,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
@@ -3620,11 +3303,11 @@
                               "prefix": true,
                               "src": "6471:4:41",
                               "subExpression": {
-                                "id": 48329,
+                                "id": 48689,
                                 "name": "_i",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 48304,
+                                "referencedDeclaration": 48664,
                                 "src": "6473:2:41",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -3636,7 +3319,7 @@
                                 "typeString": "uint256"
                               }
                             },
-                            "id": 48331,
+                            "id": 48691,
                             "nodeType": "ExpressionStatement",
                             "src": "6471:4:41"
                           }
@@ -3649,17 +3332,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 48309,
+                    "id": 48669,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 48306,
+                      "id": 48666,
                       "name": "_i",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 48304,
+                      "referencedDeclaration": 48664,
                       "src": "6246:2:41",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -3670,18 +3353,18 @@
                     "operator": "<",
                     "rightExpression": {
                       "expression": {
-                        "id": 48307,
+                        "id": 48667,
                         "name": "_indexes",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 48298,
+                        "referencedDeclaration": 48658,
                         "src": "6251:8:41",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
                           "typeString": "uint256[] calldata"
                         }
                       },
-                      "id": 48308,
+                      "id": 48668,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -3701,20 +3384,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 48334,
+                  "id": 48694,
                   "initializationExpression": {
                     "assignments": [
-                      48304
+                      48664
                     ],
                     "declarations": [
                       {
                         "constant": false,
-                        "id": 48304,
+                        "id": 48664,
                         "mutability": "mutable",
                         "name": "_i",
                         "nameLocation": "6242:2:41",
                         "nodeType": "VariableDeclaration",
-                        "scope": 48334,
+                        "scope": 48694,
                         "src": "6234:10:41",
                         "stateVariable": false,
                         "storageLocation": "default",
@@ -3723,7 +3406,7 @@
                           "typeString": "uint256"
                         },
                         "typeName": {
-                          "id": 48303,
+                          "id": 48663,
                           "name": "uint256",
                           "nodeType": "ElementaryTypeName",
                           "src": "6234:7:41",
@@ -3735,7 +3418,7 @@
                         "visibility": "internal"
                       }
                     ],
-                    "id": 48305,
+                    "id": 48665,
                     "nodeType": "VariableDeclarationStatement",
                     "src": "6234:10:41"
                   },
@@ -3745,7 +3428,7 @@
               ]
             },
             "documentation": {
-              "id": 48295,
+              "id": 48655,
               "nodeType": "StructuredDocumentation",
               "src": "5937:188:41",
               "text": "@notice \nConverts an array of permission indexes to a packed `uint256`.\n@param _indexes The indexes of the permissions to pack.\n@return packed The packed value."
@@ -3756,17 +3439,17 @@
             "name": "_packedPermissions",
             "nameLocation": "6137:18:41",
             "parameters": {
-              "id": 48299,
+              "id": 48659,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48298,
+                  "id": 48658,
                   "mutability": "mutable",
                   "name": "_indexes",
                   "nameLocation": "6175:8:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48336,
+                  "scope": 48696,
                   "src": "6156:27:41",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -3776,7 +3459,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 48296,
+                      "id": 48656,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "6156:7:41",
@@ -3785,7 +3468,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 48297,
+                    "id": 48657,
                     "nodeType": "ArrayTypeName",
                     "src": "6156:9:41",
                     "typeDescriptions": {
@@ -3799,17 +3482,17 @@
               "src": "6155:29:41"
             },
             "returnParameters": {
-              "id": 48302,
+              "id": 48662,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 48301,
+                  "id": 48661,
                   "mutability": "mutable",
                   "name": "packed",
                   "nameLocation": "6215:6:41",
                   "nodeType": "VariableDeclaration",
-                  "scope": 48336,
+                  "scope": 48696,
                   "src": "6207:14:41",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3818,7 +3501,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 48300,
+                    "id": 48660,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "6207:7:41",
@@ -3832,7 +3515,7 @@
               ],
               "src": "6206:16:41"
             },
-            "scope": 48337,
+            "scope": 48697,
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "private"
@@ -3842,16 +3525,16 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 48070,
+              "id": 48430,
               "name": "IJBOperatorStore",
               "nameLocations": [
                 "471:16:41"
               ],
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 55684,
+              "referencedDeclaration": 56044,
               "src": "471:16:41"
             },
-            "id": 48071,
+            "id": 48431,
             "nodeType": "InheritanceSpecifier",
             "src": "471:16:41"
           }
@@ -3860,21 +3543,21 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "documentation": {
-          "id": 48069,
+          "id": 48429,
           "nodeType": "StructuredDocumentation",
           "src": "103:339:41",
           "text": "@notice\nStores operator permissions for all addresses. Addresses can give permissions to any other address to take specific indexed actions on their behalf.\n@dev\nAdheres to -\nIJBOperatorStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules."
         },
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          48337,
-          55684
+          48697,
+          56044
         ],
         "name": "JBOperatorStore",
         "nameLocation": "452:15:41",
-        "scope": 48338,
+        "scope": 48698,
         "usedErrors": [
-          48073
+          48433
         ]
       }
     ],
