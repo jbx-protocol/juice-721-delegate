@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleMetadata.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBGroupedSplits.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFundAccessConstraints.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol';
 
 /**
   @member data Data that defines the project's first funding cycle. These properties will remain fixed for the duration of the funding cycle.

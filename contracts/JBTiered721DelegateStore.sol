@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol/contracts-v2/contracts/libraries/JBConstants.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
 import './interfaces/IJBTiered721DelegateStore.sol';
 import './structs/JBStored721Tier.sol';
 

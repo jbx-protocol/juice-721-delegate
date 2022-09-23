@@ -1,38 +1,38 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
-import '@jbx-protocol/contracts-v2/contracts/JBController.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBDirectory.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBETHPaymentTerminal.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBERC20PaymentTerminal.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBSingleTokenPaymentTerminalStore.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBFundingCycleStore.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBOperatorStore.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBPrices.sol';
-import {JBProjects} from '@jbx-protocol/contracts-v2/contracts/JBProjects.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBSplitsStore.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBToken.sol';
-import '@jbx-protocol/contracts-v2/contracts/JBTokenStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBController.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBDirectory.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBETHPaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBERC20PaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBSingleTokenPaymentTerminalStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBFundingCycleStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBPrices.sol';
+import {JBProjects} from '@jbx-protocol/juice-contracts-v3/contracts/JBProjects.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBSplitsStore.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBToken.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBTokenStore.sol';
 
-import '@jbx-protocol/contracts-v2/contracts/structs/JBDidPayData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBDidRedeemData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFee.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFundAccessConstraints.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycle.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBFundingCycleMetadata.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBGroupedSplits.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBOperatorData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBPayParamsData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBProjectMetadata.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBRedeemParamsData.sol';
-import '@jbx-protocol/contracts-v2/contracts/structs/JBSplit.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFee.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBOperatorData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplit.sol';
 
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBPaymentTerminal.sol';
-import '@jbx-protocol/contracts-v2/contracts/interfaces/IJBToken.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBToken.sol';
 
-import '@jbx-protocol/contracts-v2/contracts/libraries/JBOperations.sol';
-import '@jbx-protocol/contracts-v2/contracts/libraries/JBFundingCycleMetadataResolver.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 
 import '@paulrberg/contracts/math/PRBMath.sol';
 
@@ -101,7 +101,12 @@ contract TestBaseWorkflow is Test {
     );
     vm.label(address(_jbDirectory), 'JBDirectory');
 
-    _jbTokenStore = new JBTokenStore(_jbOperatorStore, _jbProjects, _jbDirectory);
+    _jbTokenStore = new JBTokenStore(
+      _jbOperatorStore,
+      _jbProjects,
+      _jbDirectory,
+      _jbFundingCycleStore
+    );
     vm.label(address(_jbTokenStore), 'JBTokenStore');
 
     _jbSplitsStore = new JBSplitsStore(_jbOperatorStore, _jbProjects, _jbDirectory);
@@ -153,8 +158,12 @@ contract TestBaseWorkflow is Test {
     });
 
     _metadata = JBFundingCycleMetadata({
-      global: JBGlobalFundingCycleMetadata({allowSetTerminals: false, allowSetController: false}),
-      reservedRate: 5000,
+      global: JBGlobalFundingCycleMetadata({
+        allowSetTerminals: false,
+        allowSetController: false,
+        pauseTransfers: false
+      }),
+      reservedRate: 5000, //50%
       redemptionRate: 5000, //50%
       ballotRedemptionRate: 5000,
       pausePay: false,
@@ -162,14 +171,15 @@ contract TestBaseWorkflow is Test {
       pauseRedeem: false,
       pauseBurn: false,
       allowMinting: true,
-      allowChangeToken: true,
       allowTerminalMigration: false,
       allowControllerMigration: false,
       holdFees: false,
+      preferClaimedTokenOverride: false,
       useTotalOverflowForRedemptions: false,
       useDataSourceForPay: true,
       useDataSourceForRedeem: true,
-      dataSource: address(0)
+      dataSource: address(0),
+      metadata: 0x00
     });
 
     // ---- general setup ----

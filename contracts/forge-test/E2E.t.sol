@@ -1,4 +1,4 @@
-pragma solidity 0.8.6;
+pragma solidity ^0.8.16;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 
@@ -373,14 +373,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(_delegate.getTierVotes(_user, _tier + 1), 0);
 
     // Assert that fren received the voting units
-    assertEq(
-      _delegate.getVotes(_userFren),
-      _frenExpectedVotes
-    );
-    assertEq(
-      _delegate.getTierVotes(_userFren, _tier + 1),
-      _frenExpectedVotes
-    );
+    assertEq(_delegate.getVotes(_userFren), _frenExpectedVotes);
+    assertEq(_delegate.getTierVotes(_userFren, _tier + 1), _frenExpectedVotes);
   }
 
   function testMintAndDelegateVotingUnits(uint8 _tier, bool _selfDelegateBeforeReceive) public {
@@ -576,6 +570,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     )
   {
     JB721TierParams[] memory tierParams = new JB721TierParams[](10);
+
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
         contributionFloor: uint80((i + 1) * 10),
@@ -588,20 +583,22 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         shouldUseBeneficiaryAsDefault: false
       });
     }
+
     NFTRewardDeployerData = JBDeployTiered721DelegateData({
       directory: _jbDirectory,
       name: name,
       symbol: symbol,
+      fundingCycleStore: _jbFundingCycleStore,
+      baseUri: baseUri,
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
-      baseUri: baseUri,
       owner: _projectOwner,
       tiers: tierParams,
       reservedTokenBeneficiary: reserveBeneficiary,
       store: new JBTiered721DelegateStore(),
-      lockReservedTokenChanges: true,
-      lockVotingUnitChanges: true
+      flags: JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     });
+
     launchProjectData = JBLaunchProjectData({
       projectMetadata: _projectMetadata,
       data: _data,
