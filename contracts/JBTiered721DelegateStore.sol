@@ -984,8 +984,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Set the token's ID.
       _tokenId = _tokenIds[_i];
 
+      uint256 _tierId = tierIdOfToken(_tokenId);
+
       // Increment the number burned for the tier.
-      numberOfBurnedFor[msg.sender][tierIdOfToken(_tokenId)]++;
+      numberOfBurnedFor[msg.sender][_tierId]++;
+
+      _storedTierOf[msg.sender][_tierId].remainingQuantity++;
 
       unchecked {
         ++_i;
@@ -1124,7 +1128,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves or burned tokens.
     uint256 _numberOfNonReservesMinted = _storedTier.initialQuantity -
-      (_storedTier.remainingQuantity + numberOfBurnedFor[_nft][_tierId]) -
+      _storedTier.remainingQuantity -
       _reserveTokensMinted;
 
     // Store the numerator common to the next two calculations.
