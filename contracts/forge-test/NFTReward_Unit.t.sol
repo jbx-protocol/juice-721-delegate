@@ -3088,7 +3088,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   {
     vm.assume(_tokenCount > 0);
 
-    vm.expectRevert(abi.encodeWithSelector(JB721Delegate.UNEXPECTED.selector));
+    vm.expectRevert(abi.encodeWithSelector(JB721Delegate.UNEXPECTED_TOKEN_REDEEMED.selector));
 
     delegate.redeemParams(
       JBRedeemParamsData({
