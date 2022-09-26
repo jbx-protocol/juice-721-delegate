@@ -42,7 +42,7 @@ abstract contract JB721Delegate is
   error INVALID_PAYMENT_EVENT();
   error INVALID_REDEMPTION_EVENT();
   error UNAUTHORIZED();
-  error UNEXPECTED();
+  error UNEXPECTED_TOKEN_REDEEMED();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -116,7 +116,7 @@ abstract contract JB721Delegate is
     delegateAllocations[0] = JBRedemptionDelegateAllocation(this, 0);
 
     // Make sure fungible project tokens aren't being redeemed too.
-    if (_data.tokenCount > 0) revert UNEXPECTED();
+    if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
     // If redemption rate is 0, nothing can be reclaimed from the treasury
     if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
