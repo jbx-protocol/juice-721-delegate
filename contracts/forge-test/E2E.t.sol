@@ -632,9 +632,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   // Will:
   // - Mint token
-  // - check the remaining supply within the corresponding tier
+  // - check the remaining reserved supply within the corresponding tier
   // - burn from that tier
-  // - recheck the remaining supply (which should be back to the initial one)
+  // - recheck the remaining reserved supply (which should be back to the initial one)
   function testRedeemToken(uint16 valueSent) external {
     vm.assume(valueSent >= 10 && valueSent < 2000);
 
@@ -687,10 +687,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       .store()
       .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, highestTier);
 
-    // Redeem the highest tier received
-    vm.prank(_beneficiary);
-    IERC721(NFTRewardDataSource).approve(NFTRewardDataSource, tokenId);
-
     // Craft the metadata: redeem the tokenId
     uint256[] memory redemptionId = new uint256[](1);
     redemptionId[0] = tokenId;
@@ -720,14 +716,141 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       1
     );
 
-    // Check: Reserved left to mint is back to one (the minimum)?
+    // Check: Reserved left to mint is back to one (the minimum when none minted yet)
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
         NFTRewardDataSource,
         highestTier
       ),
-      reservedOutstanding - 1
+      1
     );
+  }
+
+  // Will:
+  // - Mint token
+  // - check the remaining supply within the corresponding tier (highest tier == 10, reserved rate is maximum -> 5)
+  // - burn all the corresponding token from that tier
+
+  function testRedeemAll() external {
+    (
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBLaunchProjectData memory launchProjectData
+    ) = createData();
+
+    uint256 tier = 10;
+    uint256 floor = NFTRewardDeployerData.tiers[tier - 1].contributionFloor;
+
+    uint256 projectId = deployer.launchProjectFor(
+      _projectOwner,
+      NFTRewardDeployerData,
+      launchProjectData
+    );
+
+    // Craft the metadata: claim 5 from the tier
+    uint16[] memory rawMetadata = new uint16[](5);
+    for (uint256 i; i < rawMetadata.length; i++) rawMetadata[i] = uint16(tier);
+
+    bytes memory metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      false,
+      false,
+      false,
+      rawMetadata
+    );
+
+    vm.prank(_caller);
+    _jbETHPaymentTerminal.pay{value: floor * rawMetadata.length}(
+      projectId,
+      100, // _amount
+      address(0), // _token
+      _beneficiary,
+      0, // _minReturnedTokens
+      false, //_preferClaimedTokens
+      'Take my money!', // _memo
+      metadata //_delegateMetadata
+    );
+
+    address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+
+    // New token balance
+    uint256 tokenBalance = IERC721(NFTRewardDataSource).balanceOf(_beneficiary);
+
+    // Reserved token available to mint
+    uint256 reservedOutstanding = IJBTiered721Delegate(NFTRewardDataSource)
+      .store()
+      .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, tier);
+
+    // Check: reserved should be == total supply (max reserved rate) == balance of beneficiary (only minter)
+    assertEq(rawMetadata.length, tokenBalance);
+    assertEq(reservedOutstanding, tokenBalance);
+
+    // Craft the metadata to redeem the tokenId's
+    uint256[] memory redemptionId = new uint256[](5);
+    for (uint256 i; i < rawMetadata.length; i++) {
+      uint256 tokenId = _generateTokenId(tier, i + 1);
+      redemptionId[i] = tokenId;
+    }
+
+    bytes memory redemptionMetadata = abi.encode(redemptionId);
+
+    vm.prank(_beneficiary);
+    _jbETHPaymentTerminal.redeemTokensOf({
+      _holder: _beneficiary,
+      _projectId: projectId,
+      _tokenCount: 0,
+      _token: address(0),
+      _minReturnedTokens: 0,
+      _beneficiary: payable(_beneficiary),
+      _memo: 'imma out of here',
+      _metadata: redemptionMetadata
+    });
+
+    // Check: NFT actually redeemed?
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 0);
+
+    // Check: Burn accounted?
+    assertEq(
+      IJBTiered721Delegate(NFTRewardDataSource).store().numberOfBurnedFor(
+        NFTRewardDataSource,
+        tier
+      ),
+      5
+    );
+
+    // Check: Reserved left to mint is decremented to min 1 (as no reserve minted yet)
+    assertEq(
+      IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
+        NFTRewardDataSource,
+        tier
+      ),
+      1
+    );
+
+    // Check: Can mint again the token previously burned
+    vm.prank(_caller);
+    _jbETHPaymentTerminal.pay{value: floor * rawMetadata.length}(
+      projectId,
+      100, // _amount
+      address(0), // _token
+      _beneficiary,
+      0, // _minReturnedTokens
+      false, //_preferClaimedTokens
+      'Take my money!', // _memo
+      metadata //_delegateMetadata
+    );
+
+    // New token balance
+    tokenBalance = IERC721(NFTRewardDataSource).balanceOf(_beneficiary);
+
+    // Reserved token available to mint is back at total supply too
+    reservedOutstanding = IJBTiered721Delegate(NFTRewardDataSource)
+      .store()
+      .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, tier);
+
+    // Check: reserved should be == total supply (max reserved rate) == balance of beneficiary (only minter)
+    assertEq(rawMetadata.length, tokenBalance);
+    assertEq(reservedOutstanding, tokenBalance);
   }
 
   // ----- internal helpers ------
