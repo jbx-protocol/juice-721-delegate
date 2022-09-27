@@ -647,18 +647,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(
     uint16 _tierId,
-    uint16 _initialSupply,
-    uint16 _remainingSupply,
-    uint16 _burnedSupply
+    uint16 _tokenNumber
   ) public {
-    vm.assume(_tierId > 0);
-    uint256 tokenId = _generateTokenId(_tierId, _initialSupply, _remainingSupply, _burnedSupply);
+    vm.assume(_tierId > 0 && _tokenNumber > 0);
+    uint256 tokenId = _generateTokenId(_tierId, _tokenNumber);
 
     assertEq(delegate.store().tierOfTokenId(address(delegate), tokenId).id, _tierId);
   }
 
   function testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber_coverage() public {
-    testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(5, 4, 3, 1);
+    testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(5, 4);
   }
 
   function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNotMinted(uint256 tokenId)
@@ -751,12 +749,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _delegate.transferOwnership(owner);
 
     for (uint256 i = 1; i <= _tiers.length; i++) {
-      uint256 tokenId = _generateTokenId(
-        i,
-        _tiers[i].initialQuantity,
-        _tiers[i].initialQuantity,
-        0
-      );
+      uint256 tokenId = _generateTokenId(i, 1);
 
       _delegate.ForTest_setOwnerOf(tokenId, holder);
 
@@ -803,12 +796,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       if (i >= firstTier && i < lastTier) {
         for (uint256 j; j <= i; j++) {
-          _tierToGetWeightOf[_iterator] = _generateTokenId(
-            i + 1,
-            _tiers[i].initialQuantity,
-            _tiers[i].initialQuantity - j,
-            0
-          ); // "tier" tokens per tier
+          _tierToGetWeightOf[_iterator] = _generateTokenId(i + 1, j + 1); // "tier" tokens per tier
           _iterator++;
         }
         _theoreticalWeight += (i + 1) * (i + 1) * 10; //floor is 10
@@ -1208,10 +1196,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       for (uint256 token = 1; token <= mintable; token++) {
         vm.expectEmit(true, true, true, true, address(_delegate));
-
-        uint256 remaining = initialQuantity - totalMinted; // Stack too deeping...
         emit MintReservedToken(
-          _generateTokenId(tier, initialQuantity, remaining, 0),
+          _generateTokenId(tier, totalMinted + token),
           tier,
           reserveBeneficiary,
           owner
@@ -2421,24 +2407,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay + 3, delegate.store().totalSupply(address(delegate)));
 
     // Correct tier has been minted?
-    assertEq(
-      delegate.ownerOf(
-        _generateTokenId(1, tiers[0].initialQuantity, tiers[0].initialQuantity - 1, 0)
-      ),
-      msg.sender
-    );
-    assertEq(
-      delegate.ownerOf(
-        _generateTokenId(1, tiers[0].initialQuantity, tiers[0].initialQuantity - 2, 0)
-      ),
-      msg.sender
-    );
-    assertEq(
-      delegate.ownerOf(
-        _generateTokenId(2, tiers[1].initialQuantity, tiers[1].initialQuantity - 1, 0)
-      ),
-      msg.sender
-    );
+    assertEq(delegate.ownerOf(_generateTokenId(1, 1)), msg.sender);
+    assertEq(delegate.ownerOf(_generateTokenId(1, 2)), msg.sender);
+    assertEq(delegate.ownerOf(_generateTokenId(2, 1)), msg.sender);
   }
 
   function testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(uint8 _amount) public {
@@ -2487,12 +2458,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       // Correct tier has been minted?
       uint256 highestTier = _amount > 100 ? 10 : _amount / 10;
-      uint256 tokenId = _generateTokenId(
-        highestTier,
-        tiers[highestTier - 1].initialQuantity,
-        tiers[highestTier - 1].initialQuantity - 1,
-        0
-      );
+      uint256 tokenId = _generateTokenId(highestTier, 1);
       assertEq(delegate.ownerOf(tokenId), msg.sender);
     } else assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
   }
@@ -3083,16 +3049,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256[] memory _tokenList = new uint256[](5);
 
     for (uint256 i; i < 5; i++) {
-      _delegate.ForTest_setOwnerOf(
-        _generateTokenId(i + 1, _tierParams[0].initialQuantity, _tierParams[0].initialQuantity, 0),
-        beneficiary
-      );
-      _tokenList[i] = _generateTokenId(
-        i + 1,
-        _tierParams[0].initialQuantity,
-        _tierParams[0].initialQuantity,
-        0
-      );
+      _delegate.ForTest_setOwnerOf(_generateTokenId(i + 1, 1), beneficiary);
+      _tokenList[i] = _generateTokenId(i + 1, 1);
       _weight += (i + 1) * 10;
     }
 
@@ -3206,12 +3164,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
 
-      _tokenList[i] = _generateTokenId(
-        1,
-        tiers[0].initialQuantity,
-        tiers[0].initialQuantity - i - 1,
-        0
-      );
+      _tokenList[i] = _generateTokenId(1, i + 1);
 
       // Assert that a new NFT was minted
       assertEq(_delegate.balanceOf(_holder), i + 1);
@@ -3406,17 +3359,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   // Generate tokenId's based on token number and tier
-  function _generateTokenId(
-    uint256 _tierId,
-    uint256 _initialSupply,
-    uint256 _remainingSupply,
-    uint256 _burnedSupply
-  ) internal pure returns (uint256 tokenId) {
-    // The token nonce
-    uint256 _tokenNumber = _initialSupply;
-    _tokenNumber |= _remainingSupply << 80;
-    _tokenNumber |= _burnedSupply << 160;
-
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
+    internal
+    pure
+    returns (uint256 tokenId)
+  {
     // The tier ID in the first 16 bits.
     tokenId = _tierId;
 
