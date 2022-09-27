@@ -1134,7 +1134,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves or burned tokens.
     uint256 _numberOfNonReservesMinted = _storedTier.initialQuantity -
-      (_storedTier.remainingQuantity + numberOfBurnedFor[_nft][_tierId]) -
+      _storedTier.remainingQuantity -
       _reserveTokensMinted;
 
     // Store the numerator common to the next two calculations.
