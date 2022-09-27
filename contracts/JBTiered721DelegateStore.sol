@@ -749,7 +749,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Generate the tokens.
       tokenIds[_i] = _generateTokenId(
         _tierId,
-        _storedTier.initialQuantity - --_storedTier.remainingQuantity
+        _storedTier.initialQuantity -
+          --_storedTier.remainingQuantity +
+          numberOfBurnedFor[msg.sender][_tierId]
       );
 
       unchecked {
@@ -886,7 +888,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep a reference to the token ID.
         tokenId = _generateTokenId(
           tierId,
-          _bestStoredTier.initialQuantity - --_bestStoredTier.remainingQuantity
+          _bestStoredTier.initialQuantity -
+            --_bestStoredTier.remainingQuantity +
+            numberOfBurnedFor[msg.sender][tierId]
         );
       }
 
@@ -953,7 +957,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep a reference to the token ID.
         tokenIds[_i] = _generateTokenId(
           _tierId,
-          _storedTier.initialQuantity - --_storedTier.remainingQuantity
+          _storedTier.initialQuantity -
+            --_storedTier.remainingQuantity +
+            numberOfBurnedFor[msg.sender][_tierId]
         );
       }
 
