@@ -745,13 +745,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_count);
 
+    // Keep a reference to the number of burned in the tier.
+    uint256 _numberOfBurnedFromTier = numberOfBurnedFor[msg.sender][_tierId];
+
     for (uint256 _i; _i < _count; ) {
       // Generate the tokens.
       tokenIds[_i] = _generateTokenId(
         _tierId,
-        _storedTier.initialQuantity -
-          --_storedTier.remainingQuantity +
-          numberOfBurnedFor[msg.sender][_tierId]
+        _storedTier.initialQuantity - --_storedTier.remainingQuantity + _numberOfBurnedFromTier
       );
 
       unchecked {
