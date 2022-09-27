@@ -883,11 +883,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Make the token ID.
       unchecked {
+        // Update the remaining quantity
+        --_bestStoredTier.remainingQuantity;
+
+        // tokenId is the tier in first 16 bits followed by 240 bits of an unique id
+        uint256 _nonce = _bestStoredTier.initialQuantity;
+        _nonce |= uint256(_bestStoredTier.remainingQuantity) << 80;
+        _nonce |= numberOfBurnedFor[msg.sender][tierId] << 160;
+
         // Keep a reference to the token ID.
-        tokenId = _generateTokenId(
-          tierId,
-          _bestStoredTier.initialQuantity - --_bestStoredTier.remainingQuantity
-        );
+        tokenId = _generateTokenId(tierId, _nonce);
       }
 
       // Set the leftover amount.
@@ -950,11 +955,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Mint the tokens.
       unchecked {
+        // Update the remaining supply
+        --_storedTier.remainingQuantity;
+
+        // tokenId is the tier in first 16 bits followed by 240 bits of an unique id
+        uint256 _nonce = _storedTier.initialQuantity;
+        _nonce |= uint256(_storedTier.remainingQuantity) << 80;
+        _nonce |= numberOfBurnedFor[msg.sender][_tierId] << 160;
+
         // Keep a reference to the token ID.
-        tokenIds[_i] = _generateTokenId(
-          _tierId,
-          _storedTier.initialQuantity - --_storedTier.remainingQuantity
-        );
+        tokenIds[_i] = _generateTokenId(_tierId, _nonce);
       }
 
       // Update the leftover amount;

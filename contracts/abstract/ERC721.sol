@@ -22,7 +22,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   using Address for address;
   using Strings for uint256;
 
-  error ALEADY_MINTED();
+  error ALREADY_MINTED();
   error APPROVE_TO_CALLER();
   error APPROVAL_TO_CURRENT_OWNER();
   error CALLER_NOT_OWNER_OR_APPROVED();
@@ -303,7 +303,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
    */
   function _mint(address to, uint256 tokenId) internal virtual {
     if (to == address(0)) revert MINT_TO_ZERO();
-    if (_exists(tokenId)) revert ALEADY_MINTED();
+    if (_exists(tokenId)) revert ALREADY_MINTED();
 
     _beforeTokenTransfer(address(0), to, tokenId);
 
