@@ -994,8 +994,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Set the token's ID.
       _tokenId = _tokenIds[_i];
 
+      uint256 _tierId = tierIdOfToken(_tokenId);
+
       // Increment the number burned for the tier.
-      numberOfBurnedFor[msg.sender][tierIdOfToken(_tokenId)]++;
+      numberOfBurnedFor[msg.sender][_tierId]++;
+
+      _storedTierOf[msg.sender][_tierId].remainingQuantity++;
 
       unchecked {
         ++_i;
