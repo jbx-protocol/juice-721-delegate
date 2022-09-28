@@ -507,8 +507,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Make sure the contribution is being made in the expected token.
     if (_data.amount.token != contributionToken) return;
 
+    // Keep a reference to the amount of credits the beneficiary already has.
+    uint256 _credits = creditsOf[_data.beneficiary];
+
     // Set the leftover amount as the initial value, including any credits the beneficiary might already have.
-    uint256 _leftoverAmount = _data.amount.value + creditsOf[_data.beneficiary];
+    uint256 _leftoverAmount = _data.amount.value + _credits;
 
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
     bool _expectMintFromExtraFunds;
@@ -557,7 +560,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
         // Increment the leftover amount.
         creditsOf[_data.beneficiary] = _leftoverAmount;
       }
-    }
+    } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
   }
 
   /** 
