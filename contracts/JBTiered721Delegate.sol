@@ -559,7 +559,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
         // Increment the leftover amount.
         creditsOf[_data.beneficiary] = _leftoverAmount;
-      }
+      } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
     } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
   }
 
