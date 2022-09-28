@@ -53,7 +53,7 @@ interface IJBTiered721Delegate {
 
   function contractURI() external view returns (string memory);
 
-  function credits(address _address) external view returns (uint256);
+  function creditsOf(address _address) external view returns (uint256);
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
