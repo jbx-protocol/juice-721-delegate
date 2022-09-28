@@ -1281,6 +1281,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
     }
 
+    uint256 _totalMintable; // Keep a running counter
+
     JBTiered721MintReservesForTiersData[]
       memory _reservedToMint = new JBTiered721MintReservesForTiersData[](nbTiers);
 
@@ -1295,22 +1297,25 @@ contract TestJBTieredNFTRewardDelegate is Test {
         count: mintable
       });
 
+      _totalMintable += mintable;
+
       for (uint256 token = 1; token <= mintable; token++) {
+        uint256 _tokenNonce = totalMinted + token; // Avoid stack too deep
         vm.expectEmit(true, true, true, true, address(_delegate));
         emit MintReservedToken(
-          _generateTokenId(tier, totalMinted + token),
+          _generateTokenId(tier, _tokenNonce),
           tier,
           reserveBeneficiary,
           owner
         );
       }
-
-      vm.prank(owner);
-      _delegate.mintReservesFor(_reservedToMint);
-
-      // Check balance
-      assertEq(_delegate.balanceOf(reserveBeneficiary), mintable * tier);
     }
+
+    vm.prank(owner);
+    _delegate.mintReservesFor(_reservedToMint);
+
+    // Check balance
+    assertEq(_delegate.balanceOf(reserveBeneficiary), _totalMintable);
   }
 
   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(address _newBeneficiary)
