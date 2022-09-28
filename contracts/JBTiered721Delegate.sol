@@ -526,8 +526,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     else if (prices != IJBPrices(address(0)))
       _value = PRBMath.mulDiv(
         _data.amount.value,
-        _data.amount.decimals,
-        prices.priceFor(_data.amount.currency, pricingCurrency, pricingDecimals)
+        10**pricingDecimals,
+        prices.priceFor(_data.amount.currency, pricingCurrency, _data.amount.decimals)
       );
     else return;
 
