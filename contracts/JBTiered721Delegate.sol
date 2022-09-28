@@ -522,12 +522,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   function _processPayment(JBDidPayData calldata _data) internal override {
     // Normalize the currency.
     uint256 _value;
-    if (_data.amount.currency == contributionCurrency) _value = _data.amount.value;
-    else if (prices != address(0))
+    if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
+    else if (prices != IJBPrices(address(0)))
       _value = PRBMath.mulDiv(
         _data.amount.value,
         _data.amount.decimals,
-        prices.priceFor(_data.amount.currency, contributionCurrency, contributionDecimals)
+        prices.priceFor(_data.amount.currency, pricingCurrency, pricingDecimals)
       );
     else return;
 
