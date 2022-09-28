@@ -2468,6 +2468,135 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(1);
   }
 
+  function testJBTieredNFTRewardDelegate_didPay_mintBestTierAndTrackLeftover() public {
+    uint256 _leftover = tiers[0].contributionFloor - 1;
+    uint256 _amount = tiers[0].contributionFloor + _leftover;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Check: credit is updated?
+    assertEq(delegate.creditsOf(beneficiary), _leftover);
+  }
+
+  // Mint a given tier with a leftover, mint another given tier then, if the accumulated credit is enough, mint the best possible tier
+  function testJBTieredNFTRewardDelegate_didPay_mintCorrectTierAndBestTierIfEnoughCredit() public {
+    uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
+    uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](3);
+    _tierIdsToMint[0] = 1;
+    _tierIdsToMint[1] = 1;
+    _tierIdsToMint[2] = 2;
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    // First call will mint the 3 tiers requested + accumulate half of first floor in credit
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+
+    // Second call will mint another 3 tiers requested + mint from the first tier with the credit
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Check: total supply has increased?
+    assertEq(_totalSupplyBefore + 4, delegate.store().totalSupply(address(delegate)));
+
+    // Check: correct tiers have been minted
+    // .. On first pay?
+    assertEq(delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(1, 2)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(2, 1)), beneficiary);
+
+    // ... On second pay?
+    assertEq(delegate.ownerOf(_generateTokenId(1, 3)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(1, 4)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(1, 5)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(2, 2)), beneficiary);
+
+    // Check: no credit is left?
+    assertEq(delegate.creditsOf(beneficiary), 0);
+  }
+
   // If the tier has been removed, revert
   function testJBTieredNFTRewardDelegate_didPay_revertIfTierRemoved() public {
     // Mock the directory call
@@ -2780,6 +2909,49 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   function testJBTieredNFTRewardDelegate_didPay_doNotMintIfNotUsingCorrectToken_coverage() public {
     testJBTieredNFTRewardDelegate_didPay_doNotMintIfNotUsingCorrectToken(beneficiary);
+  }
+
+  function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftover() public {
+    uint256 _leftover = tiers[1].contributionFloor - 1;
+    uint256 _amount = tiers[0].contributionFloor + _leftover;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend = true;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
+        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
   }
 
   // ----------------
