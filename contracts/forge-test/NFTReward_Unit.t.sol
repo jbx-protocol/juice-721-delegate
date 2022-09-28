@@ -1204,8 +1204,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
       }
 
+      JBTiered721MintReservesForTiersData[]
+        memory _data = new JBTiered721MintReservesForTiersData[](1);
+      _data[0] = JBTiered721MintReservesForTiersData(tier, mintable);
+
       vm.prank(owner);
-      _delegate.mintReservesFor(tier, mintable);
+      _delegate.mintReservesFor(_data);
 
       // Check balance
       assertEq(_delegate.balanceOf(reserveBeneficiary), mintable * tier);
@@ -1331,8 +1335,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       vm.expectRevert(
         abi.encodeWithSelector(JBTiered721DelegateStore.INSUFFICIENT_RESERVES.selector)
       );
+
+      JBTiered721MintReservesForTiersData[]
+        memory _data = new JBTiered721MintReservesForTiersData[](1);
+      _data[0] = JBTiered721MintReservesForTiersData(i, amount);
+
       vm.prank(owner);
-      _delegate.mintReservesFor(i, amount);
+      _delegate.mintReservesFor(_data);
     }
   }
 

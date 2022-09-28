@@ -535,9 +535,14 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       1
     );
 
+    JBTiered721MintReservesForTiersData[] memory _data = new JBTiered721MintReservesForTiersData[](
+      1
+    );
+    _data[0] = JBTiered721MintReservesForTiersData(highestTier, 1);
+
     // Mint the reserved token
     vm.prank(_projectOwner);
-    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
+    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(_data);
 
     // Check: NFT received?
     assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 1);
@@ -557,7 +562,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     vm.prank(_projectOwner);
-    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
+    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(_data);
 
     uint16[] memory rawMetadata = new uint16[](1);
     rawMetadata[0] = uint16(highestTier); // reward tier
@@ -607,7 +612,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Mint the reserved token
     vm.prank(_projectOwner);
-    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
+    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(_data);
 
     // Check: NFT received?
     assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 2);
@@ -627,7 +632,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     vm.prank(_projectOwner);
-    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
+    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(_data);
   }
 
   // Will:

@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import './../structs/JB721TierParams.sol';
+import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './IJBTiered721DelegateStore.sol';
 
 interface IJBTiered721Delegate {
@@ -76,7 +77,7 @@ interface IJBTiered721Delegate {
 
   function setTierDelegate(address _delegatee, uint256 _tierId) external;
 
-  function mintReservesFor(uint256 _tierId, uint256 _count) external;
+  function mintReservesFor(JBTiered721MintReservesForTiersData[] memory _mintReservesData) external;
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
 }

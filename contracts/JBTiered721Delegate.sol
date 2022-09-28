@@ -292,10 +292,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @notice
     Mint reserved tokens within the tier for the provided value.
 
-    @param _tierId The ID of the tier to mint within.
-    @param _count The number of reserved tokens to mint. 
+    @param _mintReservesForTiersData Contains information about how many reserved tokens to mint for each tier.
   */
-  function mintReservesFor(uint256 _tierId, uint256 _count) external override {
+  function mintReservesFor(JBTiered721MintReservesForTiersData[] memory _mintReservesForTiersData)
+    external
+    override
+  {
     // Get a reference to the project's current funding cycle.
     JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
 
@@ -306,23 +308,39 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
       )
     ) revert RESERVED_TOKEN_MINTING_PAUSED();
 
-    // Record the minted reserves for the tier.
-    uint256[] memory _tokenIds = store.recordMintReservesFor(_tierId, _count);
+    // Keep a reference to the number of tiers there are to mint reserved for.
+    uint256 _numberOfTiers = _mintReservesForTiersData.length;
 
-    // Keep a reference to the reserved token beneficiary.
-    address _reservedTokenBeneficiary = store.reservedTokenBeneficiaryOf(address(this), _tierId);
+    // Mint reserved for each tier.
+    for (uint256 _i; _i < _numberOfTiers; ) {
+      // Get a reference to the data being iterated on.
+      JBTiered721MintReservesForTiersData memory _data = _mintReservesForTiersData[_i];
 
-    // Keep a reference to the token ID being iterated on.
-    uint256 _tokenId;
+      // Record the minted reserves for the tier.
+      uint256[] memory _tokenIds = store.recordMintReservesFor(_data.tierId, _data.count);
 
-    for (uint256 _i; _i < _count; ) {
-      // Set the token ID.
-      _tokenId = _tokenIds[_i];
+      // Keep a reference to the reserved token beneficiary.
+      address _reservedTokenBeneficiary = store.reservedTokenBeneficiaryOf(
+        address(this),
+        _data.tierId
+      );
 
-      // Mint the token.
-      _mint(_reservedTokenBeneficiary, _tokenId);
+      // Keep a reference to the token ID being iterated on.
+      uint256 _tokenId;
 
-      emit MintReservedToken(_tokenId, _tierId, _reservedTokenBeneficiary, msg.sender);
+      for (uint256 _j; _j < _data.count; ) {
+        // Set the token ID.
+        _tokenId = _tokenIds[_j];
+
+        // Mint the token.
+        _mint(_reservedTokenBeneficiary, _tokenId);
+
+        emit MintReservedToken(_tokenId, _data.tierId, _reservedTokenBeneficiary, msg.sender);
+
+        unchecked {
+          ++_j;
+        }
+      }
 
       unchecked {
         ++_i;
