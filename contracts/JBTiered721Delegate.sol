@@ -66,6 +66,14 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   address public immutable override contributionToken = JBTokens.ETH;
 
+  /** 
+    @notice
+    The amount that each address has paid that has not yet contribute to the minting of an NFT. 
+
+    _address The address to which the credits belong.
+  */
+  mapping(address => uint256) public override credits;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -495,8 +503,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Make sure the contribution is being made in the expected token.
     if (_data.amount.token != contributionToken) return;
 
-    // Set the leftover amount as the initial value.
-    uint256 _leftoverAmount = _data.amount.value;
+    // Set the leftover amount as the initial value, including any credits the beneficiary might already have.
+    uint256 _leftoverAmount = _data.amount.value + credits[_data.beneficiary];
 
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
     bool _expectMintFromExtraFunds;
@@ -538,8 +546,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
         _expectMintFromExtraFunds
       );
 
-    // Make sure there are no leftover funds after minting if not expected.
-    if (_dontOverspend && _leftoverAmount != 0) revert OVERSPENDING();
+    if (_leftoverAmount != 0) {
+      // Make sure there are no leftover funds after minting if not expected.
+      if (_dontOverspend) revert OVERSPENDING();
+
+      // Increment the leftover amount.
+      credits[_data.beneficiary] = _leftoverAmount;
+    }
   }
 
   /** 
