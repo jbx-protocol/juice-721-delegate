@@ -52,9 +52,9 @@ interface IJBTiered721Delegate {
 
   function prices() external view returns (IJBPrices);
 
-  function tierCurrency() external view returns (uint256);
+  function pricingCurrency() external view returns (uint256);
 
-  function tierDecimals() external view returns (uint256);
+  function pricingDecimals() external view returns (uint256);
 
   function contractURI() external view returns (string memory);
 

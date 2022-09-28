@@ -71,13 +71,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @notice
     The currency that is accepted when minting tier NFTs. 
   */
-  uint256 public immutable override pricingCurrency = 1;
+  uint256 public immutable override pricingCurrency;
 
   /** 
     @notice
     The currency that is accepted when minting tier NFTs. 
   */
-  uint256 public immutable override pricingDecimals = 18;
+  uint256 public immutable override pricingDecimals;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
