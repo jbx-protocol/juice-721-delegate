@@ -60,11 +60,23 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   IJBFundingCycleStore public immutable override fundingCycleStore;
 
+  /**
+    @notice
+    The contract that exposes price feeds.
+  */
+  IJBPrices public immutable override prices;
+
   /** 
     @notice
-    The token that is accepted when minting NFTs. 
+    The currency that is accepted when minting NFTs. 
   */
-  address public immutable override contributionToken = JBTokens.ETH;
+  uint256 public immutable override contributionCurrency = 1;
+
+  /** 
+    @notice
+    The currency that is accepted when minting NFTs. 
+  */
+  uint256 public immutable override contributionDecimals = 18;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -251,6 +263,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
     @param _fundingCycleStore A contract storing all funding cycle configurations.
+    @param _prices A contract that exposes price feeds.
     @param _baseUri A URI to use as a base for full token URIs.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
@@ -264,6 +277,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     string memory _name,
     string memory _symbol,
     IJBFundingCycleStore _fundingCycleStore,
+    IJBPrices _prices,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
@@ -273,6 +287,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   ) JB721Delegate(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
     fundingCycleStore = _fundingCycleStore;
     store = _store;
+    prices = _prices;
 
     // Store the base URI if provided.
     if (bytes(_baseUri).length != 0) _store.recordSetBaseUri(_baseUri);
@@ -504,14 +519,20 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _data The Juicebox standard project contribution data.
   */
   function _processPayment(JBDidPayData calldata _data) internal override {
-    // Make sure the contribution is being made in the expected token.
-    if (_data.amount.token != contributionToken) return;
+    // Normalize the currency.
+    uint256 _value = _data.amount.currency == contributionCurrency
+      ? _data.amount.value
+      : PRBMath.mulDiv(
+        _data.amount.value,
+        _data.amount.decimals,
+        prices.priceFor(_data.amount.currency, contributionCurrency, contributionDecimals)
+      );
 
     // Keep a reference to the amount of credits the beneficiary already has.
     uint256 _credits = creditsOf[_data.beneficiary];
 
     // Set the leftover amount as the initial value, including any credits the beneficiary might already have.
-    uint256 _leftoverAmount = _data.amount.value + _credits;
+    uint256 _leftoverAmount = _value + _credits;
 
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
     bool _expectMintFromExtraFunds;
