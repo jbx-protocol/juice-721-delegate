@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
@@ -52,9 +51,9 @@ interface IJBTiered721Delegate {
 
   function prices() external view returns (IJBPrices);
 
-  function contributionCurrency() external view returns (uint256);
+  function tierCurrency() external view returns (uint256);
 
-  function contributionDecimals() external view returns (uint256);
+  function tierDecimals() external view returns (uint256);
 
   function contractURI() external view returns (string memory);
 
