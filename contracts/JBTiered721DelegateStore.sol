@@ -745,11 +745,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_count);
 
+    // Keep a reference to the number of burned in the tier.
+    uint256 _numberOfBurnedFromTier = numberOfBurnedFor[msg.sender][_tierId];
+
     for (uint256 _i; _i < _count; ) {
       // Generate the tokens.
       tokenIds[_i] = _generateTokenId(
         _tierId,
-        _storedTier.initialQuantity - --_storedTier.remainingQuantity
+        _storedTier.initialQuantity - --_storedTier.remainingQuantity + _numberOfBurnedFromTier
       );
 
       unchecked {
@@ -886,7 +889,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep a reference to the token ID.
         tokenId = _generateTokenId(
           tierId,
-          _bestStoredTier.initialQuantity - --_bestStoredTier.remainingQuantity
+          _bestStoredTier.initialQuantity -
+            --_bestStoredTier.remainingQuantity +
+            numberOfBurnedFor[msg.sender][tierId]
         );
       }
 
@@ -953,7 +958,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep a reference to the token ID.
         tokenIds[_i] = _generateTokenId(
           _tierId,
-          _storedTier.initialQuantity - --_storedTier.remainingQuantity
+          _storedTier.initialQuantity -
+            --_storedTier.remainingQuantity +
+            numberOfBurnedFor[msg.sender][_tierId]
         );
       }
 
@@ -984,8 +991,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Set the token's ID.
       _tokenId = _tokenIds[_i];
 
+      uint256 _tierId = tierIdOfToken(_tokenId);
+
       // Increment the number burned for the tier.
-      numberOfBurnedFor[msg.sender][tierIdOfToken(_tokenId)]++;
+      numberOfBurnedFor[msg.sender][_tierId]++;
+
+      _storedTierOf[msg.sender][_tierId].remainingQuantity++;
 
       unchecked {
         ++_i;
@@ -1124,7 +1135,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves or burned tokens.
     uint256 _numberOfNonReservesMinted = _storedTier.initialQuantity -
-      (_storedTier.remainingQuantity + numberOfBurnedFor[_nft][_tierId]) -
+      _storedTier.remainingQuantity -
       _reserveTokensMinted;
 
     // Store the numerator common to the next two calculations.
