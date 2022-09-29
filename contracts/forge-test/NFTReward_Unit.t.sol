@@ -1212,6 +1212,112 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  function testJBTieredNFTRewardDelegate_mintReservesFor_mintMultipleReservedToken() public {
+    // 120 are minted, 1 out of these is reserved, meaning 119 non-reserved are minted. The reservedRate is 40% (4000/10000)
+    // meaning there are 47 total reserved to mint, 1 being already minted, 46 are outstanding
+    uint256 initialQuantity = 200;
+    uint256 totalMinted = 120;
+    uint256 reservedMinted = 1;
+    uint256 reservedRate = 4000;
+    uint256 nbTiers = 3;
+
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      abi.encode(owner)
+    );
+
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
+
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+    );
+
+    _delegate.transferOwnership(owner);
+
+    for (uint256 i; i < nbTiers; i++) {
+      _delegate.test_store().ForTest_setTier(
+        address(_delegate),
+        i + 1,
+        JBStored721Tier({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(initialQuantity - totalMinted),
+          initialQuantity: uint40(initialQuantity),
+          votingUnits: uint16(0),
+          reservedRate: uint16(reservedRate)
+        })
+      );
+
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
+    }
+
+    uint256 _totalMintable; // Keep a running counter
+
+    JBTiered721MintReservesForTiersData[]
+      memory _reservedToMint = new JBTiered721MintReservesForTiersData[](nbTiers);
+
+    for (uint256 tier = 1; tier <= nbTiers; tier++) {
+      uint256 mintable = _delegate.test_store().numberOfReservedTokensOutstandingFor(
+        address(_delegate),
+        tier
+      );
+
+      _reservedToMint[tier - 1] = JBTiered721MintReservesForTiersData({
+        tierId: tier,
+        count: mintable
+      });
+
+      _totalMintable += mintable;
+
+      for (uint256 token = 1; token <= mintable; token++) {
+        uint256 _tokenNonce = totalMinted + token; // Avoid stack too deep
+        vm.expectEmit(true, true, true, true, address(_delegate));
+        emit MintReservedToken(
+          _generateTokenId(tier, _tokenNonce),
+          tier,
+          reserveBeneficiary,
+          owner
+        );
+      }
+    }
+
+    vm.prank(owner);
+    _delegate.mintReservesFor(_reservedToMint);
+
+    // Check balance
+    assertEq(_delegate.balanceOf(reserveBeneficiary), _totalMintable);
+  }
+
   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(address _newBeneficiary)
     public
   {
