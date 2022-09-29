@@ -2,7 +2,7 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
-import './../interfaces/IJB721PricingResolver.sol';
+import './../interfaces/IJB721ValueResolver.sol';
 import './JB721TierParams.sol';
 
 /**
@@ -17,5 +17,5 @@ struct JB721PricingParams {
   uint256 currency;
   uint256 decimals;
   IJBPrices prices;
-  IJB721PricingResolver resolver;
+  IJB721ValueResolver resolver;
 }

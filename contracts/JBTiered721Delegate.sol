@@ -81,9 +81,9 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /** 
     @notice
-    A contract that can be used to return custom prices. 
+    A contract that can be used to return custom values from contributions. 
   */
-  IJB721PricingResolver public immutable override pricingResolver;
+  IJB721ValueResolver public immutable override valueResolver;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -597,8 +597,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @return The value of the contribution in terms of this contract's native pricing parameters.
   */
   function _valueOf(JBTokenAmount memory _amount, address _beneficiary) internal returns (uint256) {
-    // If there's a price resolver, resolve the price from it.
-    if (pricingResolver != IJB721PricingResolver(address(0)))
+    // If there's a value resolver, resolve the value from it.
+    if (pricingResolver != IJB721ValueResolver(address(0)))
       return pricingResolver.valueOf(_amount, _beneficiary, pricingCurrency, pricingDecimals);
 
     // If the currencies match, return the value contributed.
