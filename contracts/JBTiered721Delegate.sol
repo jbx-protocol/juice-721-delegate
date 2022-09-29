@@ -599,13 +599,19 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
       // Mint rewards if they were specified.
       if (_tierIdsToMint.length != 0)
-        _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
+        _leftoverAmount = _mintAll(
+          _leftoverAmount,
+          _data.amount.currency,
+          _tierIdsToMint,
+          _data.beneficiary
+        );
     }
 
     // If there are funds leftover, mint the best available with it.
     if (_leftoverAmount != 0) {
       _leftoverAmount = _mintBestAvailableTier(
         _leftoverAmount,
+        _data.amount.currency,
         _data.beneficiary,
         _expectMintFromExtraFunds
       );
@@ -636,6 +642,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.
+    @param _currency The currency being paid in.
     @param _beneficiary The address to mint for.
     @param _expectMint A flag indicating if a mint was expected.
 
@@ -643,6 +650,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function _mintBestAvailableTier(
     uint256 _amount,
+    uint256 _currency,
     address _beneficiary,
     bool _expectMint
   ) internal returns (uint256 leftoverAmount) {
@@ -653,7 +661,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256 _tierId;
 
     // Record the mint.
-    (_tokenId, _tierId, leftoverAmount) = store.recordMintBestAvailableTier(_amount);
+    (_tokenId, _tierId, leftoverAmount) = store.recordMintBestAvailableTier(
+      _amount,
+      _beneficiary,
+      _currency
+    );
 
     // If there's no best tier, return or revert.
     if (_tokenId == 0) {
@@ -673,6 +685,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     Mints a token in all provided tiers.
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
+    @param _currency The currency being paid in.
     @param _mintTierIds An array of tier IDs that are intended to be minted.
     @param _beneficiary The address to mint for.
 
@@ -680,6 +693,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function _mintAll(
     uint256 _amount,
+    uint256 _currency,
     uint16[] memory _mintTierIds,
     address _beneficiary
   ) internal returns (uint256 leftoverAmount) {
@@ -687,7 +701,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256[] memory _tokenIds;
 
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds);
+    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds, _beneficiary, _currency);
 
     // Get a reference to the number of mints.
     uint256 _mintsLength = _tokenIds.length;
