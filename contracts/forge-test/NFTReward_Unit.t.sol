@@ -2723,6 +2723,86 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.creditsOf(beneficiary), 0);
   }
 
+  // Terminal is in currency 1 with 18 decimal, delegate is in currency 2, with 9 decimals
+  // The conversion rate is set at 1:2
+  function testJBTieredNFTRewardDelegate_didPay_mintCorrectTierWithAnotherCurrency() public {
+    address _jbPrice = address(bytes20(keccak256('MockJBPrice')));
+
+    vm.etch(_jbPrice, new bytes(1));
+
+    JBTiered721Delegate _delegate = new JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({tiers: tiers, currency: 2, decimals: 9, prices: IJBPrices(_jbPrice)}),
+      new JBTiered721DelegateStore(),
+      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+    );
+
+    _delegate.transferOwnership(owner);
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    // Mock the price oracle call
+    uint256 _amountInOtherCurrency = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor;
+    uint256 _amountInEth = (tiers[0].contributionFloor * 2 + tiers[1].contributionFloor) * 2;
+
+    vm.mockCall(_jbPrice, abi.encodeCall(IJBPrices.priceFor, (1, 2, 18)), abi.encode(2 * 10**9));
+
+    uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(delegate));
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](3);
+    _tierIdsToMint[0] = 1;
+    _tierIdsToMint[1] = 1;
+    _tierIdsToMint[2] = 2;
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    _delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amountInEth, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Make sure a new NFT was minted
+    assertEq(_totalSupplyBeforePay + 3, _delegate.store().totalSupply(address(_delegate)));
+
+    // Correct tier has been minted?
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 1)), msg.sender);
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 2)), msg.sender);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 1)), msg.sender);
+  }
+
   // If the tier has been removed, revert
   function testJBTieredNFTRewardDelegate_didPay_revertIfTierRemoved() public {
     // Mock the directory call
