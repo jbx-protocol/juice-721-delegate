@@ -892,7 +892,21 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the contribution floor.
       uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
         ? _storedTier.contributionFloor
-        : _resolver.priceFor(_storedTier, _beneficiary, _currency);
+        : _resolver.priceFor(
+          JB721Tier({
+            id: _currentSortIndex,
+            contributionFloor: _storedTier.contributionFloor,
+            lockedUntil: _storedTier.lockedUntil,
+            remainingQuantity: _storedTier.remainingQuantity,
+            initialQuantity: _storedTier.initialQuantity,
+            votingUnits: _storedTier.votingUnits,
+            reservedRate: _storedTier.reservedRate,
+            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _currentSortIndex),
+            encodedIPFSUri: encodedIPFSUriOf[msg.sender][_currentSortIndex]
+          }),
+          _beneficiary,
+          _currency
+        );
 
       // If the contribution floor has gone over, break out of the loop.
       if (_contributionFloor > _amount) _currentSortIndex = 0;
@@ -988,7 +1002,21 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the contribution floor.
       uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
         ? _storedTier.contributionFloor
-        : _resolver.priceFor(_storedTier, _beneficiary, _currency);
+        : _resolver.priceFor(
+          JB721Tier({
+            id: _tierId,
+            contributionFloor: _storedTier.contributionFloor,
+            lockedUntil: _storedTier.lockedUntil,
+            remainingQuantity: _storedTier.remainingQuantity,
+            initialQuantity: _storedTier.initialQuantity,
+            votingUnits: _storedTier.votingUnits,
+            reservedRate: _storedTier.reservedRate,
+            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _tierId),
+            encodedIPFSUri: encodedIPFSUriOf[msg.sender][_tierId]
+          }),
+          _beneficiary,
+          _currency
+        );
 
       // Make sure the amount meets the tier's contribution floor.
       if (_contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
