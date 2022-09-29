@@ -294,7 +294,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     store = _store;
     pricingCurrency = _pricing.currency;
     pricingDecimals = _pricing.decimals;
-    pricingResolver = _pricing.resolver;
+    valueResolver = _pricing.resolver;
     prices = _pricing.prices;
 
     // Store the base URI if provided.
@@ -598,8 +598,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function _valueOf(JBTokenAmount memory _amount, address _beneficiary) internal returns (uint256) {
     // If there's a value resolver, resolve the value from it.
-    if (pricingResolver != IJB721ValueResolver(address(0)))
-      return pricingResolver.valueOf(_amount, _beneficiary, pricingCurrency, pricingDecimals);
+    if (valueResolver != IJB721ValueResolver(address(0)))
+      return valueResolver.valueOf(_amount, _beneficiary, pricingCurrency, pricingDecimals);
 
     // If the currencies match, return the value contributed.
     if (_amount.currency == pricingCurrency) return _amount.value;
