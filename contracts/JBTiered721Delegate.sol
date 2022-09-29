@@ -319,6 +319,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
       // Mint for the tier.
       mintReservesFor(_data.tierId, _data.count);
+
+      unchecked {
+        ++_i;
+      }
     }
   }
 
