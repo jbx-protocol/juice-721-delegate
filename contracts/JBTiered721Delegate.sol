@@ -476,7 +476,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function setPricingResolver(IJB721PricingResolver _pricingResolver) external override onlyOwner {
     // Make sure pricing resolver changes aren't locked.
-    if (store.lockPricingResolverChanges) revert PRICING_RESOLVER_CHANGES_LCOKED();
+    if (store.lockPricingResolverChangesFor(address(this)))
+      revert PRICING_RESOLVER_CHANGES_LCOKED();
 
     // Store the new value.
     store.recordSetPricingResolver(_pricingResolver);
