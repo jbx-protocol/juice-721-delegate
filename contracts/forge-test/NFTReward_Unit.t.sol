@@ -169,7 +169,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      tiers,
+      JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     );
@@ -1042,7 +1042,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      _tierParams,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     );
@@ -1107,7 +1112,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      _tiers,
+      JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
       _dataSourceStore,
       JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     );
@@ -1491,7 +1496,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      _tierParams,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
@@ -1768,7 +1778,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      _tierParams,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
@@ -2193,7 +2208,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      _tierParams,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
     );
@@ -2400,8 +2420,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 0, 0), // 1 wei below the minimum amount
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 18, JBCurrencies.ETH), // 1 wei below the minimum amount
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2446,8 +2466,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor + 10, 0, 0), // 10 above the floor
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor + 10, 18, JBCurrencies.ETH), // 10 above the floor
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2497,10 +2517,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTokenAmount(
           JBTokens.ETH,
           tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
-          0,
-          0
+          18,
+          JBCurrencies.ETH
         ),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2548,8 +2568,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2605,8 +2625,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         beneficiary,
         false,
@@ -2655,8 +2675,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         beneficiary,
         false,
@@ -2674,8 +2694,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         beneficiary,
         false,
@@ -2747,10 +2767,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTokenAmount(
           JBTokens.ETH,
           tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
-          0,
-          0
+          18,
+          JBCurrencies.ETH
         ),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2808,10 +2828,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTokenAmount(
           JBTokens.ETH,
           tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
-          0,
-          0
+          18,
+          JBCurrencies.ETH
         ),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2866,10 +2886,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTokenAmount(
           JBTokens.ETH,
           tiers[0].contributionFloor * 2 + tiers[1].contributionFloor - 1,
-          0,
-          0
+          18,
+          JBCurrencies.ETH
         ),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2921,8 +2941,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           msg.sender,
           projectId,
           0,
-          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
-          JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 18, JBCurrencies.ETH),
+          JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
           0,
           msg.sender,
           false,
@@ -2963,8 +2983,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(address(0), 0, 0, 0),
-        JBTokenAmount(address(0), 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(address(0), 0, 18, JBCurrencies.ETH),
+        JBTokenAmount(address(0), 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -2999,8 +3019,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(token, 0, 0, 0),
-        JBTokenAmount(token, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(token, 0, 18, JBCurrencies.ETH),
+        JBTokenAmount(token, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
         false,
@@ -3049,8 +3069,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, _amount, 0, 0),
-        JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         beneficiary,
         false,
@@ -3144,7 +3164,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tokenCount: 0,
           totalSupply: 0,
           overflow: _overflow,
-          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+          reclaimAmount: JBTokenAmount({
+            token: address(0),
+            value: 0,
+            decimals: 18,
+            currency: JBCurrencies.ETH
+          }),
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
@@ -3249,7 +3274,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tokenCount: 0,
           totalSupply: 0,
           overflow: _overflow,
-          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+          reclaimAmount: JBTokenAmount({
+            token: address(0),
+            value: 0,
+            decimals: 18,
+            currency: JBCurrencies.ETH
+          }),
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
@@ -3345,7 +3375,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tokenCount: 0,
           totalSupply: 0,
           overflow: _overflow,
-          reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+          reclaimAmount: JBTokenAmount({
+            token: address(0),
+            value: 0,
+            decimals: 18,
+            currency: JBCurrencies.ETH
+          }),
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
@@ -3377,7 +3412,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tokenCount: _tokenCount,
         totalSupply: 0,
         overflow: 100,
-        reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
+        reclaimAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }),
         useTotalOverflow: true,
         redemptionRate: 100,
         memo: '',
@@ -3432,8 +3472,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           _holder,
           projectId,
           0,
-          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 0, 0),
-          JBTokenAmount(JBTokens.ETH, 0, 0, 0), // 0 fwd to delegate
+          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 18, JBCurrencies.ETH),
+          JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
           0,
           _holder,
           false,
@@ -3455,8 +3495,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId: projectId,
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
-        reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
-        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
+        reclaimedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }),
+        forwardedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)
@@ -3499,8 +3549,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId: _wrongProjectId,
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
-        reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
-        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
+        reclaimedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }),
+        forwardedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }), //sv 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)
@@ -3535,8 +3595,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId: projectId,
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
-        reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
-        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
+        reclaimedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }),
+        forwardedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)
@@ -3589,8 +3659,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         projectId: projectId,
         currentFundingCycleConfiguration: 1,
         projectTokenCount: 0,
-        reclaimedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}),
-        forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 0, currency: 0}), // 0 fwd to delegate
+        reclaimedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }),
+        forwardedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }), // 0 fwd to delegate
         beneficiary: payable(_wrongHolder),
         memo: 'thy shall redeem',
         metadata: abi.encode(_tokenList)
@@ -3810,7 +3890,7 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
       _baseUri,
       _tokenUriResolver,
       _contractUri,
-      _tiers,
+      JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
       _test_store,
       _flags
     )
