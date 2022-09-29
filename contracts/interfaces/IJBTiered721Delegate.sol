@@ -91,4 +91,6 @@ interface IJBTiered721Delegate {
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
+
+  function setPricingResolver(IJB721PricingResolver _pricingResolver) external;
 }
