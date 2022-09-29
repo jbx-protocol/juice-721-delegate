@@ -10,5 +10,5 @@ interface IJB721PricingResolver is IERC165 {
     JBStored721Tier calldata _tier,
     address _beneficiary,
     uint256 _currency
-  ) external returns (uint256);
+  ) external view returns (uint256);
 }
