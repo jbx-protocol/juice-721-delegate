@@ -154,7 +154,12 @@ contract RinkebyLaunchProjectFor is Script {
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
       owner: _projectOwner,
-      tiers: tiers,
+      pricing: JB721PricingParams({
+        tiers: tiers,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
       reservedTokenBeneficiary: msg.sender,
       store: IJBTiered721DelegateStore(STORE),
       flags: JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
