@@ -97,7 +97,11 @@ interface IJBTiered721DelegateStore {
     external
     returns (uint256[] memory tokenIds);
 
-  function recordMintBestAvailableTier(uint256 _amount)
+  function recordMintBestAvailableTier(
+    uint256 _amount,
+    address _beneficiary,
+    uint256 _currency
+  )
     external
     returns (
       uint256 tokenId,
@@ -109,9 +113,12 @@ interface IJBTiered721DelegateStore {
 
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;
 
-  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
-    external
-    returns (uint256[] memory tokenIds, uint256 leftoverAmount);
+  function recordMint(
+    uint256 _amount,
+    uint16[] calldata _tierIds,
+    address _beneficiary,
+    uint256 _currency
+  ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
   function recordTransferForTier(
     uint256 _tierId,
@@ -128,6 +135,8 @@ interface IJBTiered721DelegateStore {
   function recordSetContractUri(string memory _uri) external;
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
+
+  function recordSetPricingResolver(IJB721PricingResolver _resolver) external;
 
   function recordLockVotingUnitChanges(bool _flag) external;
 

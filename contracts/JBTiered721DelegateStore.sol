@@ -848,12 +848,18 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.
+    @param _beneficiary The beneficiary of the mints.
+    @param _currency The currency used to pay for the mints.
 
     @return tokenId The token ID minted.
     @return tierId The ID of the tier minted from.
     @return leftoverAmount The amount leftover after the mint. 
   */
-  function recordMintBestAvailableTier(uint256 _amount)
+  function recordMintBestAvailableTier(
+    uint256 _amount,
+    address _beneficiary,
+    uint256 _currency
+  )
     external
     override
     returns (
@@ -873,12 +879,23 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // If there's no sort index, start with the first index.
     uint256 _currentSortIndex = _firstSortIndexOf(msg.sender);
 
+    // Get a reference to the resolver;
+    IJB721PricingResolver _resolver = pricingResolverOf[msg.sender];
+
+    // Keep a reference to the best contribution floor.
+    uint256 _bestContributionFloor;
+
     while (_currentSortIndex != 0) {
       // Set the tier being iterated on. Tier's are 1 indexed.
       _storedTier = _storedTierOf[msg.sender][_currentSortIndex];
 
+      // Keep a reference to the contribution floor.
+      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
+        ? _storedTier.contributionFloor
+        : _resolver.priceFor(_storedTier, _beneficiary, _currency);
+
       // If the contribution floor has gone over, break out of the loop.
-      if (_storedTier.contributionFloor > _amount) _currentSortIndex = 0;
+      if (_contributionFloor > _amount) _currentSortIndex = 0;
       else {
         // If the tier is not removed, check to see if it's optimal.
         // Set the tier as the best available so far if there is still a remaining quantity.
@@ -887,7 +904,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           (_storedTier.remainingQuantity -
             _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _storedTier)) !=
           0
-        ) tierId = _currentSortIndex;
+        ) {
+          tierId = _currentSortIndex;
+          _bestContributionFloor = _contributionFloor;
+        }
 
         // Set the next sort index.
         _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _maxTierId);
@@ -912,7 +932,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Set the leftover amount.
-      leftoverAmount = _amount - _bestStoredTier.contributionFloor;
+      leftoverAmount = _amount - _bestContributionFloor;
     }
   }
 
@@ -922,15 +942,18 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
     @param _tierIds The IDs of the tier to mint from.
+    @param _beneficiary The beneficiary of the mints.
+    @param _currency The currency used to pay for the mints.
 
     @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
   */
-  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
-    external
-    override
-    returns (uint256[] memory tokenIds, uint256 leftoverAmount)
-  {
+  function recordMint(
+    uint256 _amount,
+    uint16[] calldata _tierIds,
+    address _beneficiary,
+    uint256 _currency
+  ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
     // Set the leftover amount as the initial amount.
     leftoverAmount = _amount;
 
@@ -946,6 +969,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_numberOfTiers);
 
+    // Get a reference to the resolver;
+    IJB721PricingResolver _resolver = pricingResolverOf[msg.sender];
+
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
       _tierId = _tierIds[_i];
@@ -959,12 +985,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the provided tier exists.
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
 
-      uint256 _contributionFloor = priceResolver == IJB721PricingResolver(address(0))
+      // Keep a reference to the contribution floor.
+      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
         ? _storedTier.contributionFloor
-        : priceResolver.priceFor(_storedTier, _amount);
+        : _resolver.priceFor(_storedTier, _beneficiary, _currency);
 
       // Make sure the amount meets the tier's contribution floor.
-      if (_storedTier.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
+      if (_contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
 
       // Make sure there are enough units available.
       if (
@@ -985,7 +1012,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Update the leftover amount;
-      leftoverAmount = leftoverAmount - _storedTier.contributionFloor;
+      leftoverAmount = leftoverAmount - _contributionFloor;
 
       unchecked {
         ++_i;
