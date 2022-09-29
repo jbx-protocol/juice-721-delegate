@@ -7,7 +7,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './IJBTiered721DelegateStore.sol';
-import './IJB721ValueResolver.sol';
+import './IJB721PricingResolver.sol';
 
 interface IJBTiered721Delegate {
   event Mint(
@@ -56,8 +56,6 @@ interface IJBTiered721Delegate {
   function pricingCurrency() external view returns (uint256);
 
   function pricingDecimals() external view returns (uint256);
-
-  function valueResolver() external view returns (IJB721ValueResolver);
 
   function contractURI() external view returns (string memory);
 

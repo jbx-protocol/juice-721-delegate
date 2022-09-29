@@ -150,6 +150,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
+    Custom pricing resolver.
+
+    _nft The NFT for which the token pricing resolver applies.
+  */
+  mapping(address => IJB721PricingResolver) public override pricingResolverOf;
+
+  /**
+    @notice
     Contract metadata uri.
 
     _nft The NFT for which the contract URI resolver applies.
@@ -171,6 +179,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _nft The NFT for which the flag applies.
   */
   mapping(address => bool) public override lockVotingUnitChangesFor;
+
+  /**
+    @notice
+   A flag indicating if the provided pricing resolver can change by the owner.
+
+    _nft The NFT for which the flag applies.
+  */
+  mapping(address => bool) public override lockPricingResolverChangesFor;
 
   /**
     @notice
@@ -943,6 +959,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the provided tier exists.
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
 
+      uint256 _contributionFloor = priceResolver == IJB721PricingResolver(address(0))
+        ? _storedTier.contributionFloor
+        : priceResolver.priceFor(_storedTier, _amount);
+
       // Make sure the amount meets the tier's contribution floor.
       if (_storedTier.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
 
@@ -1047,6 +1067,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
+    Sets the pricing resolver. 
+
+    @param _resolver The resolver to set.
+  */
+  function recordSetPricingResolver(IJB721PricingResolver _resolver) external override {
+    pricingResolverOf[msg.sender] = _resolver;
+  }
+
+  /** 
+    @notice
     Sets a flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
 
     @param _flag The flag to set.
@@ -1063,6 +1093,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function recordLockReservedTokenChanges(bool _flag) external override {
     lockReservedTokenChangesFor[msg.sender] = _flag;
+  }
+
+  /** 
+    @notice
+    Sets a flag indicating if the provided pricing resolver can change by the owner.
+
+    @param _flag The flag to set.
+  */
+  function recordLockPricingResolverChanges(bool _flag) external override {
+    lockPricingResolverChangesFor[msg.sender] = _flag;
   }
 
   /** 
