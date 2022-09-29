@@ -49,7 +49,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       _deployTiered721DelegateData.baseUri,
       _deployTiered721DelegateData.tokenUriResolver,
       _deployTiered721DelegateData.contractUri,
-      _deployTiered721DelegateData.tiers,
+      _deployTiered721DelegateData.pricing,
       _deployTiered721DelegateData.store,
       _deployTiered721DelegateData.flags
     );

@@ -251,7 +251,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _generateTokenId(highestTier, 1),
       highestTier,
       _beneficiary,
-      NFTRewardDeployerData.tiers[highestTier - 1].contributionFloor,
+      NFTRewardDeployerData.pricing.tiers[highestTier - 1].contributionFloor,
       address(_jbETHPaymentTerminal) // msg.sender
     );
 
@@ -294,7 +294,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // _payAmount has to be at least the lowest tier
-    vm.assume(_payAmount >= NFTRewardDeployerData.tiers[0].contributionFloor);
+    vm.assume(_payAmount >= NFTRewardDeployerData.pricing.tiers[0].contributionFloor);
 
     // Pay and mint an NFT
     vm.deal(_user, _payAmount);
@@ -371,8 +371,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // _tier has to be a valid tier
-    vm.assume(_tier < NFTRewardDeployerData.tiers.length);
-    uint256 _payAmount = NFTRewardDeployerData.tiers[_tier].contributionFloor;
+    vm.assume(_tier < NFTRewardDeployerData.pricing.tiers.length);
+    uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
 
     vm.prank(_user);
     _delegate.setTierDelegate(_user, _tier + 1);
@@ -396,16 +396,16 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // Assert that the user received the votingUnits
-    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.tiers[_tier].votingUnits);
+    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.pricing.tiers[_tier].votingUnits);
     assertEq(
       _delegate.getTierVotes(_user, _tier + 1),
-      NFTRewardDeployerData.tiers[_tier].votingUnits
+      NFTRewardDeployerData.pricing.tiers[_tier].votingUnits
     );
 
     uint256 _frenExpectedVotes = 0;
     // Have the user delegate to themselves
     if (_recipientDelegated) {
-      _frenExpectedVotes = NFTRewardDeployerData.tiers[_tier].votingUnits;
+      _frenExpectedVotes = NFTRewardDeployerData.pricing.tiers[_tier].votingUnits;
 
       vm.prank(_userFren);
       _delegate.setTierDelegate(_userFren, _tier + 1);
@@ -446,8 +446,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // _tier has to be a valid tier
-    vm.assume(_tier < NFTRewardDeployerData.tiers.length);
-    uint256 _payAmount = NFTRewardDeployerData.tiers[_tier].contributionFloor;
+    vm.assume(_tier < NFTRewardDeployerData.pricing.tiers.length);
+    uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
 
     // Delegate NFT to fren
     vm.prank(_user);
@@ -484,10 +484,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
 
     // Assert that the user received the votingUnits
-    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.tiers[_tier].votingUnits);
+    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.pricing.tiers[_tier].votingUnits);
     assertEq(
       _delegate.getTierVotes(_user, _tier + 1),
-      NFTRewardDeployerData.tiers[_tier].votingUnits
+      NFTRewardDeployerData.pricing.tiers[_tier].votingUnits
     );
 
     // Delegate to the users fren
@@ -501,10 +501,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(_delegate.getTierVotes(_user, _tier + 1), 0);
 
     // Assert that fren received the voting units
-    assertEq(_delegate.getVotes(_userFren), NFTRewardDeployerData.tiers[_tier].votingUnits);
+    assertEq(_delegate.getVotes(_userFren), NFTRewardDeployerData.pricing.tiers[_tier].votingUnits);
     assertEq(
       _delegate.getTierVotes(_userFren, _tier + 1),
-      NFTRewardDeployerData.tiers[_tier].votingUnits
+      NFTRewardDeployerData.pricing.tiers[_tier].votingUnits
     );
   }
 
@@ -738,7 +738,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     ) = createData();
 
     uint256 tier = 10;
-    uint256 floor = NFTRewardDeployerData.tiers[tier - 1].contributionFloor;
+    uint256 floor = NFTRewardDeployerData.pricing.tiers[tier - 1].contributionFloor;
 
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
@@ -886,7 +886,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       tokenUriResolver: IJBTokenUriResolver(address(0)),
       contractUri: contractUri,
       owner: _projectOwner,
-      tiers: tierParams,
+      pricing: JB721PricingParams({
+        tiers: tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
       reservedTokenBeneficiary: reserveBeneficiary,
       store: new JBTiered721DelegateStore(),
       flags: JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})

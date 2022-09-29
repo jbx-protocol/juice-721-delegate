@@ -152,7 +152,12 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
       owner: owner,
-      tiers: tierParams,
+      pricing: JB721PricingParams({
+        tiers: tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
       flags: JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})

@@ -10,6 +10,7 @@ import './interfaces/IJBTiered721Delegate.sol';
 import './libraries/JBIpfsDecoder.sol';
 import './libraries/JBTiered721FundingCycleMetadataResolver.sol';
 import './structs/JBTiered721Flags.sol';
+import './structs/JB721PricingParams.sol';
 
 /**
   @title
@@ -60,11 +61,23 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   IJBFundingCycleStore public immutable override fundingCycleStore;
 
+  /**
+    @notice
+    The contract that exposes price feeds.
+  */
+  IJBPrices public immutable override prices;
+
   /** 
     @notice
-    The token that is accepted when minting NFTs. 
+    The currency that is accepted when minting tier NFTs. 
   */
-  address public immutable override contributionToken = JBTokens.ETH;
+  uint256 public immutable override pricingCurrency;
+
+  /** 
+    @notice
+    The currency that is accepted when minting tier NFTs. 
+  */
+  uint256 public immutable override pricingDecimals;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -254,7 +267,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _baseUri A URI to use as a base for full token URIs.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
     @param _contractUri A URI where contract metadata can be found. 
-    @param _tiers The tiers according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
+    @param _pricing The tier pricing according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
     @param _store A contract that stores the NFT's data.
     @param _flags A set of flags that help define how this contract works.
   */
@@ -267,12 +280,15 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
     string memory _contractUri,
-    JB721TierParams[] memory _tiers,
+    JB721PricingParams memory _pricing,
     IJBTiered721DelegateStore _store,
     JBTiered721Flags memory _flags
   ) JB721Delegate(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
     fundingCycleStore = _fundingCycleStore;
     store = _store;
+    pricingCurrency = _pricing.currency;
+    pricingDecimals = _pricing.decimals;
+    prices = _pricing.prices;
 
     // Store the base URI if provided.
     if (bytes(_baseUri).length != 0) _store.recordSetBaseUri(_baseUri);
@@ -285,7 +301,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
     // Record adding the provided tiers.
-    if (_tiers.length > 0) _store.recordAddTiers(_tiers);
+    if (_pricing.tiers.length > 0) _store.recordAddTiers(_pricing.tiers);
 
     // Set the locked reserved token change preference if needed.
     if (_flags.lockReservedTokenChanges)
@@ -508,14 +524,22 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _data The Juicebox standard project contribution data.
   */
   function _processPayment(JBDidPayData calldata _data) internal override {
-    // Make sure the contribution is being made in the expected token.
-    if (_data.amount.token != contributionToken) return;
+    // Normalize the currency.
+    uint256 _value;
+    if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
+    else if (prices != IJBPrices(address(0)))
+      _value = PRBMath.mulDiv(
+        _data.amount.value,
+        10**pricingDecimals,
+        prices.priceFor(_data.amount.currency, pricingCurrency, _data.amount.decimals)
+      );
+    else return;
 
     // Keep a reference to the amount of credits the beneficiary already has.
     uint256 _credits = creditsOf[_data.beneficiary];
 
     // Set the leftover amount as the initial value, including any credits the beneficiary might already have.
-    uint256 _leftoverAmount = _data.amount.value + _credits;
+    uint256 _leftoverAmount = _value + _credits;
 
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
     bool _expectMintFromExtraFunds;
