@@ -2763,7 +2763,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bool _dontMint;
     bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _dontOverspend = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
