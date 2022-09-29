@@ -79,6 +79,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   uint256 public immutable override pricingDecimals;
 
+  /** 
+    @notice
+    A contract that can be used to return custom prices. 
+  */
+  IJB721PricingResolver public immutable override pricingResolver;
+
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -288,6 +294,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     store = _store;
     pricingCurrency = _pricing.currency;
     pricingDecimals = _pricing.decimals;
+    pricingResolver = _pricing.resolver;
     prices = _pricing.prices;
 
     // Store the base URI if provided.
@@ -524,22 +531,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _data The Juicebox standard project contribution data.
   */
   function _processPayment(JBDidPayData calldata _data) internal override {
-    // Normalize the currency.
-    uint256 _value;
-    if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
-    else if (prices != IJBPrices(address(0)))
-      _value = PRBMath.mulDiv(
-        _data.amount.value,
-        10**pricingDecimals,
-        prices.priceFor(_data.amount.currency, pricingCurrency, _data.amount.decimals)
-      );
-    else return;
-
     // Keep a reference to the amount of credits the beneficiary already has.
     uint256 _credits = creditsOf[_data.beneficiary];
 
     // Set the leftover amount as the initial value, including any credits the beneficiary might already have.
-    uint256 _leftoverAmount = _value + _credits;
+    uint256 _leftoverAmount = _valueOf(_data.amount, _data.beneficiary) + _credits;
 
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
     bool _expectMintFromExtraFunds;
@@ -589,6 +585,36 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
         creditsOf[_data.beneficiary] = _leftoverAmount;
       } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
     } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
+  }
+
+  /**
+    @notice
+    The value of a contribution in terms of this contract's native pricing parameters.
+
+    @param _amount The amount contributed.
+    @param _beneficiary The beneficiary of the NFT.
+
+    @return The value of the contribution in terms of this contract's native pricing parameters.
+  */
+  function _valueOf(JBTokenAmount memory _amount, address _beneficiary) internal returns (uint256) {
+    // If there's a price resolver, resolve the price from it.
+    if (pricingResolver != IJB721PricingResolver(address(0)))
+      return pricingResolver.valueOf(_amount, _beneficiary, pricingCurrency, pricingDecimals);
+
+    // If the currencies match, return the value contributed.
+    if (_amount.currency == pricingCurrency) return _amount.value;
+
+    // If there's a prices contract, resolve the price from it.
+    if (prices != IJBPrices(address(0)))
+      return
+        PRBMath.mulDiv(
+          _amount.value,
+          10**pricingDecimals,
+          prices.priceFor(_amount.currency, pricingCurrency, _amount.decimals)
+        );
+
+    // Return no value.
+    return 0;
   }
 
   /** 
