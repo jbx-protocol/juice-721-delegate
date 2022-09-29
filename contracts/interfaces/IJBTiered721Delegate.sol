@@ -53,6 +53,8 @@ interface IJBTiered721Delegate {
 
   function contractURI() external view returns (string memory);
 
+  function creditsOf(address _address) external view returns (uint256);
+
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
   function getTierDelegate(address _account, uint256 _tier) external view returns (address);
