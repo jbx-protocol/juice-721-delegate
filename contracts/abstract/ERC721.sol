@@ -284,7 +284,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, ReentrancyGuard {
     address to,
     uint256 tokenId,
     bytes memory data
-  ) internal virtual nonReentrant {
+  ) internal virtual {
     _mint(to, tokenId);
     if (!_checkOnERC721Received(address(0), to, tokenId, data))
       revert TRANSFER_TO_NON_IMPLEMENTER();
