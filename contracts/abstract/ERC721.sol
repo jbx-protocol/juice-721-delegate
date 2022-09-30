@@ -3,7 +3,6 @@
 
 pragma solidity ^0.8.16;
 
-import '@openzeppelin/contracts/security/ReentrancyGuard.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol';
@@ -19,7 +18,7 @@ import '@openzeppelin/contracts/utils/introspection/ERC165.sol';
  * the Metadata extension, but not including the Enumerable extension, which is available separately as
  * {ERC721Enumerable}.
  */
-contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, ReentrancyGuard {
+contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   using Address for address;
   using Strings for uint256;
 
@@ -302,7 +301,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, ReentrancyGuard {
    *
    * Emits a {Transfer} event.
    */
-  function _mint(address to, uint256 tokenId) internal virtual nonReentrant {
+  function _mint(address to, uint256 tokenId) internal virtual {
     if (to == address(0)) revert MINT_TO_ZERO();
     if (_exists(tokenId)) revert ALEADY_MINTED();
 
