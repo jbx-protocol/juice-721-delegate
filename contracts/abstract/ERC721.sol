@@ -262,34 +262,6 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   }
 
   /**
-   * @dev Safely mints `tokenId` and transfers it to `to`.
-   *
-   * Requirements:
-   *
-   * - `tokenId` must not exist.
-   * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-   *
-   * Emits a {Transfer} event.
-   */
-  function _safeMint(address to, uint256 tokenId) internal virtual {
-    _safeMint(to, tokenId, '');
-  }
-
-  /**
-   * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
-   * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-   */
-  function _safeMint(
-    address to,
-    uint256 tokenId,
-    bytes memory data
-  ) internal virtual {
-    _mint(to, tokenId);
-    if (!_checkOnERC721Received(address(0), to, tokenId, data))
-      revert TRANSFER_TO_NON_IMPLEMENTER();
-  }
-
-  /**
    * @dev Mints `tokenId` and transfers it to `to`.
    *
    * WARNING: Usage of this method is discouraged, use {_safeMint} whenever possible
@@ -305,13 +277,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     if (to == address(0)) revert MINT_TO_ZERO();
     if (_exists(tokenId)) revert ALEADY_MINTED();
 
-    _beforeTokenTransfer(address(0), to, tokenId);
-
     _owners[tokenId] = to;
 
     emit Transfer(address(0), to, tokenId);
-
-    _afterTokenTransfer(address(0), to, tokenId);
   }
 
   /**
@@ -327,16 +295,12 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   function _burn(uint256 tokenId) internal virtual {
     address owner = ERC721.ownerOf(tokenId);
 
-    _beforeTokenTransfer(owner, address(0), tokenId);
-
     // Clear approvals
     _approve(address(0), tokenId);
 
     delete _owners[tokenId];
 
     emit Transfer(owner, address(0), tokenId);
-
-    _afterTokenTransfer(owner, address(0), tokenId);
   }
 
   /**
@@ -358,16 +322,12 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     if (ERC721.ownerOf(tokenId) != from) revert INCORRECT_OWNER();
     if (to == address(0)) revert TRANSFER_TO_ZERO_ADDRESS();
 
-    _beforeTokenTransfer(from, to, tokenId);
-
     // Clear approvals from the previous owner
     _approve(address(0), tokenId);
 
     _owners[tokenId] = to;
 
     emit Transfer(from, to, tokenId);
-
-    _afterTokenTransfer(from, to, tokenId);
   }
 
   /**
@@ -437,41 +397,4 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
       return true;
     }
   }
-
-  /**
-   * @dev Hook that is called before any token transfer. This includes minting
-   * and burning.
-   *
-   * Calling conditions:
-   *
-   * - When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
-   * transferred to `to`.
-   * - When `from` is zero, `tokenId` will be minted for `to`.
-   * - When `to` is zero, ``from``'s `tokenId` will be burned.
-   * - `from` and `to` are never both zero.
-   *
-   * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-   */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal virtual {}
-
-  /**
-   * @dev Hook that is called after any transfer of tokens. This includes
-   * minting and burning.
-   *
-   * Calling conditions:
-   *
-   * - when `from` and `to` are both non-zero.
-   * - `from` and `to` are never both zero.
-   *
-   * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
-   */
-  function _afterTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal virtual {}
 }
