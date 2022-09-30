@@ -264,8 +264,6 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   /**
    * @dev Mints `tokenId` and transfers it to `to`.
    *
-   * WARNING: Usage of this method is discouraged, use {_safeMint} whenever possible
-   *
    * Requirements:
    *
    * - `tokenId` must not exist.
@@ -277,9 +275,13 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     if (to == address(0)) revert MINT_TO_ZERO();
     if (_exists(tokenId)) revert ALEADY_MINTED();
 
+    _beforeTokenTransfer(address(0), to, tokenId);
+
     _owners[tokenId] = to;
 
     emit Transfer(address(0), to, tokenId);
+
+    _afterTokenTransfer(address(0), to, tokenId);
   }
 
   /**
@@ -295,12 +297,16 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   function _burn(uint256 tokenId) internal virtual {
     address owner = ERC721.ownerOf(tokenId);
 
+    _beforeTokenTransfer(owner, address(0), tokenId);
+
     // Clear approvals
     _approve(address(0), tokenId);
 
     delete _owners[tokenId];
 
     emit Transfer(owner, address(0), tokenId);
+
+    _afterTokenTransfer(owner, address(0), tokenId);
   }
 
   /**
@@ -322,12 +328,16 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     if (ERC721.ownerOf(tokenId) != from) revert INCORRECT_OWNER();
     if (to == address(0)) revert TRANSFER_TO_ZERO_ADDRESS();
 
+    _beforeTokenTransfer(from, to, tokenId);
+
     // Clear approvals from the previous owner
     _approve(address(0), tokenId);
 
     _owners[tokenId] = to;
 
     emit Transfer(from, to, tokenId);
+
+    _afterTokenTransfer(from, to, tokenId);
   }
 
   /**
