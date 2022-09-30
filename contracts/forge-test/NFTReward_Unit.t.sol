@@ -169,9 +169,19 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+      JB721PricingParams({
+        tiers: tiers,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
+      }),
       new JBTiered721DelegateStore(),
-      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: true
+      })
     );
 
     delegate.transferOwnership(owner);
@@ -220,7 +230,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -290,7 +304,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -365,7 +383,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -444,7 +466,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -507,7 +533,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -561,7 +591,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -626,7 +660,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -688,7 +726,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -743,7 +785,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -815,7 +861,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -867,7 +917,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -914,7 +968,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -949,7 +1007,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -985,7 +1047,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1046,10 +1112,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0))
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
       }),
       new JBTiered721DelegateStore(),
-      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1112,9 +1183,19 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+      JB721PricingParams({
+        tiers: _tiers,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
+      }),
       _dataSourceStore,
-      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: true
+      })
     );
   }
 
@@ -1167,7 +1248,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1260,7 +1345,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1404,7 +1493,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1500,10 +1593,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0))
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
       }),
       IJBTiered721DelegateStore(address(_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1649,7 +1747,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1782,10 +1884,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0))
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
       }),
       IJBTiered721DelegateStore(address(_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -1933,7 +2040,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: true})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: false
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -2027,7 +2138,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParam,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -2121,7 +2236,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -2212,10 +2331,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0))
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
       }),
       IJBTiered721DelegateStore(address(_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -2324,7 +2448,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -2739,9 +2867,19 @@ contract TestJBTieredNFTRewardDelegate is Test {
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
-      JB721PricingParams({tiers: tiers, currency: 2, decimals: 9, prices: IJBPrices(_jbPrice)}),
+      JB721PricingParams({
+        tiers: tiers,
+        currency: 2,
+        decimals: 9,
+        prices: IJBPrices(_jbPrice),
+        resolver: IJB721PricingResolver(address(0))
+      }),
       new JBTiered721DelegateStore(),
-      JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -3199,7 +3337,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -3309,7 +3451,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -3410,7 +3556,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -3528,7 +3678,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -3714,7 +3868,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       contractUri,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
 
     _delegate.transferOwnership(owner);
@@ -3970,7 +4128,13 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
       _baseUri,
       _tokenUriResolver,
       _contractUri,
-      JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+      JB721PricingParams({
+        tiers: _tiers,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
+      }),
       _test_store,
       _flags
     )

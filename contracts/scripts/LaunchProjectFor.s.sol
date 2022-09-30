@@ -158,11 +158,16 @@ contract RinkebyLaunchProjectFor is Script {
         tiers: tiers,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0))
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
       }),
       reservedTokenBeneficiary: msg.sender,
       store: IJBTiered721DelegateStore(STORE),
-      flags: JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+      flags: JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: true
+      })
     });
 
     launchProjectData = JBLaunchProjectData({
