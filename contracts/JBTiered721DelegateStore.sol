@@ -28,6 +28,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error NO_QUANTITY();
   error OUT();
   error RESERVED_RATE_NOT_ALLOWED();
+  error MANUAL_MINTING_NOT_ALLOWED();
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
@@ -180,6 +181,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _nft The NFT for which the flag applies.
   */
   mapping(address => bool) public override lockVotingUnitChangesFor;
+
+  /**
+    @notice
+    A flag indicating if manual minting expectations can change over time by adding new tiers with manual minting.
+
+    _nft The NFT for which the flag applies.
+  */
+  mapping(address => bool) public override lockManualMintingChangesFor;
 
   /**
     @notice
@@ -683,7 +692,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_i != 0 && _tierToAdd.contributionFloor < _tiersToAdd[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
-      // Make sure there are no voting units or reserved rates if they're not allowed.
+      // Make sure there are no voting units set if they're not allowed.
       if (lockVotingUnitChangesFor[msg.sender] && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
 
@@ -692,6 +701,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         (lockReservedTokenChangesFor[msg.sender] || _tierToAdd.allowManualMint) &&
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
+
+      // Make sure manual minting is not set if not allowed.
+      if (lockManualMintingChangesFor[msg.sender] && _tierToAdd.allowManualMint)
+        revert MANUAL_MINTING_NOT_ALLOWED();
 
       // Make sure there is some quantity.
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
@@ -1221,6 +1234,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function recordLockReservedTokenChanges(bool _flag) external override {
     lockReservedTokenChangesFor[msg.sender] = _flag;
+  }
+
+  /** 
+    @notice
+    Sets a flag indicating if manual minting expectations can change over time by adding new tiers with manual minting.
+
+    @param _flag The flag to set.
+  */
+  function recordLockManualMintingChanges(bool _flag) external override {
+    lockManualMintingChangesFor[msg.sender] = _flag;
   }
 
   /** 

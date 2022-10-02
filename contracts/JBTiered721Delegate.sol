@@ -317,6 +317,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_flags.lockVotingUnitChanges)
       _store.recordLockVotingUnitChanges(_flags.lockVotingUnitChanges);
 
+    // Set the locked manual minting change preference if needed.
+    if (_flags.lockManualMintingChanges)
+      _store.recordLockManualMintingChanges(_flags.lockManualMintingChanges);
+
     // Set the locked pricing resolver change preference if needed.
     if (_flags.lockPricingResolverChanges)
       _store.recordLockPricingResolverChanges(_flags.lockPricingResolverChanges);
