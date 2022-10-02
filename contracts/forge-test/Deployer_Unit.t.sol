@@ -156,16 +156,11 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         tiers: tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(address(0))
       }),
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
-      flags: JBTiered721Flags({
-        lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
-      })
+      flags: JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
