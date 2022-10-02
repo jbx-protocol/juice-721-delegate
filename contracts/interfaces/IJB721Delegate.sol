@@ -19,5 +19,5 @@ interface IJB721Delegate {
 
   function setContractUri(string calldata _contractMetadataUri) external;
 
-  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolverAddress) external;
+  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external;
 }

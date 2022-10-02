@@ -7,6 +7,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './IJBTiered721DelegateStore.sol';
+import './IJB721PricingResolver.sol';
 
 interface IJBTiered721Delegate {
   event Mint(
@@ -45,6 +46,8 @@ interface IJBTiered721Delegate {
   event RemoveTier(uint256 indexed tierId, address caller);
 
   event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
+
+  event SetPricingResolver(IJB721PricingResolver indexed newResolver, address caller);
 
   function store() external view returns (IJBTiered721DelegateStore);
 
@@ -90,4 +93,6 @@ interface IJBTiered721Delegate {
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
+
+  function setPricingResolver(IJB721PricingResolver _pricingResolver) external;
 }

@@ -890,11 +890,16 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         tiers: tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0))
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
       }),
       reservedTokenBeneficiary: reserveBeneficiary,
       store: new JBTiered721DelegateStore(),
-      flags: JBTiered721Flags({lockReservedTokenChanges: false, lockVotingUnitChanges: false})
+      flags: JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: false
+      })
     });
 
     launchProjectData = JBLaunchProjectData({
