@@ -541,7 +541,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Set the leftover amount as the initial value, including any credits the beneficiary might already have.
     uint256 _leftoverAmount = _value + _credits;
 
-    // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is expected.
+    // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is not expected.
     bool _expectMintFromExtraFunds;
 
     // Keep a reference to the flag indicating if the transaction should revert if all provded funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
