@@ -17,7 +17,7 @@ Each tier has the following optional properties:
 - URI, overridable by a URI resolver that can return dynamic values for each unit with the tier.
 - a lock date, before which the tier must remain accessible.
 
-New tiers can be added, so long as they respect the contract's `flags` that specify if new tiers can influence voting units or reserved quantities.
+New tiers can be added, so long as they respect the contract's `flags` that specify if new tiers can influence voting units, reserved quantities, or be manually minted.
 
 Tiers can also be removed, so long as they are not locked.
 
