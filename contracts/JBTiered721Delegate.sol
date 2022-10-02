@@ -368,7 +368,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     for (uint256 _i; _i < _numberOfBeneficiaries; ) {
       // Get a reference to the data being iterated on.
-      JBTiered721MintReservesForTiersData memory _data = _mintForTiersData[_i];
+      JBTiered721MintForTiersData memory _data = _mintForTiersData[_i];
 
       // Mint for the tier.
       mintFor(_data.tierIds, _data.beneficiary);
@@ -578,7 +578,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
     @return tokenIds The IDs of the newly minted tokens.
   */
-  function mintFor(uint16[] calldata _tierIds, address _beneficiary)
+  function mintFor(uint16[] memory _tierIds, address _beneficiary)
     public
     override
     onlyOwner

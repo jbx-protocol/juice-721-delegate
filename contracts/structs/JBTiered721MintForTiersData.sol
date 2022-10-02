@@ -6,6 +6,6 @@ pragma solidity ^0.8.0;
   @member beneficiary The beneficiary to mint for. 
 */
 struct JBTiered721MintForTiersData {
-  uint256[] tierIds;
+  uint16[] tierIds;
   address beneficiary;
 }
