@@ -25,6 +25,8 @@ An incoming payment can specify any number of tiers to mint as part of the payme
 
 If a payment received does not meet a minting threshold or is in excess of the minted tiers, the balance is stored as a credit which will be added to future payments and applied to mints at that time. A flag can also be passed to avoid accepting payments that aren't applied to mints in full. 
 
+The contract's owner can mint on demand from tier's that have been pre-programmed to allow manual token minting.
+
 The NFTs from each tier can also be used for redemptions against the underlying Juicebox treasury. The rate of redemptions corresponds to the price floor of the tier being redeemed, compared to the total price floors of all minted NFTs.
 
 The collection can be used for on-chain governance. Votes can be solicited from all tiers, or only from specific tiers.
