@@ -8,7 +8,7 @@ import './../structs/JB721Tier.sol';
 interface IJB721PricingResolver is IERC165 {
   function priceFor(
     JB721Tier calldata _tier,
-    address _beneficiary,
-    uint256 _currency
+    address _beneficiary, // address(0) passed on redemptions.
+    uint256 _currency // 0 passed on redemptions.
   ) external view returns (uint256);
 }

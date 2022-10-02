@@ -493,9 +493,40 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the total number of tokens.
     uint256 _numberOfTokenIds = _tokenIds.length;
 
+    // Keep a reference to the tier being iterated on.
+    JBStored721Tier memory _storedTier;
+
+    // Get a reference to the resolver;
+    IJB721PricingResolver _resolver = pricingResolverOf[_nft];
+
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
-      weight += uint256(_storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor);
+      // Keep a reference to the tier ID of the token being iterated on.
+      uint256 _tierId = tierIdOfToken(_tokenIds[_i]);
+
+      // Set the tier being iterated on. Tier's are 1 indexed.
+      _storedTier = _storedTierOf[_nft][_tierId];
+
+      // Keep a reference to the contribution floor.
+      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
+        ? _storedTier.contributionFloor
+        : _resolver.priceFor(
+          JB721Tier({
+            id: _tierId,
+            contributionFloor: _storedTier.contributionFloor,
+            lockedUntil: _storedTier.lockedUntil,
+            remainingQuantity: _storedTier.remainingQuantity,
+            initialQuantity: _storedTier.initialQuantity,
+            votingUnits: _storedTier.votingUnits,
+            reservedRate: _storedTier.reservedRate,
+            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+            encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
+          }),
+          address(0), // pass the zero address since this is a redemption.
+          0 // pass 0 to currency since this is a redemption.
+        );
+
+      weight += _contributionFloor;
 
       unchecked {
         ++_i;
@@ -518,14 +549,39 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
+    // Get a reference to the resolver;
+    IJB721PricingResolver _resolver = pricingResolverOf[_nft];
+
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _maxTierId; ) {
-      _storedTier = _storedTierOf[_nft][_i + 1];
+      // Keep a reference to the tier ID being iterated on.
+      uint256 _tierId = _i + 1;
+
+      // Keep a reference to the stored tier.
+      _storedTier = _storedTierOf[_nft][_tierId];
+
+      // Keep a reference to the contribution floor.
+      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
+        ? _storedTier.contributionFloor
+        : _resolver.priceFor(
+          JB721Tier({
+            id: _tierId,
+            contributionFloor: _storedTier.contributionFloor,
+            lockedUntil: _storedTier.lockedUntil,
+            remainingQuantity: _storedTier.remainingQuantity,
+            initialQuantity: _storedTier.initialQuantity,
+            votingUnits: _storedTier.votingUnits,
+            reservedRate: _storedTier.reservedRate,
+            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+            encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
+          }),
+          address(0), // pass the zero address since this is a redemption.
+          0 // pass 0 to currency since this is a redemption.
+        );
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        (uint256(_storedTier.contributionFloor) *
-          (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
+        (_contributionFloor * (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
         _numberOfReservedTokensOutstandingFor(_nft, _i, _storedTier);
 
       unchecked {
@@ -669,7 +725,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Set the next index.
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentMaxTierId);
 
-          // If the contribution floor is less than the tier being iterated on, set the
+          // If the contribution floor is less than the tier being iterated on, store the order.
           if (
             _tierToAdd.contributionFloor <
             _storedTierOf[msg.sender][_currentSortIndex].contributionFloor
