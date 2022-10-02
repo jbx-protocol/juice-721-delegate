@@ -354,6 +354,33 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /** 
     @notice
+    Mint tokens within the tier for the provided beneficiaries.
+
+    @param _mintForTiersData Contains information about how who to mint tokens for from each tier.
+  */
+  function mintFor(JBTiered721MintForTiersData[] memory _mintForTiersData)
+    external
+    override
+    onlyOwner
+  {
+    // Keep a reference to the number of beneficiaries there are to mint for.
+    uint256 _numberOfBeneficiaries = _mintForTiersData.length;
+
+    for (uint256 _i; _i < _numberOfTiers; ) {
+      // Get a reference to the data being iterated on.
+      JBTiered721MintReservesForTiersData memory _data = _mintForTiersData[_i];
+
+      // Mint for the tier.
+      mintFor(_data.tierIds, _data.beneficiary);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /** 
+    @notice
     Adjust the tiers mintable through this contract, adhering to any locked tier constraints. 
 
     @dev
@@ -542,6 +569,31 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     }
   }
 
+  /** 
+    @notice
+    Manually mint NFTs from tiers.
+
+    @param _tierIds The IDs of the tiers to mint from.
+    @param _beneficiary The address to mint to. 
+
+    @return tokenIds The IDs of the newly minted tokens.
+  */
+  function mintFor(uint16[] calldata _tierIds, address _beneficiary)
+    public
+    override
+    onlyOwner
+    returns (uint256[] memory tokenIds)
+  {
+    // Record the mint. The returned token IDs correspond to the tiers passed in.
+    (tokenIds, ) = store.recordMint(
+      type(uint256).max, // force the mint.
+      _tierIds,
+      _beneficiary,
+      pricingCurrency,
+      false // not a manual mint
+    );
+  }
+
   /**
     @notice 
     Delegates votes from the sender to `delegatee`.
@@ -712,7 +764,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256[] memory _tokenIds;
 
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds, _beneficiary, _currency);
+    (_tokenIds, leftoverAmount) = store.recordMint(
+      _amount,
+      _mintTierIds,
+      _beneficiary,
+      _currency,
+      false // not a manual mint
+    );
 
     // Get a reference to the number of mints.
     uint256 _mintsLength = _tokenIds.length;

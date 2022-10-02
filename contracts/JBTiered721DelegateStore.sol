@@ -21,6 +21,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
+  error CANT_MINT_MANUALLY();
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
   error INVALID_TIER();
@@ -245,6 +246,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           votingUnits: _storedTier.votingUnits,
           reservedRate: _storedTier.reservedRate,
           reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
+          allowManualMint: _storedTier.allowManualMint,
           encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex]
         });
       }
@@ -283,6 +285,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
+        allowManualMint: _storedTier.allowManualMint,
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id]
       });
   }
@@ -318,6 +321,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+        allowManualMint: _storedTier.allowManualMint,
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
       });
   }
@@ -520,6 +524,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             votingUnits: _storedTier.votingUnits,
             reservedRate: _storedTier.reservedRate,
             reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+            allowManualMint: _storedTier.allowManualMint,
             encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
           }),
           address(0), // pass the zero address since this is a redemption.
@@ -573,6 +578,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             votingUnits: _storedTier.votingUnits,
             reservedRate: _storedTier.reservedRate,
             reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+            allowManualMint: _storedTier.allowManualMint,
             encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
           }),
           address(0), // pass the zero address since this is a redemption.
@@ -681,8 +687,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (lockVotingUnitChangesFor[msg.sender] && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
 
-      if (lockReservedTokenChangesFor[msg.sender] && _tierToAdd.reservedRate != 0)
-        revert RESERVED_RATE_NOT_ALLOWED();
+      // Make sure a reserved rate isn't set if changes should be locked or if manual minting is allowed.
+      if (
+        (lockReservedTokenChangesFor[msg.sender] || _tierToAdd.allowManualMint) &&
+        _tierToAdd.reservedRate != 0
+      ) revert RESERVED_RATE_NOT_ALLOWED();
 
       // Make sure there is some quantity.
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
@@ -694,10 +703,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
         contributionFloor: uint80(_tierToAdd.contributionFloor),
         lockedUntil: uint48(_tierToAdd.lockedUntil),
-        remainingQuantity: uint48(_tierToAdd.initialQuantity),
-        initialQuantity: uint48(_tierToAdd.initialQuantity),
+        remainingQuantity: uint40(_tierToAdd.initialQuantity),
+        initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
-        reservedRate: uint16(_tierToAdd.reservedRate)
+        reservedRate: uint16(_tierToAdd.reservedRate),
+        allowManualMint: _tierToAdd.allowManualMint
       });
 
       // Set the reserved token beneficiary if needed.
@@ -958,6 +968,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             votingUnits: _storedTier.votingUnits,
             reservedRate: _storedTier.reservedRate,
             reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _currentSortIndex),
+            allowManualMint: _storedTier.allowManualMint,
             encodedIPFSUri: encodedIPFSUriOf[msg.sender][_currentSortIndex]
           }),
           _beneficiary,
@@ -1014,6 +1025,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _tierIds The IDs of the tier to mint from.
     @param _beneficiary The beneficiary of the mints.
     @param _currency The currency used to pay for the mints.
+    @param _isManualMint A flag indicating if the mint is being made manually by the owner.
 
     @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
@@ -1022,7 +1034,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _amount,
     uint16[] calldata _tierIds,
     address _beneficiary,
-    uint256 _currency
+    uint256 _currency,
+    bool _isManualMint
   ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
     // Set the leftover amount as the initial amount.
     leftoverAmount = _amount;
@@ -1052,6 +1065,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the tier being iterated on.
       _storedTier = _storedTierOf[msg.sender][_tierId];
 
+      // If this is a manual mint, make sure manual minting is allowed.
+      if (_isManualMint && !_storedTier.allowManualMint) revert CANT_MINT_MANUALLY();
+
       // Make sure the provided tier exists.
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
 
@@ -1068,6 +1084,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             votingUnits: _storedTier.votingUnits,
             reservedRate: _storedTier.reservedRate,
             reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _tierId),
+            allowManualMint: _storedTier.allowManualMint,
             encodedIPFSUri: encodedIPFSUriOf[msg.sender][_tierId]
           }),
           _beneficiary,

@@ -6,6 +6,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
+import './../structs/JBTiered721MintForTiersData.sol';
 import './IJBTiered721DelegateStore.sol';
 import './IJB721PricingResolver.sol';
 
@@ -91,6 +92,12 @@ interface IJBTiered721Delegate {
     external;
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
+
+  function mintFor(JBTiered721MintForTiersData[] memory _mintForTiersData) external;
+
+  function mintFor(uint16[] calldata _tierIds, address _beneficiary)
+    external
+    returns (uint256[] memory tokenIds);
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
 

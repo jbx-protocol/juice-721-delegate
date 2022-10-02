@@ -117,7 +117,8 @@ interface IJBTiered721DelegateStore {
     uint256 _amount,
     uint16[] calldata _tierIds,
     address _beneficiary,
-    uint256 _currency
+    uint256 _currency,
+    bool _isManualMint
   ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
   function recordTransferForTier(
