@@ -366,7 +366,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Keep a reference to the number of beneficiaries there are to mint for.
     uint256 _numberOfBeneficiaries = _mintForTiersData.length;
 
-    for (uint256 _i; _i < _numberOfTiers; ) {
+    for (uint256 _i; _i < _numberOfBeneficiaries; ) {
       // Get a reference to the data being iterated on.
       JBTiered721MintReservesForTiersData memory _data = _mintForTiersData[_i];
 
