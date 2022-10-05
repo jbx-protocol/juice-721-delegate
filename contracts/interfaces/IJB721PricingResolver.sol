@@ -6,9 +6,11 @@ import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBTokenAmount.sol';
 import './../structs/JB721Tier.sol';
 
 interface IJB721PricingResolver is IERC165 {
-  function priceFor(
+  function payPriceFor(
     JB721Tier calldata _tier,
-    address _beneficiary, // address(0) passed on redemptions.
-    uint256 _currency // 0 passed on redemptions.
+    address _beneficiary,
+    uint256 _currency
   ) external view returns (uint256);
+
+  function redeemPriceFor(JB721Tier calldata _tier) external view returns (uint256);
 }
