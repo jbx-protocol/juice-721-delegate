@@ -807,8 +807,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Get a reference to the project's current funding cycle.
     JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
 
-    // Transfered must not be paused.
+    // Transfered must not be paused when not minting or burning.
     if (
+      _from != address(0) &&
+      _to != address(0) &&
       JBTiered721FundingCycleMetadataResolver.transfersPaused(
         (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
       )
