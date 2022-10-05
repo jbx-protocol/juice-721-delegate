@@ -523,7 +523,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the contribution floor.
       uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
         ? _storedTier.contributionFloor
-        : _resolver.priceFor(
+        : _resolver.redeemPriceFor(
           JB721Tier({
             id: _tierId,
             contributionFloor: _storedTier.contributionFloor,
@@ -535,9 +535,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
             allowManualMint: _storedTier.allowManualMint,
             encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
-          }),
-          address(0), // pass the zero address since this is a redemption.
-          0 // pass 0 to currency since this is a redemption.
+          })
         );
 
       weight += _contributionFloor;
@@ -577,7 +575,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the contribution floor.
       uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
         ? _storedTier.contributionFloor
-        : _resolver.priceFor(
+        : _resolver.redeemPriceFor(
           JB721Tier({
             id: _tierId,
             contributionFloor: _storedTier.contributionFloor,
@@ -589,9 +587,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
             allowManualMint: _storedTier.allowManualMint,
             encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
-          }),
-          address(0), // pass the zero address since this is a redemption.
-          0 // pass 0 to currency since this is a redemption.
+          })
         );
 
       // Add the tier's contribution floor multiplied by the quantity minted.
@@ -971,7 +967,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the contribution floor.
       uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
         ? _storedTier.contributionFloor
-        : _resolver.priceFor(
+        : _resolver.payPriceFor(
           JB721Tier({
             id: _currentSortIndex,
             contributionFloor: _storedTier.contributionFloor,
@@ -1087,7 +1083,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the contribution floor.
       uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
         ? _storedTier.contributionFloor
-        : _resolver.priceFor(
+        : _resolver.payPriceFor(
           JB721Tier({
             id: _tierId,
             contributionFloor: _storedTier.contributionFloor,
