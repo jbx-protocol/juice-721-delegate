@@ -120,12 +120,7 @@ abstract contract JB721Delegate is
       _data.metadata.length < 4 ||
       bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
     ) {
-      // We don't return this contract as the delegate, since the metadata does not fit the requirements
-      return (
-        0, // TODO: return correct amount
-        _data.memo,
-        new JBRedemptionDelegateAllocation[](0)
-      );
+      revert INVALID_REDEMPTION_METADATA();
     }
 
     // Set the only delegate allocation to be a callback to this contract.
@@ -260,8 +255,7 @@ abstract contract JB721Delegate is
       _data.projectId != projectId
     ) revert INVALID_REDEMPTION_EVENT();
 
-    // Check the 4 bytes interfaceId to verify the metadata is intended for this contract.
-    // This case should already have been caught in `redeemParams` so we revert if its incorrect
+    // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     if (
       _data.metadata.length < 4 ||
       bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
