@@ -596,6 +596,26 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
       pricingCurrency,
       false // not a manual mint
     );
+
+    // Keep a reference to the number of tokens being minted.
+    uint256 _numberOfTokens;
+
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
+
+    for (uint256 _i; _i < _numberOfTokens; ) {
+      // Set the token ID.
+      _tokenId = tokenIds[_i];
+
+      // Mint the token.
+      _mint(_beneficiary, _tokenId);
+
+      emit Mint(_tokenId, _tierIds[_i], _beneficiary, 0, msg.sender);
+
+      unchecked {
+        ++_i;
+      }
+    }
   }
 
   /**
