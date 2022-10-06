@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JB721Tier.sol';
-import './IJB721PricingResolver.sol';
 
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);

@@ -462,36 +462,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
   }
 
-  /**
-    @notice
-    Set a price resolver.
-
-    @dev
-    Only the contract's owner can set the pricing resolver.
-
-    @param _pricingResolver The new pricing resolver.
-  */
-  function setPricingResolver(IJB721PricingResolver _pricingResolver) external override onlyOwner {
-    // Make sure pricing resolver changes aren't locked.
-    if (store.lockPricingResolverChangesFor(address(this)))
-      revert PRICING_RESOLVER_CHANGES_LOCKED();
-
-    // Get a reference to the project's current funding cycle.
-    JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
-
-    // Changing pricing resolvers must not be paused.
-    if (
-      JBTiered721FundingCycleMetadataResolver.changingPricingResolverPaused(
-        (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
-      )
-    ) revert PRICING_RESOLVER_CHANGES_PAUSED();
-
-    // Store the new value.
-    store.recordSetPricingResolver(_pricingResolver);
-
-    emit SetPricingResolver(_pricingResolver, msg.sender);
-  }
-
   //*********************************************************************//
   // ----------------------- public transactions ----------------------- //
   //*********************************************************************//
