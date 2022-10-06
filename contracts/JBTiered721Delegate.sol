@@ -38,7 +38,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   error NOT_AVAILABLE();
   error OVERSPENDING();
-  error PRICING_RESOLVER_CHANGES_LOCKED();
   error PRICING_RESOLVER_CHANGES_PAUSED();
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
@@ -309,21 +308,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Record adding the provided tiers.
     if (_pricing.tiers.length > 0) _store.recordAddTiers(_pricing.tiers);
 
-    // Set the locked reserved token change preference if needed.
-    if (_flags.lockReservedTokenChanges)
-      _store.recordLockReservedTokenChanges(_flags.lockReservedTokenChanges);
-
-    // Set the locked voting unit change preference if needed.
-    if (_flags.lockVotingUnitChanges)
-      _store.recordLockVotingUnitChanges(_flags.lockVotingUnitChanges);
-
-    // Set the locked manual minting change preference if needed.
-    if (_flags.lockManualMintingChanges)
-      _store.recordLockManualMintingChanges(_flags.lockManualMintingChanges);
-
-    // Set the locked pricing resolver change preference if needed.
-    if (_flags.lockPricingResolverChanges)
-      _store.recordLockPricingResolverChanges(_flags.lockPricingResolverChanges);
+    // Set the flags if needed.
+    if (
+      _flags.lockReservedTokenChanges ||
+      _flags.lockVotingUnitChanges ||
+      _flags.lockManualMintingChanges ||
+      _flags.lockPricingResolverChanges
+    ) _store.recordFlags(_flags);
   }
 
   //*********************************************************************//
@@ -507,10 +498,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _pricingResolver The new pricing resolver.
   */
   function setPricingResolver(IJB721PricingResolver _pricingResolver) external override onlyOwner {
-    // Make sure pricing resolver changes aren't locked.
-    if (store.lockPricingResolverChangesFor(address(this)))
-      revert PRICING_RESOLVER_CHANGES_LOCKED();
-
     // Get a reference to the project's current funding cycle.
     JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
 

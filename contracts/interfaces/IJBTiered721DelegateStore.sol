@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JB721Tier.sol';
+import './../structs/JBTiered721Flags.sol';
 import './IJB721PricingResolver.sol';
 
 interface IJBTiered721DelegateStore {
@@ -58,13 +59,7 @@ interface IJBTiered721DelegateStore {
 
   function isTierRemoved(address _nft, uint256 _tierId) external view returns (bool);
 
-  function lockVotingUnitChangesFor(address _nft) external view returns (bool);
-
-  function lockReservedTokenChangesFor(address _nft) external view returns (bool);
-
-  function lockManualMintingChangesFor(address _nft) external view returns (bool);
-
-  function lockPricingResolverChangesFor(address _nft) external view returns (bool);
+  function flagsOf(address _nft) external view returns (JBTiered721Flags memory);
 
   function votingUnitsOf(address _nft, address _account) external view returns (uint256 units);
 
@@ -141,13 +136,7 @@ interface IJBTiered721DelegateStore {
 
   function recordSetPricingResolver(IJB721PricingResolver _resolver) external;
 
-  function recordLockVotingUnitChanges(bool _flag) external;
-
-  function recordLockReservedTokenChanges(bool _flag) external;
-
-  function recordLockManualMintingChanges(bool _flag) external;
-
-  function recordLockPricingResolverChanges(bool _flag) external;
+  function recordFlags(JBTiered721Flags calldata _flag) external;
 
   function cleanTiers(address _nft) external;
 }

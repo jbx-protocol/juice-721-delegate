@@ -29,6 +29,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error OUT();
   error RESERVED_RATE_NOT_ALLOWED();
   error MANUAL_MINTING_NOT_ALLOWED();
+  error PRICING_RESOLVER_CHANGES_LOCKED();
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
@@ -67,6 +68,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _tierId The incremental ID of the tier, starting with 1.
   */
   mapping(address => mapping(uint256 => JBStored721Tier)) internal _storedTierOf;
+
+  /**
+    @notice
+    Flags that influence the behavior of each NFT.
+
+    _nft The NFT for which the flags apply.
+  */
+  mapping(address => JBTiered721Flags) internal _flagsOf;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -165,38 +174,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _nft The NFT for which the contract URI resolver applies.
   */
   mapping(address => string) public override contractUriOf;
-
-  /** 
-    @notice
-    A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate.
-
-    _nft The NFT for which the flag applies.
-  */
-  mapping(address => bool) public override lockReservedTokenChangesFor;
-
-  /**
-    @notice
-    A flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
-
-    _nft The NFT for which the flag applies.
-  */
-  mapping(address => bool) public override lockVotingUnitChangesFor;
-
-  /**
-    @notice
-    A flag indicating if manual minting expectations can change over time by adding new tiers with manual minting.
-
-    _nft The NFT for which the flag applies.
-  */
-  mapping(address => bool) public override lockManualMintingChangesFor;
-
-  /**
-    @notice
-   A flag indicating if the provided pricing resolver can change by the owner.
-
-    _nft The NFT for which the flag applies.
-  */
-  mapping(address => bool) public override lockPricingResolverChangesFor;
 
   /**
     @notice
@@ -460,6 +437,18 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return encodedIPFSUriOf[_nft][tierIdOfToken(_tokenId)];
   }
 
+  /** 
+    @notice
+    Flags that influence the behavior of each NFT.
+
+    @param _nft The NFT for which the flags apply.
+
+    @return The flags.
+  */
+  function flagsOf(address _nft) external view override returns (JBTiered721Flags memory) {
+    return _flagsOf[_nft];
+  }
+
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
@@ -680,6 +669,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the tier being iterated on.
     JB721TierParams memory _tierToAdd;
 
+    // Keep a reference to the flags.
+    JBTiered721Flags memory _flags = _flagsOf[msg.sender];
+
     for (uint256 _i; _i < _numberOfNewTiers; ) {
       // Set the tier being iterated on.
       _tierToAdd = _tiersToAdd[_i];
@@ -689,17 +681,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         revert INVALID_PRICE_SORT_ORDER();
 
       // Make sure there are no voting units set if they're not allowed.
-      if (lockVotingUnitChangesFor[msg.sender] && _tierToAdd.votingUnits != 0)
+      if (_flags.lockVotingUnitChanges && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
 
       // Make sure a reserved rate isn't set if changes should be locked or if manual minting is allowed.
       if (
-        (lockReservedTokenChangesFor[msg.sender] || _tierToAdd.allowManualMint) &&
+        (_flags.lockReservedTokenChanges || _tierToAdd.allowManualMint) &&
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
 
       // Make sure manual minting is not set if not allowed.
-      if (lockManualMintingChangesFor[msg.sender] && _tierToAdd.allowManualMint)
+      if (_flags.lockManualMintingChanges && _tierToAdd.allowManualMint)
         revert MANUAL_MINTING_NOT_ALLOWED();
 
       // Make sure there is some quantity.
@@ -1209,47 +1201,20 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _resolver The resolver to set.
   */
   function recordSetPricingResolver(IJB721PricingResolver _resolver) external override {
+    // Make sure pricing resolver changes aren't locked.
+    if (_flagsOf[msg.sender].lockPricingResolverChanges) revert PRICING_RESOLVER_CHANGES_LOCKED();
+
     pricingResolverOf[msg.sender] = _resolver;
   }
 
   /** 
     @notice
-    Sets a flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+    Sets flags. 
 
-    @param _flag The flag to set.
+    @param _flags The flag to sets.
   */
-  function recordLockVotingUnitChanges(bool _flag) external override {
-    lockVotingUnitChangesFor[msg.sender] = _flag;
-  }
-
-  /** 
-    @notice
-    Sets a flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate. 
-
-    @param _flag The flag to set.
-  */
-  function recordLockReservedTokenChanges(bool _flag) external override {
-    lockReservedTokenChangesFor[msg.sender] = _flag;
-  }
-
-  /** 
-    @notice
-    Sets a flag indicating if manual minting expectations can change over time by adding new tiers with manual minting.
-
-    @param _flag The flag to set.
-  */
-  function recordLockManualMintingChanges(bool _flag) external override {
-    lockManualMintingChangesFor[msg.sender] = _flag;
-  }
-
-  /** 
-    @notice
-    Sets a flag indicating if the provided pricing resolver can change by the owner.
-
-    @param _flag The flag to set.
-  */
-  function recordLockPricingResolverChanges(bool _flag) external override {
-    lockPricingResolverChangesFor[msg.sender] = _flag;
+  function recordFlags(JBTiered721Flags calldata _flags) external override {
+    _flagsOf[msg.sender] = _flags;
   }
 
   /** 
