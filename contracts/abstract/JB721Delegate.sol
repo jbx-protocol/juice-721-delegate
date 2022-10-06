@@ -43,6 +43,7 @@ abstract contract JB721Delegate is
   error INVALID_REDEMPTION_EVENT();
   error UNAUTHORIZED();
   error UNEXPECTED_TOKEN_REDEEMED();
+  error INVALID_REDEMPTION_METADATA();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -111,20 +112,30 @@ abstract contract JB721Delegate is
       JBRedemptionDelegateAllocation[] memory delegateAllocations
     )
   {
+    // Make sure fungible project tokens aren't being redeemed too.
+    if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
+
+    // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
+    if (
+      _data.metadata.length < 4 ||
+      bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
+    ) {
+      revert INVALID_REDEMPTION_METADATA();
+    }
+
     // Set the only delegate allocation to be a callback to this contract.
     delegateAllocations = new JBRedemptionDelegateAllocation[](1);
     delegateAllocations[0] = JBRedemptionDelegateAllocation(this, 0);
 
-    // Make sure fungible project tokens aren't being redeemed too.
-    if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
-
     // If redemption rate is 0, nothing can be reclaimed from the treasury
     if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
 
+    // Decode the metadata
+    (,uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
+
     // Get a reference to the redemption rate of the provided tokens.
     uint256 _redemptionWeight = _redemptionWeightOf(
-      // Decode the metadata
-      abi.decode(_data.metadata, (uint256[]))
+      _decodedTokenIds
     );
 
     // Get a reference to the total redemption weight.
@@ -244,8 +255,14 @@ abstract contract JB721Delegate is
       _data.projectId != projectId
     ) revert INVALID_REDEMPTION_EVENT();
 
+    // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
+    if (
+      _data.metadata.length < 4 ||
+      bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
+    ) revert INVALID_REDEMPTION_METADATA();
+
     // Decode the metadata.
-    uint256[] memory _decodedTokenIds = abi.decode(_data.metadata, (uint256[]));
+    (,uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
 
     // Get a reference to the number of token IDs being checked.
     uint256 _numberOfTokenIds = _decodedTokenIds.length;
