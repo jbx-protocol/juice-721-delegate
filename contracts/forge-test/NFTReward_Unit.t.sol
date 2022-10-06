@@ -4075,7 +4075,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
-          metadata: abi.encode(_tokenList)
+          metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
         })
       );
 
@@ -4189,7 +4189,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
-          metadata: abi.encode(_tokenList)
+          metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
         })
       );
 
@@ -4294,7 +4294,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
-          metadata: abi.encode(_tokenList)
+          metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
         })
       );
 
@@ -4423,7 +4423,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(_tokenList)
+        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
       })
     );
 
@@ -4477,7 +4477,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), //sv 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(_tokenList)
+        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
       })
     );
   }
@@ -4523,7 +4523,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(_tokenList)
+        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
       })
     );
   }
@@ -4591,7 +4591,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), // 0 fwd to delegate
         beneficiary: payable(_wrongHolder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(_tokenList)
+        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
       })
     );
   }
