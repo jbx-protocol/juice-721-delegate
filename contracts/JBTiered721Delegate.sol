@@ -808,17 +808,18 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
 
     // Transfered must not be paused when not minting or burning.
-    if (
-      _from != address(0) &&
-      _to != address(0) &&
-      JBTiered721FundingCycleMetadataResolver.transfersPaused(
-        (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
-      )
-    ) revert TRANSFERS_PAUSED();
+    if (_from != address(0)) {
+      if (
+        _to != address(0) &&
+        JBTiered721FundingCycleMetadataResolver.transfersPaused(
+          (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
+        )
+      ) revert TRANSFERS_PAUSED();
 
-    // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
-    if (_from != address(0) && store.firstOwnerOf(address(this), _tokenId) == address(0))
-      store.recordSetFirstOwnerOf(_tokenId, _from);
+      // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
+      if (store.firstOwnerOf(address(this), _tokenId) == address(0))
+        store.recordSetFirstOwnerOf(_tokenId, _from);
+    }
 
     super._beforeTokenTransfer(_from, _to, _tokenId);
   }
