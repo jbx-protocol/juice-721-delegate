@@ -1408,52 +1408,134 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.balanceOf(reserveBeneficiary), _totalMintable);
   }
 
-  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(address _newBeneficiary)
+  function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfReservedMintingIsPausedInFundingCycle()
     public
   {
-    // Make sure the beneficiary is actually changing
-    vm.assume(
-      _newBeneficiary != delegate.store().defaultReservedTokenBeneficiaryOf(address(delegate))
+    // 120 are minted, 1 out of these is reserved, meaning 119 non-reserved are minted. The reservedRate is 40% (4000/10000)
+    // meaning there are 47 total reserved to mint, 1 being already minted, 46 are outstanding
+    uint256 initialQuantity = 200;
+    uint256 totalMinted = 120;
+    uint256 reservedMinted = 1;
+    uint256 reservedRate = 4000;
+    uint256 nbTiers = 3;
+
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      abi.encode(owner)
     );
 
-    vm.expectEmit(true, true, true, true, address(delegate));
-    emit SetDefaultReservedTokenBeneficiary(_newBeneficiary, owner);
-
-    vm.prank(owner);
-    delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
-
-    assertEq(
-      delegate.store().defaultReservedTokenBeneficiaryOf(address(delegate)),
-      _newBeneficiary
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 2 // == 010_2
+            })
+          )
+        })
+      )
     );
-  }
 
-  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_coverage() public {
-    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(
-      address(bytes20(keccak256('newReserveBeneficiary')))
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
+
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
     );
-  }
 
-  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
-    address _sender,
-    address _newBeneficiary
-  ) public {
-    // Make sure the sender is not the owner
-    vm.assume(_sender != owner);
+    _delegate.transferOwnership(owner);
 
-    vm.expectRevert('Ownable: caller is not the owner');
+    for (uint256 i; i < nbTiers; i++) {
+      _delegate.test_store().ForTest_setTier(
+        address(_delegate),
+        i + 1,
+        JBStored721Tier({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
+          remainingQuantity: uint40(initialQuantity - totalMinted),
+          initialQuantity: uint40(initialQuantity),
+          votingUnits: uint16(0),
+          reservedRate: uint16(reservedRate)
+        })
+      );
 
-    vm.prank(_sender);
-    delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
-  }
+      _delegate.test_store().ForTest_setReservesMintedFor(
+        address(_delegate),
+        i + 1,
+        reservedMinted
+      );
+    }
 
-  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner_coverage()
-    public
-  {
-    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
-      beneficiary,
-      address(bytes20(keccak256('newOne')))
-    );
+    for (uint256 tier = 1; tier <= nbTiers; tier++) {
+      uint256 mintable = _delegate.test_store().numberOfReservedTokensOutstandingFor(
+        address(_delegate),
+        tier
+      );
+
+      vm.prank(owner);
+      vm.expectRevert(JBTiered721Delegate.RESERVED_TOKEN_MINTING_PAUSED.selector);
+      _delegate.mintReservesFor(tier, mintable);
+    }
   }
 
   function testJBTieredNFTRewardDelegate_mintReservesFor_revertIfNotEnoughReservedLeft() public {
@@ -1534,6 +1616,331 @@ contract TestJBTieredNFTRewardDelegate is Test {
       vm.prank(owner);
       _delegate.mintReservesFor(i, amount);
     }
+  }
+
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(address _newBeneficiary)
+    public
+  {
+    // Make sure the beneficiary is actually changing
+    vm.assume(
+      _newBeneficiary != delegate.store().defaultReservedTokenBeneficiaryOf(address(delegate))
+    );
+
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit SetDefaultReservedTokenBeneficiary(_newBeneficiary, owner);
+
+    vm.prank(owner);
+    delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
+
+    assertEq(
+      delegate.store().defaultReservedTokenBeneficiaryOf(address(delegate)),
+      _newBeneficiary
+    );
+  }
+
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_coverage() public {
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(
+      address(bytes20(keccak256('newReserveBeneficiary')))
+    );
+  }
+
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
+    address _sender,
+    address _newBeneficiary
+  ) public {
+    // Make sure the sender is not the owner
+    vm.assume(_sender != owner);
+
+    vm.expectRevert('Ownable: caller is not the owner');
+
+    vm.prank(_sender);
+    delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
+  }
+
+  function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner_coverage()
+    public
+  {
+    testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
+      beneficiary,
+      address(bytes20(keccak256('newOne')))
+    );
+  }
+
+  function testJBTieredNFTRewardDelegate_setPricingResolver_setNewPricingResolver() public {
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 0x00
+            })
+          )
+        })
+      )
+    );
+
+    delegate = new JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({
+        tiers: tiers,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
+      }),
+      new JBTiered721DelegateStore(),
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: false
+      })
+    );
+
+    delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
+  }
+
+  function testJBTieredNFTRewardDelegate_setPricingResolver_revertIfResolverChangedIsLocked()
+    public
+  {
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 0x00
+            })
+          )
+        })
+      )
+    );
+
+    delegate = new JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({
+        tiers: tiers,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
+      }),
+      new JBTiered721DelegateStore(),
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: true
+      })
+    );
+
+    delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    vm.expectRevert(JBTiered721Delegate.PRICING_RESOLVER_CHANGES_LOCKED.selector);
+    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
+  }
+
+  function testJBTieredNFTRewardDelegate_setPricingResolver_revertWhenResolverChangedIsPaused()
+    public
+  {
+    uint256 _delegateMetadata = 4; // == 100_2
+
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: _delegateMetadata
+            })
+          )
+        })
+      )
+    );
+
+    delegate = new JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({
+        tiers: tiers,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0)),
+        resolver: IJB721PricingResolver(address(0))
+      }),
+      new JBTiered721DelegateStore(),
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockPricingResolverChanges: false
+      })
+    );
+
+    delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    vm.expectRevert(JBTiered721Delegate.PRICING_RESOLVER_CHANGES_PAUSED.selector);
+    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
+
+    // Allowed when the new funding cycle doesn't pause it anymore
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 0x00
+            })
+          )
+        })
+      )
+    );
+
+    vm.prank(owner);
+    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
@@ -2715,6 +3122,51 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(1);
   }
 
+  function testJBTieredNFTRewardDelegate_didPay_revertIfSupposedToMintBestTierButNoneAvailable(
+    uint8 _amount
+  ) public {
+    // Not enough to mint
+    vm.assume(_amount > 0 && _amount < tiers[0].contributionFloor);
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds = true;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    vm.expectRevert(JBTiered721Delegate.NOT_AVAILABLE.selector);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+  }
+
   function testJBTieredNFTRewardDelegate_didPay_mintBestTierAndTrackLeftover() public {
     uint256 _leftover = tiers[0].contributionFloor - 1;
     uint256 _amount = tiers[0].contributionFloor + _leftover;
@@ -3058,7 +3510,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_didPay_revertIfNonExistingTier(98);
   }
 
-  // If the amount is not enought ot cover all the tiers requested, revert
+  // If the amount is not enought to cover all the tiers requested, revert
   function testJBTieredNFTRewardDelegate_didPay_revertIfAmountTooLow() public {
     // Mock the directory call
     vm.mockCall(
@@ -3288,6 +3740,232 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _metadata
       )
     );
+  }
+
+  // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting
+  function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle()
+    public
+  {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 1 // 001_2
+            })
+          )
+        })
+      )
+    );
+
+    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](3);
+    _tierIdsToMint[0] = 1;
+    _tierIdsToMint[1] = 1;
+    _tierIdsToMint[2] = 2;
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(
+          JBTokens.ETH,
+          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
+          18,
+          JBCurrencies.ETH
+        ),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    uint256 _tokenId = _generateTokenId(1, 1);
+    vm.expectRevert(JBTiered721Delegate.TRANSFERS_PAUSED.selector);
+    vm.prank(msg.sender);
+    IERC721(delegate).transferFrom(msg.sender, beneficiary, _tokenId);
+  }
+
+  function testJBTieredNFTRewardDelegate_beforeTransferHook_redeemEvenIfTransferPausedInFundingCycle() public {
+    address _holder = address(bytes20(keccak256('_holder')));
+
+        vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 1 // 001_2
+            })
+          )
+        })
+      )
+    );
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockPricingResolverChanges: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    uint256[] memory _tokenList = new uint256[](1);
+
+    // We mint the NFTs otherwise the voting balance does not get incremented
+    // which leads to underflow on redeem
+    vm.prank(mockTerminalAddress);
+    _delegate.didPay(
+      JBDidPayData(
+        _holder,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        _holder,
+        false,
+        '',
+        new bytes(0)
+      )
+    );
+
+    uint256[] memory _tokenToRedeem = new uint256[](1);
+    _tokenToRedeem[0] = _generateTokenId(1,1);
+
+    vm.prank(mockTerminalAddress);
+    _delegate.didRedeem(
+      JBDidRedeemData({
+        holder: _holder,
+        projectId: projectId,
+        currentFundingCycleConfiguration: 1,
+        projectTokenCount: 0,
+        reclaimedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }),
+        forwardedAmount: JBTokenAmount({
+          token: address(0),
+          value: 0,
+          decimals: 18,
+          currency: JBCurrencies.ETH
+        }), // 0 fwd to delegate
+        beneficiary: payable(_holder),
+        memo: 'thy shall redeem',
+        metadata: abi.encode(_tokenToRedeem)
+      })
+    );
+
+    // Balance should be 0 again
+    assertEq(_delegate.balanceOf(_holder), 0);
   }
 
   // ----------------
