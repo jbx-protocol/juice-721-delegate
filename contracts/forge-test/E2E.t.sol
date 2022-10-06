@@ -690,7 +690,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Craft the metadata: redeem the tokenId
     uint256[] memory redemptionId = new uint256[](1);
     redemptionId[0] = tokenId;
-    bytes memory redemptionMetadata = abi.encode(redemptionId);
+    bytes memory redemptionMetadata = abi.encode(
+      type(IJB721Delegate).interfaceId,
+      redemptionId
+    );
 
     vm.prank(_beneficiary);
     _jbETHPaymentTerminal.redeemTokensOf({
@@ -792,7 +795,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       redemptionId[i] = tokenId;
     }
 
-    bytes memory redemptionMetadata = abi.encode(redemptionId);
+    bytes memory redemptionMetadata = abi.encode(type(IJB721Delegate).interfaceId, redemptionId);
 
     vm.prank(_beneficiary);
     _jbETHPaymentTerminal.redeemTokensOf({
