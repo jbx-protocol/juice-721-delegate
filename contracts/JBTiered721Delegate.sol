@@ -302,10 +302,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
-    // Set the pricing resolver if provided.
-    if (_pricing.resolver != IJB721PricingResolver(address(0)))
-      _store.recordSetPricingResolver(_pricing.resolver);
-
     // Record adding the provided tiers.
     if (_pricing.tiers.length > 0) _store.recordAddTiers(_pricing.tiers);
 

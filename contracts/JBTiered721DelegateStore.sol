@@ -150,14 +150,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
-    Custom pricing resolver.
-
-    _nft The NFT for which the token pricing resolver applies.
-  */
-  mapping(address => IJB721PricingResolver) public override pricingResolverOf;
-
-  /**
-    @notice
     Contract metadata uri.
 
     _nft The NFT for which the contract URI resolver applies.
@@ -669,7 +661,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Set the next index.
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentMaxTierId);
 
-          // If the contribution floor is less than the tier being iterated on, set the
+          // If the contribution floor is less than the tier being iterated on, insert before the tier.
           if (
             _tierToAdd.contributionFloor <
             _storedTierOf[msg.sender][_currentSortIndex].contributionFloor
@@ -683,7 +675,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
               // Set the tier after the previous one being iterated on as the tier being added, or 0 if the index is incremented.
               _tierIdAfter[msg.sender][_previous] = _previous == _tierId - 1 ? 0 : _tierId;
 
-            // for the next tier being added, start at this current index. if the tierid is the last tier, start there.
+            // For the next tier being added, start at this current index.
             _startSortIndex = _currentSortIndex;
 
             // The tier just added is the previous for the next tier being added.
@@ -879,9 +871,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // If there's no sort index, start with the first index.
     uint256 _currentSortIndex = _firstSortIndexOf(msg.sender);
 
-    // Get a reference to the resolver;
-    IJB721PricingResolver _resolver = pricingResolverOf[msg.sender];
-
     // Keep a reference to the best contribution floor.
     uint256 _bestContributionFloor;
 
@@ -889,27 +878,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Set the tier being iterated on. Tier's are 1 indexed.
       _storedTier = _storedTierOf[msg.sender][_currentSortIndex];
 
-      // Keep a reference to the contribution floor.
-      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
-        ? _storedTier.contributionFloor
-        : _resolver.priceFor(
-          JB721Tier({
-            id: _currentSortIndex,
-            contributionFloor: _storedTier.contributionFloor,
-            lockedUntil: _storedTier.lockedUntil,
-            remainingQuantity: _storedTier.remainingQuantity,
-            initialQuantity: _storedTier.initialQuantity,
-            votingUnits: _storedTier.votingUnits,
-            reservedRate: _storedTier.reservedRate,
-            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _currentSortIndex),
-            encodedIPFSUri: encodedIPFSUriOf[msg.sender][_currentSortIndex]
-          }),
-          _beneficiary,
-          _currency
-        );
-
       // If the contribution floor has gone over, break out of the loop.
-      if (_contributionFloor > _amount) _currentSortIndex = 0;
+      if (_storedTier.contributionFloor > _amount) _currentSortIndex = 0;
       else {
         // If the tier is not removed, check to see if it's optimal.
         // Set the tier as the best available so far if there is still a remaining quantity.
@@ -920,7 +890,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           0
         ) {
           tierId = _currentSortIndex;
-          _bestContributionFloor = _contributionFloor;
+          _bestContributionFloor = _storedTier.contributionFloor;
         }
 
         // Set the next sort index.
@@ -983,9 +953,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_numberOfTiers);
 
-    // Get a reference to the resolver;
-    IJB721PricingResolver _resolver = pricingResolverOf[msg.sender];
-
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
       _tierId = _tierIds[_i];
@@ -999,27 +966,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the provided tier exists.
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
 
-      // Keep a reference to the contribution floor.
-      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
-        ? _storedTier.contributionFloor
-        : _resolver.priceFor(
-          JB721Tier({
-            id: _tierId,
-            contributionFloor: _storedTier.contributionFloor,
-            lockedUntil: _storedTier.lockedUntil,
-            remainingQuantity: _storedTier.remainingQuantity,
-            initialQuantity: _storedTier.initialQuantity,
-            votingUnits: _storedTier.votingUnits,
-            reservedRate: _storedTier.reservedRate,
-            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _tierId),
-            encodedIPFSUri: encodedIPFSUriOf[msg.sender][_tierId]
-          }),
-          _beneficiary,
-          _currency
-        );
-
       // Make sure the amount meets the tier's contribution floor.
-      if (_contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
+      if (_storedTier.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
 
       // Make sure there are enough units available.
       if (
@@ -1040,7 +988,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Update the leftover amount;
-      leftoverAmount = leftoverAmount - _contributionFloor;
+      leftoverAmount = leftoverAmount - _storedTier.contributionFloor;
 
       unchecked {
         ++_i;
@@ -1118,16 +1066,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external override {
     tokenUriResolverOf[msg.sender] = _resolver;
-  }
-
-  /** 
-    @notice
-    Sets the pricing resolver. 
-
-    @param _resolver The resolver to set.
-  */
-  function recordSetPricingResolver(IJB721PricingResolver _resolver) external override {
-    pricingResolverOf[msg.sender] = _resolver;
   }
 
   /** 
