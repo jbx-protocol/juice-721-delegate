@@ -899,8 +899,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       store: new JBTiered721DelegateStore(),
       flags: JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: false
+        lockVotingUnitChanges: false
       })
     });
 

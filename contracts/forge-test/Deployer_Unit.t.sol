@@ -162,8 +162,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       store: store,
       flags: JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: true
       })
     });
 

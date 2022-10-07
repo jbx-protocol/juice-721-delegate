@@ -164,8 +164,7 @@ contract RinkebyLaunchProjectFor is Script {
       store: IJBTiered721DelegateStore(STORE),
       flags: JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: true
       })
     });
 
