@@ -1079,30 +1079,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-<<<<<<< HEAD
-    Sets the pricing resolver. 
-
-    @param _resolver The resolver to set.
-  */
-  function recordSetPricingResolver(IJB721PricingResolver _resolver) external override {
-    // Make sure pricing resolver changes aren't locked.
-    if (_flagsOf[msg.sender].lockPricingResolverChanges) revert PRICING_RESOLVER_CHANGES_LOCKED();
-=======
-    Sets a flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
-
-    @param _flag The flag to set.
-  */
-  function recordLockVotingUnitChanges(bool _flag) external override {
-    lockVotingUnitChangesFor[msg.sender] = _flag;
-  }
->>>>>>> feature/manual-mint
-
-    pricingResolverOf[msg.sender] = _resolver;
-  }
-
-  /** 
-    @notice
-<<<<<<< HEAD
     Sets flags. 
 
     @param _flags The flag to sets.
@@ -1113,8 +1089,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-=======
->>>>>>> feature/manual-mint
     Removes removed tiers from sequencing.
 
     @param _nft The NFT contract to clean tiers for.
