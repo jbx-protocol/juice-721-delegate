@@ -74,6 +74,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     The biggest tier ID used. 
 
+    @dev
+    This may not include the last tier ID if it has been removed.
+
     _nft The NFT contract to get the number of tiers.
   */
   mapping(address => uint256) public override maxTierIdOf;
