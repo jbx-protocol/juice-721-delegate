@@ -106,12 +106,9 @@ interface IJBTiered721DelegateStore {
 
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;
 
-  function recordMint(
-    uint256 _amount,
-    uint16[] calldata _tierIds,
-    address _beneficiary,
-    uint256 _currency
-  ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
+  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
+    external
+    returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
   function recordTransferForTier(
     uint256 _tierId,

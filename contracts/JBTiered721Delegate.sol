@@ -667,7 +667,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256[] memory _tokenIds;
 
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds, _beneficiary, _currency);
+    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds);
 
     // Get a reference to the number of mints.
     uint256 _mintsLength = _tokenIds.length;

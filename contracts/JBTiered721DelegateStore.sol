@@ -920,18 +920,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
     @param _tierIds The IDs of the tier to mint from.
-    @param _beneficiary The beneficiary of the mints.
-    @param _currency The currency used to pay for the mints.
 
     @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
   */
-  function recordMint(
-    uint256 _amount,
-    uint16[] calldata _tierIds,
-    address _beneficiary,
-    uint256 _currency
-  ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
+  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
+    external
+    override
+    returns (uint256[] memory tokenIds, uint256 leftoverAmount)
+  {
     // Set the leftover amount as the initial amount.
     leftoverAmount = _amount;
 
