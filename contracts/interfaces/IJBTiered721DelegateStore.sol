@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JB721Tier.sol';
-import './IJB721PricingResolver.sol';
 
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
@@ -85,8 +84,6 @@ interface IJBTiered721DelegateStore {
 
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
-  function pricingResolverOf(address _nft) external view returns (IJB721PricingResolver);
-
   function encodedTierIPFSUriOf(address _nft, uint256 _tokenId) external view returns (bytes32);
 
   function recordAddTiers(JB721TierParams[] memory _tierData)
@@ -135,8 +132,6 @@ interface IJBTiered721DelegateStore {
   function recordSetContractUri(string memory _uri) external;
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
-
-  function recordSetPricingResolver(IJB721PricingResolver _resolver) external;
 
   function recordLockVotingUnitChanges(bool _flag) external;
 

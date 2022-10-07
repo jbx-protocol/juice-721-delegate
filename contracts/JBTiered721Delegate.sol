@@ -302,10 +302,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
-    // Set the pricing resolver if provided.
-    if (_pricing.resolver != IJB721PricingResolver(address(0)))
-      _store.recordSetPricingResolver(_pricing.resolver);
-
     // Record adding the provided tiers.
     if (_pricing.tiers.length > 0) _store.recordAddTiers(_pricing.tiers);
 
@@ -316,10 +312,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Set the locked voting unit change preference if needed.
     if (_flags.lockVotingUnitChanges)
       _store.recordLockVotingUnitChanges(_flags.lockVotingUnitChanges);
-
-    // Set the locked pricing resolver change preference if needed.
-    if (_flags.lockPricingResolverChanges)
-      _store.recordLockPricingResolverChanges(_flags.lockPricingResolverChanges);
   }
 
   //*********************************************************************//
@@ -464,36 +456,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     store.recordSetTokenUriResolver(_tokenUriResolver);
 
     emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
-  }
-
-  /**
-    @notice
-    Set a price resolver.
-
-    @dev
-    Only the contract's owner can set the pricing resolver.
-
-    @param _pricingResolver The new pricing resolver.
-  */
-  function setPricingResolver(IJB721PricingResolver _pricingResolver) external override onlyOwner {
-    // Make sure pricing resolver changes aren't locked.
-    if (store.lockPricingResolverChangesFor(address(this)))
-      revert PRICING_RESOLVER_CHANGES_LOCKED();
-
-    // Get a reference to the project's current funding cycle.
-    JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
-
-    // Changing pricing resolvers must not be paused.
-    if (
-      JBTiered721FundingCycleMetadataResolver.changingPricingResolverPaused(
-        (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
-      )
-    ) revert PRICING_RESOLVER_CHANGES_PAUSED();
-
-    // Store the new value.
-    store.recordSetPricingResolver(_pricingResolver);
-
-    emit SetPricingResolver(_pricingResolver, msg.sender);
   }
 
   //*********************************************************************//

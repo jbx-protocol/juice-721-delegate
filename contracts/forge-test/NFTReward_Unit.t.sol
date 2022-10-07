@@ -84,8 +84,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   event CleanTiers(address indexed nft, address caller);
 
-  event SetPricingResolver(IJB721PricingResolver, address);
-
   function setUp() public {
     _accessJBLib = new AccessJBLib();
     vm.label(beneficiary, 'beneficiary');
@@ -175,14 +173,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: tiers,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
-      }),
+        prices: IJBPrices(address(0))      }),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: true
       })
     );
 
@@ -234,8 +229,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: true
       })
     );
 
@@ -308,8 +302,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -387,8 +380,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -470,8 +462,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -537,8 +528,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -595,8 +585,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -664,8 +653,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -730,8 +718,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -789,8 +776,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -865,8 +851,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -921,8 +906,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -972,8 +956,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -1011,8 +994,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -1051,8 +1033,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -1114,14 +1095,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(address(0))
       }),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: true
       })
     );
 
@@ -1189,14 +1168,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tiers,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(address(0))
       }),
       _dataSourceStore,
       JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: true
       })
     );
   }
@@ -1252,8 +1229,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -1349,8 +1325,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -1504,8 +1479,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -1579,8 +1553,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -1672,283 +1645,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_setPricingResolver_setNewPricingResolver() public {
-    vm.mockCall(
-      mockJBFundingCycleStore,
-      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
-      abi.encode(
-        JBFundingCycle({
-          number: 1,
-          configuration: block.timestamp,
-          basedOn: 0,
-          start: block.timestamp,
-          duration: 600,
-          weight: 10e18,
-          discountRate: 0,
-          ballot: IJBFundingCycleBallot(address(0)),
-          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
-            JBFundingCycleMetadata({
-              global: JBGlobalFundingCycleMetadata({
-                allowSetTerminals: false,
-                allowSetController: false,
-                pauseTransfers: false
-              }),
-              reservedRate: 5000, //50%
-              redemptionRate: 5000, //50%
-              ballotRedemptionRate: 5000,
-              pausePay: false,
-              pauseDistributions: false,
-              pauseRedeem: false,
-              pauseBurn: false,
-              allowMinting: true,
-              allowTerminalMigration: false,
-              allowControllerMigration: false,
-              holdFees: false,
-              preferClaimedTokenOverride: false,
-              useTotalOverflowForRedemptions: false,
-              useDataSourceForPay: true,
-              useDataSourceForRedeem: true,
-              dataSource: address(0),
-              metadata: 0x00
-            })
-          )
-        })
-      )
-    );
-
-    delegate = new JBTiered721Delegate(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IJBFundingCycleStore(mockJBFundingCycleStore),
-      baseUri,
-      IJBTokenUriResolver(mockTokenUriResolver),
-      contractUri,
-      JB721PricingParams({
-        tiers: tiers,
-        currency: 1,
-        decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
-      }),
-      new JBTiered721DelegateStore(),
-      JBTiered721Flags({
-        lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: false
-      })
-    );
-
-    delegate.transferOwnership(owner);
-
-    vm.prank(owner);
-    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
-  }
-
-  function testJBTieredNFTRewardDelegate_setPricingResolver_revertIfResolverChangedIsLocked()
-    public
-  {
-    vm.mockCall(
-      mockJBFundingCycleStore,
-      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
-      abi.encode(
-        JBFundingCycle({
-          number: 1,
-          configuration: block.timestamp,
-          basedOn: 0,
-          start: block.timestamp,
-          duration: 600,
-          weight: 10e18,
-          discountRate: 0,
-          ballot: IJBFundingCycleBallot(address(0)),
-          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
-            JBFundingCycleMetadata({
-              global: JBGlobalFundingCycleMetadata({
-                allowSetTerminals: false,
-                allowSetController: false,
-                pauseTransfers: false
-              }),
-              reservedRate: 5000, //50%
-              redemptionRate: 5000, //50%
-              ballotRedemptionRate: 5000,
-              pausePay: false,
-              pauseDistributions: false,
-              pauseRedeem: false,
-              pauseBurn: false,
-              allowMinting: true,
-              allowTerminalMigration: false,
-              allowControllerMigration: false,
-              holdFees: false,
-              preferClaimedTokenOverride: false,
-              useTotalOverflowForRedemptions: false,
-              useDataSourceForPay: true,
-              useDataSourceForRedeem: true,
-              dataSource: address(0),
-              metadata: 0x00
-            })
-          )
-        })
-      )
-    );
-
-    delegate = new JBTiered721Delegate(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IJBFundingCycleStore(mockJBFundingCycleStore),
-      baseUri,
-      IJBTokenUriResolver(mockTokenUriResolver),
-      contractUri,
-      JB721PricingParams({
-        tiers: tiers,
-        currency: 1,
-        decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
-      }),
-      new JBTiered721DelegateStore(),
-      JBTiered721Flags({
-        lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
-      })
-    );
-
-    delegate.transferOwnership(owner);
-
-    vm.prank(owner);
-    vm.expectRevert(JBTiered721Delegate.PRICING_RESOLVER_CHANGES_LOCKED.selector);
-    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
-  }
-
-  function testJBTieredNFTRewardDelegate_setPricingResolver_revertWhenResolverChangedIsPaused()
-    public
-  {
-    uint256 _delegateMetadata = 4; // == 100_2
-
-    vm.mockCall(
-      mockJBFundingCycleStore,
-      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
-      abi.encode(
-        JBFundingCycle({
-          number: 1,
-          configuration: block.timestamp,
-          basedOn: 0,
-          start: block.timestamp,
-          duration: 600,
-          weight: 10e18,
-          discountRate: 0,
-          ballot: IJBFundingCycleBallot(address(0)),
-          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
-            JBFundingCycleMetadata({
-              global: JBGlobalFundingCycleMetadata({
-                allowSetTerminals: false,
-                allowSetController: false,
-                pauseTransfers: false
-              }),
-              reservedRate: 5000, //50%
-              redemptionRate: 5000, //50%
-              ballotRedemptionRate: 5000,
-              pausePay: false,
-              pauseDistributions: false,
-              pauseRedeem: false,
-              pauseBurn: false,
-              allowMinting: true,
-              allowTerminalMigration: false,
-              allowControllerMigration: false,
-              holdFees: false,
-              preferClaimedTokenOverride: false,
-              useTotalOverflowForRedemptions: false,
-              useDataSourceForPay: true,
-              useDataSourceForRedeem: true,
-              dataSource: address(0),
-              metadata: _delegateMetadata
-            })
-          )
-        })
-      )
-    );
-
-    delegate = new JBTiered721Delegate(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IJBFundingCycleStore(mockJBFundingCycleStore),
-      baseUri,
-      IJBTokenUriResolver(mockTokenUriResolver),
-      contractUri,
-      JB721PricingParams({
-        tiers: tiers,
-        currency: 1,
-        decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
-      }),
-      new JBTiered721DelegateStore(),
-      JBTiered721Flags({
-        lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: false
-      })
-    );
-
-    delegate.transferOwnership(owner);
-
-    vm.prank(owner);
-    vm.expectRevert(JBTiered721Delegate.PRICING_RESOLVER_CHANGES_PAUSED.selector);
-    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
-
-    // Allowed when the new funding cycle doesn't pause it anymore
-    vm.mockCall(
-      mockJBFundingCycleStore,
-      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
-      abi.encode(
-        JBFundingCycle({
-          number: 1,
-          configuration: block.timestamp,
-          basedOn: 0,
-          start: block.timestamp,
-          duration: 600,
-          weight: 10e18,
-          discountRate: 0,
-          ballot: IJBFundingCycleBallot(address(0)),
-          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
-            JBFundingCycleMetadata({
-              global: JBGlobalFundingCycleMetadata({
-                allowSetTerminals: false,
-                allowSetController: false,
-                pauseTransfers: false
-              }),
-              reservedRate: 5000, //50%
-              redemptionRate: 5000, //50%
-              ballotRedemptionRate: 5000,
-              pausePay: false,
-              pauseDistributions: false,
-              pauseRedeem: false,
-              pauseBurn: false,
-              allowMinting: true,
-              allowTerminalMigration: false,
-              allowControllerMigration: false,
-              holdFees: false,
-              preferClaimedTokenOverride: false,
-              useTotalOverflowForRedemptions: false,
-              useDataSourceForPay: true,
-              useDataSourceForRedeem: true,
-              dataSource: address(0),
-              metadata: 0x00
-            })
-          )
-        })
-      )
-    );
-
-    vm.prank(owner);
-    delegate.setPricingResolver(IJB721PricingResolver(address(123)));
-  }
-
   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
     uint16 initialNumberOfTiers,
     uint16[] memory floorTiersToAdd
@@ -2002,14 +1698,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(address(0))
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -2158,8 +1852,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -2293,14 +1986,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(address(0))
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -2451,8 +2142,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: false
+        lockVotingUnitChanges: true
       })
     );
 
@@ -2549,8 +2239,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -2647,8 +2336,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -2740,14 +2428,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: _tierParams,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(address(0))
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -2859,8 +2545,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -3325,14 +3010,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
         tiers: tiers,
         currency: 2,
         decimals: 9,
-        prices: IJBPrices(_jbPrice),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(_jbPrice)
       }),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: true
       })
     );
 
@@ -3855,7 +3538,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_beforeTransferHook_redeemEvenIfTransferPausedInFundingCycle() public {
     address _holder = address(bytes20(keccak256('_holder')));
 
-        vm.mockCall(
+    vm.mockCall(
       mockJBFundingCycleStore,
       abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
       abi.encode(
@@ -3912,8 +3595,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -3925,8 +3607,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
       abi.encode(true)
     );
-
-    uint256[] memory _tokenList = new uint256[](1);
 
     // We mint the NFTs otherwise the voting balance does not get incremented
     // which leads to underflow on redeem
@@ -3970,7 +3650,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(_tokenToRedeem)
+        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenToRedeem)
       })
     );
 
@@ -4019,8 +3699,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -4133,8 +3812,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -4238,8 +3916,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -4360,8 +4037,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -4550,8 +4226,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false,
-        lockPricingResolverChanges: true
+        lockVotingUnitChanges: false
       })
     );
 
@@ -4812,8 +4487,7 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
         tiers: _tiers,
         currency: 1,
         decimals: 18,
-        prices: IJBPrices(address(0)),
-        resolver: IJB721PricingResolver(address(0))
+        prices: IJBPrices(address(0))
       }),
       _test_store,
       _flags
