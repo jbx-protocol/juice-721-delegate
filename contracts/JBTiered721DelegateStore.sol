@@ -695,7 +695,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             // Break out.
             _currentSortIndex = 0;
           }
-          // If iterating on the last element,
+          // Move on to the next index.
           else {
             // Set the previous index to be the current index.
             _previous = _currentSortIndex;

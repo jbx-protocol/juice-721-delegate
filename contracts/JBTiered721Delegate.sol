@@ -584,7 +584,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     if (_leftoverAmount != 0) {
       _leftoverAmount = _mintBestAvailableTier(
         _leftoverAmount,
-        _data.amount.currency,
         _data.beneficiary,
         _expectMintFromExtraFunds
       );
@@ -615,7 +614,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.
-    @param _currency The currency being paid in.
     @param _beneficiary The address to mint for.
     @param _expectMint A flag indicating if a mint was expected.
 
@@ -623,7 +621,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function _mintBestAvailableTier(
     uint256 _amount,
-    uint256 _currency,
     address _beneficiary,
     bool _expectMint
   ) internal returns (uint256 leftoverAmount) {

@@ -1,0 +1,326 @@
+{
+  "compiler": {
+    "version": "0.8.16+commit.07a7930e"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "inputs": [],
+        "name": "PERMISSION_INDEX_OUT_OF_BOUNDS",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "domain",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256[]",
+            "name": "permissionIndexes",
+            "type": "uint256[]"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "packed",
+            "type": "uint256"
+          }
+        ],
+        "name": "SetOperator",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_operator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_account",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_domain",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_permissionIndex",
+            "type": "uint256"
+          }
+        ],
+        "name": "hasPermission",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_operator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "_account",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_domain",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "_permissionIndexes",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "hasPermissions",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "permissionsOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "domain",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256[]",
+                "name": "permissionIndexes",
+                "type": "uint256[]"
+              }
+            ],
+            "internalType": "struct JBOperatorData",
+            "name": "_operatorData",
+            "type": "tuple"
+          }
+        ],
+        "name": "setOperator",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "domain",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256[]",
+                "name": "permissionIndexes",
+                "type": "uint256[]"
+              }
+            ],
+            "internalType": "struct JBOperatorData[]",
+            "name": "_operatorData",
+            "type": "tuple[]"
+          }
+        ],
+        "name": "setOperators",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "details": "Adheres to - IJBOperatorStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.",
+      "kind": "dev",
+      "methods": {
+        "hasPermission(address,address,uint256,uint256)": {
+          "params": {
+            "_account": "The account that has given out permissions to the operator.",
+            "_domain": "The domain that the operator has been given permissions to operate.",
+            "_operator": "The operator to check.",
+            "_permissionIndex": "The permission index to check for."
+          },
+          "returns": {
+            "_0": "A flag indicating whether the operator has the specified permission."
+          }
+        },
+        "hasPermissions(address,address,uint256,uint256[])": {
+          "params": {
+            "_account": "The account that has given out permissions to the operator.",
+            "_domain": "The domain that the operator has been given permissions to operate.",
+            "_operator": "The operator to check.",
+            "_permissionIndexes": "An array of permission indexes to check for."
+          },
+          "returns": {
+            "_0": "A flag indicating whether the operator has all specified permissions."
+          }
+        },
+        "setOperator((address,uint256,uint256[]))": {
+          "details": "Only an address can set its own operators.",
+          "params": {
+            "_operatorData": "The data that specifies the params for the operator being set."
+          }
+        },
+        "setOperators((address,uint256,uint256[])[])": {
+          "details": "Only an address can set its own operators.",
+          "params": {
+            "_operatorData": "The data that specify the params for each operator being set."
+          }
+        }
+      },
+      "stateVariables": {
+        "permissionsOf": {
+          "details": "An account can give an operator permissions that only pertain to a specific domain namespace. There is no domain with a value of 0 – accounts can use the 0 domain to give an operator permissions to all domains on their behalf.Permissions are stored in a packed `uint256`. Each 256 bits represents the on/off state of a permission. Applications can specify the significance of each index. _operator The address of the operator. _account The address of the account being operated. _domain The domain within which the permissions apply. Applications can use the domain namespace as they wish."
+        }
+      },
+      "version": 1
+    },
+    "userdoc": {
+      "kind": "user",
+      "methods": {
+        "hasPermission(address,address,uint256,uint256)": {
+          "notice": " Whether or not an operator has the permission to take a certain action pertaining to the specified domain."
+        },
+        "hasPermissions(address,address,uint256,uint256[])": {
+          "notice": " Whether or not an operator has the permission to take certain actions pertaining to the specified domain."
+        },
+        "permissionsOf(address,address,uint256)": {
+          "notice": "The permissions that an operator has been given to operate on a specific domain."
+        },
+        "setOperator((address,uint256,uint256[]))": {
+          "notice": "Sets permissions for an operators."
+        },
+        "setOperators((address,uint256,uint256[])[])": {
+          "notice": "Sets permissions for many operators."
+        }
+      },
+      "notice": "Stores operator permissions for all addresses. Addresses can give permissions to any other address to take specific indexed actions on their behalf.",
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol": "JBOperatorStore"
+    },
+    "evmVersion": "london",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      ":@jbx-protocol/=node_modules/@jbx-protocol/",
+      ":@openzeppelin/=node_modules/@openzeppelin/",
+      ":@paulrberg/=node_modules/@paulrberg/",
+      ":ds-test/=lib/forge-std/lib/ds-test/src/",
+      ":forge-std/=lib/forge-std/src/",
+      ":prb-math/=node_modules/prb-math/"
+    ]
+  },
+  "sources": {
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol": {
+      "keccak256": "0x8f8f1c0438d6bc6bdf666643939dc988ad300e6a3401158ec97700fb6ec2600e",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://88132980fb0587b7e95ba7bab45677304490dc9a98a25f4eec32e8a8631a987a",
+        "dweb:/ipfs/QmbTW3WbbFcUjx34yh8vg1v7aJnv6twhYmvzzUNggmMPqL"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol": {
+      "keccak256": "0x17f4929812a356984795fafed8cb2be816a025c9a0771d85595ac0b5ff3cffc5",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://4379909df832d51d25ac6f863c12e5271c96f01c4fd399eaeb16be3db8786e4c",
+        "dweb:/ipfs/QmTeGMNaf3KPT2A54sQ6HoZiBwfGRNqMZtvvci4oAN4z2s"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBOperatorData.sol": {
+      "keccak256": "0x3b85be7b69515976ee10770776283911666aceca820b0cf4e201ea4dbffeb6f0",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1a18afb385759e5440c645f2a5c581e42a7ac357c73c376fb34dbb5d5fd8f9af",
+        "dweb:/ipfs/QmZziN5ixwUXpk185YrcneBEVq91gVqYoBD7MrbvTTpALP"
+      ]
+    }
+  },
+  "version": 1
+}
