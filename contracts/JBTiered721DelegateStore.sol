@@ -630,8 +630,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
         contributionFloor: uint80(_tierToAdd.contributionFloor),
         lockedUntil: uint48(_tierToAdd.lockedUntil),
-        remainingQuantity: uint48(_tierToAdd.initialQuantity),
-        initialQuantity: uint48(_tierToAdd.initialQuantity),
+        remainingQuantity: uint40(_tierToAdd.initialQuantity),
+        initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate)
       });
@@ -700,7 +700,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             // Set the previous index to be the current index.
             _previous = _currentSortIndex;
 
-            // Set current to zero to break out of the loop.
+            // Go to the next index.
             _currentSortIndex = _next;
           }
         }
