@@ -1,0 +1,865 @@
+{
+  "compiler": {
+    "version": "0.8.16+commit.07a7930e"
+  },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract IJBDirectory",
+            "name": "_directory",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "CONTROLLER_UNAUTHORIZED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_BALLOT",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_DISCOUNT_RATE",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_DURATION",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_TIMEFRAME",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "INVALID_WEIGHT",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NO_SAME_BLOCK_RECONFIGURATION",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "prod1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "denominator",
+            "type": "uint256"
+          }
+        ],
+        "name": "PRBMath__MulDivOverflow",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "configuration",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "duration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weight",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "discountRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBFundingCycleBallot",
+                "name": "ballot",
+                "type": "address"
+              }
+            ],
+            "indexed": false,
+            "internalType": "struct JBFundingCycleData",
+            "name": "data",
+            "type": "tuple"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "metadata",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "mustStartAtOrAfter",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "Configure",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "configuration",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "projectId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "basedOn",
+            "type": "uint256"
+          }
+        ],
+        "name": "Init",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "duration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weight",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "discountRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBFundingCycleBallot",
+                "name": "ballot",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct JBFundingCycleData",
+            "name": "_data",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_metadata",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_mustStartAtOrAfter",
+            "type": "uint256"
+          }
+        ],
+        "name": "configureFor",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "number",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "configuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "basedOn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "start",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "duration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weight",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "discountRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBFundingCycleBallot",
+                "name": "ballot",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "metadata",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct JBFundingCycle",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "currentBallotStateOf",
+        "outputs": [
+          {
+            "internalType": "enum JBBallotState",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "currentOf",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "number",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "configuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "basedOn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "start",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "duration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weight",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "discountRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBFundingCycleBallot",
+                "name": "ballot",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "metadata",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct JBFundingCycle",
+            "name": "fundingCycle",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "directory",
+        "outputs": [
+          {
+            "internalType": "contract IJBDirectory",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "_configuration",
+            "type": "uint256"
+          }
+        ],
+        "name": "get",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "number",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "configuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "basedOn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "start",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "duration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weight",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "discountRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBFundingCycleBallot",
+                "name": "ballot",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "metadata",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct JBFundingCycle",
+            "name": "fundingCycle",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "latestConfigurationOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "latestConfiguredOf",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "number",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "configuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "basedOn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "start",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "duration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weight",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "discountRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBFundingCycleBallot",
+                "name": "ballot",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "metadata",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct JBFundingCycle",
+            "name": "fundingCycle",
+            "type": "tuple"
+          },
+          {
+            "internalType": "enum JBBallotState",
+            "name": "ballotState",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "_projectId",
+            "type": "uint256"
+          }
+        ],
+        "name": "queuedOf",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "number",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "configuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "basedOn",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "start",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "duration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weight",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "discountRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "contract IJBFundingCycleBallot",
+                "name": "ballot",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "metadata",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct JBFundingCycle",
+            "name": "fundingCycle",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "devdoc": {
+      "details": "Adheres to - IJBFundingCycleStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.Inherits from - JBControllerUtility: Includes convenience functionality for checking if the message sender is the current controller of the project whose data is being manipulated.",
+      "kind": "dev",
+      "methods": {
+        "configureFor(uint256,(uint256,uint256,uint256,address),uint256,uint256)": {
+          "details": "Only a project's current controller can configure its funding cycles.",
+          "params": {
+            "_data": "The funding cycle configuration data.",
+            "_metadata": "Arbitrary extra data to associate with this funding cycle configuration that's not used within.",
+            "_mustStartAtOrAfter": "The time before which the initialized funding cycle cannot start.",
+            "_projectId": "The ID of the project being configured."
+          },
+          "returns": {
+            "_0": "The funding cycle that the configuration will take effect during."
+          }
+        },
+        "constructor": {
+          "params": {
+            "_directory": "A contract storing directories of terminals and controllers for each project."
+          }
+        },
+        "currentBallotStateOf(uint256)": {
+          "params": {
+            "_projectId": "The ID of the project to check the ballot state of."
+          },
+          "returns": {
+            "_0": "The project's current ballot's state."
+          }
+        },
+        "currentOf(uint256)": {
+          "details": "If a current funding cycle of the project is not found, returns an empty funding cycle with all properties set to 0.",
+          "params": {
+            "_projectId": "The ID of the project to get the current funding cycle of."
+          },
+          "returns": {
+            "fundingCycle": "The project's current funding cycle."
+          }
+        },
+        "get(uint256,uint256)": {
+          "params": {
+            "_configuration": "The configuration of the funding cycle to get.",
+            "_projectId": "The ID of the project to which the funding cycle belongs."
+          },
+          "returns": {
+            "fundingCycle": "The funding cycle."
+          }
+        },
+        "latestConfiguredOf(uint256)": {
+          "params": {
+            "_projectId": "The ID of the project to get the latest configured funding cycle of."
+          },
+          "returns": {
+            "ballotState": "The state of the ballot for the reconfiguration.",
+            "fundingCycle": "The project's queued funding cycle."
+          }
+        },
+        "queuedOf(uint256)": {
+          "details": "If a queued funding cycle of the project is not found, returns an empty funding cycle with all properties set to 0.",
+          "params": {
+            "_projectId": "The ID of the project to get the queued funding cycle of."
+          },
+          "returns": {
+            "fundingCycle": "The project's queued funding cycle."
+          }
+        }
+      },
+      "version": 1
+    },
+    "userdoc": {
+      "errors": {
+        "PRBMath__MulDivOverflow(uint256,uint256)": [
+          {
+            "notice": "Emitted when the result overflows uint256."
+          }
+        ]
+      },
+      "kind": "user",
+      "methods": {
+        "configureFor(uint256,(uint256,uint256,uint256,address),uint256,uint256)": {
+          "notice": " Configures the next eligible funding cycle for the specified project."
+        },
+        "currentBallotStateOf(uint256)": {
+          "notice": " The current ballot state of the project."
+        },
+        "currentOf(uint256)": {
+          "notice": " The funding cycle that is currently active for the specified project."
+        },
+        "directory()": {
+          "notice": " The directory of terminals and controllers for projects."
+        },
+        "get(uint256,uint256)": {
+          "notice": " Get the funding cycle with the given configuration for the specified project."
+        },
+        "latestConfigurationOf(uint256)": {
+          "notice": " The latest funding cycle configuration for each project. _projectId The ID of the project to get the latest funding cycle configuration of."
+        },
+        "latestConfiguredOf(uint256)": {
+          "notice": " The latest funding cycle to be configured for the specified project, and its current ballot state."
+        },
+        "queuedOf(uint256)": {
+          "notice": " The funding cycle that's next up for the specified project."
+        }
+      },
+      "notice": " Manages funding cycle configurations and scheduling.",
+      "version": 1
+    }
+  },
+  "settings": {
+    "compilationTarget": {
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBFundingCycleStore.sol": "JBFundingCycleStore"
+    },
+    "evmVersion": "london",
+    "libraries": {},
+    "metadata": {
+      "bytecodeHash": "ipfs"
+    },
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "remappings": [
+      ":@jbx-protocol/=node_modules/@jbx-protocol/",
+      ":@openzeppelin/=node_modules/@openzeppelin/",
+      ":@paulrberg/=node_modules/@paulrberg/",
+      ":ds-test/=lib/forge-std/lib/ds-test/src/",
+      ":forge-std/=lib/forge-std/src/",
+      ":prb-math/=node_modules/prb-math/"
+    ]
+  },
+  "sources": {
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/JBFundingCycleStore.sol": {
+      "keccak256": "0xd5c82115557d2a2f5b2b35a45b17d3509466e9770b4bd5733a780576b0059938",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://c52dd908a805bf57369885160eaf29289fa4ce76baac9ab7c3ab7464d65ce52a",
+        "dweb:/ipfs/QmSAZ7Z93btHwHHgvZwkeMCJNtBEumjhZt7QPWQVcYnJ4L"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/abstract/JBControllerUtility.sol": {
+      "keccak256": "0x23701e4f46df7f37506c3748ff708231b06f39f8fd6f0f4c440832d530fc364f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://cecf453a9a1c9e74ea55ac3309e381197bd7b310a7af0d954d36e9afd4abbc6d",
+        "dweb:/ipfs/QmQf62M1Fr3evXGURiLkBRfeKsLXTzB6NnbBn1TWRQ92JW"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/enums/JBBallotState.sol": {
+      "keccak256": "0x891fcac63470398b3a11239da7feba6b07d640809fcefd2404303b823d7378f8",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://6e6adfceaf284b669a8c1cbcf2da7f18ab31a2d1066f9db8bc914349e7401de7",
+        "dweb:/ipfs/QmXLHVRPPZdXUkgAHQbHUtEzAvCJk1P6rJ7wrwfTcfW6fw"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBControllerUtility.sol": {
+      "keccak256": "0xd875bbeb2412c59b01d9e78884edb4becdcb6f2f3889deef1814921e46497c49",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://2be505bb6fadf16f483d7a6952873d5d2922c71e9a8a4a02be17a934c0e32ab7",
+        "dweb:/ipfs/QmQKevq1EXfXiMvi8TxMYCxFyBsVRfBfNBChfPFKf9XR55"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol": {
+      "keccak256": "0x715321646db00514d1355ed43c40cd3f01e94959552fd07797b315d9c49cdb1d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://c34c9e1c727ffc63dd42fb6e6ffb3116c8ba15d6a322a300f10f29478974768d",
+        "dweb:/ipfs/QmYToaGrbMyyWAuyepYcDd8M6KcmosY8AWhT3uJmPM6Pvy"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol": {
+      "keccak256": "0x49553a56209237846bc400cf27f260824a6bd06fd8094a7eb5abb9de75779598",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://559372746f94f28b385bc336df263f583dca5377350645c0b28110b083bdb41a",
+        "dweb:/ipfs/QmeQRYqPjXBQCtMKXSFtHVD2ewEPoUAPDxLh4oWTRSKbmx"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol": {
+      "keccak256": "0xaead823851433be0c2ddc8f8086813e6cd647de3a1bc0f7570a5d6b38c378b5a",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://7f11fd52ba9ef67b40811d8a2298ae8b69447d2565b3f1069cbb8f0f13bc65e7",
+        "dweb:/ipfs/QmVbBzpTxZWar9xvj6x1vW91hJDv2iPVq7aG6waMxaHUPQ"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol": {
+      "keccak256": "0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95",
+        "dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol": {
+      "keccak256": "0x7cfc021d0bd7e73b1ba8f4845d7d35e3419d6a14d3d25ca3a8010e7f91062fe4",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://ff265e13e60da56b93104260ed69ab01153437ec2af9d453781f22ca295eaef9",
+        "dweb:/ipfs/QmfGCSLX2Wy26ojf4U12udsdtjSSacbLcZGwCjTw7MjWF8"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol": {
+      "keccak256": "0xd267fd8ca7c21c2c71794acdb9a98314c33a35fc559e0bf0897a6686d196d174",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://aa7053d4300ed1374f3f993e6e2163d0a05ee780e4e99eb007b55eabc93c724e",
+        "dweb:/ipfs/QmYZAUn7VCwqpDWYZNCXLNYMRQpD334YgPRiGCfxQApzuT"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol": {
+      "keccak256": "0x34362846a1cd428a8bdedf4ab6857e11402f345cb87b994b2e7fb6d2474b808d",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://80b423d29251e6d6cc6bd24b89474628ebcd588fbf485da714134e449e002264",
+        "dweb:/ipfs/QmVBKR4eLMfJRHJLxEJJJQiYEgkoXK6kK6HyFy7mQ9Wx6d"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol": {
+      "keccak256": "0xcdd3ac9b6fa67e62ada88d09b73bc35ade1cd77d43db712289266a788928b4c2",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://8ba0be407022bbeb0e9272884653209ee262b8a4e00ffbba1298c3b119feccba",
+        "dweb:/ipfs/QmbtLQzSN3hut4jYVsYPiYDfRkDdGkZmTWBnV2wJKrdM3K"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol": {
+      "keccak256": "0x2aa6368bf4dfc5797e8b02a978293de0c777fae2658de2c825a103587240f3b0",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://2d7a980ab9b67ad1569d4407b747903cab668a332214117f5ad44feb50af0a3a",
+        "dweb:/ipfs/QmSuEzmrmDSihrTKYCk8miq7VQi7WD6jmQePkjDyzt7UpC"
+      ]
+    },
+    "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol": {
+      "keccak256": "0x90ad7b1014c0a9f945fe7a2efde9d5de41e40574fa27969070b1d2ff52033ea0",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://1fafc65a9fd74605b7d6c6f0a92b3237a8e3efdd160affb8c117bad00dcf9494",
+        "dweb:/ipfs/QmQkcVt11WLqrxHVrcDCF6dNxzg2kKHEghAgSbfLF6CHkt"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+      "keccak256": "0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f",
+        "dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x"
+      ]
+    },
+    "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+      "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+        "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+      ]
+    },
+    "node_modules/@paulrberg/contracts/math/PRBMath.sol": {
+      "keccak256": "0x42821345981bc0434a90ba2268a2f5278dfe9e38166981d72fc7f3b776a29495",
+      "license": "Unlicense",
+      "urls": [
+        "bzz-raw://92f28eea1e22d4e7998617483eef42d89eb97b364414cf41041c86aa633d3b47",
+        "dweb:/ipfs/QmT5entVZFjbb3ZGZZvNAGqtwerCgwjCfN1Qmvf8jKPBXj"
+      ]
+    },
+    "node_modules/prb-math/contracts/PRBMath.sol": {
+      "keccak256": "0xed164c95012964f5e125b5d2b2d00471a4bdee4def618cd1fcf341d196011b61",
+      "license": "Unlicense",
+      "urls": [
+        "bzz-raw://3ba3ad78675323279adfc09038eaa14f4cde3f3173e5d2d60b9c30bf7099aa7b",
+        "dweb:/ipfs/QmV56KGJZQG681hwd7JQDv3KjAa9JSGF88ShGx8YBCuvcR"
+      ]
+    }
+  },
+  "version": 1
+}
