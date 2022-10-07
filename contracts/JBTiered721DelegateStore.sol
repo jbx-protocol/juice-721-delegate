@@ -840,18 +840,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.
-    @param _beneficiary The beneficiary of the mints.
-    @param _currency The currency used to pay for the mints.
 
     @return tokenId The token ID minted.
     @return tierId The ID of the tier minted from.
     @return leftoverAmount The amount leftover after the mint. 
   */
-  function recordMintBestAvailableTier(
-    uint256 _amount,
-    address _beneficiary,
-    uint256 _currency
-  )
+  function recordMintBestAvailableTier(uint256 _amount)
     external
     override
     returns (

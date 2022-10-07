@@ -634,11 +634,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256 _tierId;
 
     // Record the mint.
-    (_tokenId, _tierId, leftoverAmount) = store.recordMintBestAvailableTier(
-      _amount,
-      _beneficiary,
-      _currency
-    );
+    (_tokenId, _tierId, leftoverAmount) = store.recordMintBestAvailableTier(_amount);
 
     // If there's no best tier, return or revert.
     if (_tokenId == 0) {
