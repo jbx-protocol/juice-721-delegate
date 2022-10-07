@@ -161,14 +161,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
-    Custom pricing resolver.
-
-    _nft The NFT for which the token pricing resolver applies.
-  */
-  mapping(address => IJB721PricingResolver) public override pricingResolverOf;
-
-  /**
-    @notice
     Contract metadata uri.
 
     _nft The NFT for which the contract URI resolver applies.
@@ -495,39 +487,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the total number of tokens.
     uint256 _numberOfTokenIds = _tokenIds.length;
 
-    // Keep a reference to the tier being iterated on.
-    JBStored721Tier memory _storedTier;
-
-    // Get a reference to the resolver;
-    IJB721PricingResolver _resolver = pricingResolverOf[_nft];
-
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
-      // Keep a reference to the tier ID of the token being iterated on.
-      uint256 _tierId = tierIdOfToken(_tokenIds[_i]);
-
-      // Set the tier being iterated on. Tier's are 1 indexed.
-      _storedTier = _storedTierOf[_nft][_tierId];
-
-      // Keep a reference to the contribution floor.
-      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
-        ? _storedTier.contributionFloor
-        : _resolver.redeemPriceFor(
-          JB721Tier({
-            id: _tierId,
-            contributionFloor: _storedTier.contributionFloor,
-            lockedUntil: _storedTier.lockedUntil,
-            remainingQuantity: _storedTier.remainingQuantity,
-            initialQuantity: _storedTier.initialQuantity,
-            votingUnits: _storedTier.votingUnits,
-            reservedRate: _storedTier.reservedRate,
-            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
-            allowManualMint: _storedTier.allowManualMint,
-            encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
-          })
-        );
-
-      weight += _contributionFloor;
+      weight += _storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor;
 
       unchecked {
         ++_i;
@@ -550,38 +512,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
-    // Get a reference to the resolver;
-    IJB721PricingResolver _resolver = pricingResolverOf[_nft];
-
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _maxTierId; ) {
-      // Keep a reference to the tier ID being iterated on.
-      uint256 _tierId = _i + 1;
-
       // Keep a reference to the stored tier.
-      _storedTier = _storedTierOf[_nft][_tierId];
-
-      // Keep a reference to the contribution floor.
-      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
-        ? _storedTier.contributionFloor
-        : _resolver.redeemPriceFor(
-          JB721Tier({
-            id: _tierId,
-            contributionFloor: _storedTier.contributionFloor,
-            lockedUntil: _storedTier.lockedUntil,
-            remainingQuantity: _storedTier.remainingQuantity,
-            initialQuantity: _storedTier.initialQuantity,
-            votingUnits: _storedTier.votingUnits,
-            reservedRate: _storedTier.reservedRate,
-            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
-            allowManualMint: _storedTier.allowManualMint,
-            encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
-          })
-        );
+      _storedTier = _storedTierOf[_nft][_i + 1];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        (_contributionFloor * (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
+        (_storedTier.contributionFloor *
+          (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
         _numberOfReservedTokensOutstandingFor(_nft, _i, _storedTier);
 
       unchecked {
@@ -750,7 +689,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
               // Set the tier after the previous one being iterated on as the tier being added, or 0 if the index is incremented.
               _tierIdAfter[msg.sender][_previous] = _previous == _tierId - 1 ? 0 : _tierId;
 
-            // for the next tier being added, start at this current index. if the tierid is the last tier, start there.
+            // For the next tier being added, start at this current index.
             _startSortIndex = _currentSortIndex;
 
             // The tier just added is the previous for the next tier being added.
@@ -770,7 +709,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             // Break out.
             _currentSortIndex = 0;
           }
-          // If iterating on the last element,
+          // Move on to the next index.
           else {
             // Set the previous index to be the current index.
             _previous = _currentSortIndex;
@@ -915,18 +854,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     Mints a token in the best available tier.
 
     @param _amount The amount to base the mint on.
-    @param _beneficiary The beneficiary of the mints.
-    @param _currency The currency used to pay for the mints.
 
     @return tokenId The token ID minted.
     @return tierId The ID of the tier minted from.
     @return leftoverAmount The amount leftover after the mint. 
   */
-  function recordMintBestAvailableTier(
-    uint256 _amount,
-    address _beneficiary,
-    uint256 _currency
-  )
+  function recordMintBestAvailableTier(uint256 _amount)
     external
     override
     returns (
@@ -946,9 +879,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // If there's no sort index, start with the first index.
     uint256 _currentSortIndex = _firstSortIndexOf(msg.sender);
 
-    // Get a reference to the resolver;
-    IJB721PricingResolver _resolver = pricingResolverOf[msg.sender];
-
     // Keep a reference to the best contribution floor.
     uint256 _bestContributionFloor;
 
@@ -956,28 +886,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Set the tier being iterated on. Tier's are 1 indexed.
       _storedTier = _storedTierOf[msg.sender][_currentSortIndex];
 
-      // Keep a reference to the contribution floor.
-      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
-        ? _storedTier.contributionFloor
-        : _resolver.payPriceFor(
-          JB721Tier({
-            id: _currentSortIndex,
-            contributionFloor: _storedTier.contributionFloor,
-            lockedUntil: _storedTier.lockedUntil,
-            remainingQuantity: _storedTier.remainingQuantity,
-            initialQuantity: _storedTier.initialQuantity,
-            votingUnits: _storedTier.votingUnits,
-            reservedRate: _storedTier.reservedRate,
-            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _currentSortIndex),
-            allowManualMint: _storedTier.allowManualMint,
-            encodedIPFSUri: encodedIPFSUriOf[msg.sender][_currentSortIndex]
-          }),
-          _beneficiary,
-          _currency
-        );
-
       // If the contribution floor has gone over, break out of the loop.
-      if (_contributionFloor > _amount) _currentSortIndex = 0;
+      if (_storedTier.contributionFloor > _amount) _currentSortIndex = 0;
       else {
         // If the tier is not removed, check to see if it's optimal.
         // Set the tier as the best available so far if there is still a remaining quantity.
@@ -988,7 +898,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           0
         ) {
           tierId = _currentSortIndex;
-          _bestContributionFloor = _contributionFloor;
+          _bestContributionFloor = _storedTier.contributionFloor;
         }
 
         // Set the next sort index.
@@ -1024,9 +934,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
     @param _tierIds The IDs of the tier to mint from.
-    @param _beneficiary The beneficiary of the mints.
-    @param _currency The currency used to pay for the mints.
-    @param _isManualMint A flag indicating if the mint is being made manually by the owner.
+    @param _isManualMint A flag indicating if the mint is being made manually by the NFT's owner.
 
     @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
@@ -1034,8 +942,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   function recordMint(
     uint256 _amount,
     uint16[] calldata _tierIds,
-    address _beneficiary,
-    uint256 _currency,
     bool _isManualMint
   ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
     // Set the leftover amount as the initial amount.
@@ -1053,9 +959,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_numberOfTiers);
 
-    // Get a reference to the resolver;
-    IJB721PricingResolver _resolver = pricingResolverOf[msg.sender];
-
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
       _tierId = _tierIds[_i];
@@ -1072,28 +975,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the provided tier exists.
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
 
-      // Keep a reference to the contribution floor.
-      uint256 _contributionFloor = _resolver == IJB721PricingResolver(address(0))
-        ? _storedTier.contributionFloor
-        : _resolver.payPriceFor(
-          JB721Tier({
-            id: _tierId,
-            contributionFloor: _storedTier.contributionFloor,
-            lockedUntil: _storedTier.lockedUntil,
-            remainingQuantity: _storedTier.remainingQuantity,
-            initialQuantity: _storedTier.initialQuantity,
-            votingUnits: _storedTier.votingUnits,
-            reservedRate: _storedTier.reservedRate,
-            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(msg.sender, _tierId),
-            allowManualMint: _storedTier.allowManualMint,
-            encodedIPFSUri: encodedIPFSUriOf[msg.sender][_tierId]
-          }),
-          _beneficiary,
-          _currency
-        );
-
       // Make sure the amount meets the tier's contribution floor.
-      if (_contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
+      if (_storedTier.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
 
       // Make sure there are enough units available.
       if (
@@ -1114,7 +997,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Update the leftover amount;
-      leftoverAmount = leftoverAmount - _contributionFloor;
+      leftoverAmount = leftoverAmount - _storedTier.contributionFloor;
 
       unchecked {
         ++_i;
@@ -1196,6 +1079,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
+<<<<<<< HEAD
     Sets the pricing resolver. 
 
     @param _resolver The resolver to set.
@@ -1203,12 +1087,22 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   function recordSetPricingResolver(IJB721PricingResolver _resolver) external override {
     // Make sure pricing resolver changes aren't locked.
     if (_flagsOf[msg.sender].lockPricingResolverChanges) revert PRICING_RESOLVER_CHANGES_LOCKED();
+=======
+    Sets a flag indicating if voting unit expectations can change over time by adding new tiers with voting units.
+
+    @param _flag The flag to set.
+  */
+  function recordLockVotingUnitChanges(bool _flag) external override {
+    lockVotingUnitChangesFor[msg.sender] = _flag;
+  }
+>>>>>>> feature/manual-mint
 
     pricingResolverOf[msg.sender] = _resolver;
   }
 
   /** 
     @notice
+<<<<<<< HEAD
     Sets flags. 
 
     @param _flags The flag to sets.
@@ -1219,6 +1113,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
+=======
+>>>>>>> feature/manual-mint
     Removes removed tiers from sequencing.
 
     @param _nft The NFT contract to clean tiers for.

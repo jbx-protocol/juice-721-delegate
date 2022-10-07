@@ -5,7 +5,6 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolve
 import './../structs/JB721TierParams.sol';
 import './../structs/JB721Tier.sol';
 import './../structs/JBTiered721Flags.sol';
-import './IJB721PricingResolver.sol';
 
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
@@ -82,8 +81,6 @@ interface IJBTiered721DelegateStore {
 
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
-  function pricingResolverOf(address _nft) external view returns (IJB721PricingResolver);
-
   function encodedTierIPFSUriOf(address _nft, uint256 _tokenId) external view returns (bytes32);
 
   function recordAddTiers(JB721TierParams[] memory _tierData)
@@ -94,11 +91,7 @@ interface IJBTiered721DelegateStore {
     external
     returns (uint256[] memory tokenIds);
 
-  function recordMintBestAvailableTier(
-    uint256 _amount,
-    address _beneficiary,
-    uint256 _currency
-  )
+  function recordMintBestAvailableTier(uint256 _amount)
     external
     returns (
       uint256 tokenId,
@@ -113,8 +106,6 @@ interface IJBTiered721DelegateStore {
   function recordMint(
     uint256 _amount,
     uint16[] calldata _tierIds,
-    address _beneficiary,
-    uint256 _currency,
     bool _isManualMint
   ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
@@ -134,9 +125,17 @@ interface IJBTiered721DelegateStore {
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
 
+<<<<<<< HEAD
   function recordSetPricingResolver(IJB721PricingResolver _resolver) external;
 
   function recordFlags(JBTiered721Flags calldata _flag) external;
+=======
+  function recordLockVotingUnitChanges(bool _flag) external;
+
+  function recordLockReservedTokenChanges(bool _flag) external;
+
+  function recordLockManualMintingChanges(bool _flag) external;
+>>>>>>> feature/manual-mint
 
   function cleanTiers(address _nft) external;
 }
