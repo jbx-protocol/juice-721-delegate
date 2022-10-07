@@ -125,17 +125,7 @@ interface IJBTiered721DelegateStore {
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
 
-<<<<<<< HEAD
-  function recordSetPricingResolver(IJB721PricingResolver _resolver) external;
-
   function recordFlags(JBTiered721Flags calldata _flag) external;
-=======
-  function recordLockVotingUnitChanges(bool _flag) external;
-
-  function recordLockReservedTokenChanges(bool _flag) external;
-
-  function recordLockManualMintingChanges(bool _flag) external;
->>>>>>> feature/manual-mint
 
   function cleanTiers(address _nft) external;
 }
