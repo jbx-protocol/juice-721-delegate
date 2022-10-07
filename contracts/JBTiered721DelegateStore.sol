@@ -517,11 +517,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _maxTierId; ) {
-      // Keep a reference to the tier ID being iterated on.
-      uint256 _tierId = _i + 1;
-
       // Keep a reference to the stored tier.
-      _storedTier = _storedTierOf[_nft][_tierId];
+      _storedTier = _storedTierOf[_nft][_i + 1];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
