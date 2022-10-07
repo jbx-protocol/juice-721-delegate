@@ -490,18 +490,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the total number of tokens.
     uint256 _numberOfTokenIds = _tokenIds.length;
 
-    // Keep a reference to the tier being iterated on.
-    JBStored721Tier memory _storedTier;
-
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
-      // Keep a reference to the tier ID of the token being iterated on.
-      uint256 _tierId = tierIdOfToken(_tokenIds[_i]);
-
-      // Set the tier being iterated on. Tier's are 1 indexed.
-      _storedTier = _storedTierOf[_nft][_tierId];
-
-      weight += _storedTier.contributionFloor;
+      weight += _storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor;
 
       unchecked {
         ++_i;
