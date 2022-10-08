@@ -633,8 +633,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
         contributionFloor: uint80(_tierToAdd.contributionFloor),
         lockedUntil: uint48(_tierToAdd.lockedUntil),
-        remainingQuantity: uint40(_tierToAdd.initialQuantity),
-        initialQuantity: uint40(_tierToAdd.initialQuantity),
+        remainingQuantity: uint48(_tierToAdd.initialQuantity),
+        initialQuantity: uint48(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate)
       });
