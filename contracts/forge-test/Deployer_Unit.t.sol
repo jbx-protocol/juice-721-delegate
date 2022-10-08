@@ -160,10 +160,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       }),
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
-      flags: JBTiered721Flags({
-        lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true
-      })
+      flags: JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
