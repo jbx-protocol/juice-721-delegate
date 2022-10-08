@@ -387,20 +387,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Get a reference to the number of tiers being added.
     uint256 _numberOfTiersToAdd = _tiersToAdd.length;
 
-    // Add the tiers.
-    if (_numberOfTiersToAdd != 0) {
-      // Record the added tiers in the store.
-      uint256[] memory _tierIdsAdded = store.recordAddTiers(_tiersToAdd);
-
-      // Emit events for each added tier.
-      for (uint256 _i; _i < _numberOfTiersToAdd; ) {
-        emit AddTier(_tierIdsAdded[_i], _tiersToAdd[_i], msg.sender);
-        unchecked {
-          ++_i;
-        }
-      }
-    }
-
     // Get a reference to the number of tiers being removed.
     uint256 _numberOfTiersToRemove = _tierIdsToRemove.length;
 
@@ -412,6 +398,20 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
       // Emit events for each removed tier.
       for (uint256 _i; _i < _numberOfTiersToRemove; ) {
         emit RemoveTier(_tierIdsToRemove[_i], msg.sender);
+        unchecked {
+          ++_i;
+        }
+      }
+    }
+
+    // Add the tiers.
+    if (_numberOfTiersToAdd != 0) {
+      // Record the added tiers in the store.
+      uint256[] memory _tierIdsAdded = store.recordAddTiers(_tiersToAdd);
+
+      // Emit events for each added tier.
+      for (uint256 _i; _i < _numberOfTiersToAdd; ) {
+        emit AddTier(_tierIdsAdded[_i], _tiersToAdd[_i], msg.sender);
         unchecked {
           ++_i;
         }
