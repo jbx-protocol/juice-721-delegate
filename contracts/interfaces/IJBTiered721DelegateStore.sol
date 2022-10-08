@@ -61,8 +61,6 @@ interface IJBTiered721DelegateStore {
 
   function lockReservedTokenChangesFor(address _nft) external view returns (bool);
 
-  function lockPricingResolverChangesFor(address _nft) external view returns (bool);
-
   function votingUnitsOf(address _nft, address _account) external view returns (uint256 units);
 
   function tierVotingUnitsOf(
@@ -129,8 +127,6 @@ interface IJBTiered721DelegateStore {
   function recordLockVotingUnitChanges(bool _flag) external;
 
   function recordLockReservedTokenChanges(bool _flag) external;
-
-  function recordLockPricingResolverChanges(bool _flag) external;
 
   function cleanTiers(address _nft) external;
 }

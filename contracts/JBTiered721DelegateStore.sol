@@ -177,14 +177,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
-   A flag indicating if the provided pricing resolver can change by the owner.
-
-    _nft The NFT for which the flag applies.
-  */
-  mapping(address => bool) public override lockPricingResolverChangesFor;
-
-  /**
-    @notice
     When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS hashes stripped down.
 
     _nft The NFT contract to which the encoded upfs uri belongs.
@@ -1086,16 +1078,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function recordLockReservedTokenChanges(bool _flag) external override {
     lockReservedTokenChangesFor[msg.sender] = _flag;
-  }
-
-  /** 
-    @notice
-    Sets a flag indicating if the provided pricing resolver can change by the owner.
-
-    @param _flag The flag to set.
-  */
-  function recordLockPricingResolverChanges(bool _flag) external override {
-    lockPricingResolverChangesFor[msg.sender] = _flag;
   }
 
   /** 
