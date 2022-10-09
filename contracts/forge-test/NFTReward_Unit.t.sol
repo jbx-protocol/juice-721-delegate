@@ -2183,7 +2183,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParam[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
