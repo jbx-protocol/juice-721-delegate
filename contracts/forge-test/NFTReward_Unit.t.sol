@@ -112,6 +112,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedRate: uint16(0),
           reservedTokenBeneficiary: reserveBeneficiary,
           encodedIPFSUri: tokenUris[i],
+          allowManualMint: false,
           shouldUseBeneficiaryAsDefault: false
         })
       );
@@ -196,6 +197,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         reservedRate: uint16(0),
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -208,7 +210,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -265,6 +268,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         reservedRate: uint16(0),
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -277,7 +281,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
 
       if (i != firstRemovedTier - 1 && i != secondRemovedTier - 1) {
@@ -349,6 +354,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -361,7 +367,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -418,7 +425,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           votingUnits: 0,
           reservedRate: 0,
           reservedTokenBeneficiary: address(0),
-          encodedIPFSUri: bytes32(0)
+          encodedIPFSUri: bytes32(0),
+          allowManualMint: false
         })
       );
   }
@@ -445,6 +453,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -513,6 +522,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -571,6 +581,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -641,6 +652,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -766,6 +778,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -834,6 +847,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -898,6 +912,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -1081,6 +1096,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -1093,7 +1109,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -1161,6 +1178,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -1223,6 +1241,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -1321,6 +1340,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -1477,6 +1497,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -1553,6 +1574,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -1688,6 +1710,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -1700,7 +1723,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -1741,6 +1765,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -1753,7 +1778,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
 
       vm.expectEmit(true, true, true, true, address(_delegate));
@@ -1843,6 +1869,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -1855,7 +1882,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -1977,6 +2005,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -1989,7 +2018,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -2037,6 +2067,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedRate: uint16(i),
           reservedTokenBeneficiary: reserveBeneficiary,
           encodedIPFSUri: tokenUris[0],
+          allowManualMint: false,
           shouldUseBeneficiaryAsDefault: false
         });
 
@@ -2049,7 +2080,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           votingUnits: _tierDataRemaining[_arrayIndex].votingUnits,
           reservedRate: _tierDataRemaining[_arrayIndex].reservedRate,
           reservedTokenBeneficiary: _tierDataRemaining[_arrayIndex].reservedTokenBeneficiary,
-          encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri
+          encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri,
+          allowManualMint: _tierDataRemaining[_arrayIndex].allowManualMint
         });
         _arrayIndex++;
       } else {
@@ -2072,6 +2104,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2084,7 +2117,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
 
       vm.expectEmit(true, true, true, true, address(_delegate));
@@ -2135,6 +2169,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2147,7 +2182,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
     }
 
@@ -2184,6 +2220,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2196,7 +2233,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
     }
 
@@ -2233,6 +2271,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2245,7 +2284,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParam[i].votingUnits,
         reservedRate: _tierParam[i].reservedRate,
         reservedTokenBeneficiary: _tierParam[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParam[i].encodedIPFSUri
+        encodedIPFSUri: _tierParam[i].encodedIPFSUri,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
     }
 
@@ -2282,6 +2322,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i + 1),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2294,7 +2335,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
     }
 
@@ -2331,6 +2373,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2343,7 +2386,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
     }
 
@@ -2380,6 +2424,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2392,7 +2437,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
     }
 
@@ -2424,6 +2470,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2436,7 +2483,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -2542,6 +2590,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
 
@@ -2554,7 +2603,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
-        encodedIPFSUri: _tierParams[i].encodedIPFSUri
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
@@ -3708,6 +3758,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -3823,6 +3874,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -3928,6 +3980,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -4569,7 +4622,8 @@ contract ForTest_JBTiered721DelegateStore is
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
-        encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex]
+        encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
+        allowManualMint: _storedTier.allowManualMint
       });
 
       // Set the next sort index.

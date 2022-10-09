@@ -10,8 +10,8 @@ pragma solidity ^0.8.16;
   @member votingUnits The amount of voting significance to give this tier compared to others.
   @member reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
   @member reservedRateBeneficiary The beneificary of the reserved tokens for this tier.
-  @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member encodedIPFSUri The URI to use for each token within the tier.
+  @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
 */
 struct JB721Tier {
   uint256 id;
@@ -22,6 +22,6 @@ struct JB721Tier {
   uint256 votingUnits;
   uint256 reservedRate;
   address reservedTokenBeneficiary;
-  bool allowManualMint;
   bytes32 encodedIPFSUri;
+  bool allowManualMint;
 }
