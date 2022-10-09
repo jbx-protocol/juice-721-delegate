@@ -304,17 +304,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Record adding the provided tiers.
     if (_pricing.tiers.length > 0) _store.recordAddTiers(_pricing.tiers);
 
-    // Set the locked reserved token change preference if needed.
-    if (_flags.lockReservedTokenChanges)
-      _store.recordLockReservedTokenChanges(_flags.lockReservedTokenChanges);
-
-    // Set the locked voting unit change preference if needed.
-    if (_flags.lockVotingUnitChanges)
-      _store.recordLockVotingUnitChanges(_flags.lockVotingUnitChanges);
-
-    // Set the locked manual minting change preference if needed.
-    if (_flags.lockManualMintingChanges)
-      _store.recordLockManualMintingChanges(_flags.lockManualMintingChanges);
+    // Set the flags if needed.
+    if (
+      _flags.lockReservedTokenChanges ||
+      _flags.lockVotingUnitChanges ||
+      _flags.lockManualMintingChanges
+    ) _store.recordFlags(_flags);
   }
 
   //*********************************************************************//
