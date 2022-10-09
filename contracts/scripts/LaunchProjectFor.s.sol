@@ -141,6 +141,7 @@ contract RinkebyLaunchProjectFor is Script {
         reservedRate: 1,
         reservedTokenBeneficiary: address(0),
         encodedIPFSUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89,
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: true
       });
     }
@@ -164,7 +165,8 @@ contract RinkebyLaunchProjectFor is Script {
       store: IJBTiered721DelegateStore(STORE),
       flags: JBTiered721Flags({
         lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true
+        lockVotingUnitChanges: true,
+        lockManualMintingChanges: true
       })
     });
 
