@@ -7,6 +7,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './../structs/JBTiered721MintForTiersData.sol';
+import './../structs/JBTiered721SetTierDelegatesData.sol';
 import './IJBTiered721DelegateStore.sol';
 
 interface IJBTiered721Delegate {
@@ -81,6 +82,9 @@ interface IJBTiered721Delegate {
     returns (uint256);
 
   function adjustTiers(JB721TierParams[] memory _tierDataToAdd, uint256[] memory _tierIdsToRemove)
+    external;
+
+  function setTierDelegates(JBTiered721SetTierDelegatesData[] memory _setTierDelegatesData)
     external;
 
   function setTierDelegate(address _delegatee, uint256 _tierId) external;
