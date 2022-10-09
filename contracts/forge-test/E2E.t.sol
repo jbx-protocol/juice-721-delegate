@@ -329,6 +329,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       reservedRate: uint16(0),
       reservedTokenBeneficiary: reserveBeneficiary,
       encodedIPFSUri: tokenUris[0],
+      allowManualMint: false,
       shouldUseBeneficiaryAsDefault: false
     });
 
@@ -690,10 +691,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Craft the metadata: redeem the tokenId
     uint256[] memory redemptionId = new uint256[](1);
     redemptionId[0] = tokenId;
-    bytes memory redemptionMetadata = abi.encode(
-      type(IJB721Delegate).interfaceId,
-      redemptionId
-    );
+    bytes memory redemptionMetadata = abi.encode(type(IJB721Delegate).interfaceId, redemptionId);
 
     vm.prank(_beneficiary);
     _jbETHPaymentTerminal.redeemTokensOf({
@@ -876,6 +874,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         reservedRate: uint16(JBConstants.MAX_RESERVED_RATE),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -899,7 +898,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       store: new JBTiered721DelegateStore(),
       flags: JBTiered721Flags({
         lockReservedTokenChanges: false,
-        lockVotingUnitChanges: false
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true
       })
     });
 

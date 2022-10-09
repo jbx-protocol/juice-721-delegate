@@ -139,6 +139,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
     }
@@ -160,7 +161,11 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       }),
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
-      flags: JBTiered721Flags({lockReservedTokenChanges: true, lockVotingUnitChanges: true})
+      flags: JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockManualMintingChanges: true
+      })
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
