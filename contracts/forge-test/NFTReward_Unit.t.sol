@@ -4586,6 +4586,9 @@ contract ForTest_JBTiered721DelegateStore is
   JBTiered721DelegateStore,
   IJBTiered721DelegateStore_ForTest
 {
+  using JBBitmap for mapping(uint256=>uint256);
+  using JBBitmap for JBBitmap.BitmapWord;
+
   function ForTest_dumpTiersList(address _nft)
     public
     view
@@ -4672,6 +4675,6 @@ contract ForTest_JBTiered721DelegateStore is
   }
 
   function ForTest_setIsTierRemoved(address _delegate, uint256 _tokenId) public override {
-    isTierRemoved[_delegate][_tokenId] = true;
+    _isTierRemoved[_delegate].setToTrue(_tokenId);
   }
 }
