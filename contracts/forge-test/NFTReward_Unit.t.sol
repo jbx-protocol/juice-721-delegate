@@ -1768,7 +1768,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false
       });
-
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         contributionFloor: _tierParamsToAdd[i].contributionFloor,
@@ -1779,9 +1778,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParamsToAdd[i].allowManualMint
       });
-
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
     }
