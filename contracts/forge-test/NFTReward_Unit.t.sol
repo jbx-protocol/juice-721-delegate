@@ -2183,7 +2183,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParam[i].allowManualMint
       });
     }
 
@@ -2285,7 +2285,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParam[i].reservedRate,
         reservedTokenBeneficiary: _tierParam[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParam[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParam[i].allowManualMint
       });
     }
 
@@ -2387,7 +2387,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint
       });
     }
 
