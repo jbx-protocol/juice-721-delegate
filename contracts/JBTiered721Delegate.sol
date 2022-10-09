@@ -38,7 +38,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   error NOT_AVAILABLE();
   error OVERSPENDING();
-  error PRICING_RESOLVER_CHANGES_LOCKED();
   error PRICING_RESOLVER_CHANGES_PAUSED();
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
@@ -312,6 +311,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Set the locked voting unit change preference if needed.
     if (_flags.lockVotingUnitChanges)
       _store.recordLockVotingUnitChanges(_flags.lockVotingUnitChanges);
+
+    // Set the locked manual minting change preference if needed.
+    if (_flags.lockManualMintingChanges)
+      _store.recordLockManualMintingChanges(_flags.lockManualMintingChanges);
   }
 
   //*********************************************************************//
@@ -337,6 +340,33 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
       // Mint for the tier.
       mintReservesFor(_data.tierId, _data.count);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /** 
+    @notice
+    Mint tokens within the tier for the provided beneficiaries.
+
+    @param _mintForTiersData Contains information about how who to mint tokens for from each tier.
+  */
+  function mintFor(JBTiered721MintForTiersData[] memory _mintForTiersData)
+    external
+    override
+    onlyOwner
+  {
+    // Keep a reference to the number of beneficiaries there are to mint for.
+    uint256 _numberOfBeneficiaries = _mintForTiersData.length;
+
+    for (uint256 _i; _i < _numberOfBeneficiaries; ) {
+      // Get a reference to the data being iterated on.
+      JBTiered721MintForTiersData memory _data = _mintForTiersData[_i];
+
+      // Mint for the tier.
+      mintFor(_data.tierIds, _data.beneficiary);
 
       unchecked {
         ++_i;
@@ -504,6 +534,49 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     }
   }
 
+  /** 
+    @notice
+    Manually mint NFTs from tiers.
+
+    @param _tierIds The IDs of the tiers to mint from.
+    @param _beneficiary The address to mint to. 
+
+    @return tokenIds The IDs of the newly minted tokens.
+  */
+  function mintFor(uint16[] memory _tierIds, address _beneficiary)
+    public
+    override
+    onlyOwner
+    returns (uint256[] memory tokenIds)
+  {
+    // Record the mint. The returned token IDs correspond to the tiers passed in.
+    (tokenIds, ) = store.recordMint(
+      type(uint256).max, // force the mint.
+      _tierIds,
+      true // manual mint
+    );
+
+    // Keep a reference to the number of tokens being minted.
+    uint256 _numberOfTokens;
+
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
+
+    for (uint256 _i; _i < _numberOfTokens; ) {
+      // Set the token ID.
+      _tokenId = tokenIds[_i];
+
+      // Mint the token.
+      _mint(_beneficiary, _tokenId);
+
+      emit Mint(_tokenId, _tierIds[_i], _beneficiary, 0, msg.sender);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
   /**
     @notice 
     Delegates votes from the sender to `delegatee`.
@@ -660,7 +733,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     uint256[] memory _tokenIds;
 
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (_tokenIds, leftoverAmount) = store.recordMint(_amount, _mintTierIds);
+    (_tokenIds, leftoverAmount) = store.recordMint(
+      _amount,
+      _mintTierIds,
+      false // Not a manual mint
+    );
 
     // Get a reference to the number of mints.
     uint256 _mintsLength = _tokenIds.length;

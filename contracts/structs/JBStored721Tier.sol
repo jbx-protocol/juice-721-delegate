@@ -8,12 +8,14 @@ pragma solidity ^0.8.16;
   @member initialQuantity The initial `remainingAllowance` value when the tier was set.
   @member votingUnits The amount of voting significance to give this tier compared to others.
   @member reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
+  @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
 */
 struct JBStored721Tier {
   uint80 contributionFloor;
   uint48 lockedUntil;
-  uint48 remainingQuantity;
-  uint48 initialQuantity;
+  uint40 remainingQuantity;
+  uint40 initialQuantity;
   uint16 votingUnits;
   uint16 reservedRate;
+  bool allowManualMint;
 }

@@ -17,13 +17,15 @@ Each tier has the following optional properties:
 - URI, overridable by a URI resolver that can return dynamic values for each unit with the tier.
 - a lock date, before which the tier must remain accessible.
 
-New tiers can be added, so long as they respect the contract's `flags` that specify if new tiers can influence voting units or reserved quantities.
+New tiers can be added, so long as they respect the contract's `flags` that specify if new tiers can influence voting units, reserved quantities, or be manually minted.
 
 Tiers can also be removed, so long as they are not locked.
 
 An incoming payment can specify any number of tiers to mint as part of the payment, so long as the tier's prices are contained within the paid amount. If specific tiers aren't specified, the best available tier will be minted, unless a flag is specifically sent along with the payment telling the contract to not mint.
 
 If a payment received does not meet a minting threshold or is in excess of the minted tiers, the balance is stored as a credit which will be added to future payments and applied to mints at that time. A flag can also be passed to avoid accepting payments that aren't applied to mints in full. 
+
+The contract's owner can mint on demand from tier's that have been pre-programmed to allow manual token minting.
 
 The NFTs from each tier can also be used for redemptions against the underlying Juicebox treasury. The rate of redemptions corresponds to the price floor of the tier being redeemed, compared to the total price floors of all minted NFTs.
 

@@ -9,6 +9,7 @@ pragma solidity ^0.8.16;
   @memver reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
   @member reservedRateBeneficiary The beneificary of the reserved tokens for this tier.
   @member encodedIPFSUri The URI to use for each token within the tier.
+  @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member shouldUseBeneficiaryAsDefault A flag indicating if the `reservedTokenBeneficiary` should be stored as the default beneficiary for all tiers.
 */
 struct JB721TierParams {
@@ -19,5 +20,6 @@ struct JB721TierParams {
   uint256 reservedRate;
   address reservedTokenBeneficiary;
   bytes32 encodedIPFSUri;
+  bool allowManualMint;
   bool shouldUseBeneficiaryAsDefault;
 }

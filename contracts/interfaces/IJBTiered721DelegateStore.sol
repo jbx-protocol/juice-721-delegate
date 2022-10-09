@@ -61,6 +61,8 @@ interface IJBTiered721DelegateStore {
 
   function lockReservedTokenChangesFor(address _nft) external view returns (bool);
 
+  function lockManualMintingChangesFor(address _nft) external view returns (bool);
+
   function votingUnitsOf(address _nft, address _account) external view returns (uint256 units);
 
   function tierVotingUnitsOf(
@@ -104,9 +106,11 @@ interface IJBTiered721DelegateStore {
 
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;
 
-  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
-    external
-    returns (uint256[] memory tokenIds, uint256 leftoverAmount);
+  function recordMint(
+    uint256 _amount,
+    uint16[] calldata _tierIds,
+    bool _isManualMint
+  ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
   function recordTransferForTier(
     uint256 _tierId,
@@ -127,6 +131,8 @@ interface IJBTiered721DelegateStore {
   function recordLockVotingUnitChanges(bool _flag) external;
 
   function recordLockReservedTokenChanges(bool _flag) external;
+
+  function recordLockManualMintingChanges(bool _flag) external;
 
   function cleanTiers(address _nft) external;
 }

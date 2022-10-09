@@ -21,12 +21,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
+  error CANT_MINT_MANUALLY();
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
   error INVALID_TIER();
   error NO_QUANTITY();
   error OUT();
   error RESERVED_RATE_NOT_ALLOWED();
+  error MANUAL_MINTING_NOT_ALLOWED();
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
@@ -177,6 +179,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
+    A flag indicating if manual minting expectations can change over time by adding new tiers with manual minting.
+
+    _nft The NFT for which the flag applies.
+  */
+  mapping(address => bool) public override lockManualMintingChangesFor;
+
+  /**
+    @notice
     When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS hashes stripped down.
 
     _nft The NFT contract to which the encoded upfs uri belongs.
@@ -232,7 +242,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           votingUnits: _storedTier.votingUnits,
           reservedRate: _storedTier.reservedRate,
           reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
-          encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex]
+          encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
+          allowManualMint: _storedTier.allowManualMint
         });
       }
 
@@ -270,7 +281,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
-        encodedIPFSUri: encodedIPFSUriOf[_nft][_id]
+        encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
+        allowManualMint: _storedTier.allowManualMint
       });
   }
 
@@ -305,7 +317,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
-        encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId]
+        encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
+        allowManualMint: _storedTier.allowManualMint
       });
   }
 
@@ -482,7 +495,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
-      weight += uint256(_storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor);
+      weight += _storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor;
 
       unchecked {
         ++_i;
@@ -507,11 +520,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _maxTierIdOf; ) {
+      // Keep a reference to the stored tier.
       _storedTier = _storedTierOf[_nft][_i + 1];
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        (uint256(_storedTier.contributionFloor) *
+        (_storedTier.contributionFloor *
           (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
         _numberOfReservedTokensOutstandingFor(_nft, _i, _storedTier);
 
@@ -608,12 +622,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_i != 0 && _tierToAdd.contributionFloor < _tiersToAdd[_i - 1].contributionFloor)
         revert INVALID_PRICE_SORT_ORDER();
 
-      // Make sure there are no voting units or reserved rates if they're not allowed.
+      // Make sure there are no voting units set if they're not allowed.
       if (lockVotingUnitChangesFor[msg.sender] && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
 
-      if (lockReservedTokenChangesFor[msg.sender] && _tierToAdd.reservedRate != 0)
-        revert RESERVED_RATE_NOT_ALLOWED();
+      // Make sure a reserved rate isn't set if changes should be locked or if manual minting is allowed.
+      if (
+        (lockReservedTokenChangesFor[msg.sender] || _tierToAdd.allowManualMint) &&
+        _tierToAdd.reservedRate != 0
+      ) revert RESERVED_RATE_NOT_ALLOWED();
+
+      // Make sure manual minting is not set if not allowed.
+      if (lockManualMintingChangesFor[msg.sender] && _tierToAdd.allowManualMint)
+        revert MANUAL_MINTING_NOT_ALLOWED();
 
       // Make sure there is some quantity.
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
@@ -625,10 +646,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
         contributionFloor: uint80(_tierToAdd.contributionFloor),
         lockedUntil: uint48(_tierToAdd.lockedUntil),
-        remainingQuantity: uint48(_tierToAdd.initialQuantity),
-        initialQuantity: uint48(_tierToAdd.initialQuantity),
+        remainingQuantity: uint40(_tierToAdd.initialQuantity),
+        initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
-        reservedRate: uint16(_tierToAdd.reservedRate)
+        reservedRate: uint16(_tierToAdd.reservedRate),
+        allowManualMint: _tierToAdd.allowManualMint
       });
 
       // Set the reserved token beneficiary if needed.
@@ -656,7 +678,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Set the next index.
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentMaxTierIdOf);
 
-          // If the contribution floor is less than the tier being iterated on, insert before the tier.
+          // If the contribution floor is less than the tier being iterated on, store the order.
           if (
             _tierToAdd.contributionFloor <
             _storedTierOf[msg.sender][_currentSortIndex].contributionFloor
@@ -921,15 +943,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
     @param _tierIds The IDs of the tier to mint from.
+    @param _isManualMint A flag indicating if the mint is being made manually by the NFT's owner.
 
     @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
   */
-  function recordMint(uint256 _amount, uint16[] calldata _tierIds)
-    external
-    override
-    returns (uint256[] memory tokenIds, uint256 leftoverAmount)
-  {
+  function recordMint(
+    uint256 _amount,
+    uint16[] calldata _tierIds,
+    bool _isManualMint
+  ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
     // Set the leftover amount as the initial amount.
     leftoverAmount = _amount;
 
@@ -954,6 +977,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Keep a reference to the tier being iterated on.
       _storedTier = _storedTierOf[msg.sender][_tierId];
+
+      // If this is a manual mint, make sure manual minting is allowed.
+      if (_isManualMint && !_storedTier.allowManualMint) revert CANT_MINT_MANUALLY();
 
       // Make sure the provided tier exists.
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
@@ -1078,6 +1104,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function recordLockReservedTokenChanges(bool _flag) external override {
     lockReservedTokenChangesFor[msg.sender] = _flag;
+  }
+
+  /** 
+    @notice
+    Sets a flag indicating if manual minting expectations can change over time by adding new tiers with manual minting.
+
+    @param _flag The flag to set.
+  */
+  function recordLockManualMintingChanges(bool _flag) external override {
+    lockManualMintingChangesFor[msg.sender] = _flag;
   }
 
   /** 
