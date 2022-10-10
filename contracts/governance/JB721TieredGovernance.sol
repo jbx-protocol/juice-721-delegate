@@ -7,6 +7,17 @@ import '../interfaces/IJB721TieredGovernance.sol';
 contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
   using Checkpoints for Checkpoints.History;
 
+  error BLOCK_NOT_YET_MINED();
+
+  /**
+   * @dev Emitted when an account changes their delegate.
+   */
+  event DelegateChanged(
+    address indexed delegator,
+    address indexed fromDelegate,
+    address indexed toDelegate
+  );
+
   mapping(address => mapping(uint256 => address)) private _tierDelegation;
   mapping(address => mapping(uint256 => Checkpoints.History)) private _delegateTierCheckpoints;
   mapping(uint256 => Checkpoints.History) private _totalTierCheckpoints;
@@ -251,8 +262,16 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
   ) internal virtual override {
     if (_tier.votingUnits != 0) {
       // Transfer the voting units.
-      _transferVotingUnits(_from, _to, _tier.votingUnits);
+      //_transferVotingUnits(_from, _to, _tier.votingUnits);
       _transferTierVotingUnits(_from, _to, _tier.id, _tier.votingUnits);
     }
+  }
+
+  function _add(uint256 a, uint256 b) internal pure returns (uint256) {
+    return a + b;
+  }
+
+  function _subtract(uint256 a, uint256 b) internal pure returns (uint256) {
+    return a - b;
   }
 }

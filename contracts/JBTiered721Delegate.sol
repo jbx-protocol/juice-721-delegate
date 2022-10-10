@@ -29,7 +29,7 @@ import './structs/JB721PricingParams.sol';
   Votes: A helper for voting balance snapshots.
   Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Ownable {
+contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -209,7 +209,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     JB721PricingParams memory _pricing,
     IJBTiered721DelegateStore _store,
     JBTiered721Flags memory _flags
-  ) JB721Delegate(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
+  ) JB721Delegate(_projectId, _directory, _name, _symbol) {
     fundingCycleStore = _fundingCycleStore;
     store = _store;
     pricingCurrency = _pricing.currency;
@@ -696,24 +696,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   */
   function _totalRedemptionWeight() internal view virtual override returns (uint256) {
     return store.totalRedemptionWeight(address(this));
-  }
-
-  /**
-    @notice
-    The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
-
-    @param _account The account to get voting units for.
-
-    @return units The voting units for the account.
-  */
-  function _getVotingUnits(address _account)
-    internal
-    view
-    virtual
-    override
-    returns (uint256 units)
-  {
-    return store.votingUnitsOf(address(this), _account);
   }
 
   /**

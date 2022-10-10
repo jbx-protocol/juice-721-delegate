@@ -6,6 +6,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
 import './JBTiered721Delegate.sol';
 import './governance/JB721TieredGovernance.sol';
+import './governance/JB721GlobalGovernance.sol';
 import './interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**
@@ -77,8 +78,20 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
         _deployTiered721DelegateData.flags
       );
     }else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL){
-      // TODO: Implement global governance variant or remove this type
-      revert INVALID_GOVERNANCE_TYPE();
+      // Deploy the delegate contract.
+      newDelegate = new JB721GlobalGovernance(
+        _projectId,
+        _deployTiered721DelegateData.directory,
+        _deployTiered721DelegateData.name,
+        _deployTiered721DelegateData.symbol,
+        _deployTiered721DelegateData.fundingCycleStore,
+        _deployTiered721DelegateData.baseUri,
+        _deployTiered721DelegateData.tokenUriResolver,
+        _deployTiered721DelegateData.contractUri,
+        _deployTiered721DelegateData.pricing,
+        _deployTiered721DelegateData.store,
+        _deployTiered721DelegateData.flags
+      );
     }else{
       revert INVALID_GOVERNANCE_TYPE();
     }
