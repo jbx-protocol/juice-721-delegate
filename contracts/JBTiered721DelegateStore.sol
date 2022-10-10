@@ -723,7 +723,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             if (_currentSortIndex != _tierId + 1)
               _tierIdAfter[msg.sender][_tierId] = _currentSortIndex;
 
-            // If currentSortIndex is the max and it is removed, set the max to be _tierId.
+            // If currentSortIndex is the max and it is removed, don't include it in the max tier ID calculation.
             if (
               _currentSortIndex == _currentMaxTierIdOf &&
               _bitmapWord.isTierIdRemoved(_currentSortIndex)
