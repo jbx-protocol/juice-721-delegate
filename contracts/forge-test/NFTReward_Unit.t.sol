@@ -2965,7 +2965,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
