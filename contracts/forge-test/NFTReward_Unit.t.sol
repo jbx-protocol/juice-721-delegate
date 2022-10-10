@@ -2892,6 +2892,96 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(1);
   }
 
+  function testJBTieredNFTRewardDelegate_didPay_mintFirstBestTierIfMultipleAvailableAtSameFloor() public {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](5);
+
+    // 5 tiers, floors from 10 to 50
+    for (uint256 i; i < 5; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        reservedRate: uint16(0),
+        encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
+
+    // Tier id 3 and 4 have same floor
+    _tierParams[2].contributionFloor = 35;
+    _tierParams[3].contributionFloor = 35;
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockManualMintingChanges: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    _delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, 36, 18, JBCurrencies.ETH), // Just above the 
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Make sure a new NFT was minted
+      assertEq(_totalSupplyBeforePay + 1, _delegate.store().totalSupply(address(_delegate)));
+
+      // Correct tier has been minted?
+      uint256 tokenId = _generateTokenId(3, 1);
+      assertEq(_delegate.ownerOf(tokenId), msg.sender);
+  }
+
   function testJBTieredNFTRewardDelegate_didPay_revertIfSupposedToMintBestTierButNoneAvailable(
     uint8 _amount
   ) public {
