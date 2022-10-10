@@ -165,7 +165,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
-      })
+      }),
+      governanceType: IJBTiered721DelegateDeployer.GovernanceType.NONE
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});

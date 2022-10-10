@@ -167,7 +167,8 @@ contract RinkebyLaunchProjectFor is Script {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
-      })
+      }),
+      governanceType: IJBTiered721DelegateDeployer.GovernanceType.NONE
     });
 
     launchProjectData = JBLaunchProjectData({

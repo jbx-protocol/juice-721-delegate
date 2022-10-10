@@ -5,6 +5,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol'
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
 import './JBTiered721Delegate.sol';
+import './governance/JB721TieredGovernance.sol';
 import './interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**
@@ -16,6 +17,9 @@ import './interfaces/IJBTiered721DelegateDeployer.sol';
   IJBTiered721DelegateDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
 */
 contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
+
+  error INVALID_GOVERNANCE_TYPE();
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
@@ -39,26 +43,52 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
-    // Deploy the delegate contract.
-    JBTiered721Delegate newDelegate = new JBTiered721Delegate(
-      _projectId,
-      _deployTiered721DelegateData.directory,
-      _deployTiered721DelegateData.name,
-      _deployTiered721DelegateData.symbol,
-      _deployTiered721DelegateData.fundingCycleStore,
-      _deployTiered721DelegateData.baseUri,
-      _deployTiered721DelegateData.tokenUriResolver,
-      _deployTiered721DelegateData.contractUri,
-      _deployTiered721DelegateData.pricing,
-      _deployTiered721DelegateData.store,
-      _deployTiered721DelegateData.flags
-    );
+
+    // Deploy the governance variant that was requested
+    JBTiered721Delegate newDelegate;
+    if (_deployTiered721DelegateData.governanceType == GovernanceType.NONE) {
+      // Deploy the delegate contract.
+       newDelegate = new JBTiered721Delegate(
+        _projectId,
+        _deployTiered721DelegateData.directory,
+        _deployTiered721DelegateData.name,
+        _deployTiered721DelegateData.symbol,
+        _deployTiered721DelegateData.fundingCycleStore,
+        _deployTiered721DelegateData.baseUri,
+        _deployTiered721DelegateData.tokenUriResolver,
+        _deployTiered721DelegateData.contractUri,
+        _deployTiered721DelegateData.pricing,
+        _deployTiered721DelegateData.store,
+        _deployTiered721DelegateData.flags
+      );
+    }else if (_deployTiered721DelegateData.governanceType == GovernanceType.TIERED) {
+      // Deploy the delegate contract.
+      newDelegate = new JB721TieredGovernance(
+        _projectId,
+        _deployTiered721DelegateData.directory,
+        _deployTiered721DelegateData.name,
+        _deployTiered721DelegateData.symbol,
+        _deployTiered721DelegateData.fundingCycleStore,
+        _deployTiered721DelegateData.baseUri,
+        _deployTiered721DelegateData.tokenUriResolver,
+        _deployTiered721DelegateData.contractUri,
+        _deployTiered721DelegateData.pricing,
+        _deployTiered721DelegateData.store,
+        _deployTiered721DelegateData.flags
+      );
+    }else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL){
+      // TODO: Implement global governance variant or remove this type
+      revert INVALID_GOVERNANCE_TYPE();
+    }else{
+      revert INVALID_GOVERNANCE_TYPE();
+    }
+    
 
     // Transfer the ownership to the specified address.
     if (_deployTiered721DelegateData.owner != address(0))
       newDelegate.transferOwnership(_deployTiered721DelegateData.owner);
 
-    emit DelegateDeployed(_projectId, newDelegate);
+    emit DelegateDeployed(_projectId, newDelegate, _deployTiered721DelegateData.governanceType);
 
     return newDelegate;
   }
