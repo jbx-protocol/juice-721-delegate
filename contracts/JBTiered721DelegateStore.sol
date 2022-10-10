@@ -86,14 +86,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     For each tier ID, a flag indicating if the tier has been removed. 
 
     _nft The NFT contract to which the tier belong.
-    
+    _depth The bitmap row
+    _word The row content
   */
   mapping(address => mapping(uint256 => uint256)) internal _isTierRemoved;
-
-  function isTierRemoved(address _nft, uint256 _tierId) external view override returns(bool) {
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].cacheWord(_tierId);
-    return _bitmapWord.readValue(_tierId);
-  }
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -223,15 +219,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     JBStored721Tier memory _storedTier;
 
     // Initialise a BitmapWord for isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].cacheWord(_currentSortIndex);
+    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.
     while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
       // Is the current index outside the currently stored word for isRemoved?
-      if (_bitmapWord.depthChangeNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemoved[_nft].cacheWord(_currentSortIndex);
+      if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
+        _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
-      if (!_bitmapWord.readValue(_currentSortIndex)) {
+      if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
         _storedTier = _storedTierOf[_nft][_currentSortIndex];
         // Add the tier to the array being returned.
         _tiers[_numberOfIncludedTiers++] = JB721Tier({
@@ -458,6 +454,21 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function flagsOf(address _nft) external view override returns (JBTiered721Flags memory) {
     return _flagsOf[_nft];
+  }
+
+  /** 
+    @notice
+    Tier removed from the current tiering
+
+    @param _nft The NFT for which the removed tier is queried
+    @param _tierId The tier ID
+
+    @return True if the tier has been removed
+  */
+  function isTierRemoved(address _nft, uint256 _tierId) external view override returns(bool) {
+    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
+    
+    return _bitmapWord.isTierIdRemoved(_tierId);
   }
 
   //*********************************************************************//
@@ -690,15 +701,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         uint256 _currentSortIndex = _startSortIndex;
 
         // Initialise a BitmapWord for isRemoved
-        JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].cacheWord(_currentSortIndex);
+        JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
         // Keep a reference to the idex to iterate on next.
         uint256 _next;
 
         while (_currentSortIndex != 0) {
           // Is the current index outside the currently stored word?
-          if (_bitmapWord.depthChangeNeeded(_currentSortIndex))
-            _bitmapWord = _isTierRemoved[msg.sender].cacheWord(_currentSortIndex);
+          if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
+            _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
           // Set the next index.
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentMaxTierIdOf);
@@ -715,7 +726,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             // If currentSortIndex is the max and it is removed, set the max to be _tierId.
             if (
               _currentSortIndex == _currentMaxTierIdOf &&
-              _bitmapWord.readValue(_currentSortIndex)
+              _bitmapWord.isTierIdRemoved(_currentSortIndex)
             ) _currentMaxTierIdOf--;
 
             // If the previous after index was set to something else, set the previous after.
@@ -875,7 +886,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_storedTierOf[msg.sender][_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
 
       // Set the tier as removed.
-      _isTierRemoved[msg.sender].setToTrue(_tierId);
+      _isTierRemoved[msg.sender].removeTier(_tierId);
 
       unchecked {
         ++_i;
@@ -916,16 +927,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the best contribution floor.
     uint256 _bestContributionFloor;
 
-    // Initialise a BitmapWord for isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].cacheWord(_currentSortIndex);
+    // Initialise a BitmapWord to read isRemoved
+    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
     while (_currentSortIndex != 0) {
       // Set the tier being iterated on. Tier's are 1 indexed.
       _storedTier = _storedTierOf[msg.sender][_currentSortIndex];
 
       // Is the current index outside the currently stored word?
-      if (_bitmapWord.depthChangeNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemoved[msg.sender].cacheWord(_currentSortIndex);
+      if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
+        _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
       // If the contribution floor has gone over, break out of the loop.
       if (_storedTier.contributionFloor > _amount) _currentSortIndex = 0;
@@ -933,7 +944,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // If the tier is not removed, check to see if it's optimal.
         // Set the tier as the best available so far if there is still a remaining quantity.
         if (
-          !_bitmapWord.readValue(_currentSortIndex) &&
+          !_bitmapWord.isTierIdRemoved(_currentSortIndex) &&
           (_storedTier.remainingQuantity -
             _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _storedTier)) !=
           0
@@ -1001,18 +1012,18 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     tokenIds = new uint256[](_numberOfTiers);
 
     // Initialise a BitmapWord for isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].cacheWord(_tierIds[0]);
+    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_tierIds[0]);
 
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
       _tierId = _tierIds[_i];
 
       // Is the current index outside the currently stored word?
-      if (_bitmapWord.depthChangeNeeded(_tierId))
-        _bitmapWord = _isTierRemoved[msg.sender].cacheWord(_tierId);
+      if (_bitmapWord.refreshBitmapNeeded(_tierId))
+        _bitmapWord = _isTierRemoved[msg.sender].readId(_tierId);
 
       // Make sure the tier hasn't been removed.
-      if (_bitmapWord.readValue(_tierId)) revert TIER_REMOVED();
+      if (_bitmapWord.isTierIdRemoved(_tierId)) revert TIER_REMOVED();
 
       // Keep a reference to the tier being iterated on.
       _storedTier = _storedTierOf[msg.sender][_tierId];
@@ -1152,15 +1163,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _previous;
 
     // Initialise a BitmapWord for isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].cacheWord(_currentSortIndex);
+    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.
     while (_currentSortIndex != 0) {
       // Is the current index outside the currently stored word?
-      if (_bitmapWord.depthChangeNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemoved[_nft].cacheWord(_currentSortIndex);
+      if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
+        _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
-      if (!_bitmapWord.readValue(_currentSortIndex)) {
+      if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
         // If the current index being iterated on isn't an increment of the previous, set the correct tier after if needed.
         if (_currentSortIndex != _previous + 1) {
           if (_tierIdAfter[_nft][_previous] != _currentSortIndex)
