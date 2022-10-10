@@ -3537,7 +3537,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting
+  // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting (if delegate flag pausable is true)
   function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle()
     public
   {
