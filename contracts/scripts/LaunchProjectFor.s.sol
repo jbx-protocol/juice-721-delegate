@@ -166,7 +166,8 @@ contract RinkebyLaunchProjectFor is Script {
       flags: JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     });
 
