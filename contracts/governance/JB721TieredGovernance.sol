@@ -71,6 +71,35 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     @notice 
     Delegates votes from the sender to `delegatee`.
 
+    @param _setTierDelegatesData An array of tiers to set delegates for.
+   */
+  function setTierDelegates(JBTiered721SetTierDelegatesData[] memory _setTierDelegatesData)
+    public
+    virtual
+    override
+  {
+    // Keep a reference to the number of tier delegates.
+    uint256 _numberOfTierDelegates = _setTierDelegatesData.length;
+
+    // Keep a reference to the data being iterated on.
+    JBTiered721SetTierDelegatesData memory _data;
+
+    for (uint256 _i; _i < _numberOfTierDelegates; ) {
+      // Reference the data being iterated on.
+      _data = _setTierDelegatesData[_i];
+
+      _delegateTier(msg.sender, _data.delegatee, _data.tierId);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /**
+    @notice 
+    Delegates votes from the sender to `delegatee`.
+
     @param _delegatee The account to delegate tier voting units to.
     @param _tierId The ID of the tier to delegate voting units for.
    */

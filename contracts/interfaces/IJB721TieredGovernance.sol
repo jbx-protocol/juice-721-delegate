@@ -5,7 +5,6 @@ import './IJBTiered721DelegateStore.sol';
 import './IJBTiered721Delegate.sol';
 
 interface IJB721TieredGovernance is IJBTiered721Delegate {
-  
   event TierDelegateChanged(
     address indexed delegator,
     address indexed fromDelegate,
@@ -40,4 +39,7 @@ interface IJB721TieredGovernance is IJBTiered721Delegate {
     returns (uint256);
 
   function setTierDelegate(address _delegatee, uint256 _tierId) external;
+
+  function setTierDelegates(JBTiered721SetTierDelegatesData[] memory _setTierDelegatesData)
+    external;
 }

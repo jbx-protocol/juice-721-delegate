@@ -7,6 +7,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './../structs/JBTiered721MintForTiersData.sol';
+import './../structs/JBTiered721SetTierDelegatesData.sol';
 import './IJBTiered721DelegateStore.sol';
 
 interface IJBTiered721Delegate {
