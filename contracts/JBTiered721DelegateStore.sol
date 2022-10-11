@@ -945,6 +945,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Set the tier as the best available so far if there is still a remaining quantity.
         if (
           !_bitmapWord.isTierIdRemoved(_currentSortIndex) &&
+          _storedTier.contributionFloor > _bestContributionFloor &&
           (_storedTier.remainingQuantity -
             _numberOfReservedTokensOutstandingFor(msg.sender, _currentSortIndex, _storedTier)) !=
           0
