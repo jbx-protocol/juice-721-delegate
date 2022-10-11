@@ -5,8 +5,8 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol'
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
 import './JBTiered721Delegate.sol';
-import './governance/JB721TieredGovernance.sol';
-import './governance/JB721GlobalGovernance.sol';
+import './JB721TieredGovernance.sol';
+import './JB721GlobalGovernance.sol';
 import './interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**

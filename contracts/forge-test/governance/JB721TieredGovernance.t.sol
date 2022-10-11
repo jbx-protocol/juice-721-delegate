@@ -2,7 +2,7 @@ pragma solidity ^0.8.16;
 
 import "../E2E.t.sol";
 
-import "../../governance/JB721TieredGovernance.sol";
+import "../../JB721TieredGovernance.sol";
 
 contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
  using JBFundingCycleMetadataResolver for JBFundingCycle;

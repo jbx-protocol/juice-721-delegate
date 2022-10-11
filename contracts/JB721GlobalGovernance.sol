@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import '../JBTiered721Delegate.sol';
-import '../interfaces/IJB721TieredGovernance.sol';
+import './JBTiered721Delegate.sol';
+import './interfaces/IJB721TieredGovernance.sol';
 
 contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
   //*********************************************************************//
