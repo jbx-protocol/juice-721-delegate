@@ -283,6 +283,15 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     }
   }
 
+  /**
+   @notice
+   handles the tier voting accounting
+
+    @param _from The account to transfer tier voting units from.
+    @param _to The account to transfer tier voting units to.
+    @param _tokenId The id of the token for which voting units are being transfered.
+    @param _tier The tier the token id is part of
+   */
   function _afterTokenTransferAccounting(
     address _from,
     address _to,
@@ -291,7 +300,6 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
   ) internal virtual override {
     if (_tier.votingUnits != 0) {
       // Transfer the voting units.
-      //_transferVotingUnits(_from, _to, _tier.votingUnits);
       _transferTierVotingUnits(_from, _to, _tier.id, _tier.votingUnits);
     }
   }
