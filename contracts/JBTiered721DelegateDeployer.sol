@@ -61,54 +61,11 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     // Deploy the governance variant that was requested
     address codeToCopy;
     if (_deployTiered721DelegateData.governanceType == GovernanceType.NONE) {
-      // Deploy the delegate contract.
       codeToCopy = address(noGovernance);
-      // newDelegate = new JBTiered721Delegate(
-      //   _projectId,
-      //   _deployTiered721DelegateData.directory,
-      //   _deployTiered721DelegateData.name,
-      //   _deployTiered721DelegateData.symbol,
-      //   _deployTiered721DelegateData.fundingCycleStore,
-      //   _deployTiered721DelegateData.baseUri,
-      //   _deployTiered721DelegateData.tokenUriResolver,
-      //   _deployTiered721DelegateData.contractUri,
-      //   _deployTiered721DelegateData.pricing,
-      //   _deployTiered721DelegateData.store,
-      //   _deployTiered721DelegateData.flags
-      // );
     } else if (_deployTiered721DelegateData.governanceType == GovernanceType.TIERED) {
       codeToCopy = address(tieredGovernance);
-      // Deploy the delegate contract.
-      // newDelegate = new JB721TieredGovernance(
-      //   _projectId,
-      //   _deployTiered721DelegateData.directory,
-      //   _deployTiered721DelegateData.name,
-      //   _deployTiered721DelegateData.symbol,
-      //   _deployTiered721DelegateData.fundingCycleStore,
-      //   _deployTiered721DelegateData.baseUri,
-      //   _deployTiered721DelegateData.tokenUriResolver,
-      //   _deployTiered721DelegateData.contractUri,
-      //   _deployTiered721DelegateData.pricing,
-      //   _deployTiered721DelegateData.store,
-      //   _deployTiered721DelegateData.flags
-      // );
     } else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL) {
       codeToCopy = address(globalGovernance);
-
-      // // Deploy the delegate contract.
-      // newDelegate = new JB721GlobalGovernance(
-      //   _projectId,
-      //   _deployTiered721DelegateData.directory,
-      //   _deployTiered721DelegateData.name,
-      //   _deployTiered721DelegateData.symbol,
-      //   _deployTiered721DelegateData.fundingCycleStore,
-      //   _deployTiered721DelegateData.baseUri,
-      //   _deployTiered721DelegateData.tokenUriResolver,
-      //   _deployTiered721DelegateData.contractUri,
-      //   _deployTiered721DelegateData.pricing,
-      //   _deployTiered721DelegateData.store,
-      //   _deployTiered721DelegateData.flags
-      // );
     } else {
       revert INVALID_GOVERNANCE_TYPE();
     }

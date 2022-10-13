@@ -201,28 +201,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       projectId,
       delegateData
     )));
-
-    
-
-    // delegate = new JBTiered721Delegate(
-    //   projectId,
-    //   IJBDirectory(mockJBDirectory),
-    //   name,
-    //   symbol,
-    //   IJBFundingCycleStore(mockJBFundingCycleStore),
-    //   baseUri,
-    //   IJBTokenUriResolver(mockTokenUriResolver),
-    //   contractUri,
-    //   JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
-    //   new JBTiered721DelegateStore(),
-    //   JBTiered721Flags({
-    //     lockReservedTokenChanges: true,
-    //     lockVotingUnitChanges: true,
-    //     lockManualMintingChanges: true
-    //   })
-    // );
-
-    //delegate.transferOwnership(owner);
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint16 numberOfTiers) public {
@@ -1156,13 +1134,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         allowManualMint: _tierParams[i].allowManualMint
       });
     }
-
-    // vm.etch(delegate_i, address(delegate).code);
-    // JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
-    // _delegate.initialize(
-      
-    // );
-    // // delegate_i
 
     vm.etch(delegate_i, address(delegate).code);
     JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
