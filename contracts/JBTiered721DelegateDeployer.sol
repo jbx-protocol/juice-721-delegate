@@ -94,37 +94,36 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     return newDelegate;
   }
 
-  // https://github.com/drgorillamd/clone-deployed-contract
-  function _clone(address _targetAddress) internal returns (address _out) {
-    bytes32 _dump;
-    assembly {
-      // Retrieve target address
-      //let _targetAddress := sload(_target.slot)
+  /**
+    @notice Clone and redeploy the bytecode of a given address
 
-      // Get deployed code size
+    @dev Runtime bytecode needs a constructor -> we append this one
+         to the bytecode, which is a minimalistic one only returning the runtime bytecode
+
+         See https://github.com/drgorillamd/clone-deployed-contract/blob/master/readme.MD for details
+   */
+  function _clone(address _targetAddress) internal returns (address _out) {
+    assembly {
+      // Get deployed/runtime code size
       let _codeSize := extcodesize(_targetAddress)
 
-      // Get a bit of freemem to land the bytecode
+      // Get a bit of freemem to land the bytecode, not updated as we'll leave this scope right after create(..)
       let _freeMem := mload(0x40)
 
-      // Shift the length to the length placeholder
+      // Shift the length to the length placeholder, in the constructor
       let _mask := mul(_codeSize, 0x100000000000000000000000000000000000000000000000000000000)
 
-      // I built the init by hand (and it was quite fun)
-      let _initCode := or(_mask, 0x620000006100118181600039816000f3fe000000000000000000000000000000)
+      // Insert the length in the correct sport (after the PUSH3 / 0x62)
+      let _initCode := or(_mask, 0x62000000600081600d8239f3fe00000000000000000000000000000000000000)
 
+      // Store the deployment bytecode 
       mstore(_freeMem, _initCode)
 
-      // Copy the bytecode (our initialise part is 17 bytes long)
-      extcodecopy(_targetAddress, add(_freeMem, 17), 0, _codeSize)
-
-      _dump := mload(_freeMem)
+      // Copy the bytecode (our initialise part is 13 bytes long)
+      extcodecopy(_targetAddress, add(_freeMem, 13), 0, _codeSize)
 
       // Deploy the copied bytecode
       _out := create(0, _freeMem, _codeSize)
-
-      // We're tidy people, we update our freemem ptr + 64bytes for the padding - yes, ugly
-      mstore(0x40, add(_freeMem, add(_codeSize, 64)))
     }
   }
 }
