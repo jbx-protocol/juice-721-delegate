@@ -18,14 +18,28 @@ import './interfaces/IJBTiered721DelegateDeployer.sol';
   IJBTiered721DelegateDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
 */
 contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
-
   error INVALID_GOVERNANCE_TYPE();
+
+  //*********************************************************************//
+  // --------------- public immutable stored properties ---------------- //
+  //*********************************************************************//
+  JB721GlobalGovernance immutable globalGovernance;
+  JB721TieredGovernance immutable tieredGovernance;
+  JBTiered721Delegate immutable noGovernance;
 
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
-  constructor() {}
+  constructor(
+    JB721GlobalGovernance _globalGovernance,
+    JB721TieredGovernance _tieredGovernance,
+    JBTiered721Delegate _noGovernance
+  ) {
+    globalGovernance = _globalGovernance;
+    tieredGovernance = _tieredGovernance;
+    noGovernance = _noGovernance;
+  }
 
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
@@ -44,58 +58,75 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
-
     // Deploy the governance variant that was requested
-    JBTiered721Delegate newDelegate;
+    address codeToCopy;
     if (_deployTiered721DelegateData.governanceType == GovernanceType.NONE) {
       // Deploy the delegate contract.
-       newDelegate = new JBTiered721Delegate(
-        _projectId,
-        _deployTiered721DelegateData.directory,
-        _deployTiered721DelegateData.name,
-        _deployTiered721DelegateData.symbol,
-        _deployTiered721DelegateData.fundingCycleStore,
-        _deployTiered721DelegateData.baseUri,
-        _deployTiered721DelegateData.tokenUriResolver,
-        _deployTiered721DelegateData.contractUri,
-        _deployTiered721DelegateData.pricing,
-        _deployTiered721DelegateData.store,
-        _deployTiered721DelegateData.flags
-      );
-    }else if (_deployTiered721DelegateData.governanceType == GovernanceType.TIERED) {
+      codeToCopy = address(noGovernance);
+      // newDelegate = new JBTiered721Delegate(
+      //   _projectId,
+      //   _deployTiered721DelegateData.directory,
+      //   _deployTiered721DelegateData.name,
+      //   _deployTiered721DelegateData.symbol,
+      //   _deployTiered721DelegateData.fundingCycleStore,
+      //   _deployTiered721DelegateData.baseUri,
+      //   _deployTiered721DelegateData.tokenUriResolver,
+      //   _deployTiered721DelegateData.contractUri,
+      //   _deployTiered721DelegateData.pricing,
+      //   _deployTiered721DelegateData.store,
+      //   _deployTiered721DelegateData.flags
+      // );
+    } else if (_deployTiered721DelegateData.governanceType == GovernanceType.TIERED) {
+      codeToCopy = address(tieredGovernance);
       // Deploy the delegate contract.
-      newDelegate = new JB721TieredGovernance(
-        _projectId,
-        _deployTiered721DelegateData.directory,
-        _deployTiered721DelegateData.name,
-        _deployTiered721DelegateData.symbol,
-        _deployTiered721DelegateData.fundingCycleStore,
-        _deployTiered721DelegateData.baseUri,
-        _deployTiered721DelegateData.tokenUriResolver,
-        _deployTiered721DelegateData.contractUri,
-        _deployTiered721DelegateData.pricing,
-        _deployTiered721DelegateData.store,
-        _deployTiered721DelegateData.flags
-      );
-    }else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL){
-      // Deploy the delegate contract.
-      newDelegate = new JB721GlobalGovernance(
-        _projectId,
-        _deployTiered721DelegateData.directory,
-        _deployTiered721DelegateData.name,
-        _deployTiered721DelegateData.symbol,
-        _deployTiered721DelegateData.fundingCycleStore,
-        _deployTiered721DelegateData.baseUri,
-        _deployTiered721DelegateData.tokenUriResolver,
-        _deployTiered721DelegateData.contractUri,
-        _deployTiered721DelegateData.pricing,
-        _deployTiered721DelegateData.store,
-        _deployTiered721DelegateData.flags
-      );
-    }else{
+      // newDelegate = new JB721TieredGovernance(
+      //   _projectId,
+      //   _deployTiered721DelegateData.directory,
+      //   _deployTiered721DelegateData.name,
+      //   _deployTiered721DelegateData.symbol,
+      //   _deployTiered721DelegateData.fundingCycleStore,
+      //   _deployTiered721DelegateData.baseUri,
+      //   _deployTiered721DelegateData.tokenUriResolver,
+      //   _deployTiered721DelegateData.contractUri,
+      //   _deployTiered721DelegateData.pricing,
+      //   _deployTiered721DelegateData.store,
+      //   _deployTiered721DelegateData.flags
+      // );
+    } else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL) {
+      codeToCopy = address(globalGovernance);
+
+      // // Deploy the delegate contract.
+      // newDelegate = new JB721GlobalGovernance(
+      //   _projectId,
+      //   _deployTiered721DelegateData.directory,
+      //   _deployTiered721DelegateData.name,
+      //   _deployTiered721DelegateData.symbol,
+      //   _deployTiered721DelegateData.fundingCycleStore,
+      //   _deployTiered721DelegateData.baseUri,
+      //   _deployTiered721DelegateData.tokenUriResolver,
+      //   _deployTiered721DelegateData.contractUri,
+      //   _deployTiered721DelegateData.pricing,
+      //   _deployTiered721DelegateData.store,
+      //   _deployTiered721DelegateData.flags
+      // );
+    } else {
       revert INVALID_GOVERNANCE_TYPE();
     }
-    
+
+    JB721GlobalGovernance newDelegate = JB721GlobalGovernance(_clone(codeToCopy));
+    newDelegate.initialize(
+      _projectId,
+      _deployTiered721DelegateData.directory,
+      _deployTiered721DelegateData.name,
+      _deployTiered721DelegateData.symbol,
+      _deployTiered721DelegateData.fundingCycleStore,
+      _deployTiered721DelegateData.baseUri,
+      _deployTiered721DelegateData.tokenUriResolver,
+      _deployTiered721DelegateData.contractUri,
+      _deployTiered721DelegateData.pricing,
+      _deployTiered721DelegateData.store,
+      _deployTiered721DelegateData.flags
+    );
 
     // Transfer the ownership to the specified address.
     if (_deployTiered721DelegateData.owner != address(0))
@@ -104,5 +135,39 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     emit DelegateDeployed(_projectId, newDelegate, _deployTiered721DelegateData.governanceType);
 
     return newDelegate;
+  }
+
+  // https://github.com/drgorillamd/clone-deployed-contract
+  function _clone(address _targetAddress) internal returns (address _out) {
+    bytes32 _dump;
+    assembly {
+      // Retrieve target address
+      //let _targetAddress := sload(_target.slot)
+
+      // Get deployed code size
+      let _codeSize := extcodesize(_targetAddress)
+
+      // Get a bit of freemem to land the bytecode
+      let _freeMem := mload(0x40)
+
+      // Shift the length to the length placeholder
+      let _mask := mul(_codeSize, 0x100000000000000000000000000000000000000000000000000000000)
+
+      // I built the init by hand (and it was quite fun)
+      let _initCode := or(_mask, 0x620000006100118181600039816000f3fe000000000000000000000000000000)
+
+      mstore(_freeMem, _initCode)
+
+      // Copy the bytecode (our initialise part is 17 bytes long)
+      extcodecopy(_targetAddress, add(_freeMem, 17), 0, _codeSize)
+
+      _dump := mload(_freeMem)
+
+      // Deploy the copied bytecode
+      _out := create(0, _freeMem, _codeSize)
+
+      // We're tidy people, we update our freemem ptr + 64bytes for the padding - yes, ugly
+      mstore(0x40, add(_freeMem, add(_codeSize, 64)))
+    }
   }
 }

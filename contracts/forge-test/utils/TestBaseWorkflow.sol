@@ -206,7 +206,7 @@ contract TestBaseWorkflow is Test {
       data = abi.encodePacked(bytes1(0xd9), bytes1(0x94), _origin, bytes1(0x83), uint24(_nonce));
     else data = abi.encodePacked(bytes1(0xda), bytes1(0x94), _origin, bytes1(0x84), uint32(_nonce));
     bytes32 hash = keccak256(data);
-    assembly {
+    assembly ("memory-safe"){
       mstore(0, hash)
       _address := mload(0)
     }

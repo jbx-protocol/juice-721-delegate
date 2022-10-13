@@ -14,7 +14,15 @@ contract DeployMainnet is Script {
 
   function run() external {
     vm.startBroadcast();
-    jbDelegateDeployer = new JBTiered721DelegateDeployer();
+    JBTiered721Delegate noGovernance = new JBTiered721Delegate();
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+
+    jbDelegateDeployer = new JBTiered721DelegateDeployer(
+      globalGovernance,
+      tieredGovernance,
+      noGovernance
+    );
     jbTieredLimitedNFTRewardDataSource = new JBTiered721DelegateProjectDeployer(
       jbController,
       jbDelegateDeployer,
@@ -23,9 +31,13 @@ contract DeployMainnet is Script {
   }
 }
 
-contract DeployRinkeby is Script {
-  IJBController jbController = IJBController(0xd96ecf0E07eB197587Ad4A897933f78A00B21c9a);
-  IJBOperatorStore jbOperatorStore = IJBOperatorStore(0xEDB2db4b82A4D4956C3B4aA474F7ddf3Ac73c5AB);
+contract DeployGoerli is Script {
+  IJBController jbController = IJBController(0x7Cb86D43B665196BC719b6974D320bf674AFb395);
+  IJBOperatorStore jbOperatorStore = IJBOperatorStore(0x99dB6b517683237dE9C494bbd17861f3608F3585);
+
+  JB721GlobalGovernance globalGovernance;
+  JB721TieredGovernance tieredGovernance;
+  JBTiered721Delegate noGovernance;
 
   JBTiered721DelegateDeployer jbDelegateDeployer;
   JBTiered721DelegateProjectDeployer jbTieredLimitedNFTRewardDataSourceProjectDeployer;
@@ -33,7 +45,16 @@ contract DeployRinkeby is Script {
 
   function run() external {
     vm.startBroadcast();
-    jbDelegateDeployer = new JBTiered721DelegateDeployer();
+
+    noGovernance = new JBTiered721Delegate();
+    globalGovernance = new JB721GlobalGovernance();
+    tieredGovernance = new JB721TieredGovernance();
+
+    jbDelegateDeployer = new JBTiered721DelegateDeployer(
+      globalGovernance,
+      tieredGovernance,
+      noGovernance
+    );
 
     jbTieredLimitedNFTRewardDataSourceProjectDeployer = new JBTiered721DelegateProjectDeployer(
       jbController,

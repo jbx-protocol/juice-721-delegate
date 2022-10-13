@@ -1,5 +1,6 @@
 pragma solidity ^0.8.16;
 
+import '../JBTiered721DelegateDeployer.sol';
 import '../JBTiered721Delegate.sol';
 import '../JBTiered721DelegateStore.sol';
 import '../interfaces/IJBTiered721Delegate.sol';
@@ -59,7 +60,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   JB721TierParams[] tiers;
 
-  JBTiered721Delegate delegate;
+  JBTiered721Delegate delegate; 
+  JBTiered721Delegate noGovernanceOrigin; // noGovernanceOrigin
+
+  address delegate_i = address(bytes20(keccak256('delegate_implementation')));
+
 
   event Mint(
     uint256 indexed tokenId,
@@ -161,25 +166,63 @@ contract TestJBTieredNFTRewardDelegate is Test {
       )
     );
 
-    delegate = new JBTiered721Delegate(
-      projectId,
-      IJBDirectory(mockJBDirectory),
+    noGovernanceOrigin = new JBTiered721Delegate();
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+
+    JBTiered721DelegateDeployer jbDelegateDeployer = new JBTiered721DelegateDeployer(
+      globalGovernance,
+      tieredGovernance,
+      noGovernanceOrigin
+    );
+
+    JBDeployTiered721DelegateData memory delegateData = JBDeployTiered721DelegateData(
+            IJBDirectory(mockJBDirectory),
       name,
       symbol,
       IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri,
       IJBTokenUriResolver(mockTokenUriResolver),
       contractUri,
+      owner,
       JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+      address(0),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
-      })
+      }),
+      IJBTiered721DelegateDeployer.GovernanceType.NONE
     );
+    
 
-    delegate.transferOwnership(owner);
+    delegate = JBTiered721Delegate(address(jbDelegateDeployer.deployDelegateFor(
+      projectId,
+      delegateData
+    )));
+
+    
+
+    // delegate = new JBTiered721Delegate(
+    //   projectId,
+    //   IJBDirectory(mockJBDirectory),
+    //   name,
+    //   symbol,
+    //   IJBFundingCycleStore(mockJBFundingCycleStore),
+    //   baseUri,
+    //   IJBTokenUriResolver(mockTokenUriResolver),
+    //   contractUri,
+    //   JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+    //   new JBTiered721DelegateStore(),
+    //   JBTiered721Flags({
+    //     lockReservedTokenChanges: true,
+    //     lockVotingUnitChanges: true,
+    //     lockManualMintingChanges: true
+    //   })
+    // );
+
+    //delegate.transferOwnership(owner);
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint16 numberOfTiers) public {
@@ -1114,7 +1157,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
     }
 
-    JBTiered721Delegate _delegate = new JBTiered721Delegate(
+    // vm.etch(delegate_i, address(delegate).code);
+    // JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    // _delegate.initialize(
+      
+    // );
+    // // delegate_i
+
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
@@ -1189,7 +1241,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Expect the error at i+1 (as the floor is now smaller than i)
     vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.NO_QUANTITY.selector));
-    new JBTiered721Delegate(
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
@@ -1729,7 +1783,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
 
     JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
-    JBTiered721Delegate _delegate = new JBTiered721Delegate(
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
@@ -1925,7 +1981,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tierParamsRemaining[i] = tierParamsRemaining[tierParamsRemaining.length - 1];
 
           // Remove the last elelment / reduce array length by 1
-          assembly {
+          assembly ("memory-safe") {
             mstore(tiersRemaining, sub(mload(tiersRemaining), 1))
             mstore(tierParamsRemaining, sub(mload(tierParamsRemaining), 1))
           }
@@ -2023,7 +2079,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     //  Deploy the delegate with the initial tiers
     JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
-    JBTiered721Delegate _delegate = new JBTiered721Delegate(
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
@@ -2487,7 +2545,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
 
     JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
-    JBTiered721Delegate _delegate = new JBTiered721Delegate(
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
@@ -2646,7 +2706,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           tierParamsRemaining[i] = tierParamsRemaining[tierParamsRemaining.length - 1];
 
           // Remove the last elelment / reduce array length by 1
-          assembly {
+          assembly ("memory-safe") {
             mstore(tiersRemaining, sub(mload(tiersRemaining), 1))
             mstore(tierParamsRemaining, sub(mload(tierParamsRemaining), 1))
           }
@@ -3073,7 +3133,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     vm.etch(_jbPrice, new bytes(1));
 
-    JBTiered721Delegate _delegate = new JBTiered721Delegate(
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
       projectId,
       IJBDirectory(mockJBDirectory),
       name,
@@ -4560,7 +4622,11 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
     IJBTiered721DelegateStore _test_store,
     JBTiered721Flags memory _flags
   )
-    JBTiered721Delegate(
+  {
+    // Disable the safety check to not allow initializing the original contract
+    codeOrigin = address(0);
+
+     JBTiered721Delegate.initialize(
       _projectId,
       _directory,
       _name,
@@ -4572,8 +4638,8 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
       JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
       _test_store,
       _flags
-    )
-  {
+    );
+
     test_store = IJBTiered721DelegateStore_ForTest(address(_test_store));
   }
 
@@ -4631,7 +4697,7 @@ contract ForTest_JBTiered721DelegateStore is
     // Drop the empty tiers at the end of the array (coming from maxTierIdOf which *might* be bigger than actual bigger tier)
     for (uint256 i = _tiers.length - 1; i >= 0; i--) {
       if (_tiers[i].id == 0) {
-        assembly {
+        assembly ("memory-safe") {
           mstore(_tiers, sub(mload(_tiers), 1))
         }
       } else break;

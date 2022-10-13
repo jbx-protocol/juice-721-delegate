@@ -53,13 +53,13 @@ abstract contract JB721Delegate is
     @notice
     The ID of the project this contract's functionality applies to.
   */
-  uint256 public immutable override projectId;
+  uint256 public override projectId;
 
   /**
     @notice
     The directory of terminals and controllers for projects.
   */
-  IJBDirectory public immutable override directory;
+  IJBDirectory public override directory;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -203,12 +203,14 @@ abstract contract JB721Delegate is
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
   */
-  constructor(
+  function _initialize(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol
-  ) ERC721(_name, _symbol) {
+  ) internal {
+    ERC721._initialize(_name, _symbol);
+    
     projectId = _projectId;
     directory = _directory;
   }

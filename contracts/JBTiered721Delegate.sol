@@ -30,7 +30,6 @@ import './structs/JB721PricingParams.sol';
   Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
 contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
-
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -47,33 +46,39 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
   /**
     @notice
+    The address of the origin 'JBTiered721Delegate', used to check in the init if the contract is the original or not
+  */
+  address internal codeOrigin;
+
+  /**
+    @notice
     The contract that stores and manages the NFT's data.
   */
-  IJBTiered721DelegateStore public immutable override store;
+  IJBTiered721DelegateStore public override store;
 
   /**
     @notice
     The contract storing all funding cycle configurations.
   */
-  IJBFundingCycleStore public immutable override fundingCycleStore;
+  IJBFundingCycleStore public override fundingCycleStore;
 
   /**
     @notice
     The contract that exposes price feeds.
   */
-  IJBPrices public immutable override prices;
+  IJBPrices public override prices;
 
   /** 
     @notice
     The currency that is accepted when minting tier NFTs. 
   */
-  uint256 public immutable override pricingCurrency;
+  uint256 public override pricingCurrency;
 
   /** 
     @notice
     The currency that is accepted when minting tier NFTs. 
   */
-  uint256 public immutable override pricingDecimals;
+  uint256 public override pricingDecimals;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -184,6 +189,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
+  constructor(){
+    codeOrigin = address(this);
+  }
+
   /**
     @param _projectId The ID of the project this contract's functionality applies to.
     @param _directory The directory of terminals and controllers for projects.
@@ -197,7 +206,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     @param _store A contract that stores the NFT's data.
     @param _flags A set of flags that help define how this contract works.
   */
-  constructor(
+  function initialize(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
@@ -209,7 +218,14 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     JB721PricingParams memory _pricing,
     IJBTiered721DelegateStore _store,
     JBTiered721Flags memory _flags
-  ) JB721Delegate(_projectId, _directory, _name, _symbol) {
+  ) public {
+    // Make the original un-initializable
+    require(address(this) != codeOrigin);
+    // Stop re-initialization
+    require(address(store) == address(0));
+
+    JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
+
     fundingCycleStore = _fundingCycleStore;
     store = _store;
     pricingCurrency = _pricing.currency;
@@ -235,6 +251,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       _flags.lockVotingUnitChanges ||
       _flags.lockManualMintingChanges
     ) _store.recordFlags(_flags);
+
+    _transferOwnership(msg.sender);
   }
 
   //*********************************************************************//
@@ -731,7 +749,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     super._beforeTokenTransfer(_from, _to, _tokenId);
   }
 
-    /**
+  /**
     @notice
     Transfer voting units after the transfer of a token.
 
@@ -765,5 +783,4 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     uint256 _tokenId,
     JB721Tier memory _tier
   ) internal virtual {}
-
 }

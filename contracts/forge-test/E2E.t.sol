@@ -47,7 +47,15 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   function setUp() public override {
     super.setUp();
 
-    JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer();
+    JBTiered721Delegate noGovernance = new JBTiered721Delegate();
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+
+    JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer(
+      globalGovernance,
+      tieredGovernance,
+      noGovernance
+    );
 
     deployer = new JBTiered721DelegateProjectDeployer(
       IJBController(_jbController),

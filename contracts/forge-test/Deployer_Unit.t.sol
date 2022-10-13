@@ -61,7 +61,17 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
     store = new JBTiered721DelegateStore();
-    delegateDeployer = new JBTiered721DelegateDeployer();
+
+    JBTiered721Delegate noGovernance = new JBTiered721Delegate();
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+
+    JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer(
+      globalGovernance,
+      tieredGovernance,
+      noGovernance
+    );
+
     deployer = new JBTiered721DelegateProjectDeployer(
       IJBController(mockJBController),
       delegateDeployer,
