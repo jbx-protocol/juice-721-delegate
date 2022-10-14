@@ -191,7 +191,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       }),
       IJBTiered721DelegateDeployer.GovernanceType.NONE
     );
@@ -251,7 +252,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -327,7 +329,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -408,7 +411,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -494,7 +498,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -563,7 +568,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -622,7 +628,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -693,7 +700,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -759,7 +767,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -819,7 +828,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -896,7 +906,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -953,7 +964,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1005,7 +1017,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1044,7 +1057,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1084,7 +1098,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1156,7 +1171,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1228,7 +1244,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
   }
@@ -1286,7 +1303,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1385,7 +1403,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1542,7 +1561,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1619,7 +1639,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1775,7 +1796,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -1927,7 +1949,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -2071,7 +2094,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -2229,7 +2253,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -2331,7 +2356,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -2433,7 +2459,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -2537,7 +2564,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -2652,7 +2680,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -2923,6 +2952,97 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(1);
   }
 
+  function testJBTieredNFTRewardDelegate_didPay_mintFirstBestTierIfMultipleAvailableAtSameFloor() public {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](5);
+
+    // 5 tiers, floors from 10 to 50
+    for (uint256 i; i < 5; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        reservedRate: uint16(0),
+        encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
+
+    // Tier id 3 and 4 have same floor
+    _tierParams[2].contributionFloor = 35;
+    _tierParams[3].contributionFloor = 35;
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockManualMintingChanges: true,
+        pausable: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    _delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, 36, 18, JBCurrencies.ETH), // Just above the 
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Make sure a new NFT was minted
+      assertEq(_totalSupplyBeforePay + 1, _delegate.store().totalSupply(address(_delegate)));
+
+      // Correct tier has been minted?
+      uint256 tokenId = _generateTokenId(3, 1);
+      assertEq(_delegate.ownerOf(tokenId), msg.sender);
+  }
+
   function testJBTieredNFTRewardDelegate_didPay_revertIfSupposedToMintBestTierButNoneAvailable(
     uint8 _amount
   ) public {
@@ -3120,7 +3240,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -3540,7 +3661,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting
+  // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting (if delegate flag pausable is true)
   function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle()
     public
   {
@@ -3640,6 +3761,126 @@ contract TestJBTieredNFTRewardDelegate is Test {
     IERC721(delegate).transferFrom(msg.sender, beneficiary, _tokenId);
   }
 
+  // If FC has the pause transfer flag but the delegate flag 'pausable' is false, transfer are not paused
+  function testJBTieredNFTRewardDelegate_beforeTransferHook_pauseFlagOverrideFundingCycleTransferPaused()
+    public
+  {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 1 // 001_2
+            })
+          )
+        })
+      )
+    );
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true,
+        pausable: false
+      })
+    );
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](3);
+    _tierIdsToMint[0] = 1;
+    _tierIdsToMint[1] = 1;
+    _tierIdsToMint[2] = 2;
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    _delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(
+          JBTokens.ETH,
+          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
+          18,
+          JBCurrencies.ETH
+        ),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    uint256 _tokenId = _generateTokenId(1, 1);
+    vm.prank(msg.sender);
+    IERC721(_delegate).transferFrom(msg.sender, beneficiary, _tokenId);
+    
+    // Check: token transfered
+    assertEq(IERC721(_delegate).ownerOf(_tokenId), beneficiary);
+  }
+
   function testJBTieredNFTRewardDelegate_beforeTransferHook_redeemEvenIfTransferPausedInFundingCycle()
     public
   {
@@ -3703,7 +3944,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -3809,7 +4051,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -3925,7 +4168,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -4032,7 +4276,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -4155,7 +4400,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -4345,7 +4591,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true
+        lockManualMintingChanges: true,
+        pausable: true
       })
     );
 
@@ -4623,6 +4870,9 @@ contract ForTest_JBTiered721DelegateStore is
   JBTiered721DelegateStore,
   IJBTiered721DelegateStore_ForTest
 {
+  using JBBitmap for mapping(uint256=>uint256);
+  using JBBitmap for JBBitmap.BitmapWord;
+
   function ForTest_dumpTiersList(address _nft)
     public
     view
@@ -4709,6 +4959,6 @@ contract ForTest_JBTiered721DelegateStore is
   }
 
   function ForTest_setIsTierRemoved(address _delegate, uint256 _tokenId) public override {
-    isTierRemoved[_delegate][_tokenId] = true;
+    _isTierRemoved[_delegate].removeTier(_tokenId);
   }
 }

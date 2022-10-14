@@ -249,7 +249,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     if (
       _flags.lockReservedTokenChanges ||
       _flags.lockVotingUnitChanges ||
-      _flags.lockManualMintingChanges
+      _flags.lockManualMintingChanges ||
+      _flags.pausable
     ) _store.recordFlags(_flags);
 
     _transferOwnership(msg.sender);
@@ -729,17 +730,20 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     address _to,
     uint256 _tokenId
   ) internal virtual override {
-    // Get a reference to the project's current funding cycle.
-    JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
-
     // Transfered must not be paused when not minting or burning.
     if (_from != address(0)) {
-      if (
-        _to != address(0) &&
-        JBTiered721FundingCycleMetadataResolver.transfersPaused(
-          (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
-        )
-      ) revert TRANSFERS_PAUSED();
+      // Transfers must not be paused.
+      if (store.flagsOf(address(this)).pausable) {
+        // Get a reference to the project's current funding cycle.
+        JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
+
+        if (
+          _to != address(0) &&
+          JBTiered721FundingCycleMetadataResolver.transfersPaused(
+            (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
+          )
+        ) revert TRANSFERS_PAUSED();
+      }
 
       // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
       if (store.firstOwnerOf(address(this), _tokenId) == address(0))
