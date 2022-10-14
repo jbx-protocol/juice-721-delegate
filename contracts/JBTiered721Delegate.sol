@@ -491,7 +491,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     );
 
     // Keep a reference to the number of tokens being minted.
-    uint256 _numberOfTokens;
+    uint256 _numberOfTokens = _tierIds.length;
 
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;

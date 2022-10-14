@@ -1686,6 +1686,215 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  function testJBTieredNFTRewardDelegate_mintFor_mintArrayOfTiers() public {
+    uint256 nbTiers = 3;
+
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      abi.encode(owner)
+    );
+
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
+    uint16[] memory _tiersToMint = new uint16[](nbTiers * 2);
+
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        allowManualMint: true, // Allow this type of mint
+        shouldUseBeneficiaryAsDefault: false
+      });
+
+      _tiersToMint[i] = uint16(i)+1;
+      _tiersToMint[_tiersToMint.length - 1 - i] = uint16(i)+1;
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true,
+        pausable: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    _delegate.mintFor(_tiersToMint, beneficiary);
+
+    assertEq(_delegate.balanceOf(beneficiary), 6);
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 2)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 2)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 2)), beneficiary);
+  }
+
+  function testJBTieredNFTRewardDelegate_mintFor_mintArrayOfMintForTiersData() public {
+    uint256 nbTiers = 3;
+
+    address beneficiaryTwo = address(bytes20(keccak256('beneficiaryTwo')));
+
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      abi.encode(owner)
+    );
+
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
+    JBTiered721MintForTiersData[] memory _tiersToMint = new JBTiered721MintForTiersData[](2);
+    uint16[] memory _tiersToMintOne = new uint16[](nbTiers * 2);
+    uint16[] memory _tiersToMintTwo = new uint16[](nbTiers * 2);
+
+
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        allowManualMint: true, // Allow this type of mint
+        shouldUseBeneficiaryAsDefault: false
+      });
+
+      _tiersToMintOne[i] = uint16(i)+1;
+      _tiersToMintOne[_tiersToMintOne.length - 1 - i] = uint16(i)+1;
+
+      _tiersToMintTwo[i] = uint16(i)+1;
+      _tiersToMintTwo[_tiersToMintTwo.length - 1 - i] = uint16(i)+1;
+    }
+
+    _tiersToMint[0] = JBTiered721MintForTiersData({ tierIds: _tiersToMintOne, beneficiary: beneficiary});
+    _tiersToMint[1] = JBTiered721MintForTiersData({ tierIds: _tiersToMintTwo, beneficiary: beneficiaryTwo});
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true,
+        pausable: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    _delegate.mintFor(_tiersToMint);
+
+    assertEq(_delegate.balanceOf(beneficiary), 6);
+    assertEq(_delegate.balanceOf(beneficiaryTwo), 6);
+
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 2)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 2)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 2)), beneficiary);
+
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 3)), beneficiaryTwo);
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 4)), beneficiaryTwo);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 3)), beneficiaryTwo);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 4)), beneficiaryTwo);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 3)), beneficiaryTwo);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 4)), beneficiaryTwo);
+  }
+
+  function testJBTieredNFTRewardDelegate_mintFor_revertIfManualMintNotAllowed() public {
+    uint256 nbTiers = 3;
+
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      abi.encode(owner)
+    );
+
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
+    uint16[] memory _tiersToMint = new uint16[](nbTiers * 2);
+
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        allowManualMint: true,
+        shouldUseBeneficiaryAsDefault: false
+      });
+
+      _tiersToMint[i] = uint16(i)+1;
+      _tiersToMint[_tiersToMint.length - 1 - i] = uint16(i)+1;
+    }
+
+    _tiers[2].allowManualMint = false;
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true,
+        pausable: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.CANT_MINT_MANUALLY.selector));
+    _delegate.mintFor(_tiersToMint, beneficiary);
+
+  }
+
+
   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(address _newBeneficiary)
     public
   {
