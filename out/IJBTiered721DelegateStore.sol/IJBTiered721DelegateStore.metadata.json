@@ -196,6 +196,47 @@
             "internalType": "address",
             "name": "_nft",
             "type": "address"
+          }
+        ],
+        "name": "flagsOf",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "lockReservedTokenChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockVotingUnitChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockManualMintingChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "pausable",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct JBTiered721Flags",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
+            "type": "address"
           },
           {
             "internalType": "uint256",
@@ -222,64 +263,7 @@
             "type": "address"
           }
         ],
-        "name": "lockPricingResolverChangesFor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_nft",
-            "type": "address"
-          }
-        ],
-        "name": "lockReservedTokenChangesFor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_nft",
-            "type": "address"
-          }
-        ],
-        "name": "lockVotingUnitChangesFor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "_nft",
-            "type": "address"
-          }
-        ],
-        "name": "maxTierId",
+        "name": "maxTierIdOf",
         "outputs": [
           {
             "internalType": "uint256",
@@ -403,6 +387,11 @@
               },
               {
                 "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
                 "name": "shouldUseBeneficiaryAsDefault",
                 "type": "bool"
               }
@@ -439,38 +428,34 @@
       {
         "inputs": [
           {
-            "internalType": "bool",
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "lockReservedTokenChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockVotingUnitChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockManualMintingChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "pausable",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct JBTiered721Flags",
             "name": "_flag",
-            "type": "bool"
+            "type": "tuple"
           }
         ],
-        "name": "recordLockPricingResolverChanges",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bool",
-            "name": "_flag",
-            "type": "bool"
-          }
-        ],
-        "name": "recordLockReservedTokenChanges",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bool",
-            "name": "_flag",
-            "type": "bool"
-          }
-        ],
-        "name": "recordLockVotingUnitChanges",
+        "name": "recordFlags",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -488,14 +473,9 @@
             "type": "uint16[]"
           },
           {
-            "internalType": "address",
-            "name": "_beneficiary",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_currency",
-            "type": "uint256"
+            "internalType": "bool",
+            "name": "_isManualMint",
+            "type": "bool"
           }
         ],
         "name": "recordMint",
@@ -782,6 +762,11 @@
                 "internalType": "bytes32",
                 "name": "encodedIPFSUri",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
               }
             ],
             "internalType": "struct JB721Tier",
@@ -901,6 +886,11 @@
                 "internalType": "bytes32",
                 "name": "encodedIPFSUri",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
               }
             ],
             "internalType": "struct JB721Tier",
@@ -1006,6 +996,11 @@
                 "internalType": "bytes32",
                 "name": "encodedIPFSUri",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
               }
             ],
             "internalType": "struct JB721Tier[]",
@@ -1129,31 +1124,40 @@
       ":ds-test/=lib/forge-std/lib/ds-test/src/",
       ":forge-std/=lib/forge-std/src/",
       ":prb-math/=node_modules/prb-math/"
-    ]
+    ],
+    "viaIR": true
   },
   "sources": {
     "contracts/interfaces/IJBTiered721DelegateStore.sol": {
-      "keccak256": "0xe21154e30dbe7d0b18a9e5a61d8bdf2b734e1dcd949a59734a5eccfd651556cf",
+      "keccak256": "0xcf1b6e7936510e113ecfdf9ec19a53fd4bc76bbdd6fb45277b3f87dad6a80392",
       "license": "MIT",
       "urls": [
-        "bzz-raw://4757436856343ac300f1bcab3fa516dd4a3de0110abc9300c3cedf01f339d977",
-        "dweb:/ipfs/QmZRp8p9UgkwTMUuXE1Y8Z9bPzqisDB5FyuAiXMrhAhfXb"
+        "bzz-raw://3837762449cbb5582dd35cf87857c71fe49d5ee723d4860fc5ff5265415ea57e",
+        "dweb:/ipfs/QmbN8ULJmgnfiD8tbKLrKE8KJDzd4xwqopSVq6DWHrMWiT"
       ]
     },
     "contracts/structs/JB721Tier.sol": {
-      "keccak256": "0x5bd4779b619bc3fe3803f0bd4b45b03168e50ba2525e27c61d87369800b12fa8",
+      "keccak256": "0x672025dfabf2c6b0d26f4503365954ff3785e1d5cc8e597a31325d9fd94cd12a",
       "license": "MIT",
       "urls": [
-        "bzz-raw://3ec850e0a94341d4a0b75fe11a20f4bf433b0c84cfc0120570ccffc8d53ca7d5",
-        "dweb:/ipfs/QmbrFYswXfCtotRGsWXyqqag8iSrBsoWmCqPKA45Q76ad3"
+        "bzz-raw://19230b2cbec919ad73b01b408bc7a750d583cecd24363d722ca797d95a127447",
+        "dweb:/ipfs/QmdBEcypFDY1UvXPLVUuAEWAknu1GGgxnEYkzem8kssrVq"
       ]
     },
     "contracts/structs/JB721TierParams.sol": {
-      "keccak256": "0x496c1934772a88fc206d478a8ecc2c0fa59371445738021f6ba251b1dafbf7a7",
+      "keccak256": "0x99553a129e063389b38ca5c5aafe35bedcf4127bbae846f9c8bbe8a859788867",
       "license": "MIT",
       "urls": [
-        "bzz-raw://9e9f7a756899f12491a8fee9c94b76039cc34b36c97e694399751901f9472113",
-        "dweb:/ipfs/QmYTGxZ3VstaWhDJL8K1pe96fLWSgXfkwbhbKseKZwZ9E1"
+        "bzz-raw://c5e8c5fc92c18539d38585b610fa57b6a8a3e548379bf68a81e25bb88504c69e",
+        "dweb:/ipfs/QmeVzaMnmBdaRPpW3qvF25iD2dmfKqU6LicoTtHDqUcQcH"
+      ]
+    },
+    "contracts/structs/JBTiered721Flags.sol": {
+      "keccak256": "0x244946776da208ef0f433355e11e7c78fc47ff21cc3b176a0cc8234f1d2c9b11",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://6f0a6ca1eaf2a7616e704c760f57ed5c1b86c26fea61f7680f3341c99de2c5ab",
+        "dweb:/ipfs/QmdP1UXG2vuBwW9t1SxvLv8zMB9eqmiPobiYrE6VbSDmK1"
       ]
     },
     "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol": {
