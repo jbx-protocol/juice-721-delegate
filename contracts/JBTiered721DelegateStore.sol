@@ -4,6 +4,7 @@ pragma solidity ^0.8.16;
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
 import './interfaces/IJBTiered721DelegateStore.sol';
 import './libraries/JBBitmap.sol';
+import './structs/JBBitmapWord.sol';
 import './structs/JBStored721Tier.sol';
 
 /**
@@ -19,7 +20,7 @@ import './structs/JBStored721Tier.sol';
 */
 contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   using JBBitmap for mapping(uint256=>uint256);
-  using JBBitmap for JBBitmap.BitmapWord;
+  using JBBitmap for JBBitmapWord;
 
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -219,7 +220,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     JBStored721Tier memory _storedTier;
 
     // Initialise a BitmapWord for isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
+    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.
     while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
@@ -466,7 +467,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @return True if the tier has been removed
   */
   function isTierRemoved(address _nft, uint256 _tierId) external view override returns(bool) {
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
+    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
     
     return _bitmapWord.isTierIdRemoved(_tierId);
   }
@@ -701,7 +702,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         uint256 _currentSortIndex = _startSortIndex;
 
         // Initialise a BitmapWord for isRemoved
-        JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
+        JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
         // Keep a reference to the idex to iterate on next.
         uint256 _next;
@@ -928,7 +929,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _bestContributionFloor;
 
     // Initialise a BitmapWord to read isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
+    JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
     while (_currentSortIndex != 0) {
       // Set the tier being iterated on. Tier's are 1 indexed.
@@ -1012,8 +1013,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_numberOfTiers);
 
-    // Initialise a BitmapWord for isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_tierIds[0]);
+    // Initialise a BitmapWord for isRemoved.
+    JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_tierIds[0]);
 
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
@@ -1163,8 +1164,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep track of the previous non-removed index.
     uint256 _previous;
 
-    // Initialise a BitmapWord for isRemoved
-    JBBitmap.BitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
+    // Initialise a BitmapWord for isRemoved.
+    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.
     while (_currentSortIndex != 0) {
