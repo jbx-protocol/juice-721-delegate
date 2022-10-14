@@ -753,7 +753,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         lockManualMintingChanges: true,
         pausable: true
       }),
-      governanceType: IJBTiered721DelegateDeployer.GovernanceType.NONE
+      governanceType: JB721GovernanceType.NONE
     });
 
     launchProjectData = JBLaunchProjectData({
