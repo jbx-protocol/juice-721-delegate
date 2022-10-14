@@ -195,7 +195,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockManualMintingChanges: true,
         pausable: true
       }),
-      IJBTiered721DelegateDeployer.GovernanceType.NONE
+      JB721GovernanceType.NONE
     );
     
 
