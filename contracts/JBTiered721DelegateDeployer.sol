@@ -72,11 +72,11 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   ) external override returns (IJBTiered721Delegate) {
     // Deploy the governance variant that was requested
     address codeToCopy;
-    if (_deployTiered721DelegateData.governanceType == GovernanceType.NONE)
+    if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.NONE)
       codeToCopy = address(noGovernance);
-    else if (_deployTiered721DelegateData.governanceType == GovernanceType.TIERED)
+    else if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.TIERED)
       codeToCopy = address(tieredGovernance);
-    else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL)
+    else if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.GLOBAL)
       codeToCopy = address(globalGovernance);
     else revert INVALID_GOVERNANCE_TYPE();
 
