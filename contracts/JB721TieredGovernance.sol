@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import '@openzeppelin/contracts/utils/Checkpoints.sol';
 import './interfaces/IJB721TieredGovernance.sol';
 import './JBTiered721Delegate.sol';
 
