@@ -4,6 +4,7 @@ import '../JBTiered721DelegateDeployer.sol';
 import '../JBTiered721Delegate.sol';
 import '../JBTiered721DelegateStore.sol';
 import '../interfaces/IJBTiered721Delegate.sol';
+import '../structs/JBBitmapWord.sol';
 import './utils/AccessJBLib.sol';
 import 'forge-std/Test.sol';
 
@@ -4871,7 +4872,7 @@ contract ForTest_JBTiered721DelegateStore is
   IJBTiered721DelegateStore_ForTest
 {
   using JBBitmap for mapping(uint256=>uint256);
-  using JBBitmap for JBBitmap.BitmapWord;
+  using JBBitmap for JBBitmapWord;
 
   function ForTest_dumpTiersList(address _nft)
     public
