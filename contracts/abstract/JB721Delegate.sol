@@ -7,8 +7,8 @@ import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
-import './ERC721.sol';
 import '../interfaces/IJB721Delegate.sol';
+import './ERC721.sol';
 
 /**
   @title 
@@ -117,8 +117,7 @@ abstract contract JB721Delegate is
 
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     if (
-      _data.metadata.length < 4 ||
-      bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 4 || bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
     ) {
       revert INVALID_REDEMPTION_METADATA();
     }
@@ -131,12 +130,10 @@ abstract contract JB721Delegate is
     if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
 
     // Decode the metadata
-    (,uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
+    (, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
 
     // Get a reference to the redemption rate of the provided tokens.
-    uint256 _redemptionWeight = _redemptionWeightOf(
-      _decodedTokenIds
-    );
+    uint256 _redemptionWeight = _redemptionWeightOf(_decodedTokenIds);
 
     // Get a reference to the total redemption weight.
     uint256 _total = _totalRedemptionWeight();
@@ -210,7 +207,7 @@ abstract contract JB721Delegate is
     string memory _symbol
   ) internal {
     ERC721._initialize(_name, _symbol);
-    
+
     projectId = _projectId;
     directory = _directory;
   }
@@ -259,12 +256,11 @@ abstract contract JB721Delegate is
 
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     if (
-      _data.metadata.length < 4 ||
-      bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 4 || bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
     ) revert INVALID_REDEMPTION_METADATA();
 
     // Decode the metadata.
-    (,uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
+    (, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
 
     // Get a reference to the number of token IDs being checked.
     uint256 _numberOfTokenIds = _decodedTokenIds.length;

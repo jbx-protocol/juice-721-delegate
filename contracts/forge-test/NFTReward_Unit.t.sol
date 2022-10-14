@@ -4,6 +4,7 @@ import '../JBTiered721DelegateDeployer.sol';
 import '../JBTiered721Delegate.sol';
 import '../JBTiered721DelegateStore.sol';
 import '../interfaces/IJBTiered721Delegate.sol';
+import '../structs/JBBitmapWord.sol';
 import './utils/AccessJBLib.sol';
 import 'forge-std/Test.sol';
 
@@ -194,7 +195,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockManualMintingChanges: true,
         pausable: true
       }),
-      IJBTiered721DelegateDeployer.GovernanceType.NONE
+      JB721GovernanceType.NONE
     );
     
 
@@ -5051,7 +5052,7 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
   )
   {
     // Disable the safety check to not allow initializing the original contract
-    codeOrigin = address(0);
+    _codeOrigin = address(0);
 
      JBTiered721Delegate.initialize(
       _projectId,
@@ -5080,7 +5081,7 @@ contract ForTest_JBTiered721DelegateStore is
   IJBTiered721DelegateStore_ForTest
 {
   using JBBitmap for mapping(uint256=>uint256);
-  using JBBitmap for JBBitmap.BitmapWord;
+  using JBBitmap for JBBitmapWord;
 
   function ForTest_dumpTiersList(address _nft)
     public

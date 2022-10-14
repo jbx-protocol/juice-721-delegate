@@ -1,11 +1,11 @@
 pragma solidity ^0.8.16;
 
-import "../E2E.t.sol";
+import '../E2E.t.sol';
 
-import "../../JB721TieredGovernance.sol";
+import '../../JB721TieredGovernance.sol';
 
 contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
- using JBFundingCycleMetadataResolver for JBFundingCycle;
+  using JBFundingCycleMetadataResolver for JBFundingCycle;
 
   function testMintAndTransferTieredVotingUnits(uint8 _tier, bool _recipientDelegated) public {
     address _user = address(bytes20(keccak256('user')));
@@ -16,7 +16,7 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     ) = createData();
 
     // Set the governance type to tiered
-    NFTRewardDeployerData.governanceType = IJBTiered721DelegateDeployer.GovernanceType.TIERED;
+    NFTRewardDeployerData.governanceType = JB721GovernanceType.TIERED;
 
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
@@ -33,10 +33,7 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     vm.assume(_tier < NFTRewardDeployerData.pricing.tiers.length);
     uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
 
-    assertEq(
-        _delegate.getTierDelegate(_user, _tier),
-        address(0)
-    );
+    assertEq(_delegate.getTierDelegate(_user, _tier), address(0));
 
     vm.prank(_user);
     _delegate.setTierDelegate(_user, _tier + 1);
@@ -82,7 +79,9 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     assertEq(_delegate.getTierVotes(_userFren, _tier + 1), _frenExpectedVotes);
   }
 
-  function testMintAndDelegateTieredVotingUnits(uint8 _tier, bool _selfDelegateBeforeReceive) public {
+  function testMintAndDelegateTieredVotingUnits(uint8 _tier, bool _selfDelegateBeforeReceive)
+    public
+  {
     address _user = address(bytes20(keccak256('user')));
     address _userFren = address(bytes20(keccak256('user_fren')));
     (
@@ -91,7 +90,7 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     ) = createData();
 
     // Set the governance type to tiered
-    NFTRewardDeployerData.governanceType = IJBTiered721DelegateDeployer.GovernanceType.TIERED;
+    NFTRewardDeployerData.governanceType = JB721GovernanceType.TIERED;
 
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,

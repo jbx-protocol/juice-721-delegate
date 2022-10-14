@@ -5,6 +5,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol'
 import '../JBTiered721DelegateProjectDeployer.sol';
 import '../JBTiered721DelegateDeployer.sol';
 import '../JBTiered721DelegateStore.sol';
+import '../enums/JB721GovernanceType.sol';
 import '../interfaces/IJBTiered721DelegateProjectDeployer.sol';
 import '../structs/JBLaunchProjectData.sol';
 
@@ -177,7 +178,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         lockManualMintingChanges: true,
         pausable: true
       }),
-      governanceType: IJBTiered721DelegateDeployer.GovernanceType.NONE
+      governanceType: JB721GovernanceType.NONE
     });
 
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});

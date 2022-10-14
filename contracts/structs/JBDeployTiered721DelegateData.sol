@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.0;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
+import './../enums/JB721GovernanceType.sol';
+import './../interfaces/IJBTiered721DelegateStore.sol';
 import './JB721PricingParams.sol';
 import './JBTiered721Flags.sol';
-import './../interfaces/IJBTiered721DelegateStore.sol';
-import './../interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**
   @member directory The directory of terminals and controllers for projects.
@@ -22,6 +22,7 @@ import './../interfaces/IJBTiered721DelegateDeployer.sol';
   @member reservedTokenBeneficiary The address receiving the reserved token
   @member store The store contract to use.
   @member flags A set of flags that help define how this contract works.
+  @member governanceType The type of governance to allow the NFTs to be used for.
 */
 struct JBDeployTiered721DelegateData {
   IJBDirectory directory;
@@ -36,5 +37,5 @@ struct JBDeployTiered721DelegateData {
   address reservedTokenBeneficiary;
   IJBTiered721DelegateStore store;
   JBTiered721Flags flags;
-  IJBTiered721DelegateDeployer.GovernanceType governanceType;
+  JB721GovernanceType governanceType;
 }

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
+import './../structs/JB721PricingParams.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './../structs/JBTiered721MintForTiersData.sol';
-import './../structs/JBTiered721SetTierDelegatesData.sol';
 import './IJBTiered721DelegateStore.sol';
 
 interface IJBTiered721Delegate {
@@ -63,4 +63,18 @@ interface IJBTiered721Delegate {
     returns (uint256[] memory tokenIds);
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
+
+  function initialize(
+    uint256 _projectId,
+    IJBDirectory _directory,
+    string memory _name,
+    string memory _symbol,
+    IJBFundingCycleStore _fundingCycleStore,
+    string memory _baseUri,
+    IJBTokenUriResolver _tokenUriResolver,
+    string memory _contractUri,
+    JB721PricingParams memory _pricing,
+    IJBTiered721DelegateStore _store,
+    JBTiered721Flags memory _flags
+  ) external;
 }

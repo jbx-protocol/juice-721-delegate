@@ -1,10 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import './abstract/Votes.sol';
 import './JBTiered721Delegate.sol';
-import './interfaces/IJB721TieredGovernance.sol';
 
+/**
+  @title
+  JB721GlobalGovernance
+
+  @notice
+  A tiered 721 delegate where each NFT can be used for on chain governance, with votes delegatable globally across all tiers.
+
+  @dev
+  Inherits from -
+  JBTiered721Delegate: The tiered 721 delegate.
+  Votes: A helper for voting balance snapshots.
+*/
 contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
+  //*********************************************************************//
+  // ------------------------ internal functions ----------------------- //
+  //*********************************************************************//
 
   /**
     @notice
@@ -39,9 +54,9 @@ contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
     uint256 _tokenId,
     JB721Tier memory _tier
   ) internal virtual override {
-    if (_tier.votingUnits != 0) {
+    _tokenId; // Prevents unused var compiler and natspec complaints.
+    if (_tier.votingUnits != 0)
       // Transfer the voting units.
       _transferVotingUnits(_from, _to, _tier.votingUnits);
-    }
   }
 }

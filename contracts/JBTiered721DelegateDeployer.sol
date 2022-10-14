@@ -1,13 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
+import './interfaces/IJBTiered721DelegateDeployer.sol';
 import './JBTiered721Delegate.sol';
 import './JB721TieredGovernance.sol';
 import './JB721GlobalGovernance.sol';
-import './interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**
   @notice
@@ -23,9 +20,24 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
-  JB721GlobalGovernance immutable globalGovernance;
-  JB721TieredGovernance immutable tieredGovernance;
-  JBTiered721Delegate immutable noGovernance;
+
+  /** 
+    @notice 
+    The contract that supports on-chain governance across all tiers. 
+  */
+  JB721GlobalGovernance public immutable globalGovernance;
+
+  /** 
+    @notice 
+    The contract that supports on-chain governance per-tier. 
+  */
+  JB721TieredGovernance public immutable tieredGovernance;
+
+  /** 
+    @notice 
+    The contract that has no on-chain governance. 
+  */
+  JBTiered721Delegate public immutable noGovernance;
 
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
@@ -60,15 +72,13 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   ) external override returns (IJBTiered721Delegate) {
     // Deploy the governance variant that was requested
     address codeToCopy;
-    if (_deployTiered721DelegateData.governanceType == GovernanceType.NONE) {
+    if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.NONE)
       codeToCopy = address(noGovernance);
-    } else if (_deployTiered721DelegateData.governanceType == GovernanceType.TIERED) {
+    else if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.TIERED)
       codeToCopy = address(tieredGovernance);
-    } else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL) {
+    else if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.GLOBAL)
       codeToCopy = address(globalGovernance);
-    } else {
-      revert INVALID_GOVERNANCE_TYPE();
-    }
+    else revert INVALID_GOVERNANCE_TYPE();
 
     JB721GlobalGovernance newDelegate = JB721GlobalGovernance(_clone(codeToCopy));
     newDelegate.initialize(
@@ -116,7 +126,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       // Insert the length in the correct sport (after the PUSH3 / 0x62)
       let _initCode := or(_mask, 0x62000000600081600d8239f3fe00000000000000000000000000000000000000)
 
-      // Store the deployment bytecode 
+      // Store the deployment bytecode
       mstore(_freeMem, _initCode)
 
       // Copy the bytecode (our initialise part is 13 bytes long)

@@ -1,11 +1,11 @@
 pragma solidity ^0.8.16;
 
-import "../E2E.t.sol";
+import '../E2E.t.sol';
 
-import "../../JB721GlobalGovernance.sol";
+import '../../JB721GlobalGovernance.sol';
 
 contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
- using JBFundingCycleMetadataResolver for JBFundingCycle;
+  using JBFundingCycleMetadataResolver for JBFundingCycle;
 
   function testMintAndTransferGlobalVotingUnits(uint8 _tier, bool _recipientDelegated) public {
     address _user = address(bytes20(keccak256('user')));
@@ -16,7 +16,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
     ) = createData();
 
     // Set the governance type to tiered
-    NFTRewardDeployerData.governanceType = IJBTiered721DelegateDeployer.GovernanceType.GLOBAL;
+    NFTRewardDeployerData.governanceType = JB721GovernanceType.GLOBAL;
 
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
@@ -33,10 +33,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
     vm.assume(_tier < NFTRewardDeployerData.pricing.tiers.length);
     uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
 
-    assertEq(
-        _delegate.delegates(_user),
-        address(0)
-    );
+    assertEq(_delegate.delegates(_user), address(0));
 
     vm.prank(_user);
     _delegate.delegate(_user);
@@ -57,10 +54,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
     );
 
     // Assert that the user received the votingUnits
-    assertEq(
-      _delegate.getVotes(_user),
-      NFTRewardDeployerData.pricing.tiers[_tier].votingUnits
-    );
+    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.pricing.tiers[_tier].votingUnits);
 
     uint256 _frenExpectedVotes = 0;
     // Have the user delegate to themselves
@@ -91,7 +85,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
     ) = createData();
 
     // Set the governance type to tiered
-    NFTRewardDeployerData.governanceType = IJBTiered721DelegateDeployer.GovernanceType.GLOBAL;
+    NFTRewardDeployerData.governanceType = JB721GovernanceType.GLOBAL;
 
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
@@ -99,7 +93,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       launchProjectData
     );
 
-     // Get the dataSource
+    // Get the dataSource
     JB721GlobalGovernance _delegate = JB721GlobalGovernance(
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
