@@ -5,7 +5,14 @@ import '../structs/JBDeployTiered721DelegateData.sol';
 import './IJBTiered721Delegate.sol';
 
 interface IJBTiered721DelegateDeployer {
-  event DelegateDeployed(uint256 indexed projectId, IJBTiered721Delegate newDelegate);
+
+  enum GovernanceType {
+    NONE,
+    TIERED,
+    GLOBAL
+  }
+
+  event DelegateDeployed(uint256 indexed projectId, IJBTiered721Delegate newDelegate, GovernanceType governanceType);
 
   function deployDelegateFor(
     uint256 _projectId,

@@ -250,7 +250,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Resize the array if there are removed tiers
     if (_numberOfIncludedTiers != _size)
-      assembly {
+      assembly ("memory-safe"){
         mstore(_tiers, _numberOfIncludedTiers)
       }
   }

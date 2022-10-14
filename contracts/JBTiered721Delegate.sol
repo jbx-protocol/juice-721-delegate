@@ -29,9 +29,7 @@ import './structs/JB721PricingParams.sol';
   Votes: A helper for voting balance snapshots.
   Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Ownable {
-  using Checkpoints for Checkpoints.History;
-
+contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -42,43 +40,45 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
 
-  mapping(address => mapping(uint256 => address)) private _tierDelegation;
-  mapping(address => mapping(uint256 => Checkpoints.History)) private _delegateTierCheckpoints;
-  mapping(uint256 => Checkpoints.History) private _totalTierCheckpoints;
-
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
 
   /**
     @notice
+    The address of the origin 'JBTiered721Delegate', used to check in the init if the contract is the original or not
+  */
+  address internal codeOrigin;
+
+  /**
+    @notice
     The contract that stores and manages the NFT's data.
   */
-  IJBTiered721DelegateStore public immutable override store;
+  IJBTiered721DelegateStore public override store;
 
   /**
     @notice
     The contract storing all funding cycle configurations.
   */
-  IJBFundingCycleStore public immutable override fundingCycleStore;
+  IJBFundingCycleStore public override fundingCycleStore;
 
   /**
     @notice
     The contract that exposes price feeds.
   */
-  IJBPrices public immutable override prices;
+  IJBPrices public override prices;
 
   /** 
     @notice
     The currency that is accepted when minting tier NFTs. 
   */
-  uint256 public immutable override pricingCurrency;
+  uint256 public override pricingCurrency;
 
   /** 
     @notice
     The currency that is accepted when minting tier NFTs. 
   */
-  uint256 public immutable override pricingDecimals;
+  uint256 public override pricingDecimals;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -172,76 +172,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
-    Returns the delegate of an account for specific tier.
-
-    @param _account The account to check for a delegate of.
-    @param _tier the tier to check within.
-  */
-  function getTierDelegate(address _account, uint256 _tier)
-    external
-    view
-    override
-    returns (address)
-  {
-    return _tierDelegation[_account][_tier];
-  }
-
-  /**
-    @notice
-    Returns the current voting power of an address for a specific tier.
-
-    @param _account The address to check.
-    @param _tier The tier to check within.
-  */
-  function getTierVotes(address _account, uint256 _tier) external view override returns (uint256) {
-    return _delegateTierCheckpoints[_account][_tier].latest();
-  }
-
-  /**
-    @notice
-    Returns the past voting power of a specific address for a specific tier.
-
-    @param _account The address to check.
-    @param _tier The tier to check within.
-    @param _blockNumber the blocknumber to check the voting power at.
-  */
-  function getPastTierVotes(
-    address _account,
-    uint256 _tier,
-    uint256 _blockNumber
-  ) external view override returns (uint256) {
-    return _delegateTierCheckpoints[_account][_tier].getAtBlock(_blockNumber);
-  }
-
-  /**
-    @notice
-    Returns the total amount of voting power that exists for a tier.
-
-    @param _tier The tier to check.
-  */
-  function getTierTotalVotes(uint256 _tier) external view override returns (uint256) {
-    return _totalTierCheckpoints[_tier].latest();
-  }
-
-  /**
-    @notice
-    Returns the total amount of voting power that exists for a tier.
-
-    @param _tier The tier to check.
-    @param _blockNumber The blocknumber to check the total voting power at.
-  */
-  function getPastTierTotalVotes(uint256 _tier, uint256 _blockNumber)
-    external
-    view
-    override
-    returns (uint256)
-  {
-    if (_blockNumber >= block.number) revert BLOCK_NOT_YET_MINED();
-    return _totalTierCheckpoints[_tier].getAtBlock(_blockNumber);
-  }
-
-  /**
-    @notice
     Indicates if this contract adheres to the specified interface.
 
     @dev
@@ -259,6 +189,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
+  constructor(){
+    codeOrigin = address(this);
+  }
+
   /**
     @param _projectId The ID of the project this contract's functionality applies to.
     @param _directory The directory of terminals and controllers for projects.
@@ -272,7 +206,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     @param _store A contract that stores the NFT's data.
     @param _flags A set of flags that help define how this contract works.
   */
-  constructor(
+  function initialize(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
@@ -284,7 +218,14 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     JB721PricingParams memory _pricing,
     IJBTiered721DelegateStore _store,
     JBTiered721Flags memory _flags
-  ) JB721Delegate(_projectId, _directory, _name, _symbol) EIP712(_name, '1') {
+  ) public {
+    // Make the original un-initializable
+    require(address(this) != codeOrigin);
+    // Stop re-initialization
+    require(address(store) == address(0));
+
+    JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
+
     fundingCycleStore = _fundingCycleStore;
     store = _store;
     pricingCurrency = _pricing.currency;
@@ -311,6 +252,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
       _flags.lockManualMintingChanges ||
       _flags.pausable
     ) _store.recordFlags(_flags);
+
+    _transferOwnership(msg.sender);
   }
 
   //*********************************************************************//
@@ -573,17 +516,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     }
   }
 
-  /**
-    @notice 
-    Delegates votes from the sender to `delegatee`.
-
-    @param _delegatee The account to delegate tier voting units to.
-    @param _tierId The ID of the tier to delegate voting units for.
-   */
-  function setTierDelegate(address _delegatee, uint256 _tierId) public virtual override {
-    _delegateTier(msg.sender, _delegatee, _tierId);
-  }
-
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
@@ -787,33 +719,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
 
   /**
     @notice
-    The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units. 
-
-    @param _account The account to get voting units for.
-
-    @return units The voting units for the account.
-  */
-  function _getVotingUnits(address _account)
-    internal
-    view
-    virtual
-    override
-    returns (uint256 units)
-  {
-    return store.votingUnitsOf(address(this), _account);
-  }
-
-  function _getTierVotingUnits(address _account, uint256 _tierId)
-    internal
-    view
-    virtual
-    returns (uint256 units)
-  {
-    return store.tierVotingUnitsOf(address(this), _account, _tierId);
-  }
-
-  /**
-    @notice
     User the hook to register the first owner if it's not yet regitered.
 
     @param _from The address where the transfer is originating.
@@ -867,109 +772,19 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Votes, Owna
     // Record the transfer.
     store.recordTransferForTier(_tier.id, _from, _to);
 
-    if (_tier.votingUnits != 0) {
-      // Transfer the voting units.
-      _transferVotingUnits(_from, _to, _tier.votingUnits);
-      _transferTierVotingUnits(_from, _to, _tier.id, _tier.votingUnits);
-    }
+    // Handle any other accounting (ex. account for governance voting units)
+    _afterTokenTransferAccounting(_from, _to, _tokenId, _tier);
 
     super._afterTokenTransfer(_from, _to, _tokenId);
   }
 
   /**
-    @notice 
-    Delegate all of `account`'s voting units for the specified tier to `delegatee`.
-
-    @param _account The account delegating tier voting units.
-    @param _delegatee The account to delegate tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
+   @notice custom hook to handle token/tier accounting, this way we can reuse the '_tier' instead of fetching it again
    */
-  function _delegateTier(
-    address _account,
-    address _delegatee,
-    uint256 _tierId
-  ) internal virtual {
-    // Get the current delegatee
-    address _oldDelegate = _tierDelegation[_account][_tierId];
-
-    // Store the new delegatee
-    _tierDelegation[_account][_tierId] = _delegatee;
-
-    emit DelegateChanged(_account, _oldDelegate, _delegatee);
-
-    // Move the votes.
-    _moveTierDelegateVotes(
-      _oldDelegate,
-      _delegatee,
-      _tierId,
-      _getTierVotingUnits(_account, _tierId)
-    );
-  }
-
-  /**
-    @notice 
-    Transfers, mints, or burns tier voting units. To register a mint, `from` should be zero. To register a burn, `to` should be zero. Total supply of voting units will be adjusted with mints and burns.
-
-    @param _from The account to transfer tier voting units from.
-    @param _to The account to transfer tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
-    @param _amount The amount of voting units to delegate.
-   */
-  function _transferTierVotingUnits(
+  function _afterTokenTransferAccounting(
     address _from,
     address _to,
-    uint256 _tierId,
-    uint256 _amount
-  ) internal virtual {
-    // If minting, add to the total tier checkpoints.
-    if (_from == address(0)) _totalTierCheckpoints[_tierId].push(_add, _amount);
-
-    // If burning, subtract from the total tier checkpoints.
-    if (_to == address(0)) _totalTierCheckpoints[_tierId].push(_subtract, _amount);
-
-    // Move delegated votes.
-    _moveTierDelegateVotes(
-      _tierDelegation[_from][_tierId],
-      _tierDelegation[_to][_tierId],
-      _tierId,
-      _amount
-    );
-  }
-
-  /**
-    @notice 
-    Moves delegated tier votes from one delegate to another.
-
-    @param _from The account to transfer tier voting units from.
-    @param _to The account to transfer tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
-    @param _amount The amount of voting units to delegate.
-  */
-  function _moveTierDelegateVotes(
-    address _from,
-    address _to,
-    uint256 _tierId,
-    uint256 _amount
-  ) private {
-    // Nothing to do if moving to the same account, or no amount is being moved.
-    if (_from == _to || _amount == 0) return;
-
-    // If not moving from the zero address, update the checkpoints to subtract the amount.
-    if (_from != address(0)) {
-      (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_from][_tierId].push(
-        _subtract,
-        _amount
-      );
-      emit TierDelegateVotesChanged(_from, _oldValue, _newValue, _tierId, msg.sender);
-    }
-
-    // If not moving to the zero address, update the checkpoints to add the amount.
-    if (_to != address(0)) {
-      (uint256 _oldValue, uint256 _newValue) = _delegateTierCheckpoints[_to][_tierId].push(
-        _add,
-        _amount
-      );
-      emit TierDelegateVotesChanged(_to, _tierId, _oldValue, _newValue, msg.sender);
-    }
-  }
+    uint256 _tokenId,
+    JB721Tier memory _tier
+  ) internal virtual {}
 }

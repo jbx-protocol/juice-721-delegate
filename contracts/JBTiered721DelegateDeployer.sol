@@ -5,6 +5,8 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol'
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
 import './JBTiered721Delegate.sol';
+import './JB721TieredGovernance.sol';
+import './JB721GlobalGovernance.sol';
 import './interfaces/IJBTiered721DelegateDeployer.sol';
 
 /**
@@ -16,11 +18,28 @@ import './interfaces/IJBTiered721DelegateDeployer.sol';
   IJBTiered721DelegateDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
 */
 contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
+  error INVALID_GOVERNANCE_TYPE();
+
+  //*********************************************************************//
+  // --------------- public immutable stored properties ---------------- //
+  //*********************************************************************//
+  JB721GlobalGovernance immutable globalGovernance;
+  JB721TieredGovernance immutable tieredGovernance;
+  JBTiered721Delegate immutable noGovernance;
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
-  constructor() {}
+  constructor(
+    JB721GlobalGovernance _globalGovernance,
+    JB721TieredGovernance _tieredGovernance,
+    JBTiered721Delegate _noGovernance
+  ) {
+    globalGovernance = _globalGovernance;
+    tieredGovernance = _tieredGovernance;
+    noGovernance = _noGovernance;
+  }
 
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
@@ -39,8 +58,20 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
-    // Deploy the delegate contract.
-    JBTiered721Delegate newDelegate = new JBTiered721Delegate(
+    // Deploy the governance variant that was requested
+    address codeToCopy;
+    if (_deployTiered721DelegateData.governanceType == GovernanceType.NONE) {
+      codeToCopy = address(noGovernance);
+    } else if (_deployTiered721DelegateData.governanceType == GovernanceType.TIERED) {
+      codeToCopy = address(tieredGovernance);
+    } else if (_deployTiered721DelegateData.governanceType == GovernanceType.GLOBAL) {
+      codeToCopy = address(globalGovernance);
+    } else {
+      revert INVALID_GOVERNANCE_TYPE();
+    }
+
+    JB721GlobalGovernance newDelegate = JB721GlobalGovernance(_clone(codeToCopy));
+    newDelegate.initialize(
       _projectId,
       _deployTiered721DelegateData.directory,
       _deployTiered721DelegateData.name,
@@ -58,8 +89,41 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     if (_deployTiered721DelegateData.owner != address(0))
       newDelegate.transferOwnership(_deployTiered721DelegateData.owner);
 
-    emit DelegateDeployed(_projectId, newDelegate);
+    emit DelegateDeployed(_projectId, newDelegate, _deployTiered721DelegateData.governanceType);
 
     return newDelegate;
+  }
+
+  /**
+    @notice Clone and redeploy the bytecode of a given address
+
+    @dev Runtime bytecode needs a constructor -> we append this one
+         to the bytecode, which is a minimalistic one only returning the runtime bytecode
+
+         See https://github.com/drgorillamd/clone-deployed-contract/blob/master/readme.MD for details
+   */
+  function _clone(address _targetAddress) internal returns (address _out) {
+    assembly {
+      // Get deployed/runtime code size
+      let _codeSize := extcodesize(_targetAddress)
+
+      // Get a bit of freemem to land the bytecode, not updated as we'll leave this scope right after create(..)
+      let _freeMem := mload(0x40)
+
+      // Shift the length to the length placeholder, in the constructor
+      let _mask := mul(_codeSize, 0x100000000000000000000000000000000000000000000000000000000)
+
+      // Insert the length in the correct sport (after the PUSH3 / 0x62)
+      let _initCode := or(_mask, 0x62000000600081600d8239f3fe00000000000000000000000000000000000000)
+
+      // Store the deployment bytecode 
+      mstore(_freeMem, _initCode)
+
+      // Copy the bytecode (our initialise part is 13 bytes long)
+      extcodecopy(_targetAddress, add(_freeMem, 13), 0, _codeSize)
+
+      // Deploy the copied bytecode
+      _out := create(0, _freeMem, _codeSize)
+    }
   }
 }

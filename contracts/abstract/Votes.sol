@@ -27,27 +27,35 @@ import '@openzeppelin/contracts/governance/utils/IVotes.sol';
  *
  * _Available since v4.5._
  */
-abstract contract Votes is IVotes, EIP712 {
+abstract contract Votes {
   using Checkpoints for Checkpoints.History;
-  using Counters for Counters.Counter;
 
   error SIGNATURE_EXPIRED();
   error BLOCK_NOT_YET_MINED();
   error INVALID();
 
-  bytes32 private constant _DELEGATION_TYPEHASH =
-    keccak256('Delegation(address delegatee,uint256 nonce,uint256 expiry)');
+  /**
+   * @dev Emitted when an account changes their delegate.
+   */
+  event DelegateChanged(
+    address indexed delegator,
+    address indexed fromDelegate,
+    address indexed toDelegate
+  );
+
+  /**
+   * @dev Emitted when a token transfer or delegate change results in changes to a delegate's number of votes.
+   */
+  event DelegateVotesChanged(address indexed delegate, uint256 previousBalance, uint256 newBalance);
 
   mapping(address => address) private _delegation;
   mapping(address => Checkpoints.History) private _delegateCheckpoints;
   Checkpoints.History private _totalCheckpoints;
 
-  mapping(address => Counters.Counter) private _nonces;
-
   /**
    * @dev Returns the current amount of votes that `account` has.
    */
-  function getVotes(address account) public view virtual override returns (uint256) {
+  function getVotes(address account) public view virtual returns (uint256) {
     return _delegateCheckpoints[account].latest();
   }
 
@@ -62,7 +70,6 @@ abstract contract Votes is IVotes, EIP712 {
     public
     view
     virtual
-    override
     returns (uint256)
   {
     return _delegateCheckpoints[account].getAtBlock(blockNumber);
@@ -79,7 +86,7 @@ abstract contract Votes is IVotes, EIP712 {
    *
    * - `blockNumber` must have been already mined
    */
-  function getPastTotalSupply(uint256 blockNumber) public view virtual override returns (uint256) {
+  function getPastTotalSupply(uint256 blockNumber) public view virtual returns (uint256) {
     if (blockNumber >= block.number) revert BLOCK_NOT_YET_MINED();
     return _totalCheckpoints.getAtBlock(blockNumber);
   }
@@ -94,37 +101,15 @@ abstract contract Votes is IVotes, EIP712 {
   /**
    * @dev Returns the delegate that `account` has chosen.
    */
-  function delegates(address account) public view virtual override returns (address) {
+  function delegates(address account) public view virtual returns (address) {
     return _delegation[account];
   }
 
   /**
    * @dev Delegates votes from the sender to `delegatee`.
    */
-  function delegate(address delegatee) public virtual override {
+  function delegate(address delegatee) public virtual {
     _delegate(msg.sender, delegatee);
-  }
-
-  /**
-   * @dev Delegates votes from signer to `delegatee`.
-   */
-  function delegateBySig(
-    address delegatee,
-    uint256 nonce,
-    uint256 expiry,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) public virtual override {
-    if (block.timestamp > expiry) revert SIGNATURE_EXPIRED();
-    address signer = ECDSA.recover(
-      _hashTypedDataV4(keccak256(abi.encode(_DELEGATION_TYPEHASH, delegatee, nonce, expiry))),
-      v,
-      r,
-      s
-    );
-    if (nonce != _useNonce(signer)) revert INVALID();
-    _delegate(signer, delegatee);
   }
 
   /**
@@ -184,32 +169,6 @@ abstract contract Votes is IVotes, EIP712 {
 
   function _subtract(uint256 a, uint256 b) internal pure returns (uint256) {
     return a - b;
-  }
-
-  /**
-   * @dev Consumes a nonce.
-   *
-   * Returns the current value and increments nonce.
-   */
-  function _useNonce(address owner) internal virtual returns (uint256 current) {
-    Counters.Counter storage nonce = _nonces[owner];
-    current = nonce.current();
-    nonce.increment();
-  }
-
-  /**
-   * @dev Returns an address nonce.
-   */
-  function nonces(address owner) public view virtual returns (uint256) {
-    return _nonces[owner].current();
-  }
-
-  /**
-   * @dev Returns the contract's {EIP712} domain separator.
-   */
-  // solhint-disable-next-line func-name-mixedcase
-  function DOMAIN_SEPARATOR() external view returns (bytes32) {
-    return _domainSeparatorV4();
   }
 
   /**
