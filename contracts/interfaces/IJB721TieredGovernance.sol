@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import './IJBTiered721DelegateStore.sol';
 import './IJBTiered721Delegate.sol';
 
 interface IJB721TieredGovernance is IJBTiered721Delegate {
@@ -19,6 +18,12 @@ interface IJB721TieredGovernance is IJBTiered721Delegate {
     uint256 previousBalance,
     uint256 newBalance,
     address callre
+  );
+
+  event DelegateChanged(
+    address indexed delegator,
+    address indexed fromDelegate,
+    address indexed toDelegate
   );
 
   function getTierDelegate(address _account, uint256 _tier) external view returns (address);

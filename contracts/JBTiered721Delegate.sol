@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import './abstract/JB721Delegate.sol';
-import './abstract/Votes.sol';
 import './interfaces/IJBTiered721Delegate.sol';
 import './libraries/JBIpfsDecoder.sol';
 import './libraries/JBTiered721FundingCycleMetadataResolver.sol';
 import './structs/JBTiered721Flags.sol';
-import './structs/JB721PricingParams.sol';
 
 /**
   @title
@@ -40,15 +37,15 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
 
-  //*********************************************************************//
-  // --------------- public immutable stored properties ---------------- //
-  //*********************************************************************//
-
   /**
     @notice
     The address of the origin 'JBTiered721Delegate', used to check in the init if the contract is the original or not
   */
-  address internal codeOrigin;
+  address internal _codeOrigin;
+
+  //*********************************************************************//
+  // --------------------- public stored properties -------------------- //
+  //*********************************************************************//
 
   /**
     @notice
@@ -80,10 +77,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   */
   uint256 public override pricingDecimals;
 
-  //*********************************************************************//
-  // --------------------- public stored properties -------------------- //
-  //*********************************************************************//
-
   /** 
     @notice
     The amount that each address has paid that has not yet contribute to the minting of an NFT. 
@@ -95,18 +88,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
-
-  /** 
-    @notice 
-    The total number of tokens owned by the given owner across all tiers. 
-
-    @param _owner The address to check the balance of.
-
-    @return balance The number of tokens owners by the owner accross all tiers.
-  */
-  function balanceOf(address _owner) public view override returns (uint256 balance) {
-    return store.balanceOf(address(this), _owner);
-  }
 
   /**
     @notice
@@ -130,6 +111,18 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
+
+  /** 
+    @notice 
+    The total number of tokens owned by the given owner across all tiers. 
+
+    @param _owner The address to check the balance of.
+
+    @return balance The number of tokens owners by the owner accross all tiers.
+  */
+  function balanceOf(address _owner) public view override returns (uint256 balance) {
+    return store.balanceOf(address(this), _owner);
+  }
 
   /** 
     @notice
@@ -189,8 +182,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
-  constructor(){
-    codeOrigin = address(this);
+  constructor() {
+    _codeOrigin = address(this);
   }
 
   /**
@@ -218,12 +211,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     JB721PricingParams memory _pricing,
     IJBTiered721DelegateStore _store,
     JBTiered721Flags memory _flags
-  ) public {
-    // Make the original un-initializable
-    require(address(this) != codeOrigin);
-    // Stop re-initialization
+  ) public override {
+    // Make the original un-initializable.
+    require(address(this) != _codeOrigin);
+    // Stop re-initialization.
     require(address(store) == address(0));
 
+    // Initialize the sub class.
     JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
 
     fundingCycleStore = _fundingCycleStore;
@@ -253,6 +247,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       _flags.pausable
     ) _store.recordFlags(_flags);
 
+    // Transfer ownership to the initializer.
     _transferOwnership(msg.sender);
   }
 
@@ -779,12 +774,23 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   }
 
   /**
-   @notice custom hook to handle token/tier accounting, this way we can reuse the '_tier' instead of fetching it again
-   */
+    @notice 
+    Custom hook to handle token/tier accounting, this way we can reuse the '_tier' instead of fetching it again.
+
+    @param _from The account to transfer voting units from.
+    @param _to The account to transfer voting units to.
+    @param _tokenId The ID of the token for which voting units are being transfered.
+    @param _tier The tier the token ID is part of.
+  */
   function _afterTokenTransferAccounting(
     address _from,
     address _to,
     uint256 _tokenId,
     JB721Tier memory _tier
-  ) internal virtual {}
+  ) internal virtual {
+    _from; // Prevents unused var compiler and natspec complaints.
+    _to;
+    _tokenId;
+    _tier;
+  }
 }
