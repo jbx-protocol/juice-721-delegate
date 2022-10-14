@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import './../structs/JBTiered721SetTierDelegatesData.sol';
 import './IJBTiered721Delegate.sol';
 
 interface IJB721TieredGovernance is IJBTiered721Delegate {
