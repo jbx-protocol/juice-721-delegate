@@ -1685,6 +1685,74 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  function testJBTieredNFTRewardDelegate_mintFor_mintArrayOfTiers() public {
+    uint256 nbTiers = 3;
+
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+      abi.encode(owner)
+    );
+
+    JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
+    uint16[] memory _tiersToMint = new uint16[](nbTiers * 2);
+
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    for (uint256 i; i < nbTiers; i++) {
+      _tiers[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[i],
+        allowManualMint: true, // Allow this type of mint
+        shouldUseBeneficiaryAsDefault: false
+      });
+
+      _tiersToMint[i] = uint16(i)+1;
+      _tiersToMint[_tiersToMint.length - 1 - i] = uint16(i)+1;
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tiers,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true,
+        pausable: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    _delegate.mintFor(_tiersToMint, beneficiary);
+
+    assertEq(_delegate.balanceOf(beneficiary), 6);
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(1, 2)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(2, 2)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 1)), beneficiary);
+    assertEq(_delegate.ownerOf(_generateTokenId(3, 2)), beneficiary);
+  }
+
+
+
+
+
   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary(address _newBeneficiary)
     public
   {
