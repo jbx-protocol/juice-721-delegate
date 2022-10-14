@@ -4842,7 +4842,7 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
   )
   {
     // Disable the safety check to not allow initializing the original contract
-    codeOrigin = address(0);
+    _codeOrigin = address(0);
 
      JBTiered721Delegate.initialize(
       _projectId,
