@@ -7,6 +7,11 @@
     "abi": [
       {
         "inputs": [],
+        "name": "CANT_MINT_MANUALLY",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "INSUFFICIENT_AMOUNT",
         "type": "error"
       },
@@ -27,12 +32,22 @@
       },
       {
         "inputs": [],
+        "name": "MANUAL_MINTING_NOT_ALLOWED",
+        "type": "error"
+      },
+      {
+        "inputs": [],
         "name": "NO_QUANTITY",
         "type": "error"
       },
       {
         "inputs": [],
         "name": "OUT",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "PRICING_RESOLVER_CHANGES_LOCKED",
         "type": "error"
       },
       {
@@ -244,12 +259,53 @@
         "inputs": [
           {
             "internalType": "address",
+            "name": "_nft",
+            "type": "address"
+          }
+        ],
+        "name": "flagsOf",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "lockReservedTokenChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockVotingUnitChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockManualMintingChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "pausable",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct JBTiered721Flags",
             "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "_nft",
             "type": "address"
           },
           {
             "internalType": "uint256",
-            "name": "",
+            "name": "_tierId",
             "type": "uint256"
           }
         ],
@@ -272,64 +328,7 @@
             "type": "address"
           }
         ],
-        "name": "lockPricingResolverChangesFor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "lockReservedTokenChangesFor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "lockVotingUnitChangesFor",
-        "outputs": [
-          {
-            "internalType": "bool",
-            "name": "",
-            "type": "bool"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "maxTierId",
+        "name": "maxTierIdOf",
         "outputs": [
           {
             "internalType": "uint256",
@@ -453,6 +452,11 @@
               },
               {
                 "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
                 "name": "shouldUseBeneficiaryAsDefault",
                 "type": "bool"
               }
@@ -489,38 +493,34 @@
       {
         "inputs": [
           {
-            "internalType": "bool",
-            "name": "_flag",
-            "type": "bool"
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "lockReservedTokenChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockVotingUnitChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "lockManualMintingChanges",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "pausable",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct JBTiered721Flags",
+            "name": "_flags",
+            "type": "tuple"
           }
         ],
-        "name": "recordLockPricingResolverChanges",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bool",
-            "name": "_flag",
-            "type": "bool"
-          }
-        ],
-        "name": "recordLockReservedTokenChanges",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      },
-      {
-        "inputs": [
-          {
-            "internalType": "bool",
-            "name": "_flag",
-            "type": "bool"
-          }
-        ],
-        "name": "recordLockVotingUnitChanges",
+        "name": "recordFlags",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -538,14 +538,9 @@
             "type": "uint16[]"
           },
           {
-            "internalType": "address",
-            "name": "_beneficiary",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "_currency",
-            "type": "uint256"
+            "internalType": "bool",
+            "name": "_isManualMint",
+            "type": "bool"
           }
         ],
         "name": "recordMint",
@@ -832,6 +827,11 @@
                 "internalType": "bytes32",
                 "name": "encodedIPFSUri",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
               }
             ],
             "internalType": "struct JB721Tier",
@@ -951,6 +951,11 @@
                 "internalType": "bytes32",
                 "name": "encodedIPFSUri",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
               }
             ],
             "internalType": "struct JB721Tier",
@@ -1056,6 +1061,11 @@
                 "internalType": "bytes32",
                 "name": "encodedIPFSUri",
                 "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "allowManualMint",
+                "type": "bool"
               }
             ],
             "internalType": "struct JB721Tier[]",
@@ -1175,6 +1185,23 @@
             "_0": "The encoded IPFS URI."
           }
         },
+        "flagsOf(address)": {
+          "params": {
+            "_nft": "The NFT for which the flags apply."
+          },
+          "returns": {
+            "_0": "The flags."
+          }
+        },
+        "isTierRemoved(address,uint256)": {
+          "params": {
+            "_nft": "The NFT for which the removed tier is queried",
+            "_tierId": "The tier ID"
+          },
+          "returns": {
+            "_0": "True if the tier has been removed"
+          }
+        },
         "numberOfReservedTokensOutstandingFor(address,uint256)": {
           "params": {
             "_nft": "The NFT to get a number of reserved tokens outstanding.",
@@ -1184,7 +1211,7 @@
             "_0": "The outstanding number of reserved tokens within the tier."
           }
         },
-        "recordAddTiers((uint256,uint256,uint256,uint256,uint256,address,bytes32,bool)[])": {
+        "recordAddTiers((uint256,uint256,uint256,uint256,uint256,address,bytes32,bool,bool)[])": {
           "params": {
             "_tiersToAdd": "The tiers to add."
           },
@@ -1197,26 +1224,15 @@
             "_tokenIds": "The IDs of the tokens burned."
           }
         },
-        "recordLockPricingResolverChanges(bool)": {
+        "recordFlags((bool,bool,bool,bool))": {
           "params": {
-            "_flag": "The flag to set."
+            "_flags": "The flag to sets."
           }
         },
-        "recordLockReservedTokenChanges(bool)": {
-          "params": {
-            "_flag": "The flag to set."
-          }
-        },
-        "recordLockVotingUnitChanges(bool)": {
-          "params": {
-            "_flag": "The flag to set."
-          }
-        },
-        "recordMint(uint256,uint16[],address,uint256)": {
+        "recordMint(uint256,uint16[],bool)": {
           "params": {
             "_amount": "The amount to base the mints on. All mints' price floors must fit in this amount.",
-            "_beneficiary": "The beneficiary of the mints.",
-            "_currency": "The currency used to pay for the mints.",
+            "_isManualMint": "A flag indicating if the mint is being made manually by the NFT's owner.",
             "_tierIds": "The IDs of the tier to mint from."
           },
           "returns": {
@@ -1376,6 +1392,9 @@
       "stateVariables": {
         "_tierIdAfter": {
           "details": "If empty, assume the next index should come after.  _nft The NFT contract to get tier order index from. _index The index to get a tier after relative to."
+        },
+        "maxTierIdOf": {
+          "details": "This may not include the last tier ID if it has been removed. _nft The NFT contract to get the number of tiers."
         }
       },
       "title": "JBTiered721DelegateStore",
@@ -1408,20 +1427,14 @@
         "firstOwnerOf(address,uint256)": {
           "notice": "The first owner of each token ID, stored on first transfer out. _nft The NFT contract to which the token belongs. _tokenId The ID of the token to get the stored first owner of."
         },
+        "flagsOf(address)": {
+          "notice": "Flags that influence the behavior of each NFT."
+        },
         "isTierRemoved(address,uint256)": {
-          "notice": "For each tier ID, a flag indicating if the tier has been removed.  _nft The NFT contract to which the tier data belong. _tierId The ID of the tier to check."
+          "notice": "Tier removed from the current tiering"
         },
-        "lockPricingResolverChangesFor(address)": {
-          "notice": "A flag indicating if the provided pricing resolver can change by the owner. _nft The NFT for which the flag applies."
-        },
-        "lockReservedTokenChangesFor(address)": {
-          "notice": "A flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate. _nft The NFT for which the flag applies."
-        },
-        "lockVotingUnitChangesFor(address)": {
-          "notice": "A flag indicating if voting unit expectations can change over time by adding new tiers with voting units. _nft The NFT for which the flag applies."
-        },
-        "maxTierId(address)": {
-          "notice": "The biggest tier ID used.  _nft The NFT contract to get the number of tiers."
+        "maxTierIdOf(address)": {
+          "notice": "The biggest tier ID used. "
         },
         "numberOfBurnedFor(address,uint256)": {
           "notice": " The number of tokens that have been burned for each tier.  _nft The NFT contract to which the burned data belong. _tierId The ID of the tier to get a burned token count for."
@@ -1432,22 +1445,16 @@
         "numberOfReservesMintedFor(address,uint256)": {
           "notice": " The number of reserved tokens that have been minted for each tier.  _nft The NFT contract to which the reserve data belong. _tierId The ID of the tier to get a minted reserved token count for."
         },
-        "recordAddTiers((uint256,uint256,uint256,uint256,uint256,address,bytes32,bool)[])": {
+        "recordAddTiers((uint256,uint256,uint256,uint256,uint256,address,bytes32,bool,bool)[])": {
           "notice": "Adds tiers. "
         },
         "recordBurn(uint256[])": {
           "notice": "Records burned tokens."
         },
-        "recordLockPricingResolverChanges(bool)": {
-          "notice": "Sets a flag indicating if the provided pricing resolver can change by the owner."
+        "recordFlags((bool,bool,bool,bool))": {
+          "notice": "Sets flags. "
         },
-        "recordLockReservedTokenChanges(bool)": {
-          "notice": "Sets a flag indicating if reserved tokens can change over time by adding new tiers with a reserved rate. "
-        },
-        "recordLockVotingUnitChanges(bool)": {
-          "notice": "Sets a flag indicating if voting unit expectations can change over time by adding new tiers with voting units."
-        },
-        "recordMint(uint256,uint16[],address,uint256)": {
+        "recordMint(uint256,uint16[],bool)": {
           "notice": "Mints a token in all provided tiers."
         },
         "recordMintBestAvailableTier(uint256)": {
@@ -1538,47 +1545,72 @@
       ":ds-test/=lib/forge-std/lib/ds-test/src/",
       ":forge-std/=lib/forge-std/src/",
       ":prb-math/=node_modules/prb-math/"
-    ]
+    ],
+    "viaIR": true
   },
   "sources": {
     "contracts/JBTiered721DelegateStore.sol": {
-      "keccak256": "0x705e56aca92eb467e61205f422048522b1d339d088b11d7ce7682a220be8d5ae",
+      "keccak256": "0xad2d741795ec57ed56584735394324167743f14ae7be3cf099a2113b4bc80ef4",
       "license": "MIT",
       "urls": [
-        "bzz-raw://a7b45c3959e5a0724c849f46a6db5dfdc5f239c21f1ff66ca12863d3a5948fe4",
-        "dweb:/ipfs/QmbNa2RtHkp8f5jkJxFPWG8XgTQK8dtkuAfcdtFQJsBaGR"
+        "bzz-raw://8899028924648927be82d64cac39934b49a9f5fda5be4c8d97a4888af16348e2",
+        "dweb:/ipfs/QmTtpbyc2KjeANAJSc7vGYoMYkx9H87Dvgjyjdwt54pM6o"
       ]
     },
     "contracts/interfaces/IJBTiered721DelegateStore.sol": {
-      "keccak256": "0xe21154e30dbe7d0b18a9e5a61d8bdf2b734e1dcd949a59734a5eccfd651556cf",
+      "keccak256": "0xcf1b6e7936510e113ecfdf9ec19a53fd4bc76bbdd6fb45277b3f87dad6a80392",
       "license": "MIT",
       "urls": [
-        "bzz-raw://4757436856343ac300f1bcab3fa516dd4a3de0110abc9300c3cedf01f339d977",
-        "dweb:/ipfs/QmZRp8p9UgkwTMUuXE1Y8Z9bPzqisDB5FyuAiXMrhAhfXb"
+        "bzz-raw://3837762449cbb5582dd35cf87857c71fe49d5ee723d4860fc5ff5265415ea57e",
+        "dweb:/ipfs/QmbN8ULJmgnfiD8tbKLrKE8KJDzd4xwqopSVq6DWHrMWiT"
+      ]
+    },
+    "contracts/libraries/JBBitmap.sol": {
+      "keccak256": "0xc2500935e107a8ffefbb5c0e5905013ac4183cff07f393c5ae5240eab0842769",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://3f5a556e1f34ef2b6bac262908a6ea253d1f3a21288c57a9aa75c181b7f8b9a8",
+        "dweb:/ipfs/QmaVhowy4HpDZ3tkC8EW1dTnKkgrXNAbXUu29tyd6xmX2e"
       ]
     },
     "contracts/structs/JB721Tier.sol": {
-      "keccak256": "0x5bd4779b619bc3fe3803f0bd4b45b03168e50ba2525e27c61d87369800b12fa8",
+      "keccak256": "0x672025dfabf2c6b0d26f4503365954ff3785e1d5cc8e597a31325d9fd94cd12a",
       "license": "MIT",
       "urls": [
-        "bzz-raw://3ec850e0a94341d4a0b75fe11a20f4bf433b0c84cfc0120570ccffc8d53ca7d5",
-        "dweb:/ipfs/QmbrFYswXfCtotRGsWXyqqag8iSrBsoWmCqPKA45Q76ad3"
+        "bzz-raw://19230b2cbec919ad73b01b408bc7a750d583cecd24363d722ca797d95a127447",
+        "dweb:/ipfs/QmdBEcypFDY1UvXPLVUuAEWAknu1GGgxnEYkzem8kssrVq"
       ]
     },
     "contracts/structs/JB721TierParams.sol": {
-      "keccak256": "0x496c1934772a88fc206d478a8ecc2c0fa59371445738021f6ba251b1dafbf7a7",
+      "keccak256": "0x99553a129e063389b38ca5c5aafe35bedcf4127bbae846f9c8bbe8a859788867",
       "license": "MIT",
       "urls": [
-        "bzz-raw://9e9f7a756899f12491a8fee9c94b76039cc34b36c97e694399751901f9472113",
-        "dweb:/ipfs/QmYTGxZ3VstaWhDJL8K1pe96fLWSgXfkwbhbKseKZwZ9E1"
+        "bzz-raw://c5e8c5fc92c18539d38585b610fa57b6a8a3e548379bf68a81e25bb88504c69e",
+        "dweb:/ipfs/QmeVzaMnmBdaRPpW3qvF25iD2dmfKqU6LicoTtHDqUcQcH"
+      ]
+    },
+    "contracts/structs/JBBitmapWord.sol": {
+      "keccak256": "0x3cb3491c43e48a91763975191edbc4e5b6ea5a2c471ef61a5c002b9c5c51dc96",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://ed499e21b19251e68aae594fe5e2d9087e3b2fce06d8f39b68271f5c10e871d8",
+        "dweb:/ipfs/QmSndiy5j334hys8y3M8ccymkeheJmvQWYCccyU5BVPTQ9"
       ]
     },
     "contracts/structs/JBStored721Tier.sol": {
-      "keccak256": "0x988e4eec3fef9e2a46ef5ea2cd21b92853136b492f63d86a40fad59489a82ae9",
+      "keccak256": "0x6823b2da240e9f138fd5d2f982e42c3429bb1c3febd3ba413bdd4f9f35ab7a84",
       "license": "MIT",
       "urls": [
-        "bzz-raw://ba8735f0df8558147d03e3ff2964abaeb87e3a39776739c4005fe6e0bd041fb9",
-        "dweb:/ipfs/QmSFJuVmyFN3DQTgqfgdV7j9WNLFFarfyh8QwFQEKuBNNU"
+        "bzz-raw://9a3b242a39b01f0198b29d823c88450cd2fd22c26936d26accd19913dc096cef",
+        "dweb:/ipfs/QmXFn6rJV1fxVxbqStLyySdygenkYVQsGwQhT7EnVhaCYq"
+      ]
+    },
+    "contracts/structs/JBTiered721Flags.sol": {
+      "keccak256": "0x244946776da208ef0f433355e11e7c78fc47ff21cc3b176a0cc8234f1d2c9b11",
+      "license": "MIT",
+      "urls": [
+        "bzz-raw://6f0a6ca1eaf2a7616e704c760f57ed5c1b86c26fea61f7680f3341c99de2c5ab",
+        "dweb:/ipfs/QmdP1UXG2vuBwW9t1SxvLv8zMB9eqmiPobiYrE6VbSDmK1"
       ]
     },
     "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol": {
