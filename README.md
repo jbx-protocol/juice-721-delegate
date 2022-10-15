@@ -10,7 +10,7 @@ Within one collection, NFTs can be minted within any number of pre-programmed ti
 
 Each tier has the following optional properties:
 
-- a contribution floor amount, overridable by a pricing resolver that can return dynamic values.
+- a contribution floor amount.
 - a max quantity.
 - a number of voting units to associate with each unit within the tier.
 - a reserved rate, allowing a proprtion of units within the tier to be minted to a pre-programmed beneficiary.
