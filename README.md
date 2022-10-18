@@ -53,7 +53,7 @@ The deployer copies the data of a pre-existing cononical version of the 721 cont
 Quick all-in-one command:
 
 ```bash
-rm -Rf juice-nft-rewards || true && git clone -n https://github.com/jbx-protocol/juice-nft-rewards && cd juice-nft-rewards && git pull origin 4ac8cb18f5873a4f59341719450be6a91c4fa8e1 && git checkout FETCH_HEAD && foundryup && git submodule update --init --recursive --force && yarn install && forge test --gas-report
+rm -Rf juice-nft-rewards || true && git clone -n https://github.com/jbx-protocol/juice-nft-rewards && cd juice-nft-rewards && git fetch && git checkout FETCH_HEAD && foundryup && git submodule update --init --recursive --force && yarn install && forge test --gas-report
 ```
 
 To get set up:
