@@ -679,7 +679,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
 
       // Get a reference to the tier ID.
-      uint256 _tierId = _currentMaxTierIdOf + _i + _tierIdOffset + 1;
+      uint256 _tierId = _currentMaxTierIdOf + _i + 1;
 
       // Add the tier with the iterative ID.
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
