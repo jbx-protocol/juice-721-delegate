@@ -32,6 +32,8 @@ interface IJBTiered721Delegate {
 
   event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
+  function codeOrigin() external view returns (address);
+
   function store() external view returns (IJBTiered721DelegateStore);
 
   function fundingCycleStore() external view returns (IJBFundingCycleStore);

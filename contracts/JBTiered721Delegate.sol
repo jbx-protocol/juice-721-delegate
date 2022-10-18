@@ -37,15 +37,15 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
 
+  //*********************************************************************//
+  // --------------------- public stored properties -------------------- //
+  //*********************************************************************//
+
   /**
     @notice
     The address of the origin 'JBTiered721Delegate', used to check in the init if the contract is the original or not
   */
-  address internal _codeOrigin;
-
-  //*********************************************************************//
-  // --------------------- public stored properties -------------------- //
-  //*********************************************************************//
+  address public override codeOrigin;
 
   /**
     @notice
@@ -183,7 +183,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   //*********************************************************************//
 
   constructor() {
-    _codeOrigin = address(this);
+    codeOrigin = address(this);
   }
 
   /**
@@ -213,7 +213,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     JBTiered721Flags memory _flags
   ) public override {
     // Make the original un-initializable.
-    require(address(this) != _codeOrigin);
+    require(address(this) != codeOrigin);
     // Stop re-initialization.
     require(address(store) == address(0));
 
