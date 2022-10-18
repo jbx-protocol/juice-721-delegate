@@ -29,7 +29,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error CANT_MINT_MANUALLY();
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
+  error INVALID_PRICE_SORT_ORDER();
   error INVALID_TIER();
+  error MAX_TIERS_EXCEEDED();
   error NO_QUANTITY();
   error OUT();
   error RESERVED_RATE_NOT_ALLOWED();
@@ -38,7 +40,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
-  error INVALID_PRICE_SORT_ORDER();
 
   //*********************************************************************//
   // -------------------- private constant properties ------------------ //
@@ -629,6 +630,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Keep a reference to the greatest tier ID.
     uint256 _currentMaxTierIdOf = maxTierIdOf[msg.sender];
+
+    // Make sure the max number of tiers hasn't been reached.
+    if(_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
 
     // Initialize an array with the appropriate length.
     tierIds = new uint256[](_numberOfNewTiers);
