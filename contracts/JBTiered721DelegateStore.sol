@@ -92,6 +92,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => mapping(uint256 => uint256)) internal _isTierRemoved;
 
+  /** 
+    @notice
+    For each tier ID, the number of removed tiers at the end of the tier list. 
+
+    _nft The NFT contract to which the tier belong.
+  */
+  mapping(address => uint256) internal _trailingRemovedTierIdOffsetOf;
+
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -205,7 +213,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _size
   ) external view override returns (JB721Tier[] memory _tiers) {
     // Keep a reference to the max tier ID.
-    uint256 _maxTierIdOf = maxTierIdOf[_nft];
+    uint256 _maxUnremovedTierIdOf = maxTierIdOf[_nft] - _trailingRemovedTierIdOffsetOf[_nft];
 
     // Initialize an array with the appropriate length.
     _tiers = new JB721Tier[](_size);
@@ -246,7 +254,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierIdOf);
+      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxUnremovedTierIdOf);
     }
 
     // Resize the array if there are removed tiers
@@ -642,6 +650,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the flags.
     JBTiered721Flags memory _flags = _flagsOf[msg.sender];
 
+    // Keep a reference to the number of tierId that are not accounted for in the max tier IDs.
+    uint256 _tierIdOffset = _trailingRemovedTierIdOffsetOf[msg.sender];
+
     for (uint256 _i; _i < _numberOfNewTiers; ) {
       // Set the tier being iterated on.
       _tierToAdd = _tiersToAdd[_i];
@@ -668,7 +679,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
 
       // Get a reference to the tier ID.
-      uint256 _tierId = _currentMaxTierIdOf + _i + 1;
+      uint256 _tierId = _currentMaxTierIdOf + _i + _tierIdOffset + 1;
 
       // Add the tier with the iterative ID.
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
@@ -693,9 +704,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
-        encodedIPFSUriOf[msg.sender][_tierId] = _tierToAdd.encodedIPFSUri;
-
- 
+        encodedIPFSUriOf[msg.sender][_tierId] = _tierToAdd.encodedIPFSUri; 
 
       if (_startSortIndex != 0) {
         // Keep track of the sort index.
@@ -728,7 +737,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             if (
               _currentSortIndex == _currentMaxTierIdOf &&
               _bitmapWord.isTierIdRemoved(_currentSortIndex)
-            ) _currentMaxTierIdOf--;
+            ) 
+              _trailingRemovedTierIdOffsetOf[msg.sender] = 1;
 
             // If the previous after index was set to something else, set the previous after.
             if (_previous != _tierId - 1 || _tierIdAfter[msg.sender][_previous] != 0)
@@ -754,6 +764,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Break out.
             _currentSortIndex = 0;
+
+            // Reset the tier ID off
+            if (_trailingRemovedTierIdOffsetOf[msg.sender] != 0)  _trailingRemovedTierIdOffsetOf[msg.sender] = 0;
           }
           // Move on to the next index.
           else {
@@ -915,7 +928,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     )
   {
     // Keep a reference to the greatest tier ID.
-    uint256 _maxTierIdOf = maxTierIdOf[msg.sender];
+    uint256 _maxUnremovedTierIdOf = maxTierIdOf[msg.sender] - _trailingRemovedTierIdOffsetOf[msg.sender];
 
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
@@ -956,7 +969,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         }
 
         // Set the next sort index.
-        _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _maxTierIdOf);
+        _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _maxUnremovedTierIdOf);
       }
     }
 
