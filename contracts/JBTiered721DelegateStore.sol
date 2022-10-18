@@ -41,6 +41,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INVALID_PRICE_SORT_ORDER();
 
   //*********************************************************************//
+  // -------------------- private constant properties ------------------ //
+  //*********************************************************************//
+
+  uint256 private constant _ONE_MILLION = 1_000_000;
+
+  //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
   //*********************************************************************//
 
@@ -559,7 +565,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
     }
   }
-
+  
   /** 
     @notice
     The tier number of the provided token ID. 
@@ -572,8 +578,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @return The tier number of the specified token ID.
   */
   function tierIdOfToken(uint256 _tokenId) public pure override returns (uint256) {
-    // The tier ID is in the first 16 bits.
-    return uint256(uint16(_tokenId));
+    return _tokenId / _ONE_MILLION;
   }
 
   /** 
@@ -1249,18 +1254,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _tierId The ID of the tier to generate an ID for.
     @param _tokenNumber The number of the token in the tier.
 
-    @return tokenId The ID of the token.
+    @return The ID of the token.
   */
   function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
     internal
     pure
-    returns (uint256 tokenId)
+    returns (uint256)
   {
-    // The tier ID in the first 16 bits.
-    tokenId = _tierId;
-
-    // The token number in the rest.
-    tokenId |= _tokenNumber << 16;
+    return (_tierId * _ONE_MILLION) + _tokenNumber;
   }
 
   /** 
