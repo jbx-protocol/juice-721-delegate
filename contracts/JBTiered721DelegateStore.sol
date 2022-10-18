@@ -92,6 +92,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => mapping(uint256 => uint256)) internal _isTierRemoved;
 
+  /** 
+    @notice
+    For each NFT, the tier ID that comes last when sorting. 
+
+    @dev
+    If not set, it is assumed the `maxTierIdOf` is the last sorted.
+
+    _nft The NFT contract to which the tier belongs.
+  */
+  mapping(address => uint256) internal _trackedLastSortIndexOf;
+
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -204,8 +215,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _startingId,
     uint256 _size
   ) external view override returns (JB721Tier[] memory _tiers) {
-    // Keep a reference to the max tier ID.
-    uint256 _maxTierIdOf = maxTierIdOf[_nft];
+    // Keep a reference to the last tier ID.
+    uint256 _lastTierIdOf = _lastSortIndexOf(_nft);
 
     // Initialize an array with the appropriate length.
     _tiers = new JB721Tier[](_size);
@@ -246,7 +257,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierIdOf);
+      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _lastTierIdOf);
     }
 
     // Resize the array if there are removed tiers
@@ -625,6 +636,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the greatest tier ID.
     uint256 _currentMaxTierIdOf = maxTierIdOf[msg.sender];
 
+    // Keep a reference to the current last sorted tier ID.
+    uint256 _currentLastSortIndex = _lastSortIndexOf(msg.sender);
+
     // Initialize an array with the appropriate length.
     tierIds = new uint256[](_numberOfNewTiers);
 
@@ -695,8 +709,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
         encodedIPFSUriOf[msg.sender][_tierId] = _tierToAdd.encodedIPFSUri;
 
- 
-
       if (_startSortIndex != 0) {
         // Keep track of the sort index.
         uint256 _currentSortIndex = _startSortIndex;
@@ -713,7 +725,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
           // Set the next index.
-          _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentMaxTierIdOf);
+          _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentLastSortIndex);
 
           // If the contribution floor is less than the tier being iterated on, store the order.
           if (
@@ -724,11 +736,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             if (_currentSortIndex != _tierId + 1)
               _tierIdAfter[msg.sender][_tierId] = _currentSortIndex;
 
-            // If currentSortIndex is the max and it is removed, don't include it in the max tier ID calculation.
+            // If this is the last tier being added, track the current last sort index if it's not already tracked.
             if (
-              _currentSortIndex == _currentMaxTierIdOf &&
-              _bitmapWord.isTierIdRemoved(_currentSortIndex)
-            ) _currentMaxTierIdOf--;
+              _i == _numberOfNewTiers - 1 && 
+              _trackedLastSortIndexOf[msg.sender] != _currentLastSortIndex
+            ) _trackedLastSortIndexOf[msg.sender] = _currentLastSortIndex;
 
             // If the previous after index was set to something else, set the previous after.
             if (_previous != _tierId - 1 || _tierIdAfter[msg.sender][_previous] != 0)
@@ -745,7 +757,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             _currentSortIndex = 0;
           }
           // If the tier being iterated on is the last tier, add the tier after it.
-          else if (_next == 0) {
+          else if (_next == 0 || _next > _currentMaxTierIdOf) {
             if (_tierId != _currentSortIndex + 1)
               _tierIdAfter[msg.sender][_currentSortIndex] = _tierId;
 
@@ -754,6 +766,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Break out.
             _currentSortIndex = 0;
+
+            // If there's currently a last sort index tracked, override it.
+            if (_trackedLastSortIndexOf[msg.sender] != 0) 
+              _trackedLastSortIndexOf[msg.sender] = 0;
           }
           // Move on to the next index.
           else {
@@ -914,8 +930,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       uint256 leftoverAmount
     )
   {
-    // Keep a reference to the greatest tier ID.
-    uint256 _maxTierIdOf = maxTierIdOf[msg.sender];
+    // Keep a reference to the last tier ID.
+    uint256 _lastTierIdOf = _lastSortIndexOf(msg.sender);
 
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
@@ -956,7 +972,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         }
 
         // Set the next sort index.
-        _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _maxTierIdOf);
+        _currentSortIndex = _nextSortIndex(msg.sender, _currentSortIndex, _lastTierIdOf);
       }
     }
 
@@ -1155,8 +1171,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _nft The NFT contract to clean tiers for.
   */
   function cleanTiers(address _nft) external override {
-    // Keep a reference to the greatest tier ID.
-    uint256 _maxTierIdOf = maxTierIdOf[_nft];
+    // Keep a reference to the last tier ID.
+    uint256 _lastTierIdOf = _lastSortIndexOf(_nft);
 
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _firstSortIndexOf(_nft);
@@ -1185,7 +1201,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _previous = _currentSortIndex;
       }
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierIdOf);
+      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _lastTierIdOf);
     }
 
     emit CleanTiers(_nft, msg.sender);
@@ -1278,13 +1294,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _index,
     uint256 _max
   ) internal view returns (uint256) {
+    // If this is the last tier, set current to zero to break out of the loop.
+    if (_index == _max) return 0;
     // Update the current index to be the one saved to be after, if it exists.
     uint256 _storedNext = _tierIdAfter[_nft][_index];
     if (_storedNext != 0) return _storedNext;
-    // Otherwise if this is the last tier, set current to zero to break out of the loop.
-    else if (_index >= _max) return 0;
     // Otherwise increment the current.
-    else return _index + 1;
+    return _index + 1;
   }
 
   /** 
@@ -1299,5 +1315,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     index = _tierIdAfter[_nft][0];
     // Start at the first index if nothing is specified.
     if (index == 0) index = 1;
+  }
+
+  /** 
+    @notice
+    The last sorted tier index of an NFT.
+
+    @param _nft The NFT to get the last sorted tier index of.
+
+    @return index The last sorted tier index.
+  */
+  function _lastSortIndexOf(address _nft) internal view returns (uint256 index) {
+    index = _trackedLastSortIndexOf[_nft];
+    // Start at the first index if nothing is specified.
+    if (index == 0) index = maxTierIdOf[_nft];
   }
 }
