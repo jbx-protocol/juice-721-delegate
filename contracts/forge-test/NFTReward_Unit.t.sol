@@ -4889,13 +4889,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
     internal
     pure
-    returns (uint256 tokenId)
+    returns (uint256)
   {
-    // The tier ID in the first 16 bits.
-    tokenId = _tierId;
-
-    // The token number in the rest.
-    tokenId |= _tokenNumber << 16;
+    return (_tierId * 1_000_000) + _tokenNumber;
   }
 
   // Check if every elements from smol are in bigg
