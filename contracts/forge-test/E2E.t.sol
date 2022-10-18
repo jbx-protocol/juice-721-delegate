@@ -770,6 +770,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   // Generate tokenId's based on token number and tier
   function _generateTokenId(uint256 _tierId, uint256 _tokenNumber) internal pure returns (uint256) {
-    return (_tierId * 1_000_000) + _tokenNumber;
+    return (_tierId * 1_000_000_000) + _tokenNumber;
   }
 }

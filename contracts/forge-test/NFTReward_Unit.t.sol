@@ -4891,7 +4891,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     pure
     returns (uint256)
   {
-    return (_tierId * 1_000_000) + _tokenNumber;
+    return (_tierId * 1_000_000_000) + _tokenNumber;
   }
 
   // Check if every elements from smol are in bigg
