@@ -728,7 +728,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     // Transfered must not be paused when not minting or burning.
     if (_from != address(0)) {
       // Transfers must not be paused.
-      if (store.flagsOf(address(this)).pausable) {
+      if (store.flagsOf(address(this)).transfersPausable) {
         // Get a reference to the project's current funding cycle.
         JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
 
