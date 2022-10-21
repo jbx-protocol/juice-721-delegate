@@ -244,7 +244,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       _flags.lockReservedTokenChanges ||
       _flags.lockVotingUnitChanges ||
       _flags.lockManualMintingChanges ||
-      _flags.pausable
+      _flags.transfersPausable
     ) _store.recordFlags(_flags);
 
     // Transfer ownership to the initializer.
