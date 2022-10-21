@@ -168,7 +168,7 @@ contract RinkebyLaunchProjectFor is Script {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       }),
       governanceType: JB721GovernanceType.NONE
     });

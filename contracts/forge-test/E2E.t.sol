@@ -753,7 +753,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       }),
       governanceType: JB721GovernanceType.NONE
     });

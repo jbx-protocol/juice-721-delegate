@@ -194,7 +194,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       }),
       JB721GovernanceType.NONE
     );
@@ -257,7 +257,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -336,7 +336,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -420,7 +420,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -510,7 +510,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -582,7 +582,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -643,7 +643,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -717,7 +717,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -784,7 +784,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -846,7 +846,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -925,7 +925,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -984,7 +984,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1038,7 +1038,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1078,7 +1078,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1119,7 +1119,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1194,7 +1194,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1268,7 +1268,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
   }
@@ -1328,7 +1328,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1430,7 +1430,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1590,7 +1590,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1670,7 +1670,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1763,7 +1763,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1839,7 +1839,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -1915,7 +1915,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2042,7 +2042,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2199,7 +2199,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2346,7 +2346,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2385,7 +2385,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedTokenBeneficiary: _tierDataRemaining[_arrayIndex].reservedTokenBeneficiary,
           encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri,
           allowManualMint: _tierDataRemaining[_arrayIndex].allowManualMint,
-                transfersPausable: _tierDataRemainins[_arrayIndex].transfersPausable
+                transfersPausable: _tierDataRemaining[_arrayIndex].transfersPausable
         });
         _arrayIndex++;
       } else {
@@ -2511,7 +2511,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2618,7 +2618,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2725,7 +2725,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2834,7 +2834,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -2952,7 +2952,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -3269,7 +3269,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -3513,7 +3513,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -4103,7 +4103,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: false
+        transfersPausable: false
       })
     );
 
@@ -4217,7 +4217,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -4325,7 +4325,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -4444,7 +4444,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -4554,7 +4554,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -4679,7 +4679,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
@@ -4870,7 +4870,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true,
-        pausable: true
+        transfersPausable: true
       })
     );
 
