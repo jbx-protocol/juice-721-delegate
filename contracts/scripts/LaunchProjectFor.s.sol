@@ -142,7 +142,8 @@ contract RinkebyLaunchProjectFor is Script {
         reservedTokenBeneficiary: address(0),
         encodedIPFSUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89,
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: true
+        shouldUseBeneficiaryAsDefault: true,
+        transfersPausable: false
       });
     }
 

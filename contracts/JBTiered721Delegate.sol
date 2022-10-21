@@ -729,15 +729,21 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     if (_from != address(0)) {
       // Transfers must not be paused.
       if (store.flagsOf(address(this)).transfersPausable) {
-        // Get a reference to the project's current funding cycle.
-        JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
+        // Get a reference to the tier.
+        JB721Tier memory _tier = store.tierOfTokenId(address(this), _tokenId);
 
-        if (
-          _to != address(0) &&
-          JBTiered721FundingCycleMetadataResolver.transfersPaused(
-            (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
-          )
-        ) revert TRANSFERS_PAUSED();
+        // Transfers from the tier must be pausable.
+        if (_tier.transfersPausable) {
+          // Get a reference to the project's current funding cycle.
+          JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
+
+          if (
+            _to != address(0) &&
+            JBTiered721FundingCycleMetadataResolver.transfersPaused(
+              (JBFundingCycleMetadataResolver.metadata(_fundingCycle))
+            )
+          ) revert TRANSFERS_PAUSED();
+        }
       }
 
       // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.

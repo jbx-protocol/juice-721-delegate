@@ -338,7 +338,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       reservedTokenBeneficiary: reserveBeneficiary,
       encodedIPFSUri: tokenUris[0],
       allowManualMint: false,
-      shouldUseBeneficiaryAsDefault: false
+      shouldUseBeneficiaryAsDefault: false,
+      transfersPausable: false
     });
 
     // Remove all the existing tiers and add a new one at the previous paid price
@@ -726,7 +727,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
