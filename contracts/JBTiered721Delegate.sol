@@ -546,10 +546,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     bool _dontOverspend;
 
     // Skip the first 32 bytes which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
+    // Skip another 32 bytes reserved for generic extension parameters.
     // Check the 4 bytes interfaceId to verify the metadata is intended for this contract.
     if (
       _data.metadata.length > 36 &&
-      bytes4(_data.metadata[32:36]) == type(IJB721Delegate).interfaceId
+      bytes4(_data.metadata[64:68]) == type(IJB721Delegate).interfaceId
     ) {
       // Keep a reference to the flag indicating if the transaction should not mint anything.
       bool _dontMint;
@@ -558,9 +559,9 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       uint16[] memory _tierIdsToMint;
 
       // Decode the metadata.
-      (, , _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
+      (, , , _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
         _data.metadata,
-        (bytes32, bytes4, bool, bool, bool, uint16[])
+        (bytes32, bytes32, bytes4, bool, bool, bool, uint16[])
       );
 
       // Don't mint if not desired.
