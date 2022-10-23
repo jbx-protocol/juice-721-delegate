@@ -193,8 +193,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       }),
       JB721GovernanceType.NONE
     );
@@ -256,8 +255,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -335,8 +333,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -419,8 +416,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -509,8 +505,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -581,8 +576,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -642,8 +636,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -716,8 +709,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -783,8 +775,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -845,8 +836,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -924,8 +914,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -983,8 +972,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1037,8 +1025,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1077,8 +1064,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1118,8 +1104,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1193,8 +1178,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1267,8 +1251,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
   }
@@ -1327,8 +1310,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1429,8 +1411,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1589,8 +1570,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1669,8 +1649,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1762,8 +1741,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1838,8 +1816,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1914,8 +1891,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2041,8 +2017,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2198,8 +2173,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2345,8 +2319,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2510,8 +2483,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2617,8 +2589,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2724,8 +2695,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2833,8 +2803,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2951,8 +2920,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -3268,8 +3236,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -3512,8 +3479,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4102,8 +4068,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: false
+        lockManualMintingChanges: true
       })
     );
 
@@ -4216,8 +4181,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4324,8 +4288,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4443,8 +4406,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4553,8 +4515,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4678,8 +4639,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4869,8 +4829,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        transfersPausable: true
+        lockManualMintingChanges: true
       })
     );
 
