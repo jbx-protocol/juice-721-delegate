@@ -13,11 +13,11 @@ pragma solidity ^0.8.0;
   @member shouldUseBeneficiaryAsDefault A flag indicating if the `reservedTokenBeneficiary` should be stored as the default beneficiary for all tiers.
 */
 struct JB721TierParams {
-  uint256 contributionFloor;
-  uint256 lockedUntil;
-  uint256 initialQuantity;
-  uint256 votingUnits;
-  uint256 reservedRate;
+  uint80 contributionFloor;
+  uint48 lockedUntil;
+  uint40 initialQuantity;
+  uint16 votingUnits;
+  uint16 reservedRate;
   address reservedTokenBeneficiary;
   bytes32 encodedIPFSUri;
   bool allowManualMint;
