@@ -131,7 +131,6 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     override
     returns (uint256)
   {
-    if (_blockNumber >= block.number) revert BLOCK_NOT_YET_MINED();
     return _totalTierCheckpoints[_tier].getAtBlock(_blockNumber);
   }
 
