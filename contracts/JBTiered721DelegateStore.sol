@@ -930,6 +930,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       uint256 leftoverAmount
     )
   {
+    // If no tiers at all, exit early without token to mint
+    if (maxTierIdOf[msg.sender] == 0) return (0, 0, _amount);
+
     // Keep a reference to the last tier ID.
     uint256 _lastTierId = _lastSortIndexOf(msg.sender);
 
