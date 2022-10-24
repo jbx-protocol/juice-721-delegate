@@ -29,7 +29,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
   //*********************************************************************//
 
   error BLOCK_NOT_YET_MINED();
-  error INVALID_DELEGATE();
+  error DELEGATE_ADDRESS_ZERO();
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -158,6 +158,9 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     for (uint256 _i; _i < _numberOfTierDelegates; ) {
       // Reference the data being iterated on.
       _data = _setTierDelegatesData[_i];
+
+      // No active delegation to the address 0
+      if (_data.delegatee == address(0)) revert DELEGATE_ADDRESS_ZERO();
 
       _delegateTier(msg.sender, _data.delegatee, _data.tierId);
 
@@ -295,8 +298,6 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
       );
       emit TierDelegateVotesChanged(_to, _oldValue, _newValue, _tierId, msg.sender);
     }
-    // Cannot delegate to the zero address
-    else revert INVALID_DELEGATE();
   }
 
   /**
