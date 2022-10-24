@@ -293,7 +293,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
         _add,
         _amount
       );
-      emit TierDelegateVotesChanged(_to, _tierId, _oldValue, _newValue, msg.sender);
+      emit TierDelegateVotesChanged(_to, _oldValue, _newValue, _tierId, msg.sender);
     }
   }
 
