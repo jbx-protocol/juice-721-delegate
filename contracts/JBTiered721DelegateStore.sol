@@ -696,12 +696,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       });
 
       // Set the reserved token beneficiary if needed.
-      if (
-        _tierToAdd.reservedTokenBeneficiary != address(0) &&
-        _tierToAdd.reservedTokenBeneficiary != defaultReservedTokenBeneficiaryOf[msg.sender]
-      ) {
-        if (_tierToAdd.shouldUseBeneficiaryAsDefault)
-          defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
+      if (_tierToAdd.reservedTokenBeneficiary != address(0)) {
+        if (
+          _tierToAdd.reservedTokenBeneficiary != defaultReservedTokenBeneficiaryOf[msg.sender]
+          && _tierToAdd.shouldUseBeneficiaryAsDefault)
+            defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
+ 
         else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
       }
 
