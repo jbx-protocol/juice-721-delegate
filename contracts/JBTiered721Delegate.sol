@@ -202,15 +202,15 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   function initialize(
     uint256 _projectId,
     IJBDirectory _directory,
-    string memory _name,
-    string memory _symbol,
+    string calldata _name,
+    string calldata _symbol,
     IJBFundingCycleStore _fundingCycleStore,
-    string memory _baseUri,
+    string calldata _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
-    string memory _contractUri,
-    JB721PricingParams memory _pricing,
+    string calldata _contractUri,
+    JB721PricingParams calldata _pricing,
     IJBTiered721DelegateStore _store,
-    JBTiered721Flags memory _flags
+    JBTiered721Flags calldata _flags
   ) public override {
     // Make the original un-initializable.
     require(address(this) != codeOrigin);
@@ -261,7 +261,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _mintReservesForTiersData Contains information about how many reserved tokens to mint for each tier.
   */
-  function mintReservesFor(JBTiered721MintReservesForTiersData[] memory _mintReservesForTiersData)
+  function mintReservesFor(JBTiered721MintReservesForTiersData[] calldata _mintReservesForTiersData)
     external
     override
   {
@@ -287,7 +287,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _mintForTiersData Contains information about how who to mint tokens for from each tier.
   */
-  function mintFor(JBTiered721MintForTiersData[] memory _mintForTiersData)
+  function mintFor(JBTiered721MintForTiersData[] calldata _mintForTiersData)
     external
     override
     onlyOwner
@@ -383,7 +383,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _baseUri The new base URI.
   */
-  function setBaseUri(string memory _baseUri) external override onlyOwner {
+  function setBaseUri(string calldata _baseUri) external override onlyOwner {
     // Store the new value.
     store.recordSetBaseUri(_baseUri);
 
@@ -477,7 +477,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @return tokenIds The IDs of the newly minted tokens.
   */
-  function mintFor(uint16[] memory _tierIds, address _beneficiary)
+  function mintFor(uint16[] calldata _tierIds, address _beneficiary)
     public
     override
     onlyOwner

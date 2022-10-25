@@ -68,7 +68,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   */
   function deployDelegateFor(
     uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTiered721DelegateData
+    JBDeployTiered721DelegateData calldata _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
     // Deploy the governance variant that was requested
     address codeToCopy;

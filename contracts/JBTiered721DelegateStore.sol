@@ -625,7 +625,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return tierIds The IDs of the tiers added.
   */
-  function recordAddTiers(JB721TierParams[] memory _tiersToAdd)
+  function recordAddTiers(JB721TierParams[] calldata _tiersToAdd)
     external
     override
     returns (uint256[] memory tierIds)
@@ -1086,7 +1086,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _tokenIds The IDs of the tokens burned.
   */
-  function recordBurn(uint256[] memory _tokenIds) external override {
+  function recordBurn(uint256[] calldata _tokenIds) external override {
     // Get a reference to the number of token IDs provided.
     uint256 _numberOfTokenIds = _tokenIds.length;
 
