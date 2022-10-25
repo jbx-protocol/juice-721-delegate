@@ -468,6 +468,21 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return _flagsOf[_nft];
   }
 
+  /** 
+    @notice
+    Tier removed from the current tiering
+
+    @param _nft The NFT for which the removed tier is queried
+    @param _tierId The tier ID
+
+    @return True if the tier has been removed
+  */
+  function isTierRemoved(address _nft, uint256 _tierId) external view override returns (bool) {
+    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
+
+    return _bitmapWord.isTierIdRemoved(_tierId);
+  }
+
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
@@ -596,21 +611,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Return the default.
     return defaultReservedTokenBeneficiaryOf[_nft];
-  }
-
-  /** 
-    @notice
-    Tier removed from the current tiering
-
-    @param _nft The NFT for which the removed tier is queried
-    @param _tierId The tier ID
-
-    @return True if the tier has been removed
-  */
-  function isTierRemoved(address _nft, uint256 _tierId) public view override returns (bool) {
-    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
-
-    return _bitmapWord.isTierIdRemoved(_tierId);
   }
 
   //*********************************************************************//
