@@ -35,6 +35,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error RESERVED_RATE_NOT_ALLOWED();
   error MANUAL_MINTING_NOT_ALLOWED();
   error PRICING_RESOLVER_CHANGES_LOCKED();
+  error RESERVED_RATE_TOO_BIG();
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
@@ -676,6 +677,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         (_flags.lockReservedTokenChanges || _tierToAdd.allowManualMint) &&
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
+
+      if (_tierToAdd.reservedRate > JBConstants.MAX_RESERVED_RATE)
+        revert RESERVED_RATE_TOO_BIG();
 
       // Make sure manual minting is not set if not allowed.
       if (_flags.lockManualMintingChanges && _tierToAdd.allowManualMint)
