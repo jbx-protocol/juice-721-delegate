@@ -49,7 +49,6 @@ library JBIpfsDecoder {
     Written by Martin Ludfall - Licence: MIT
   */
   function _toBase58(bytes memory _source) private pure returns (string memory) {
-
     if (_source.length == 0) return new string(0);
 
     uint8[] memory digits = new uint8[](46); // hash size with the prefix
@@ -57,8 +56,9 @@ library JBIpfsDecoder {
     digits[0] = 0;
 
     uint8 digitlength = 1;
+    uint256 _sourceLength = _source.length;
 
-    for (uint256 i; i < _source.length;) {
+    for (uint256 i; i < _sourceLength;) {
       uint256 carry = uint8(_source[i]);
 
       for (uint256 j; j < digitlength;) {
@@ -99,8 +99,9 @@ library JBIpfsDecoder {
   }
 
   function _reverse(uint8[] memory _input) private pure returns (uint8[] memory) {
-    uint8[] memory output = new uint8[](_input.length);
-    for (uint256 i; i < _input.length;) {
+    uint256 _inputLength = _input.length;
+    uint8[] memory output = new uint8[](_inputLength);
+    for (uint256 i; i < _inputLength;) {
 
       unchecked {
         output[i] = _input[_input.length - 1 - i];
@@ -111,8 +112,9 @@ library JBIpfsDecoder {
   }
 
   function _toAlphabet(uint8[] memory _indices) private pure returns (bytes memory) {
-    bytes memory output = new bytes(_indices.length);
-    for (uint256 i; i < _indices.length;) {
+    uint256 _indicesLength = _indices.length;
+    bytes memory output = new bytes(_indicesLength);
+    for (uint256 i; i < _indicesLength;) {
       output[i] = _ALPHABET[_indices[i]];
 
       unchecked {
