@@ -1232,8 +1232,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Invalid tier or no reserved rate?
     if (_storedTier.initialQuantity == 0 || _storedTier.reservedRate == 0) return 0;
 
-    // No token minted yet? Round up to 1.
-    if (_storedTier.initialQuantity == _storedTier.remainingQuantity) return 1;
+    // No token minted yet? 
+    if (_storedTier.initialQuantity == _storedTier.remainingQuantity) {
+      // If the tier is removed, no reserved should be mintable.
+      JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
+      if (_bitmapWord.isTierIdRemoved(_tierId)) return 0;
+
+      //Round up to 1.
+      return 1;
+    } 
 
     // The number of reserved tokens of the tier already minted.
     uint256 _reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
