@@ -226,11 +226,13 @@ abstract contract JB721Delegate is
     @param _data The Juicebox standard project payment data.
   */
   function didPay(JBDidPayData calldata _data) external payable virtual override {
+    uint256 _projectId = projectId;
+    
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
       msg.value != 0 ||
-      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
-      _data.projectId != projectId
+      !directory.isTerminalOf(_projectId, IJBPaymentTerminal(msg.sender)) ||
+      _data.projectId != _projectId
     ) revert INVALID_PAYMENT_EVENT();
 
     // Process the payment.
