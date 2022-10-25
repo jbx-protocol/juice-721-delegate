@@ -213,9 +213,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     JBTiered721Flags calldata _flags
   ) public override {
     // Make the original un-initializable.
-    require(address(this) != codeOrigin);
+    if(address(this) == codeOrigin) revert();
+
     // Stop re-initialization.
-    require(address(store) == address(0));
+    if(address(store) != address(0)) revert();
 
     // Initialize the sub class.
     JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
@@ -297,7 +298,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     for (uint256 _i; _i < _numberOfBeneficiaries; ) {
       // Get a reference to the data being iterated on.
-      JBTiered721MintForTiersData memory _data = _mintForTiersData[_i];
+      JBTiered721MintForTiersData calldata _data = _mintForTiersData[_i];
 
       // Mint for the tier.
       mintFor(_data.tierIds, _data.beneficiary);
