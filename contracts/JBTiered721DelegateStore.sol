@@ -19,7 +19,7 @@ import './structs/JBStored721Tier.sol';
   IJBTiered721DelegateStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
 */
 contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
-  using JBBitmap for mapping(uint256=>uint256);
+  using JBBitmap for mapping(uint256 => uint256);
   using JBBitmap for JBBitmapWord;
 
   //*********************************************************************//
@@ -196,7 +196,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _tierId the ID of the tier
   */
   mapping(address => mapping(uint256 => bytes32)) public override encodedIPFSUriOf;
-
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
@@ -548,11 +547,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        _storedTier.contributionFloor  *
-        (
-            (_storedTier.initialQuantity - _storedTier.remainingQuantity) +
-          _numberOfReservedTokensOutstandingFor(_nft, _i + 1, _storedTier)
-        );
+        _storedTier.contributionFloor *
+        ((_storedTier.initialQuantity - _storedTier.remainingQuantity) +
+          _numberOfReservedTokensOutstandingFor(_nft, _i + 1, _storedTier));
 
       unchecked {
         ++_i;
@@ -611,9 +608,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return True if the tier has been removed
   */
-  function isTierRemoved(address _nft, uint256 _tierId) public view override returns(bool) {
+  function isTierRemoved(address _nft, uint256 _tierId) public view override returns (bool) {
     JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
-    
+
     return _bitmapWord.isTierIdRemoved(_tierId);
   }
 
@@ -678,8 +675,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
 
-      if (_tierToAdd.reservedRate > JBConstants.MAX_RESERVED_RATE)
-        revert RESERVED_RATE_TOO_BIG();
+      if (_tierToAdd.reservedRate > JBConstants.MAX_RESERVED_RATE) revert RESERVED_RATE_TOO_BIG();
 
       // Make sure manual minting is not set if not allowed.
       if (_flags.lockManualMintingChanges && _tierToAdd.allowManualMint)
@@ -705,9 +701,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Set the reserved token beneficiary if needed.
       if (_tierToAdd.reservedTokenBeneficiary != address(0))
         if (_tierToAdd.shouldUseBeneficiaryAsDefault)
-            defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
-        else
-            _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
+          defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
+        else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
@@ -742,7 +737,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // If this is the last tier being added, track the current last sort index if it's not already tracked.
             if (
-              _i == _numberOfNewTiers - 1 && 
+              _i == _numberOfNewTiers - 1 &&
               _trackedLastSortTierIdOf[msg.sender] != _currentLastSortIndex
             ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortIndex;
 
@@ -772,8 +767,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             _currentSortIndex = 0;
 
             // If there's currently a last sort index tracked, override it.
-            if (_trackedLastSortTierIdOf[msg.sender] != 0) 
-              _trackedLastSortTierIdOf[msg.sender] = 0;
+            if (_trackedLastSortTierIdOf[msg.sender] != 0) _trackedLastSortTierIdOf[msg.sender] = 0;
           }
           // Move on to the next index.
           else {
@@ -1101,7 +1095,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;
-    
+
     // Iterate through all tokens to increment the burn count.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
       // Set the token's ID.
@@ -1236,14 +1230,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Invalid tier or no reserved rate?
     if (_storedTier.initialQuantity == 0 || _storedTier.reservedRate == 0) return 0;
 
-    // No token minted yet? 
+    // No token minted yet?
     if (_storedTier.initialQuantity == _storedTier.remainingQuantity) {
       // If the tier is removed, no reserved should be mintable.
       if (isTierRemoved(_nft, _tierId)) return 0;
 
       //Round up to 1.
       return 1;
-    } 
+    }
 
     // The number of reserved tokens of the tier already minted.
     uint256 _reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
@@ -1269,7 +1263,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Make sure there are more mintable than have been minted. This is possible if some tokens have been burned.
     if (_reserveTokensMinted > _numberReservedTokensMintable) return 0;
-   
+
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - _reserveTokensMinted;
   }
