@@ -62,7 +62,7 @@ library JBIpfsDecoder {
       uint256 carry = uint8(_source[i]);
 
       for (uint256 j; j < digitlength;) {
-        carry += uint256(digits[j]) * 256;
+        carry += uint256(digits[j]) << 8; // mul 256
         digits[j] = uint8(carry % 58);
         carry = carry / 58;
 

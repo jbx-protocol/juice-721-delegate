@@ -71,6 +71,6 @@ library JBBitmap {
     Return the lines of the bitmap matrix where an index lies.
   */
   function _retrieveDepth(uint256 _index) internal pure returns (uint256) {
-    return _index / 256;
+    return _index >> 8; // div by 256
   }
 }
