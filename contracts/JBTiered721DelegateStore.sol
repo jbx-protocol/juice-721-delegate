@@ -196,6 +196,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => mapping(uint256 => bytes32)) public override encodedIPFSUriOf;
 
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -1096,7 +1097,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;
-
+    
     // Iterate through all tokens to increment the burn count.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
       // Set the token's ID.
@@ -1256,6 +1257,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     if (_numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0)
       ++_numberReservedTokensMintable;
 
+    // Make sure there are more mintable than have been minted. This is possible if some tokens have been burned.
+    if (_reserveTokensMinted > _numberReservedTokensMintable) return 0;
+   
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - _reserveTokensMinted;
   }
