@@ -73,7 +73,9 @@ library JBIpfsDecoder {
 
       while (carry > 0) {
         digits[digitlength] = uint8(carry % 58);
-        digitlength++;
+        unchecked {
+          ++digitlength;          
+        }
         carry = carry / 58;
       }
 
@@ -99,9 +101,9 @@ library JBIpfsDecoder {
   function _reverse(uint8[] memory _input) private pure returns (uint8[] memory) {
     uint8[] memory output = new uint8[](_input.length);
     for (uint256 i; i < _input.length;) {
-      output[i] = _input[_input.length - 1 - i];
 
       unchecked {
+        output[i] = _input[_input.length - 1 - i];
         ++i;
       }
     }
