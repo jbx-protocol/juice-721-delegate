@@ -2,8 +2,15 @@
 pragma solidity ^0.8.16;
 
 /**
+  
   @notice
   Utilities to decode an IPFS hash.
+
+  @dev
+  This is fairly gas intensive, due to multiple nested loops, onchain 
+  IPFS hash decoding is therefore not advised (storing them as a string,
+  in that use-case, *might* be more efficient).
+
 */
 library JBIpfsDecoder {
   //*********************************************************************//
