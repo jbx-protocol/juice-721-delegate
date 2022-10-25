@@ -561,9 +561,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        (_storedTier.contributionFloor *
-          (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
-        _numberOfReservedTokensOutstandingFor(_nft, _i, _storedTier);
+        _storedTier.contributionFloor  *
+        (
+            (_storedTier.initialQuantity - _storedTier.remainingQuantity) +
+          _numberOfReservedTokensOutstandingFor(_nft, _i + 1, _storedTier)
+        );
 
       unchecked {
         ++_i;
