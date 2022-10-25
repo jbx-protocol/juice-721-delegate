@@ -35,7 +35,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error RESERVED_RATE_NOT_ALLOWED();
   error MANUAL_MINTING_NOT_ALLOWED();
   error PRICING_RESOLVER_CHANGES_LOCKED();
-  error RESERVED_RATE_TOO_BIG();
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
@@ -675,8 +674,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
 
-      if (_tierToAdd.reservedRate > JBConstants.MAX_RESERVED_RATE) revert RESERVED_RATE_TOO_BIG();
-
       // Make sure manual minting is not set if not allowed.
       if (_flags.lockManualMintingChanges && _tierToAdd.allowManualMint)
         revert MANUAL_MINTING_NOT_ALLOWED();
@@ -1227,17 +1224,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _tierId,
     JBStored721Tier memory _storedTier
   ) internal view returns (uint256) {
-    // Invalid tier or no reserved rate?
-    if (_storedTier.initialQuantity == 0 || _storedTier.reservedRate == 0) return 0;
-
-    // No token minted yet?
-    if (_storedTier.initialQuantity == _storedTier.remainingQuantity) {
-      // If the tier is removed, no reserved should be mintable.
-      if (isTierRemoved(_nft, _tierId)) return 0;
-
-      //Round up to 1.
-      return 1;
-    }
+    // No reserves outstanding if no mints or no reserved rate.
+    if (
+      _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity
+    ) return 0;
 
     // The number of reserved tokens of the tier already minted.
     uint256 _reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
@@ -1251,15 +1241,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _storedTier.remainingQuantity -
       _reserveTokensMinted;
 
-    // Store the numerator common to the next two calculations.
-    uint256 _numerator = uint256(_numberOfNonReservesMinted * _storedTier.reservedRate);
-
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
-    uint256 _numberReservedTokensMintable = _numerator / JBConstants.MAX_RESERVED_RATE;
+    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _storedTier.reservedRate;
 
     // Round up.
-    if (_numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0)
-      ++_numberReservedTokensMintable;
+    if (_numberOfNonReservesMinted % _storedTier.reservedRate > 0) ++_numberReservedTokensMintable;
 
     // Make sure there are more mintable than have been minted. This is possible if some tokens have been burned.
     if (_reserveTokensMinted > _numberReservedTokensMintable) return 0;
