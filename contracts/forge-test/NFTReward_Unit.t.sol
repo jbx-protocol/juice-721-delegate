@@ -5170,6 +5170,6 @@ contract ForTest_JBTiered721DelegateStore is
   }
 
   function ForTest_setIsTierRemoved(address _delegate, uint256 _tokenId) public override {
-    _isTierRemoved[_delegate].removeTier(_tokenId);
+    _isTierRemovedBitmapWord[_delegate].removeTier(_tokenId);
   }
 }
