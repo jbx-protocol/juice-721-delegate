@@ -133,7 +133,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       extcodecopy(_targetAddress, add(_freeMem, 13), 0, _codeSize)
 
       // Deploy the copied bytecode
-      _out := create(0, _freeMem, _codeSize)
+      _out := create(0, _freeMem, add(_codeSize, 13))
     }
   }
 }
