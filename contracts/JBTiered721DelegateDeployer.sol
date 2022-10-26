@@ -17,6 +17,8 @@ import './JB721GlobalGovernance.sol';
 contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   error INVALID_GOVERNANCE_TYPE();
 
+  uint256 constant DEPLOY_BYTECODE_LENGTH = 13;
+
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
@@ -120,20 +122,21 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       // Get a bit of freemem to land the bytecode, not updated as we'll leave this scope right after create(..)
       let _freeMem := mload(0x40)
 
-      // Shift the length to the length placeholder, in the constructor
-      let _mask := mul(_codeSize, 0x100000000000000000000000000000000000000000000000000000000)
+      // Shift the length to the length placeholder, in the constructor (by adding zero's/mul)
+      let _mask := mul(_codeSize,       0x100000000000000000000000000000000000000000000000000000000)
 
-      // Insert the length in the correct sport (after the PUSH3 / 0x62)
+      // Insert the length in the correct spot (after the PUSH3 / 0x62)
       let _initCode := or(_mask, 0x62000000600081600d8239f3fe00000000000000000000000000000000000000)
+      // --------------------------- here ^ (see the "1" from the mul step aligning)
 
-      // Store the deployment bytecode
+      // Store the deployment bytecode in free memory
       mstore(_freeMem, _initCode)
 
-      // Copy the bytecode (our initialise part is 13 bytes long)
-      extcodecopy(_targetAddress, add(_freeMem, 13), 0, _codeSize)
+      // Copy the bytecode, after the deployer bytecode in free memory
+      extcodecopy(_targetAddress, add(_freeMem, DEPLOY_BYTECODE_LENGTH), 0, _codeSize)
 
-      // Deploy the copied bytecode
-      _out := create(0, _freeMem, add(_codeSize, 13))
+      // Deploy the copied bytecode (constructor + original) and return the address in 'out'
+      _out := create(0, _freeMem, add(_codeSize, DEPLOY_BYTECODE_LENGTH))
     }
   }
 }

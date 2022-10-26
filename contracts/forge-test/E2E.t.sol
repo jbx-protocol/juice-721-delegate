@@ -378,23 +378,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
 
-    // Check: 1 reserved token before any mint from a contribution?
-    assertEq(
-      IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
-        NFTRewardDataSource,
-        highestTier
-      ),
-      1
-    );
-
-    // Mint the reserved token
-    vm.prank(_projectOwner);
-    IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
-
-    // Check: NFT received?
-    assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 1);
-
-    // Check: no more reserved token to mint?
+    // Check: 0 reserved token before any mint from a contribution?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
         NFTRewardDataSource,
@@ -403,7 +387,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       0
     );
 
-    // Check: cannot mint more reserved token?
+    // Check: cannot mint 0 reserved token?
     vm.expectRevert(
       abi.encodeWithSelector(JBTiered721DelegateStore.INSUFFICIENT_RESERVES.selector)
     );
@@ -425,7 +409,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Check: correct tier and id?
     vm.expectEmit(true, true, true, true);
     emit Mint(
-      _generateTokenId(highestTier, 2), // First one is the reserved
+      _generateTokenId(highestTier, 1), // First one
       highestTier,
       _beneficiary,
       valueSent,
@@ -448,7 +432,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       metadata
     );
 
-    // Check: new reserved one?
+    // Check: new reserved one (1 minted == 1 reserved, due to rounding up)
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
         NFTRewardDataSource,
@@ -462,7 +446,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
 
     // Check: NFT received?
-    assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 2);
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 1);
 
     // Check: no more reserved token to mint?
     assertEq(
@@ -568,13 +552,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       1
     );
 
-    // Check: Reserved left to mint is back to one (the minimum when none minted yet)
+    // Check: Reserved left to mint is ?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
         NFTRewardDataSource,
         highestTier
       ),
-      1
+      (tokenBalance / NFTRewardDeployerData.pricing.tiers[highestTier - 1].reservedRate)
     );
   }
 
@@ -633,9 +617,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       .store()
       .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, tier);
 
-    // Check: reserved should be == total supply (max reserved rate) == balance of beneficiary (only minter)
+    // Check: token minted and outstanding reserved balances are correct (+1 as we're rounding up for non-null values)
     assertEq(rawMetadata.length, tokenBalance);
-    assertEq(reservedOutstanding, tokenBalance);
+    assertEq(reservedOutstanding, (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1);
 
     // Craft the metadata to redeem the tokenId's
     uint256[] memory redemptionId = new uint256[](5);
@@ -670,13 +654,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       5
     );
 
-    // Check: Reserved left to mint is decremented to min 1 (as no reserve minted yet)
+    // Check: Reserved left to mint is back to 0
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
         NFTRewardDataSource,
         tier
       ),
-      1
+      0
     );
 
     // Check: Can mint again the token previously burned
@@ -695,14 +679,14 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // New token balance
     tokenBalance = IERC721(NFTRewardDataSource).balanceOf(_beneficiary);
 
-    // Reserved token available to mint is back at total supply too
+    // Reserved token available to mint is back at prev value too
     reservedOutstanding = IJBTiered721Delegate(NFTRewardDataSource)
       .store()
       .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, tier);
 
-    // Check: reserved should be == total supply (max reserved rate) == balance of beneficiary (only minter)
+    // Check: token minted and outstanding reserved balances are correct (+1 as we're rounding up for non-null values)
     assertEq(rawMetadata.length, tokenBalance);
-    assertEq(reservedOutstanding, tokenBalance);
+    assertEq(reservedOutstanding, (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1);
   }
 
   // ----- internal helpers ------
@@ -722,7 +706,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         lockedUntil: uint48(0),
         initialQuantity: uint40(10),
         votingUnits: uint16((i + 1) * 10),
-        reservedRate: uint16(JBConstants.MAX_RESERVED_RATE),
+        reservedRate: 10,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,

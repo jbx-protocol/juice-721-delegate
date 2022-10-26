@@ -590,12 +590,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_numberOfReservedTokensOutstandingFor_returnsOutstandingReserved()
     public
   {
-    // 120 are minted, 1 out of these is reserved, meaning 119 non-reserved are minted. The reservedRate is 40% (4000/10000)
-    // meaning there are 47.6 total reserved to mint (-> rounding up 48), 1 being already minted, 47 are outstanding
+    // 120 are minted, 10 out of these are reserved, meaning 110 non-reserved are minted. The reservedRate is
+    // 9 (1 reserved token for every 9 non-reserved minted) -> total reserved is 13 (  ceil(110 / 9)), still 3 to mint
+
     uint256 initialQuantity = 200;
     uint256 totalMinted = 120;
-    uint256 reservedMinted = 1;
-    uint256 reservedRate = 4000;
+    uint256 reservedMinted = 10;
+    uint256 reservedRate = 9;
 
     JB721TierParams[] memory _tiers = new JB721TierParams[](10);
 
@@ -660,7 +661,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++)
       assertEq(
         _delegate.test_store().numberOfReservedTokensOutstandingFor(address(_delegate), i + 1),
-        47
+        3
       );
   }
 
@@ -5052,7 +5053,7 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
   )
   {
     // Disable the safety check to not allow initializing the original contract
-    codeOrigin = address(0);
+     codeOrigin = address(0);
 
      JBTiered721Delegate.initialize(
       _projectId,
