@@ -101,6 +101,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     rawMetadata[0] = uint16(highestTier);
     bytes memory metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
       false,
@@ -196,6 +197,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Encode it to metadata
     bytes memory metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
@@ -415,6 +417,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     rawMetadata[0] = uint16(highestTier); // reward tier
     bytes memory metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
       false,
@@ -508,6 +511,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint16[] memory rawMetadata = new uint16[](1);
     rawMetadata[0] = uint16(highestTier);
     bytes memory metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
@@ -603,6 +607,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     for (uint256 i; i < rawMetadata.length; i++) rawMetadata[i] = uint16(tier);
 
     bytes memory metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
