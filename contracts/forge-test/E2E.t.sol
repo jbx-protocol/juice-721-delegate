@@ -489,16 +489,19 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     // Craft the metadata: claim from the highest tier
-    uint16[] memory rawMetadata = new uint16[](1);
-    rawMetadata[0] = uint16(highestTier);
-    bytes memory metadata = abi.encode(
-      bytes32(0),
-      type(IJB721Delegate).interfaceId,
-      false,
-      false,
-      false,
-      rawMetadata
-    );
+    bytes memory metadata;
+    {
+      uint16[] memory rawMetadata = new uint16[](1);
+      rawMetadata[0] = uint16(highestTier);
+      metadata = abi.encode(
+        bytes32(0),
+        type(IJB721Delegate).interfaceId,
+        false,
+        false,
+        false,
+        rawMetadata
+      );
+    }
 
     vm.prank(_caller);
     _jbETHPaymentTerminal.pay{value: valueSent}(
@@ -517,11 +520,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // New token balance
     uint256 tokenBalance = IERC721(NFTRewardDataSource).balanceOf(_beneficiary);
-
-    // Reserved token available to mint
-    uint256 reservedOutstanding = IJBTiered721Delegate(NFTRewardDataSource)
-      .store()
-      .numberOfReservedTokensOutstandingFor(NFTRewardDataSource, highestTier);
 
     // Craft the metadata: redeem the tokenId
     uint256[] memory redemptionId = new uint256[](1);
@@ -552,13 +550,22 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       1
     );
 
+    // Calculate if we are rounding up or not. Used to verify 'numberOfReservedTokensOutstandingFor'
+    uint256 _rounding;
+    {
+      JB721Tier memory _tier = IJBTiered721Delegate(NFTRewardDataSource).store().tier(NFTRewardDataSource, highestTier);
+      // '_reserveTokensMinted' is always 0 here
+      uint256 _numberOfNonReservesMinted = _tier.initialQuantity - _tier.remainingQuantity;
+      _rounding = _numberOfNonReservesMinted % _tier.reservedRate > 0 ? 1 : 0;
+    }
+    
     // Check: Reserved left to mint is ?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
         NFTRewardDataSource,
         highestTier
       ),
-      (tokenBalance / NFTRewardDeployerData.pricing.tiers[highestTier - 1].reservedRate)
+      (tokenBalance / NFTRewardDeployerData.pricing.tiers[highestTier - 1].reservedRate + _rounding)
     );
   }
 
