@@ -18,7 +18,7 @@ import './JB721FundingCycleMetadata.sol';
 */
 struct JBLaunchFundingCyclesData {
   JBFundingCycleData data;
-  JBFundingCycleMetadata metadata;
+  JB721FundingCycleMetadata metadata;
   uint256 mustStartAtOrAfter;
   JBGroupedSplits[] groupedSplits;
   JBFundAccessConstraints[] fundAccessConstraints;
