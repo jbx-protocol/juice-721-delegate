@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
+import './JB721FundingCycleMetadata.sol';
 
 /**
   @member projectMetadata Metadata to associate with the project within a particular domain. This can be updated any time by the owner of the project.
@@ -21,7 +21,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
 struct JBLaunchProjectData {
   JBProjectMetadata projectMetadata;
   JBFundingCycleData data;
-  JBFundingCycleMetadata metadata;
+  JB721FundingCycleMetadata metadata;
   uint256 mustStartAtOrAfter;
   JBGroupedSplits[] groupedSplits;
   JBFundAccessConstraints[] fundAccessConstraints;
