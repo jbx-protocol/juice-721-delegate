@@ -4088,7 +4088,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(msg.sender);
     IERC721(_delegate).transferFrom(msg.sender, beneficiary, _tokenId);
     
-    // Check: token transfered
+    // Check: token transferred
     assertEq(IERC721(_delegate).ownerOf(_tokenId), beneficiary);
   }
 
@@ -5102,7 +5102,7 @@ contract ForTest_JBTiered721DelegateStore is
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _firstSortIndexOf(_nft);
 
-    // Keep a referecen to the tier being iterated on.
+    // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
     // Make the sorted array.

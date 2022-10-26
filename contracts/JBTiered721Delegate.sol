@@ -118,7 +118,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _owner The address to check the balance of.
 
-    @return balance The number of tokens owners by the owner accross all tiers.
+    @return balance The number of tokens owners by the owner across all tiers.
   */
   function balanceOf(address _owner) public view override returns (uint256 balance) {
     return store.balanceOf(address(this), _owner);
@@ -170,7 +170,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     @dev
     See {IERC165-supportsInterface}.
 
-    @param _interfaceId The ID of the interface to check for adherance to.
+    @param _interfaceId The ID of the interface to check for adherence to.
   */
   function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
     return
@@ -213,12 +213,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     JBTiered721Flags memory _flags
   ) public override {
     // Make the original un-initializable.
-    if(address(this) == codeOrigin) revert();
+    if (address(this) == codeOrigin) revert();
 
     // Stop re-initialization.
-    if(address(store) != address(0)) revert();
+    if (address(store) != address(0)) revert();
 
-    // Initialize the sub class.
+    // Initialize the superclass.
     JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
 
     fundingCycleStore = _fundingCycleStore;
@@ -266,7 +266,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     external
     override
   {
-    // Keep a reference to the number of tiers there are to mint reserved for.
+    // Keep a reference to the number of tiers there are to mint reserves for.
     uint256 _numberOfTiers = _mintReservesForTiersData.length;
 
     for (uint256 _i; _i < _numberOfTiers; ) {
@@ -361,12 +361,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
   /** 
     @notice
-    Sets the beneificiary of the reserved tokens for tiers where a specific beneficiary isn't set. 
+    Sets the beneficiary of the reserved tokens for tiers where a specific beneficiary isn't set. 
 
     @dev
     Only the contract's owner can set the default reserved token beneficiary.
 
-    @param _beneficiary The default beneificiary of the reserved tokens.
+    @param _beneficiary The default beneficiary of the reserved tokens.
   */
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external override onlyOwner {
     // Set the beneficiary.
@@ -543,7 +543,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is not expected.
     bool _expectMintFromExtraFunds;
 
-    // Keep a reference to the flag indicating if the transaction should revert if all provded funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
+    // Keep a reference to the flag indicating if the transaction should revert if all provided funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
     bool _dontOverspend;
 
     // Skip the first 32 bytes which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
@@ -592,7 +592,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
   /** 
     @notice
-    A function that will run when a tokens are burned via redemption.
+    A function that will run when tokens are burned via redemption.
 
     @param _tokenIds The IDs of the tokens that were burned.
   */
@@ -715,18 +715,18 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
   /**
     @notice
-    User the hook to register the first owner if it's not yet regitered.
+    User the hook to register the first owner if it's not yet registered.
 
     @param _from The address where the transfer is originating.
     @param _to The address to which the transfer is being made.
-    @param _tokenId The ID of the token being transfered.
+    @param _tokenId The ID of the token being transferred.
   */
   function _beforeTokenTransfer(
     address _from,
     address _to,
     uint256 _tokenId
   ) internal virtual override {
-    // Transfered must not be paused when not minting or burning.
+    // Transferred must not be paused when not minting or burning.
     if (_from != address(0)) {
       // Transfers must not be paused.
       if (store.flagsOf(address(this)).pausable) {
@@ -755,7 +755,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _from The address where the transfer is originating.
     @param _to The address to which the transfer is being made.
-    @param _tokenId The ID of the token being transfered.
+    @param _tokenId The ID of the token being transferred.
    */
   function _afterTokenTransfer(
     address _from,
@@ -780,7 +780,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _from The account to transfer voting units from.
     @param _to The account to transfer voting units to.
-    @param _tokenId The ID of the token for which voting units are being transfered.
+    @param _tokenId The ID of the token for which voting units are being transferred.
     @param _tier The tier the token ID is part of.
   */
   function _afterTokenTransferAccounting(

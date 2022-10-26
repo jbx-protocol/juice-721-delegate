@@ -173,7 +173,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
-    Custom token URI resolver, superceeds base URI.
+    Custom token URI resolver, supersedes base URI.
 
     _nft The NFT for which the token URI resolver applies.
   */
@@ -227,10 +227,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(_nft);
 
-    // Keep a referecen to the tier being iterated on.
+    // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
-    // Initialise a BitmapWord for isRemoved
+    // Initialize a BitmapWord for isRemoved
     JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.
@@ -494,7 +494,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _nft The NFT to get a balance from.
     @param _owner The address to check the balance of.
 
-    @return balance The number of tokens owners by the owner accross all tiers.
+    @return balance The number of tokens owners by the owner across all tiers.
   */
   function balanceOf(address _nft, address _owner) public view override returns (uint256 balance) {
     // Keep a reference to the greatest tier ID.
@@ -594,7 +594,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _nft The NFT to get the reserved token beneficiary within.
     @param _tierId The ID of the tier to get a reserved token beneficiary of.
 
-    @return The reserved token benficiary.
+    @return The reserved token beneficiary.
   */
   function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
     public
@@ -709,7 +709,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep track of the sort index.
         uint256 _currentSortIndex = _startSortIndex;
 
-        // Initialise a BitmapWord for isRemoved
+        // Initialize a BitmapWord for isRemoved
         JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
         // Keep a reference to the idex to iterate on next.
@@ -844,7 +844,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Sets the reserved token beneficiary.
 
-    @param _beneficiary The reservd token beneficiary.
+    @param _beneficiary The reserved token beneficiary.
   */
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external override {
     defaultReservedTokenBeneficiaryOf[msg.sender] = _beneficiary;
@@ -854,7 +854,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Record a token transfer.
 
-    @param _tierId The ID the tier being transfered
+    @param _tierId The ID the tier being transferred.
     @param _from The sender of the token.
     @param _to The recipient of the token.
   */
@@ -942,7 +942,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the best contribution floor.
     uint256 _bestContributionFloor;
 
-    // Initialise a BitmapWord to read isRemoved
+    // Initialize a BitmapWord to read isRemoved
     JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
 
     while (_currentSortIndex != 0) {
@@ -1027,7 +1027,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_numberOfTiers);
 
-    // Initialise a BitmapWord for isRemoved.
+    // Initialize a BitmapWord for isRemoved.
     JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_tierIds[0]);
 
     for (uint256 _i; _i < _numberOfTiers; ) {
@@ -1178,7 +1178,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep track of the previous non-removed index.
     uint256 _previous;
 
-    // Initialise a BitmapWord for isRemoved.
+    // Initialize a BitmapWord for isRemoved.
     JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.

@@ -209,7 +209,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _account The account delegating tier voting units.
     @param _delegatee The account to delegate tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _tierId The ID of the tier for which voting units are being transferred.
   */
   function _delegateTier(
     address _account,
@@ -239,7 +239,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _from The account to transfer tier voting units from.
     @param _to The account to transfer tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _tierId The ID of the tier for which voting units are being transferred.
     @param _amount The amount of voting units to delegate.
    */
   function _transferTierVotingUnits(
@@ -269,7 +269,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _from The account to transfer tier voting units from.
     @param _to The account to transfer tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _tierId The ID of the tier for which voting units are being transferred.
     @param _amount The amount of voting units to delegate.
   */
   function _moveTierDelegateVotes(
@@ -306,7 +306,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _from The account to transfer voting units from.
     @param _to The account to transfer voting units to.
-    @param _tokenId The ID of the token for which voting units are being transfered.
+    @param _tokenId The ID of the token for which voting units are being transferred.
     @param _tier The tier the token ID is part of.
    */
   function _afterTokenTransferAccounting(
