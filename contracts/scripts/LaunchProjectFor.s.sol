@@ -77,7 +77,7 @@ contract RinkebyLaunchProjectFor is Script {
       ballot: IJBFundingCycleBallot(address(0))
     });
 
-    JBFundingCycleMetadata memory _metadata = JBFundingCycleMetadata({
+    JBPayDataSourceFundingCycleMetadata memory _metadata = JBPayDataSourceFundingCycleMetadata({
       global: JBGlobalFundingCycleMetadata({
         allowSetTerminals: false,
         allowSetController: false,
@@ -96,9 +96,7 @@ contract RinkebyLaunchProjectFor is Script {
       holdFees: false,
       preferClaimedTokenOverride: false,
       useTotalOverflowForRedemptions: false,
-      useDataSourceForPay: true,
       useDataSourceForRedeem: true,
-      dataSource: address(0), // Will get overriden during deployment
       metadata: 0
     });
 

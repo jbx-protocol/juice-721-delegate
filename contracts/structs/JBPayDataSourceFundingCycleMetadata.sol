@@ -21,7 +21,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGlobalFundingCycleM
   @member useDataSourceForRedeem A flag indicating if the data source should be used for redeem transactions during this funding cycle.
   @member metadata Metadata of the metadata, up to uint8 in size.
 */
-struct JB721FundingCycleMetadata {
+struct JBPayDataSourceFundingCycleMetadata {
   JBGlobalFundingCycleMetadata global;
   uint256 reservedRate;
   uint256 redemptionRate;

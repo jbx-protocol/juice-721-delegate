@@ -6,7 +6,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
-import './JB721FundingCycleMetadata.sol';
+import './JBPayDataSourceFundingCycleMetadata.sol';
 
 /**
   @member projectMetadata Metadata to associate with the project within a particular domain. This can be updated any time by the owner of the project.
@@ -21,7 +21,7 @@ import './JB721FundingCycleMetadata.sol';
 struct JBLaunchProjectData {
   JBProjectMetadata projectMetadata;
   JBFundingCycleData data;
-  JB721FundingCycleMetadata metadata;
+  JBPayDataSourceFundingCycleMetadata metadata;
   uint256 mustStartAtOrAfter;
   JBGroupedSplits[] groupedSplits;
   JBFundAccessConstraints[] fundAccessConstraints;
