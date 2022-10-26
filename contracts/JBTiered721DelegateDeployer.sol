@@ -68,7 +68,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   */
   function deployDelegateFor(
     uint256 _projectId,
-    JBDeployTiered721DelegateData calldata _deployTiered721DelegateData
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData
   ) external override returns (IJBTiered721Delegate) {
     // Deploy the governance variant that was requested
     address codeToCopy;
@@ -80,7 +80,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       codeToCopy = address(globalGovernance);
     else revert INVALID_GOVERNANCE_TYPE();
 
-    JB721GlobalGovernance newDelegate = JB721GlobalGovernance(_clone(codeToCopy));
+    IJBTiered721Delegate newDelegate = IJBTiered721Delegate(_clone(codeToCopy));
     newDelegate.initialize(
       _projectId,
       _deployTiered721DelegateData.directory,
@@ -97,7 +97,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
     // Transfer the ownership to the specified address.
     if (_deployTiered721DelegateData.owner != address(0))
-      newDelegate.transferOwnership(_deployTiered721DelegateData.owner);
+      Ownable(address(newDelegate)).transferOwnership(_deployTiered721DelegateData.owner);
 
     emit DelegateDeployed(_projectId, newDelegate, _deployTiered721DelegateData.governanceType);
 

@@ -202,15 +202,15 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   function initialize(
     uint256 _projectId,
     IJBDirectory _directory,
-    string calldata _name,
-    string calldata _symbol,
+    string memory _name,
+    string memory _symbol,
     IJBFundingCycleStore _fundingCycleStore,
-    string calldata _baseUri,
+    string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
-    string calldata _contractUri,
-    JB721PricingParams calldata _pricing,
+    string memory _contractUri,
+    JB721PricingParams memory _pricing,
     IJBTiered721DelegateStore _store,
-    JBTiered721Flags calldata _flags
+    JBTiered721Flags memory _flags
   ) public override {
     // Make the original un-initializable.
     if(address(this) == codeOrigin) revert();

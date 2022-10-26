@@ -203,8 +203,8 @@ abstract contract JB721Delegate is
   function _initialize(
     uint256 _projectId,
     IJBDirectory _directory,
-    string calldata _name,
-    string calldata _symbol
+    string memory _name,
+    string memory _symbol
   ) internal {
     ERC721._initialize(_name, _symbol);
 
