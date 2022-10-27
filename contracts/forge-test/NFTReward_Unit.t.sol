@@ -3050,6 +3050,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3097,6 +3098,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3151,6 +3153,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3302,6 +3305,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3344,6 +3348,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3393,6 +3398,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3510,6 +3516,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3562,6 +3569,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3623,6 +3631,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[0] = _invalidTier;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3688,6 +3697,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3745,6 +3755,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tierSelected[0] = 1;
 
       bytes memory _metadata = abi.encode(
+        bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
         _dontMint,
@@ -3873,6 +3884,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -4003,6 +4015,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -4119,6 +4132,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -4274,7 +4288,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenToRedeem)
+        metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenToRedeem)
       })
     );
 
@@ -4384,7 +4398,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
-          metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
+          metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
         })
       );
 
@@ -4426,7 +4440,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
-                                transfersPausable: false
+        transfersPausable: false
       });
     }
 
@@ -4464,7 +4478,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           votingUnits: uint16(0),
           reservedRate: uint16(0),
           allowManualMint: false,
-                                  transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -4502,7 +4516,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
-          metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
+          metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
         })
       );
 
@@ -4611,7 +4625,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           useTotalOverflow: true,
           redemptionRate: _redemptionRate,
           memo: 'plz gib',
-          metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
+          metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
         })
       );
 
@@ -4740,7 +4754,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), // 0 fwd to delegate
         beneficiary: payable(_holder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
+        metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
       })
     );
 
@@ -4908,7 +4922,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }), // 0 fwd to delegate
         beneficiary: payable(_wrongHolder),
         memo: 'thy shall redeem',
-        metadata: abi.encode(type(IJB721Delegate).interfaceId, _tokenList)
+        metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
       })
     );
   }
