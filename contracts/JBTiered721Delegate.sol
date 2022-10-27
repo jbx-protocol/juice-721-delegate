@@ -549,7 +549,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     // Skip another 32 bytes reserved for generic extension parameters.
     // Check the 4 bytes interfaceId to verify the metadata is intended for this contract.
     if (
-      _data.metadata.length > 36 &&
+      _data.metadata.length > 68 &&
       bytes4(_data.metadata[64:68]) == type(IJB721Delegate).interfaceId
     ) {
       // Keep a reference to the flag indicating if the transaction should not mint anything.
