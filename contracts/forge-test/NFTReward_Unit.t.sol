@@ -3052,6 +3052,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3102,6 +3103,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3156,6 +3158,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3307,6 +3310,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3349,6 +3353,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3398,6 +3403,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3515,6 +3521,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3567,6 +3574,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3628,6 +3636,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[0] = _invalidTier;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -3693,6 +3702,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -3750,6 +3760,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tierSelected[0] = 1;
 
       bytes memory _metadata = abi.encode(
+        bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
         _dontMint,
@@ -3878,6 +3889,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
@@ -4008,6 +4020,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,
       _expectMintFromExtraFunds,
@@ -4124,6 +4137,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _tierIdsToMint[2] = 2;
 
     bytes memory _metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       _dontMint,

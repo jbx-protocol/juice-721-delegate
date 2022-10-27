@@ -101,6 +101,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     rawMetadata[0] = uint16(highestTier);
     bytes memory metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
       false,
@@ -196,6 +197,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Encode it to metadata
     bytes memory metadata = abi.encode(
+      bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
@@ -400,6 +402,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     rawMetadata[0] = uint16(highestTier); // reward tier
     bytes memory metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
       false,
@@ -496,6 +499,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       rawMetadata[0] = uint16(highestTier);
       metadata = abi.encode(
         bytes32(0),
+        bytes32(0),
         type(IJB721Delegate).interfaceId,
         false,
         false,
@@ -554,12 +558,15 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Calculate if we are rounding up or not. Used to verify 'numberOfReservedTokensOutstandingFor'
     uint256 _rounding;
     {
-      JB721Tier memory _tier = IJBTiered721Delegate(NFTRewardDataSource).store().tier(NFTRewardDataSource, highestTier);
+      JB721Tier memory _tier = IJBTiered721Delegate(NFTRewardDataSource).store().tier(
+        NFTRewardDataSource,
+        highestTier
+      );
       // '_reserveTokensMinted' is always 0 here
       uint256 _numberOfNonReservesMinted = _tier.initialQuantity - _tier.remainingQuantity;
       _rounding = _numberOfNonReservesMinted % _tier.reservedRate > 0 ? 1 : 0;
     }
-    
+
     // Check: Reserved left to mint is ?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(
@@ -596,6 +603,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     bytes memory metadata = abi.encode(
       bytes32(0),
+      bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
       false,
@@ -627,7 +635,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Check: token minted and outstanding reserved balances are correct (+1 as we're rounding up for non-null values)
     assertEq(rawMetadata.length, tokenBalance);
-    assertEq(reservedOutstanding, (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1);
+    assertEq(
+      reservedOutstanding,
+      (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1
+    );
 
     // Craft the metadata to redeem the tokenId's
     uint256[] memory redemptionId = new uint256[](5);
@@ -694,7 +705,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Check: token minted and outstanding reserved balances are correct (+1 as we're rounding up for non-null values)
     assertEq(rawMetadata.length, tokenBalance);
-    assertEq(reservedOutstanding, (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1);
+    assertEq(
+      reservedOutstanding,
+      (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1
+    );
   }
 
   // ----- internal helpers ------
