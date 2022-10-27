@@ -145,7 +145,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     @param _setTierDelegatesData An array of tiers to set delegates for.
    */
   function setTierDelegates(JBTiered721SetTierDelegatesData[] memory _setTierDelegatesData)
-    public
+    external
     virtual
     override
   {
