@@ -2226,6 +2226,85 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  // Bug test: tiers() returns inf array when last tier is removed?
+  function testJBTieredNFTRewardDelegate_adjustTiers_removeLastTier(
+  ) public {
+
+    uint256 initialNumberOfTiers = 3;
+
+    // Create tiers to remove
+    uint256[] memory tiersToRemove = new uint256[](3);
+    tiersToRemove[0] = 1;
+    tiersToRemove[1] = 2;
+    tiersToRemove[2] = 3;
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](initialNumberOfTiers);
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
+        shouldUseBeneficiaryAsDefault: false
+      });
+
+      _tierParamsToAdd[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10 + 1), // -1 to have lower tiers
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
+        shouldUseBeneficiaryAsDefault: false
+      });
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true,
+        pausable: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    vm.prank(owner);
+    _delegate.adjustTiers(new JB721TierParams[](0), tiersToRemove);
+
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
+
+    JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
+      address(_delegate),
+      0,
+      10 // max size: should be downsized if bug is fixed
+    );
+
+    // Check: expected number of tiers remainings
+    assertEq(_storedTiers.length, 3);
+  }
+
   function testJBTieredNFTRewardDelegate_adjustTiers_removeTiers_coverage() public {
     testJBTieredNFTRewardDelegate_adjustTiers_removeTiers(10, 6969, 4);
     testJBTieredNFTRewardDelegate_adjustTiers_removeTiers(10, 1234, 4);
@@ -2391,7 +2470,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
       0,
-      7 // 7 tiers remaining - Hardcoded to avoid stack too deep
+      10 // 7 tiers remaining, trying to get more, should reduce the returned array accordingly
     );
 
     // Check: Expected number of remaining tiers?
