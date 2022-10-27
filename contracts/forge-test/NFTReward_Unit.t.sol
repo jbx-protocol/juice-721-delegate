@@ -4291,8 +4291,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256[] memory _tokenList = new uint256[](5);
 
     for (uint256 i; i < 5; i++) {
-      _delegate.ForTest_setOwnerOf(i + 1, beneficiary);
-      _tokenList[i] = i + 1;
+      uint256 _tokenId = _generateTokenId(i + 1, 1);
+      _delegate.ForTest_setOwnerOf(_tokenId, beneficiary);
+      _tokenList[i] = _tokenId;
       _weight += (i + 1) * 10;
     }
 
