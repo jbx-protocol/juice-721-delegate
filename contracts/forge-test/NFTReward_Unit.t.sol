@@ -3034,7 +3034,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   // If the amount is above contribution floor, a tier is passed but the bool to prevent mint is true, do not mint
-  function testJBTieredNFTRewardDelegate_didPay_doesNotMintIfMetadataDeactivateMint() public {
+  function testJBTieredNFTRewardDelegate_didPay_doesNotMintIfMetadataDeactivateMintButKeepInCredit() public {
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -3077,6 +3077,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Make sure no new NFT was minted
     assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
+    
+    // Make sure the credit has been incremented
+    assertEq(delegate.creditsOf(msg.sender), tiers[0].contributionFloor + 10);
   }
 
   // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
