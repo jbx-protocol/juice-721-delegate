@@ -564,7 +564,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       );
 
       // Don't mint if not desired.
-      if (_dontMint) return;
+      if (_dontMint) {
+        // Store credits.
+        creditsOf[_data.beneficiary] = _leftoverAmount;
+
+        // Return instead of minting.
+        return;
+      }
 
       // Mint rewards if they were specified.
       if (_tierIdsToMint.length != 0)
