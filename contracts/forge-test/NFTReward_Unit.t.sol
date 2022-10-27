@@ -120,7 +120,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedTokenBeneficiary: reserveBeneficiary,
           encodedIPFSUri: tokenUris[i],
           allowManualMint: false,
-          shouldUseBeneficiaryAsDefault: false
+          shouldUseBeneficiaryAsDefault: false,
+                transfersPausable: false
         })
       );
     }
@@ -193,8 +194,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       }),
       JB721GovernanceType.NONE
     );
@@ -222,7 +222,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -235,7 +236,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+              transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -254,8 +256,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -294,7 +295,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -307,7 +309,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+        transfersPausable: _tierParams[i].transfersPausable
       });
 
       if (i != firstRemovedTier - 1 && i != secondRemovedTier - 1) {
@@ -331,8 +334,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -381,7 +383,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -394,7 +397,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+              transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -413,8 +417,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -432,7 +435,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(_tierParams[i].initialQuantity),
           votingUnits: uint16(_tierParams[i].votingUnits),
           reservedRate: uint16(_tierParams[i].reservedRate),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
     }
@@ -453,7 +457,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedRate: 0,
           reservedTokenBeneficiary: address(0),
           encodedIPFSUri: bytes32(0),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
   }
@@ -481,7 +486,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -500,8 +506,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -518,7 +523,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
     }
@@ -551,7 +557,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -570,8 +577,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -612,7 +618,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -631,8 +638,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -649,7 +655,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
       _delegate.test_store().ForTest_setReservesMintedFor(
@@ -684,7 +691,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -703,8 +711,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -770,8 +777,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -812,7 +818,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -831,8 +838,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -882,7 +888,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       if (i >= firstTier && i < lastTier) {
@@ -909,8 +916,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -948,7 +954,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -967,8 +974,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -985,7 +991,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
 
@@ -1020,8 +1027,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1060,8 +1066,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1101,8 +1106,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1136,7 +1140,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -1149,7 +1154,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+              transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -1174,8 +1180,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1221,7 +1226,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -1247,8 +1253,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
   }
@@ -1287,7 +1292,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -1306,8 +1312,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1324,7 +1329,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
 
@@ -1387,7 +1393,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -1406,8 +1413,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1424,7 +1430,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
 
@@ -1545,7 +1552,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -1564,8 +1572,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1582,7 +1589,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
 
@@ -1623,7 +1631,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
     }
 
@@ -1642,8 +1651,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1660,7 +1668,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
-          allowManualMint: false
+          allowManualMint: false,
+                transfersPausable: false
         })
       );
 
@@ -1711,7 +1720,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: true, // Allow this type of mint
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiersToMint[i] = uint16(i)+1;
@@ -1733,8 +1743,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1780,7 +1789,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: true, // Allow this type of mint
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiersToMintOne[i] = uint16(i)+1;
@@ -1808,8 +1818,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1859,7 +1868,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: true,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiersToMint[i] = uint16(i)+1;
@@ -1883,8 +1893,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -1969,7 +1978,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -1982,7 +1992,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+              transfersPausable: false
       });
     }
 
@@ -2008,8 +2019,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2027,7 +2037,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
@@ -2039,7 +2050,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+              transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -2129,7 +2141,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2142,7 +2155,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+              transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2161,8 +2175,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2266,7 +2279,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2279,7 +2293,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+              transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2306,8 +2321,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2331,7 +2345,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedTokenBeneficiary: reserveBeneficiary,
           encodedIPFSUri: tokenUris[0],
           allowManualMint: false,
-          shouldUseBeneficiaryAsDefault: false
+          shouldUseBeneficiaryAsDefault: false,
+                transfersPausable: false
         });
 
         _tiersRemaining[_arrayIndex] = JB721Tier({
@@ -2344,7 +2359,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedRate: _tierDataRemaining[_arrayIndex].reservedRate,
           reservedTokenBeneficiary: _tierDataRemaining[_arrayIndex].reservedTokenBeneficiary,
           encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri,
-          allowManualMint: _tierDataRemaining[_arrayIndex].allowManualMint
+          allowManualMint: _tierDataRemaining[_arrayIndex].allowManualMint,
+                transfersPausable: _tierDataRemaining[_arrayIndex].transfersPausable
         });
         _arrayIndex++;
       } else {
@@ -2368,7 +2384,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2381,7 +2398,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
 
       vm.expectEmit(true, true, true, true, address(_delegate));
@@ -2433,7 +2451,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2446,7 +2465,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2465,8 +2485,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2485,7 +2504,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2498,7 +2518,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -2536,7 +2557,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2549,7 +2571,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParam[i].reservedRate,
         reservedTokenBeneficiary: _tierParam[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParam[i].encodedIPFSUri,
-        allowManualMint: _tierParam[i].allowManualMint
+        allowManualMint: _tierParam[i].allowManualMint,
+        transfersPausable: _tierParam[i].transfersPausable
       });
     }
 
@@ -2568,8 +2591,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2588,7 +2610,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+              transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2601,7 +2624,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -2639,7 +2663,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2652,7 +2677,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+                transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2671,8 +2697,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2691,7 +2716,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+                transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2704,7 +2730,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
-        allowManualMint: _tierParamsToAdd[i].allowManualMint
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+                transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -2737,7 +2764,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+                        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2750,7 +2778,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+                        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2776,8 +2805,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -2860,7 +2888,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+                        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2873,7 +2902,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
-        allowManualMint: _tierParams[i].allowManualMint
+        allowManualMint: _tierParams[i].allowManualMint,
+                        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2892,8 +2922,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -3185,7 +3214,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedRate: uint16(0),
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+                        transfersPausable: false
       });
     }
 
@@ -3208,8 +3238,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -3452,8 +3481,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -3877,6 +3905,44 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle()
     public
   {
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](5);
+
+    // 5 tiers, floors from 10 to 50
+    for (uint256 i; i < 5; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        reservedRate: uint16(0),
+        encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
+        shouldUseBeneficiaryAsDefault: false,
+        transfersPausable: true
+      });
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true
+      })
+    );
+
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -3919,7 +3985,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
               useTotalOverflowForRedemptions: false,
               useDataSourceForPay: true,
               useDataSourceForRedeem: true,
-              dataSource: address(0),
+              dataSource: address(_delegate),
               metadata: 1 // 001_2
             })
           )
@@ -3927,7 +3993,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       )
     );
 
-    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+    uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(_delegate));
 
     bool _dontMint;
     bool _expectMintFromExtraFunds;
@@ -3947,7 +4013,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     vm.prank(mockTerminalAddress);
-    delegate.didPay(
+    _delegate.didPay(
       JBDidPayData(
         msg.sender,
         projectId,
@@ -3970,7 +4036,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 _tokenId = _generateTokenId(1, 1);
     vm.expectRevert(JBTiered721Delegate.TRANSFERS_PAUSED.selector);
     vm.prank(msg.sender);
-    IERC721(delegate).transferFrom(msg.sender, beneficiary, _tokenId);
+    IERC721(_delegate).transferFrom(msg.sender, beneficiary, _tokenId);
   }
 
   // If FC has the pause transfer flag but the delegate flag 'pausable' is false, transfer are not paused
@@ -4042,8 +4108,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: false
+        lockManualMintingChanges: true
       })
     );
 
@@ -4156,8 +4221,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4244,7 +4308,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+                                transfersPausable: false
       });
     }
 
@@ -4263,8 +4328,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4282,7 +4346,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          allowManualMint: false
+          allowManualMint: false,
+                                  transfersPausable: false
         })
       );
 
@@ -4293,8 +4358,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256[] memory _tokenList = new uint256[](5);
 
     for (uint256 i; i < 5; i++) {
-      _delegate.ForTest_setOwnerOf(i + 1, beneficiary);
-      _tokenList[i] = i + 1;
+      uint256 _tokenId = _generateTokenId(i + 1, 1);
+      _delegate.ForTest_setOwnerOf(_tokenId, beneficiary);
+      _tokenList[i] = _tokenId;
       _weight += (i + 1) * 10;
     }
 
@@ -4361,7 +4427,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+                                transfersPausable: false
       });
     }
 
@@ -4380,8 +4447,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4399,7 +4465,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          allowManualMint: false
+          allowManualMint: false,
+                                  transfersPausable: false
         })
       );
 
@@ -4468,7 +4535,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+                                transfersPausable: false
       });
     }
 
@@ -4488,8 +4556,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4507,7 +4574,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
-          allowManualMint: false
+          allowManualMint: false,
+                                  transfersPausable: false
         })
       );
 
@@ -4612,8 +4680,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4803,8 +4870,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       })
     );
 
@@ -4891,13 +4957,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
     internal
     pure
-    returns (uint256 tokenId)
+    returns (uint256)
   {
-    // The tier ID in the first 16 bits.
-    tokenId = _tierId;
-
-    // The token number in the rest.
-    tokenId |= _tokenNumber << 16;
+    return (_tierId * 1_000_000_000) + _tokenNumber;
   }
 
   // Check if every elements from smol are in bigg
@@ -5120,7 +5182,8 @@ contract ForTest_JBTiered721DelegateStore is
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
-        allowManualMint: _storedTier.allowManualMint
+        allowManualMint: _storedTier.allowManualMint,
+                                transfersPausable: _storedTier.transfersPausable
       });
 
       // Set the next sort index.

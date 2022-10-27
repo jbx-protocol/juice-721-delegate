@@ -11,6 +11,7 @@ pragma solidity ^0.8.0;
   @member encodedIPFSUri The URI to use for each token within the tier.
   @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member shouldUseBeneficiaryAsDefault A flag indicating if the `reservedTokenBeneficiary` should be stored as the default beneficiary for all tiers.
+  @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
 */
 struct JB721TierParams {
   uint80 contributionFloor;
@@ -22,4 +23,5 @@ struct JB721TierParams {
   bytes32 encodedIPFSUri;
   bool allowManualMint;
   bool shouldUseBeneficiaryAsDefault;
+  bool transfersPausable;
 }
