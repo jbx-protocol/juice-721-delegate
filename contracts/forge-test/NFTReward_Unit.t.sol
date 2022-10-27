@@ -3903,6 +3903,44 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle()
     public
   {
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](5);
+
+    // 5 tiers, floors from 10 to 50
+    for (uint256 i; i < 5; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        reservedRate: uint16(0),
+        encodedIPFSUri: tokenUris[0],
+        allowManualMint: false,
+        shouldUseBeneficiaryAsDefault: false,
+        transfersPausable: true
+      });
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true
+      })
+    );
+
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -3945,7 +3983,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
               useTotalOverflowForRedemptions: false,
               useDataSourceForPay: true,
               useDataSourceForRedeem: true,
-              dataSource: address(0),
+              dataSource: address(_delegate),
               metadata: 1 // 001_2
             })
           )
@@ -3953,7 +3991,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       )
     );
 
-    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+    uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(_delegate));
 
     bool _dontMint;
     bool _expectMintFromExtraFunds;
@@ -3973,7 +4011,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     vm.prank(mockTerminalAddress);
-    delegate.didPay(
+    _delegate.didPay(
       JBDidPayData(
         msg.sender,
         projectId,
@@ -3996,7 +4034,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 _tokenId = _generateTokenId(1, 1);
     vm.expectRevert(JBTiered721Delegate.TRANSFERS_PAUSED.selector);
     vm.prank(msg.sender);
-    IERC721(delegate).transferFrom(msg.sender, beneficiary, _tokenId);
+    IERC721(_delegate).transferFrom(msg.sender, beneficiary, _tokenId);
   }
 
   // If FC has the pause transfer flag but the delegate flag 'pausable' is false, transfer are not paused
