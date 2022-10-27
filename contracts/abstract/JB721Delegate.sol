@@ -237,7 +237,7 @@ abstract contract JB721Delegate is
     // Process the payment.
     _processPayment(_data);
   }
-event Test(bytes4);
+  
   /**
     @notice
     Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
