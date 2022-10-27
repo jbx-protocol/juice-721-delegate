@@ -9,6 +9,7 @@ pragma solidity ^0.8.0;
   @member votingUnits The amount of voting significance to give this tier compared to others.
   @member reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
   @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
+  @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
 */
 struct JBStored721Tier {
   uint80 contributionFloor;
@@ -18,4 +19,5 @@ struct JBStored721Tier {
   uint16 votingUnits;
   uint16 reservedRate;
   bool allowManualMint;
+  bool transfersPausable;
 }

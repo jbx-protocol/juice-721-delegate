@@ -260,7 +260,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           reservedRate: _storedTier.reservedRate,
           reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
           encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
-          allowManualMint: _storedTier.allowManualMint
+          allowManualMint: _storedTier.allowManualMint,
+          transfersPausable: _storedTier.transfersPausable
         });
       }
 
@@ -299,7 +300,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
-        allowManualMint: _storedTier.allowManualMint
+        allowManualMint: _storedTier.allowManualMint,
+        transfersPausable: _storedTier.transfersPausable
       });
   }
 
@@ -335,7 +337,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
-        allowManualMint: _storedTier.allowManualMint
+        allowManualMint: _storedTier.allowManualMint,
+        transfersPausable: _storedTier.transfersPausable
       });
   }
 
@@ -705,7 +708,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
-        allowManualMint: _tierToAdd.allowManualMint
+        allowManualMint: _tierToAdd.allowManualMint,
+        transfersPausable: _tierToAdd.transfersPausable
       });
 
       // Set the reserved token beneficiary if needed.
