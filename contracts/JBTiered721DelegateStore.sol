@@ -29,7 +29,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error CANT_MINT_MANUALLY();
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
+  error INVALID_PRICE_SORT_ORDER();
+  error INVALID_QUANTITY();
   error INVALID_TIER();
+  error MAX_TIERS_EXCEEDED();
   error NO_QUANTITY();
   error OUT();
   error RESERVED_RATE_NOT_ALLOWED();
@@ -38,7 +41,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
-  error INVALID_PRICE_SORT_ORDER();
+
+  //*********************************************************************//
+  // -------------------- private constant properties ------------------ //
+  //*********************************************************************//
+
+  uint256 private constant _ONE_BILLION = 1_000_000_000;
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -583,8 +591,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @return The tier number of the specified token ID.
   */
   function tierIdOfToken(uint256 _tokenId) public pure override returns (uint256) {
-    // The tier ID is in the first 16 bits.
-    return uint256(uint16(_tokenId));
+    return _tokenId / _ONE_BILLION;
   }
 
   /** 
@@ -636,6 +643,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the greatest tier ID.
     uint256 _currentMaxTierIdOf = maxTierIdOf[msg.sender];
 
+    // Make sure the max number of tiers hasn't been reached.
+    if(_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
+
     // Keep a reference to the current last sorted tier ID.
     uint256 _currentLastSortIndex = _lastSortIndexOf(msg.sender);
 
@@ -659,6 +669,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     for (uint256 _i; _i < _numberOfNewTiers; ) {
       // Set the tier being iterated on.
       _tierToAdd = _tiersToAdd[_i];
+
+      // Make sure the max is enforced.
+      if (_tierToAdd.initialQuantity > _ONE_BILLION - 1) revert INVALID_QUANTITY();
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
       if (_i != 0 && _tierToAdd.contributionFloor < _tiersToAdd[_i - 1].contributionFloor)
@@ -1265,18 +1278,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _tierId The ID of the tier to generate an ID for.
     @param _tokenNumber The number of the token in the tier.
 
-    @return tokenId The ID of the token.
+    @return The ID of the token.
   */
   function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
     internal
     pure
-    returns (uint256 tokenId)
+    returns (uint256)
   {
-    // The tier ID in the first 16 bits.
-    tokenId = _tierId;
-
-    // The token number in the rest.
-    tokenId |= _tokenNumber << 16;
+    return (_tierId * _ONE_BILLION) + _tokenNumber;
   }
 
   /** 
