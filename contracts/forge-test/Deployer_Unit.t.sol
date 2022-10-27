@@ -135,7 +135,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
   {
     JBProjectMetadata memory projectMetadata;
     JBFundingCycleData memory data;
-    JBFundingCycleMetadata memory metadata;
+    JBPayDataSourceFundingCycleMetadata memory metadata;
     JBGroupedSplits[] memory groupedSplits;
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
@@ -190,7 +190,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       ballot: IJBFundingCycleBallot(address(0))
     });
 
-    metadata = JBFundingCycleMetadata({
+    metadata = JBPayDataSourceFundingCycleMetadata({
       global: JBGlobalFundingCycleMetadata({
         allowSetTerminals: false,
         allowSetController: false,
@@ -209,9 +209,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       holdFees: false,
       preferClaimedTokenOverride: false,
       useTotalOverflowForRedemptions: false,
-      useDataSourceForPay: false,
       useDataSourceForRedeem: false,
-      dataSource: address(0),
       metadata: 0x00
     });
 

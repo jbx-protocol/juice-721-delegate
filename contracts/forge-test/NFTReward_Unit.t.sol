@@ -9,6 +9,7 @@ import './utils/AccessJBLib.sol';
 import 'forge-std/Test.sol';
 
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
 
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
