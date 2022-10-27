@@ -338,7 +338,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       reservedTokenBeneficiary: reserveBeneficiary,
       encodedIPFSUri: tokenUris[0],
       allowManualMint: false,
-      shouldUseBeneficiaryAsDefault: false
+      shouldUseBeneficiaryAsDefault: false,
+      transfersPausable: false
     });
 
     // Remove all the existing tiers and add a new one at the previous paid price
@@ -717,7 +718,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -741,8 +743,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       flags: JBTiered721Flags({
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       }),
       governanceType: JB721GovernanceType.NONE
     });
@@ -760,14 +761,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   }
 
   // Generate tokenId's based on token number and tier
-  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
-    internal
-    pure
-    returns (uint256 tokenId)
-  {
-    // The tier ID in the first 16 bits.
-    tokenId = _tierId;
-    // The token number in the rest.
-    tokenId |= _tokenNumber << 16;
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber) internal pure returns (uint256) {
+    return (_tierId * 1_000_000_000) + _tokenNumber;
   }
 }

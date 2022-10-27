@@ -151,7 +151,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false
+        shouldUseBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -175,8 +176,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       flags: JBTiered721Flags({
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
-        lockManualMintingChanges: true,
-        pausable: true
+        lockManualMintingChanges: true
       }),
       governanceType: JB721GovernanceType.NONE
     });
