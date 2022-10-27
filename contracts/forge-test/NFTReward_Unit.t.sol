@@ -4356,8 +4356,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256[] memory _tokenList = new uint256[](5);
 
     for (uint256 i; i < 5; i++) {
-      _delegate.ForTest_setOwnerOf(i + 1, beneficiary);
-      _tokenList[i] = i + 1;
+      uint256 _tokenId = _generateTokenId(i + 1, 1);
+      _delegate.ForTest_setOwnerOf(_tokenId, beneficiary);
+      _tokenList[i] = _tokenId;
       _weight += (i + 1) * 10;
     }
 
@@ -4954,13 +4955,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
     internal
     pure
-    returns (uint256 tokenId)
+    returns (uint256)
   {
-    // The tier ID in the first 16 bits.
-    tokenId = _tierId;
-
-    // The token number in the rest.
-    tokenId |= _tokenNumber << 16;
+    return (_tierId * 1_000_000_000) + _tokenNumber;
   }
 
   // Check if every elements from smol are in bigg
