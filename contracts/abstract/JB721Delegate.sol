@@ -116,8 +116,9 @@ abstract contract JB721Delegate is
     if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
+    // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 4 || bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) {
       revert INVALID_REDEMPTION_METADATA();
     }
@@ -130,7 +131,7 @@ abstract contract JB721Delegate is
     if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
 
     // Decode the metadata
-    (, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
+    (, , uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
 
     // Get a reference to the redemption rate of the provided tokens.
     uint256 _redemptionWeight = _redemptionWeightOf(_decodedTokenIds);
@@ -236,7 +237,7 @@ abstract contract JB721Delegate is
     // Process the payment.
     _processPayment(_data);
   }
-
+event Test(bytes4);
   /**
     @notice
     Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
@@ -255,12 +256,13 @@ abstract contract JB721Delegate is
     ) revert INVALID_REDEMPTION_EVENT();
 
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
+    // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 4 || bytes4(_data.metadata[0:4]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) revert INVALID_REDEMPTION_METADATA();
 
     // Decode the metadata.
-    (, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes4, uint256[]));
+    (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
 
     // Get a reference to the number of token IDs being checked.
     uint256 _numberOfTokenIds = _decodedTokenIds.length;
