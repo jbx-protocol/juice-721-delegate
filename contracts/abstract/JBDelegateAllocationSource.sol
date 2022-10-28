@@ -2,9 +2,9 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
-import '../interfaces/IJBDelegateSource.sol';
+import '../interfaces/IJBDelegateAllocationSource.sol';
 
-abstract contract JBDelegateSource is IJBDelegateSource, IJBPayDelegate {
+abstract contract JBDelegateAllocationSource is IJBDelegateAllocationSource, IJBPayDelegate {
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//

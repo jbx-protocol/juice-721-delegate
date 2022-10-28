@@ -8,7 +8,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '../interfaces/IJB721Delegate.sol';
 import './ERC721.sol';
-import './JBDelegateSource.sol';
+import './JBDelegateAllocationSource.sol';
 
 /**
   @title 
@@ -33,7 +33,7 @@ abstract contract JB721Delegate is
   IJBFundingCycleDataSource,
   IJBPayDelegate,
   IJBRedemptionDelegate,
-  JBDelegateSource,
+  JBDelegateAllocationSource,
   ERC721
 {
   //*********************************************************************//
@@ -212,7 +212,7 @@ abstract contract JB721Delegate is
     JBPayDelegateAllocation[] memory _delegateAllocations
   ) internal {
     ERC721._initialize(_name, _symbol);
-    JBDelegateSource._initialize(_delegateAllocations, 0);
+    JBDelegateAllocationSource._initialize(_delegateAllocations, 0);
 
     projectId = _projectId;
     directory = _directory;
