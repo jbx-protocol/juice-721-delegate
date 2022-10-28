@@ -1,4 +1,4 @@
-# Juicebox NFT Distribution Mechanism
+# Juicebox 721 Distribution Mechanism
 
 ## Motivation
 
