@@ -4,6 +4,7 @@ pragma solidity ^0.8.16;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
@@ -43,7 +44,9 @@ abstract contract JB721Delegate is
   error INVALID_REDEMPTION_EVENT();
   error UNAUTHORIZED();
   error UNEXPECTED_TOKEN_REDEEMED();
+  error INCORRECT_DECIMAL_AMOUNT();
   error INVALID_REDEMPTION_METADATA();
+  error TERMINAL_NOT_FOUND();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -118,7 +121,8 @@ abstract contract JB721Delegate is
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 ||
+      bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) {
       revert INVALID_REDEMPTION_METADATA();
     }
@@ -131,7 +135,10 @@ abstract contract JB721Delegate is
     if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
 
     // Decode the metadata
-    (, , uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+    (, , uint256[] memory _decodedTokenIds) = abi.decode(
+      _data.metadata,
+      (bytes32, bytes4, uint256[])
+    );
 
     // Get a reference to the redemption rate of the provided tokens.
     uint256 _redemptionWeight = _redemptionWeightOf(_decodedTokenIds);
@@ -213,6 +220,30 @@ abstract contract JB721Delegate is
     directory = _directory;
   }
 
+  /** 
+    @notice
+    Received funds are paid to the default project ID.
+
+    @dev
+    This function is called automatically when the contract receives an ETH payment.
+  */
+  receive() external payable virtual override {
+    // Find the terminal for the specified project.
+    IJBPaymentTerminal _terminal = directory.primaryTerminalOf(projectId, JBTokens.ETH);
+
+    // There must be a terminal.
+    if (_terminal == IJBPaymentTerminal(address(0))) revert TERMINAL_NOT_FOUND();
+
+    // The amount's decimals must match the terminal's expected decimals.
+    if (_terminal.decimalsForToken(JBTokens.ETH) != 18) revert INCORRECT_DECIMAL_AMOUNT();
+
+    // Get a reference to the amount being paid.
+    uint256 _amount = address(this).balance;
+
+    // Add to balance so tokens don't get issued.
+    _terminal.addToBalanceOf{value: _amount}(projectId, _amount, JBTokens.ETH, '', bytes(''));
+  }
+
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
@@ -239,7 +270,9 @@ abstract contract JB721Delegate is
     // Process the payment.
     _processPayment(_data);
   }
-event Test(bytes4);
+
+  event Test(bytes4);
+
   /**
     @notice
     Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
@@ -260,11 +293,15 @@ event Test(bytes4);
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 ||
+      bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) revert INVALID_REDEMPTION_METADATA();
 
     // Decode the metadata.
-    (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+    (, , uint256[] memory _decodedTokenIds) = abi.decode(
+      _data.metadata,
+      (bytes32, bytes4, uint256[])
+    );
 
     // Get a reference to the number of token IDs being checked.
     uint256 _numberOfTokenIds = _decodedTokenIds.length;
