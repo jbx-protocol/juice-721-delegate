@@ -1,8 +1,8 @@
-# Juicebox Contribution NFT Reward Mechanism
+# Juicebox NFT Distribution Mechanism
 
 ## Motivation
 
-If added to an existing project via a funding cycle, NFT rewards can provide additional incentive for contributors to participate in funding of a project.
+If added to an existing project via a funding cycle, NFTs can provide utility or incentive for contributors to participate in funding of a project.
 
 ## Mechanic
 
