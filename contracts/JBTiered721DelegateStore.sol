@@ -19,7 +19,7 @@ import './structs/JBStored721Tier.sol';
   IJBTiered721DelegateStore: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
 */
 contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
-  using JBBitmap for mapping(uint256=>uint256);
+  using JBBitmap for mapping(uint256 => uint256);
   using JBBitmap for JBBitmapWord;
 
   //*********************************************************************//
@@ -92,13 +92,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-    For each tier ID, a flag indicating if the tier has been removed. 
+    For each tier ID, a bitmap containing flags indicating if the tier has been removed. 
 
     _nft The NFT contract to which the tier belong.
-    _depth The bitmap row
-    _word The row content
+    _depth The bitmap row.
+    _word The row content bitmap.
   */
-  mapping(address => mapping(uint256 => uint256)) internal _isTierRemoved;
+  mapping(address => mapping(uint256 => uint256)) internal _isTierRemovedBitmapWord;
 
   /** 
     @notice
@@ -181,7 +181,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /**
     @notice
-    Custom token URI resolver, superceeds base URI.
+    Custom token URI resolver, supersedes base URI.
 
     _nft The NFT for which the token URI resolver applies.
   */
@@ -235,17 +235,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the index being iterated on, starting with the starting index.
     uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(_nft);
 
-    // Keep a referecen to the tier being iterated on.
+    // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
-    // Initialise a BitmapWord for isRemoved
-    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
+    // Initialize a BitmapWord for isRemoved
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.
     while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
       // Is the current index outside the currently stored word for isRemoved?
       if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
+        _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
 
       if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
         _storedTier = _storedTierOf[_nft][_currentSortIndex];
@@ -488,9 +488,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return True if the tier has been removed
   */
-  function isTierRemoved(address _nft, uint256 _tierId) external view override returns(bool) {
-    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_tierId);
-    
+  function isTierRemoved(address _nft, uint256 _tierId) external view override returns (bool) {
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_tierId);
+
     return _bitmapWord.isTierIdRemoved(_tierId);
   }
 
@@ -505,7 +505,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _nft The NFT to get a balance from.
     @param _owner The address to check the balance of.
 
-    @return balance The number of tokens owners by the owner accross all tiers.
+    @return balance The number of tokens owners by the owner across all tiers.
   */
   function balanceOf(address _nft, address _owner) public view override returns (uint256 balance) {
     // Keep a reference to the greatest tier ID.
@@ -568,13 +568,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _maxTierId; ) {
       // Keep a reference to the stored tier.
-      _storedTier = _storedTierOf[_nft][_i + 1];
+      unchecked {
+        _storedTier = _storedTierOf[_nft][_i + 1];
+      }
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        (_storedTier.contributionFloor *
-          (_storedTier.initialQuantity - _storedTier.remainingQuantity)) +
-        _numberOfReservedTokensOutstandingFor(_nft, _i, _storedTier);
+        _storedTier.contributionFloor *
+        ((_storedTier.initialQuantity - _storedTier.remainingQuantity) +
+          _numberOfReservedTokensOutstandingFor(_nft, _i + 1, _storedTier));
 
       unchecked {
         ++_i;
@@ -604,7 +606,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @param _nft The NFT to get the reserved token beneficiary within.
     @param _tierId The ID of the tier to get a reserved token beneficiary of.
 
-    @return The reserved token benficiary.
+    @return The reserved token beneficiary.
   */
   function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
     public
@@ -635,7 +637,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return tierIds The IDs of the tiers added.
   */
-  function recordAddTiers(JB721TierParams[] memory _tiersToAdd)
+  function recordAddTiers(JB721TierParams[] calldata _tiersToAdd)
     external
     override
     returns (uint256[] memory tierIds)
@@ -713,14 +715,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       });
 
       // Set the reserved token beneficiary if needed.
-      if (
-        _tierToAdd.reservedTokenBeneficiary != address(0) &&
-        _tierToAdd.reservedTokenBeneficiary != defaultReservedTokenBeneficiaryOf[msg.sender]
-      ) {
+      if (_tierToAdd.reservedTokenBeneficiary != address(0))
         if (_tierToAdd.shouldUseBeneficiaryAsDefault)
           defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
         else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
-      }
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
@@ -730,8 +728,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep track of the sort index.
         uint256 _currentSortIndex = _startSortIndex;
 
-        // Initialise a BitmapWord for isRemoved
-        JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
+        // Initialize a BitmapWord for isRemoved
+        JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(
+          _currentSortIndex
+        );
 
         // Keep a reference to the idex to iterate on next.
         uint256 _next;
@@ -739,7 +739,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         while (_currentSortIndex != 0) {
           // Is the current index outside the currently stored word?
           if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
-            _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
+            _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_currentSortIndex);
 
           // Set the next index.
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentLastSortIndex);
@@ -755,7 +755,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // If this is the last tier being added, track the current last sort index if it's not already tracked.
             if (
-              _i == _numberOfNewTiers - 1 && 
+              _i == _numberOfNewTiers - 1 &&
               _trackedLastSortTierIdOf[msg.sender] != _currentLastSortIndex
             ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortIndex;
 
@@ -785,8 +785,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             _currentSortIndex = 0;
 
             // If there's currently a last sort index tracked, override it.
-            if (_trackedLastSortTierIdOf[msg.sender] != 0) 
-              _trackedLastSortTierIdOf[msg.sender] = 0;
+            if (_trackedLastSortTierIdOf[msg.sender] != 0) _trackedLastSortTierIdOf[msg.sender] = 0;
           }
           // Move on to the next index.
           else {
@@ -866,7 +865,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Sets the reserved token beneficiary.
 
-    @param _beneficiary The reservd token beneficiary.
+    @param _beneficiary The reserved token beneficiary.
   */
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external override {
     defaultReservedTokenBeneficiaryOf[msg.sender] = _beneficiary;
@@ -876,7 +875,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Record a token transfer.
 
-    @param _tierId The ID the tier being transfered
+    @param _tierId The ID the tier being transferred.
     @param _from The sender of the token.
     @param _to The recipient of the token.
   */
@@ -920,7 +919,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_storedTierOf[msg.sender][_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
 
       // Set the tier as removed.
-      _isTierRemoved[msg.sender].removeTier(_tierId);
+      _isTierRemovedBitmapWord[msg.sender].removeTier(_tierId);
 
       unchecked {
         ++_i;
@@ -947,6 +946,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       uint256 leftoverAmount
     )
   {
+    // If no tiers at all, exit early without token to mint
+    if (maxTierIdOf[msg.sender] == 0) return (0, 0, _amount);
+
     // Keep a reference to the last tier ID.
     uint256 _lastTierId = _lastSortIndexOf(msg.sender);
 
@@ -961,8 +963,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the best contribution floor.
     uint256 _bestContributionFloor;
 
-    // Initialise a BitmapWord to read isRemoved
-    JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
+    // Initialize a BitmapWord to read isRemoved
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(
+      _currentSortIndex
+    );
 
     while (_currentSortIndex != 0) {
       // Set the tier being iterated on. Tier's are 1 indexed.
@@ -970,7 +974,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Is the current index outside the currently stored word?
       if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemoved[msg.sender].readId(_currentSortIndex);
+        _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_currentSortIndex);
 
       // If the contribution floor has gone over, break out of the loop.
       if (_storedTier.contributionFloor > _amount) _currentSortIndex = 0;
@@ -1046,8 +1050,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize an array with the appropriate length.
     tokenIds = new uint256[](_numberOfTiers);
 
-    // Initialise a BitmapWord for isRemoved.
-    JBBitmapWord memory _bitmapWord = _isTierRemoved[msg.sender].readId(_tierIds[0]);
+    // Initialize a BitmapWord for isRemoved.
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierIds[0]);
 
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
@@ -1055,7 +1059,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Is the current index outside the currently stored word?
       if (_bitmapWord.refreshBitmapNeeded(_tierId))
-        _bitmapWord = _isTierRemoved[msg.sender].readId(_tierId);
+        _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierId);
 
       // Make sure the tier hasn't been removed.
       if (_bitmapWord.isTierIdRemoved(_tierId)) revert TIER_REMOVED();
@@ -1105,7 +1109,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _tokenIds The IDs of the tokens burned.
   */
-  function recordBurn(uint256[] memory _tokenIds) external override {
+  function recordBurn(uint256[] calldata _tokenIds) external override {
     // Get a reference to the number of token IDs provided.
     uint256 _numberOfTokenIds = _tokenIds.length;
 
@@ -1197,14 +1201,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep track of the previous non-removed index.
     uint256 _previous;
 
-    // Initialise a BitmapWord for isRemoved.
-    JBBitmapWord memory _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
+    // Initialize a BitmapWord for isRemoved.
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
 
     // Make the sorted array.
     while (_currentSortIndex != 0) {
       // Is the current index outside the currently stored word?
       if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemoved[_nft].readId(_currentSortIndex);
+        _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
 
       if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
         // If the current index being iterated on isn't an increment of the previous, set the correct tier after if needed.
@@ -1243,11 +1247,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _tierId,
     JBStored721Tier memory _storedTier
   ) internal view returns (uint256) {
-    // Invalid tier or no reserved rate?
-    if (_storedTier.initialQuantity == 0 || _storedTier.reservedRate == 0) return 0;
-
-    // No token minted yet? Round up to 1.
-    if (_storedTier.initialQuantity == _storedTier.remainingQuantity) return 1;
+    // No reserves outstanding if no mints or no reserved rate.
+    if (
+      _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity
+    ) return 0;
 
     // The number of reserved tokens of the tier already minted.
     uint256 _reserveTokensMinted = numberOfReservesMintedFor[_nft][_tierId];
@@ -1261,15 +1264,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _storedTier.remainingQuantity -
       _reserveTokensMinted;
 
-    // Store the numerator common to the next two calculations.
-    uint256 _numerator = uint256(_numberOfNonReservesMinted * _storedTier.reservedRate);
-
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
-    uint256 _numberReservedTokensMintable = _numerator / JBConstants.MAX_RESERVED_RATE;
+    uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _storedTier.reservedRate;
 
     // Round up.
-    if (_numerator - JBConstants.MAX_RESERVED_RATE * _numberReservedTokensMintable > 0)
-      ++_numberReservedTokensMintable;
+    if (_numberOfNonReservesMinted % _storedTier.reservedRate > 0) ++_numberReservedTokensMintable;
+
+    // Make sure there are more mintable than have been minted. This is possible if some tokens have been burned.
+    if (_reserveTokensMinted > _numberReservedTokensMintable) return 0;
 
     // Return the difference between the amount mintable and the amount already minted.
     return _numberReservedTokensMintable - _reserveTokensMinted;

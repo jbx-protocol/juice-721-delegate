@@ -40,6 +40,8 @@ import 'forge-std/Test.sol';
 
 import './AccessJBLib.sol';
 
+import './../../structs/JBPayDataSourceFundingCycleMetadata.sol';
+
 // Base contract for Juicebox system tests.
 //
 // Provides common functionality, such as deploying contracts on test setup.
@@ -64,7 +66,7 @@ contract TestBaseWorkflow is Test {
   JBETHPaymentTerminal internal _jbETHPaymentTerminal;
   JBProjectMetadata internal _projectMetadata;
   JBFundingCycleData internal _data;
-  JBFundingCycleMetadata internal _metadata;
+  JBPayDataSourceFundingCycleMetadata internal _metadata;
   JBGroupedSplits[] internal _groupedSplits;
   JBFundAccessConstraints[] internal _fundAccessConstraints;
   IJBPaymentTerminal[] internal _terminals;
@@ -157,7 +159,7 @@ contract TestBaseWorkflow is Test {
       ballot: IJBFundingCycleBallot(address(0))
     });
 
-    _metadata = JBFundingCycleMetadata({
+    _metadata = JBPayDataSourceFundingCycleMetadata({
       global: JBGlobalFundingCycleMetadata({
         allowSetTerminals: false,
         allowSetController: false,
@@ -176,9 +178,7 @@ contract TestBaseWorkflow is Test {
       holdFees: false,
       preferClaimedTokenOverride: false,
       useTotalOverflowForRedemptions: false,
-      useDataSourceForPay: true,
       useDataSourceForRedeem: true,
-      dataSource: address(0),
       metadata: 0x00
     });
 

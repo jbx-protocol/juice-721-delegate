@@ -10,7 +10,7 @@ import '../structs/JBBitmapWord.sol';
 library JBBitmap {
   /**
     @notice
-    initialise a BitmapWord struct, based on the mapping storage pointer and a given index.
+    Initialize a BitmapWord struct, based on the mapping storage pointer and a given index.
   */
   function readId(mapping(uint256 => uint256) storage self, uint256 _index)
     internal
@@ -71,6 +71,6 @@ library JBBitmap {
     Return the lines of the bitmap matrix where an index lies.
   */
   function _retrieveDepth(uint256 _index) internal pure returns (uint256) {
-    return _index / 256;
+    return _index >> 8; // div by 256
   }
 }

@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
+import './JBPayDataSourceFundingCycleMetadata.sol';
 
 /**
   @member data Data that defines the project's first funding cycle. These properties will remain fixed for the duration of the funding cycle.
@@ -17,7 +17,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol';
 */
 struct JBReconfigureFundingCyclesData {
   JBFundingCycleData data;
-  JBFundingCycleMetadata metadata;
+  JBPayDataSourceFundingCycleMetadata metadata;
   uint256 mustStartAtOrAfter;
   JBGroupedSplits[] groupedSplits;
   JBFundAccessConstraints[] fundAccessConstraints;

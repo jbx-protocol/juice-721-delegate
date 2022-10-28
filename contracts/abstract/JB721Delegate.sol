@@ -85,7 +85,7 @@ abstract contract JB721Delegate is
       JBPayDelegateAllocation[] memory delegateAllocations
     )
   {
-    // Forward the recieved weight and memo, and use this contract as a pay delegate.
+    // Forward the received weight and memo, and use this contract as a pay delegate.
     weight = _data.weight;
     memo = _data.memo;
     delegateAllocations = new JBPayDelegateAllocation[](1);
@@ -174,7 +174,7 @@ abstract contract JB721Delegate is
     @dev
     See {IERC165-supportsInterface}.
 
-    @param _interfaceId The ID of the interface to check for adherance to.
+    @param _interfaceId The ID of the interface to check for adherence to.
   */
   function supportsInterface(bytes4 _interfaceId)
     public
@@ -227,11 +227,13 @@ abstract contract JB721Delegate is
     @param _data The Juicebox standard project payment data.
   */
   function didPay(JBDidPayData calldata _data) external payable virtual override {
+    uint256 _projectId = projectId;
+
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
       msg.value != 0 ||
-      !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender)) ||
-      _data.projectId != projectId
+      !directory.isTerminalOf(_projectId, IJBPaymentTerminal(msg.sender)) ||
+      _data.projectId != _projectId
     ) revert INVALID_PAYMENT_EVENT();
 
     // Process the payment.
@@ -306,7 +308,7 @@ event Test(bytes4);
 
   /** 
     @notice
-    A function that will run when a tokens are burned via redemption.
+    A function that will run when tokens are burned via redemption.
 
     @param _tokenIds The IDs of the tokens that were burned.
   */

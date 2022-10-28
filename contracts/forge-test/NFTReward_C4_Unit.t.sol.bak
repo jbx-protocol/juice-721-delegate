@@ -1,0 +1,549 @@
+pragma solidity ^0.8.16;
+
+import '../JBTiered721DelegateDeployer.sol';
+import '../JBTiered721Delegate.sol';
+import '../JBTiered721DelegateStore.sol';
+import '../interfaces/IJBTiered721Delegate.sol';
+import '../structs/JBBitmapWord.sol';
+import './utils/AccessJBLib.sol';
+import 'forge-std/Test.sol';
+
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
+
+contract TestJBTieredNFTRewardDelegate is Test {
+  using stdStorage for StdStorage;
+  AccessJBLib internal _accessJBLib;
+
+  address beneficiary = address(bytes20(keccak256('beneficiary')));
+  address owner = address(bytes20(keccak256('owner')));
+  address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
+  address mockJBDirectory = address(bytes20(keccak256('mockJBDirectory')));
+  address mockJBFundingCycleStore = address(bytes20(keccak256('mockJBFundingCycleStore')));
+  address mockTokenUriResolver = address(bytes20(keccak256('mockTokenUriResolver')));
+  address mockTerminalAddress = address(bytes20(keccak256('mockTerminalAddress')));
+  address mockJBProjects = address(bytes20(keccak256('mockJBProjects')));
+
+  uint256 projectId = 69;
+
+  string name = 'NAME';
+  string symbol = 'SYM';
+  string baseUri = 'http://www.null.com/';
+  string contractUri = 'ipfs://null';
+
+  // NodeJS: function con(hash) { Buffer.from(bs58.decode(hash).slice(2)).toString('hex') }
+  // JS;  0x${bs58.decode(hash).slice(2).toString('hex')})
+
+  bytes32[] tokenUris = [
+    bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
+    bytes32(0xf5d60fc6f462f6176982833f5e2ca222a2ced265fa94e4ce1c477d74910250ed),
+    bytes32(0x4258512cfb09993d9f3613a59ffc592a5593abf3c06ed57a22656c5fbca4de23),
+    bytes32(0xae7035a8ef12433adbf4a55f2063696972bcf50434fe70ee6d8ab78f83e358c8),
+    bytes32(0xae7035a8ef12433adbf4a55f2faabecff3446276fdbc6f6209e6bba25ee358c8),
+    bytes32(0xae7035a8ef1242fc4b803a9284453843f278307462311f8b8b90fddfcbe358c8),
+    bytes32(0xae824fb9f7de128f66cb5e224e4f8c65f37c479ee6ec7193c8741d6f997f5a18),
+    bytes32(0xae7035a8f8d14617dd6d904265fe7d84a493c628385ffba7016d6463c852e8c8),
+    bytes32(0xae7035a8ef12433adbf4a55f2063696972bcf50434fe70ee6d8ab78f74adbbf7),
+    bytes32(0xae7035a8ef12433adbf4a55f2063696972bcf51c38098273db23452d955758c8)
+  ];
+
+  string[] theoricHashes = [
+    'QmWmyoMoctfbAaiEs2G46gpeUmhqFRDW6KWo64y5r581Vz',
+    'QmetHutWQPz3qfu5jhTi1bqbRZXt8zAJaqqxkiJoJCX9DN',
+    'QmSodj3RSrXKPy3WRFSPz8HRDVyRdrBtjxBfoiWBgtGugN',
+    'Qma5atSTeoKJkcXe2R7gdmcvPvLJJkh2jd4cDZeM1wnFgK',
+    'Qma5atSTeoKJkcXe2R7typcvPvLJJkh2jd4cDZeM1wnFgK',
+    'Qma5atSTeoKJKSQSDFcgdmcvPvLJJkh2jd4cDZeM1wnFgK',
+    'Qma5rtytgfdgzrg4345RFGdfbzert345rfgvs5YRtSTkcX',
+    'Qma5atSTkcXe2R7gdmcvPvLJJkh2234234QcDZeM1wnFgK',
+    'Qma5atSTeoKJkcXe2R7gdmcvPvLJJkh2jd4cDZeM1ZERze',
+    'Qma5atSTeoKJkcXe2R7gdmcvPvLJLkh2jd4cDZeM1wnFgK'
+  ];
+
+  JB721TierParams[] tiers;
+
+  JBTiered721Delegate delegate; 
+  JBTiered721Delegate noGovernanceOrigin; // noGovernanceOrigin
+
+  address delegate_i = address(bytes20(keccak256('delegate_implementation')));
+
+
+  event Mint(
+    uint256 indexed tokenId,
+    uint256 indexed tierId,
+    address indexed beneficiary,
+    uint256 totalAmountContributed,
+    address caller
+  );
+
+  event MintReservedToken(
+    uint256 indexed tokenId,
+    uint256 indexed tierId,
+    address indexed beneficiary,
+    address caller
+  );
+
+  event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
+
+  event AddTier(uint256 indexed tierId, JB721TierParams tier, address caller);
+
+  event RemoveTier(uint256 indexed tierId, address caller);
+
+  event CleanTiers(address indexed nft, address caller);
+
+  function setUp() public {
+    _accessJBLib = new AccessJBLib();
+    vm.label(beneficiary, 'beneficiary');
+    vm.label(owner, 'owner');
+    vm.label(reserveBeneficiary, 'reserveBeneficiary');
+    vm.label(mockJBDirectory, 'mockJBDirectory');
+    vm.label(mockJBFundingCycleStore, 'mockJBFundingCycleStore');
+    vm.label(mockTokenUriResolver, 'mockTokenUriResolver');
+    vm.label(mockTerminalAddress, 'mockTerminalAddress');
+    vm.label(mockJBProjects, 'mockJBProjects');
+
+    vm.etch(mockJBDirectory, new bytes(0x69));
+    vm.etch(mockJBFundingCycleStore, new bytes(0x69));
+    vm.etch(mockTokenUriResolver, new bytes(0x69));
+    vm.etch(mockTerminalAddress, new bytes(0x69));
+    vm.etch(mockJBProjects, new bytes(0x69));
+
+    // Create 10 tiers, each with 100 tokens available to mint
+    for (uint256 i; i < 10; i++) {
+      tiers.push(
+        JB721TierParams({
+          contributionFloor: uint80((i + 1) * 10),
+          lockedUntil: uint48(0),
+          initialQuantity: uint40(100),
+          votingUnits: uint16(0),
+          reservedRate: uint16(0),
+          reservedTokenBeneficiary: reserveBeneficiary,
+          encodedIPFSUri: tokenUris[i],
+          allowManualMint: false,
+          shouldUseBeneficiaryAsDefault: false
+        })
+      );
+    }
+
+    vm.mockCall(
+      mockJBFundingCycleStore,
+      abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
+      abi.encode(
+        JBFundingCycle({
+          number: 1,
+          configuration: block.timestamp,
+          basedOn: 0,
+          start: block.timestamp,
+          duration: 600,
+          weight: 10e18,
+          discountRate: 0,
+          ballot: IJBFundingCycleBallot(address(0)),
+          metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
+            JBFundingCycleMetadata({
+              global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+              }),
+              reservedRate: 5000, //50%
+              redemptionRate: 5000, //50%
+              ballotRedemptionRate: 5000,
+              pausePay: false,
+              pauseDistributions: false,
+              pauseRedeem: false,
+              pauseBurn: false,
+              allowMinting: true,
+              allowTerminalMigration: false,
+              allowControllerMigration: false,
+              holdFees: false,
+              preferClaimedTokenOverride: false,
+              useTotalOverflowForRedemptions: false,
+              useDataSourceForPay: true,
+              useDataSourceForRedeem: true,
+              dataSource: address(0),
+              metadata: 0x00
+            })
+          )
+        })
+      )
+    );
+
+    noGovernanceOrigin = new JBTiered721Delegate();
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+
+    JBTiered721DelegateDeployer jbDelegateDeployer = new JBTiered721DelegateDeployer(
+      globalGovernance,
+      tieredGovernance,
+      noGovernanceOrigin
+    );
+
+    JBDeployTiered721DelegateData memory delegateData = JBDeployTiered721DelegateData(
+            IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      owner,
+      JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+      address(0),
+      new JBTiered721DelegateStore(),
+      JBTiered721Flags({
+        lockReservedTokenChanges: true,
+        lockVotingUnitChanges: true,
+        lockManualMintingChanges: true,
+        pausable: true
+      }),
+      JB721GovernanceType.NONE
+    );
+    
+
+    delegate = JBTiered721Delegate(address(jbDelegateDeployer.deployDelegateFor(
+      projectId,
+      delegateData
+    )));
+  }
+
+  function testJBTieredNFTRewardDelegate_mintFor_mintArrayOfTiers_downcast_POC() public {
+    // SOL-C NOW PREVENTS THIS ASSIGNEMENT (uint256 not assignable to uint80)
+
+    // Temp tiers, will get overwritten later (pass the constructor check)
+    // uint256 originalFloorPrice = 10000000000000000000000000 ether;
+  
+    // for (uint256 i; i < nbTiers; i++) {
+    //   _tiers[i] = JB721TierParams({
+    //     contributionFloor: originalFloorPrice,
+    //     lockedUntil: uint48(0),
+    //     initialQuantity: 20,
+    //     votingUnits: uint16(0),
+    //     reservedRate: uint16(0),
+    //     reservedTokenBeneficiary: reserveBeneficiary,
+    //     encodedIPFSUri: tokenUris[i],
+    //     allowManualMint: true, // Allow this type of mint
+    //     shouldUseBeneficiaryAsDefault: false
+    //   });
+  }
+
+
+  // ----------------
+  // Internal helpers
+  // ----------------
+
+  // JB721Tier comparison
+  function assertEq(JB721Tier memory first, JB721Tier memory second) private {
+    assertEq(first.id, second.id);
+    assertEq(first.contributionFloor, second.contributionFloor);
+    assertEq(first.lockedUntil, second.lockedUntil);
+    assertEq(first.remainingQuantity, second.remainingQuantity);
+    assertEq(first.initialQuantity, second.initialQuantity);
+    assertEq(first.votingUnits, second.votingUnits);
+    assertEq(first.reservedRate, second.reservedRate);
+    assertEq(first.reservedTokenBeneficiary, second.reservedTokenBeneficiary);
+    assertEq(first.encodedIPFSUri, second.encodedIPFSUri);
+  }
+
+  // JB721Tier Array comparison
+  function assertEq(JB721Tier[] memory first, JB721Tier[] memory second) private {
+    assertEq(first.length, second.length);
+
+    for (uint256 i; i < first.length; i++) {
+      assertEq(first[i].id, second[i].id);
+      assertEq(first[i].contributionFloor, second[i].contributionFloor);
+      assertEq(first[i].lockedUntil, second[i].lockedUntil);
+      assertEq(first[i].remainingQuantity, second[i].remainingQuantity);
+      assertEq(first[i].initialQuantity, second[i].initialQuantity);
+      assertEq(first[i].votingUnits, second[i].votingUnits);
+      assertEq(first[i].reservedRate, second[i].reservedRate);
+      assertEq(first[i].reservedTokenBeneficiary, second[i].reservedTokenBeneficiary);
+      assertEq(first[i].encodedIPFSUri, second[i].encodedIPFSUri);
+    }
+  }
+
+  // Generate tokenId's based on token number and tier
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
+    internal
+    pure
+    returns (uint256 tokenId)
+  {
+    // The tier ID in the first 16 bits.
+    tokenId = _tierId;
+
+    // The token number in the rest.
+    tokenId |= _tokenNumber << 16;
+  }
+
+  // Check if every elements from smol are in bigg
+  function _isIn(JB721Tier[] memory smol, JB721Tier[] memory bigg) private returns (bool) {
+    // Cannot be oversized
+    if (smol.length > bigg.length) {
+      emit log('_isIn: smol too big');
+      return false;
+    }
+
+    if (smol.length == 0) return true;
+
+    uint256 count;
+
+    // Iterate on every smol elements
+    for (uint256 smolIter; smolIter < smol.length; smolIter++) {
+      // Compare it with every bigg element until...
+      for (uint256 biggIter; biggIter < bigg.length; biggIter++) {
+        // ... the same element is found -> break to go to the next smol element
+        if (_compareTiers(smol[smolIter], bigg[biggIter])) {
+          count += smolIter + 1; // 1-indexed, as the length
+          break;
+        }
+      }
+    }
+
+    // Insure all the smoll indexes have been iterated on (ie we've seen (smoll.length)! elements)
+    if (count == (smol.length * (smol.length + 1)) / 2) return true;
+    else {
+      emit log('_isIn: incomplete inclusion');
+      return false;
+    }
+  }
+
+  function _compareTiers(JB721Tier memory first, JB721Tier memory second)
+    private
+    pure
+    returns (bool)
+  {
+    return (first.id == second.id &&
+      first.contributionFloor == second.contributionFloor &&
+      first.lockedUntil == second.lockedUntil &&
+      first.remainingQuantity == second.remainingQuantity &&
+      first.initialQuantity == second.initialQuantity &&
+      first.votingUnits == second.votingUnits &&
+      first.reservedRate == second.reservedRate &&
+      first.reservedTokenBeneficiary == second.reservedTokenBeneficiary &&
+      first.encodedIPFSUri == second.encodedIPFSUri);
+  }
+
+  function _sortArray(uint256[] memory _in) internal pure returns (uint256[] memory) {
+    for (uint256 i; i < _in.length; i++) {
+      uint256 minIndex = i;
+      uint256 minValue = _in[i];
+
+      for (uint256 j = i; j < _in.length; j++) {
+        if (_in[j] < minValue) {
+          minIndex = j;
+          minValue = _in[j];
+        }
+      }
+
+      if (minIndex != i) (_in[i], _in[minIndex]) = (_in[minIndex], _in[i]);
+    }
+
+    return _in;
+  }
+
+  function _sortArray(uint16[] memory _in) internal pure returns (uint16[] memory) {
+    for (uint256 i; i < _in.length; i++) {
+      uint256 minIndex = i;
+      uint16 minValue = _in[i];
+
+      for (uint256 j = i; j < _in.length; j++) {
+        if (_in[j] < minValue) {
+          minIndex = j;
+          minValue = _in[j];
+        }
+      }
+
+      if (minIndex != i) (_in[i], _in[minIndex]) = (_in[minIndex], _in[i]);
+    }
+
+    return _in;
+  }
+
+  function _sortArray(uint8[] memory _in) internal pure returns (uint8[] memory) {
+    for (uint256 i; i < _in.length; i++) {
+      uint256 minIndex = i;
+      uint8 minValue = _in[i];
+
+      for (uint256 j = i; j < _in.length; j++) {
+        if (_in[j] < minValue) {
+          minIndex = j;
+          minValue = _in[j];
+        }
+      }
+
+      if (minIndex != i) (_in[i], _in[minIndex]) = (_in[minIndex], _in[i]);
+    }
+
+    return _in;
+  }
+}
+
+// ForTest to manually set some internalt nested values
+
+interface IJBTiered721DelegateStore_ForTest is IJBTiered721DelegateStore {
+  function ForTest_dumpTiersList(address _nft) external view returns (JB721Tier[] memory _tiers);
+
+  function ForTest_setTier(
+    address _delegate,
+    uint256 index,
+    JBStored721Tier calldata newTier
+  ) external;
+
+  function ForTest_setBalanceOf(
+    address _delegate,
+    address holder,
+    uint256 tier,
+    uint256 balance
+  ) external;
+
+  function ForTest_setReservesMintedFor(
+    address _delegate,
+    uint256 tier,
+    uint256 amount
+  ) external;
+
+  function ForTest_setFirstOwnerOf(
+    address _delegate,
+    uint256 tokenId,
+    address _owner
+  ) external;
+
+  function ForTest_setIsTierRemoved(address _delegate, uint256 _tokenId) external;
+}
+
+contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
+  IJBTiered721DelegateStore_ForTest public test_store;
+
+  constructor(
+    uint256 _projectId,
+    IJBDirectory _directory,
+    string memory _name,
+    string memory _symbol,
+    IJBFundingCycleStore _fundingCycleStore,
+    string memory _baseUri,
+    IJBTokenUriResolver _tokenUriResolver,
+    string memory _contractUri,
+    JB721TierParams[] memory _tiers,
+    IJBTiered721DelegateStore _test_store,
+    JBTiered721Flags memory _flags
+  )
+  {
+    // Disable the safety check to not allow initializing the original contract
+    codeOrigin = address(0);
+
+     JBTiered721Delegate.initialize(
+      _projectId,
+      _directory,
+      _name,
+      _symbol,
+      _fundingCycleStore,
+      _baseUri,
+      _tokenUriResolver,
+      _contractUri,
+      JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+      _test_store,
+      _flags
+    );
+
+    test_store = IJBTiered721DelegateStore_ForTest(address(_test_store));
+  }
+
+  function ForTest_setOwnerOf(uint256 tokenId, address _owner) public {
+    _owners[tokenId] = _owner;
+  }
+}
+
+contract ForTest_JBTiered721DelegateStore is
+  JBTiered721DelegateStore,
+  IJBTiered721DelegateStore_ForTest
+{
+  using JBBitmap for mapping(uint256=>uint256);
+  using JBBitmap for JBBitmapWord;
+
+  function ForTest_dumpTiersList(address _nft)
+    public
+    view
+    override
+    returns (JB721Tier[] memory _tiers)
+  {
+    // Keep a reference to the max tier ID.
+    uint256 _maxTierId = maxTierIdOf[_nft];
+
+    // Initialize an array with the appropriate length.
+    _tiers = new JB721Tier[](_maxTierId);
+
+    // Count the number of included tiers.
+    uint256 _numberOfIncludedTiers;
+
+    // Get a reference to the index being iterated on, starting with the starting index.
+    uint256 _currentSortIndex = _firstSortIndexOf(_nft);
+
+    // Keep a reference to the tier being iterated on.
+    JBStored721Tier memory _storedTier;
+
+    // Make the sorted array.
+    while (_currentSortIndex != 0 && _numberOfIncludedTiers < _maxTierId) {
+      _storedTier = _storedTierOf[_nft][_currentSortIndex];
+      // Add the tier to the array being returned.
+      _tiers[_numberOfIncludedTiers++] = JB721Tier({
+        id: _currentSortIndex,
+        contributionFloor: _storedTier.contributionFloor,
+        lockedUntil: _storedTier.lockedUntil,
+        remainingQuantity: _storedTier.remainingQuantity,
+        initialQuantity: _storedTier.initialQuantity,
+        votingUnits: _storedTier.votingUnits,
+        reservedRate: _storedTier.reservedRate,
+        reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
+        encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
+        allowManualMint: _storedTier.allowManualMint
+      });
+
+      // Set the next sort index.
+      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierId);
+    }
+
+    // Drop the empty tiers at the end of the array (coming from maxTierIdOf which *might* be bigger than actual bigger tier)
+    for (uint256 i = _tiers.length - 1; i >= 0; i--) {
+      if (_tiers[i].id == 0) {
+        assembly ("memory-safe") {
+          mstore(_tiers, sub(mload(_tiers), 1))
+        }
+      } else break;
+    }
+  }
+
+  function ForTest_setTier(
+    address _delegate,
+    uint256 index,
+    JBStored721Tier calldata newTier
+  ) public override {
+    _storedTierOf[address(_delegate)][index] = newTier;
+  }
+
+  function ForTest_setBalanceOf(
+    address _delegate,
+    address holder,
+    uint256 tier,
+    uint256 balance
+  ) public override {
+    tierBalanceOf[address(_delegate)][holder][tier] = balance;
+  }
+
+  function ForTest_setReservesMintedFor(
+    address _delegate,
+    uint256 tier,
+    uint256 amount
+  ) public override {
+    numberOfReservesMintedFor[address(_delegate)][tier] = amount;
+  }
+
+  function ForTest_setFirstOwnerOf(
+    address _delegate,
+    uint256 tokenId,
+    address _owner
+  ) public override {
+    firstOwnerOf[address(_delegate)][tokenId] = _owner;
+  }
+
+  function ForTest_setIsTierRemoved(address _delegate, uint256 _tokenId) public override {
+    _isTierRemoved[_delegate].removeTier(_tokenId);
+  }
+}
