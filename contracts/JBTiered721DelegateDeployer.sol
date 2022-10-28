@@ -88,6 +88,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       _deployTiered721DelegateData.directory,
       _deployTiered721DelegateData.name,
       _deployTiered721DelegateData.symbol,
+      _deployTiered721DelegateData.delegateAllocators,
       _deployTiered721DelegateData.fundingCycleStore,
       _deployTiered721DelegateData.baseUri,
       _deployTiered721DelegateData.tokenUriResolver,
@@ -123,7 +124,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       let _freeMem := mload(0x40)
 
       // Shift the length to the length placeholder, in the constructor (by adding zero's/mul)
-      let _mask := mul(_codeSize,       0x100000000000000000000000000000000000000000000000000000000)
+      let _mask := mul(_codeSize, 0x100000000000000000000000000000000000000000000000000000000)
 
       // Insert the length in the correct spot (after the PUSH3 / 0x62)
       let _initCode := or(_mask, 0x62000000600081600d8239f3fe00000000000000000000000000000000000000)
