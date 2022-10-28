@@ -5,7 +5,6 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDat
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '../interfaces/IJB721Delegate.sol';
 import './ERC721.sol';
@@ -61,6 +60,8 @@ abstract contract JB721Delegate is
   */
   IJBDirectory public override directory;
 
+  JBPayDelegateAllocation[] public allocations;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -88,8 +89,7 @@ abstract contract JB721Delegate is
     // Forward the received weight and memo, and use this contract as a pay delegate.
     weight = _data.weight;
     memo = _data.memo;
-    delegateAllocations = new JBPayDelegateAllocation[](1);
-    delegateAllocations[0] = JBPayDelegateAllocation(this, 0);
+    delegateAllocations = allocations;
   }
 
   /**
@@ -118,7 +118,8 @@ abstract contract JB721Delegate is
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 ||
+      bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) {
       revert INVALID_REDEMPTION_METADATA();
     }
@@ -131,7 +132,10 @@ abstract contract JB721Delegate is
     if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
 
     // Decode the metadata
-    (, , uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+    (, , uint256[] memory _decodedTokenIds) = abi.decode(
+      _data.metadata,
+      (bytes32, bytes4, uint256[])
+    );
 
     // Get a reference to the redemption rate of the provided tokens.
     uint256 _redemptionWeight = _redemptionWeightOf(_decodedTokenIds);
@@ -205,12 +209,16 @@ abstract contract JB721Delegate is
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
-    string memory _symbol
+    string memory _symbol,
+    JBPayDelegateAllocation[] memory _allocations
   ) internal {
     ERC721._initialize(_name, _symbol);
 
     projectId = _projectId;
     directory = _directory;
+
+    allocations = _allocations;
+    allocations.push(JBPayDelegateAllocation(this, 0));
   }
 
   //*********************************************************************//
@@ -239,7 +247,9 @@ abstract contract JB721Delegate is
     // Process the payment.
     _processPayment(_data);
   }
-event Test(bytes4);
+
+  event Test(bytes4);
+
   /**
     @notice
     Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
@@ -260,11 +270,15 @@ event Test(bytes4);
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 ||
+      bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) revert INVALID_REDEMPTION_METADATA();
 
     // Decode the metadata.
-    (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+    (, , uint256[] memory _decodedTokenIds) = abi.decode(
+      _data.metadata,
+      (bytes32, bytes4, uint256[])
+    );
 
     // Get a reference to the number of token IDs being checked.
     uint256 _numberOfTokenIds = _decodedTokenIds.length;

@@ -204,6 +204,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
+    JBPayDelegateAllocation[] memory _allocations,
     IJBFundingCycleStore _fundingCycleStore,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
@@ -219,7 +220,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     if (address(store) != address(0)) revert();
 
     // Initialize the superclass.
-    JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
+    JB721Delegate._initialize(_projectId, _directory, _name, _symbol, _allocations);
 
     fundingCycleStore = _fundingCycleStore;
     store = _store;

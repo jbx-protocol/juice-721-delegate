@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol';
 import './../structs/JB721PricingParams.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
@@ -71,6 +72,7 @@ interface IJBTiered721Delegate {
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
+    JBPayDelegateAllocation[] memory _allocations,
     IJBFundingCycleStore _fundingCycleStore,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
