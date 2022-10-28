@@ -8,6 +8,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '../interfaces/IJB721Delegate.sol';
 import './ERC721.sol';
+import './JBDelegateSource.sol';
 
 /**
   @title 
@@ -32,6 +33,7 @@ abstract contract JB721Delegate is
   IJBFundingCycleDataSource,
   IJBPayDelegate,
   IJBRedemptionDelegate,
+  JBDelegateSource,
   ERC721
 {
   //*********************************************************************//
@@ -60,8 +62,6 @@ abstract contract JB721Delegate is
   */
   IJBDirectory public override directory;
 
-  JBPayDelegateAllocation[] public allocations;
-
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -72,24 +72,22 @@ abstract contract JB721Delegate is
 
     @param _data The Juicebox standard project payment data.
 
-    @return weight The weight that tokens should get minted in accordance with.
-    @return memo The memo that should be forwarded to the event.
-    @return delegateAllocations The amount to send to delegates instead of adding to the local balance.
+    @return The weight that tokens should get minted in accordance with.
+    @return The memo that should be forwarded to the event.
+    @return The amount to send to delegates instead of adding to the local balance.
   */
   function payParams(JBPayParamsData calldata _data)
     external
     view
     override
     returns (
-      uint256 weight,
-      string memory memo,
-      JBPayDelegateAllocation[] memory delegateAllocations
+      uint256,
+      string memory,
+      JBPayDelegateAllocation[] memory
     )
   {
     // Forward the received weight and memo, and use this contract as a pay delegate.
-    weight = _data.weight;
-    memo = _data.memo;
-    delegateAllocations = allocations;
+    return (_data.weight, _data.memo, delegateAllocations);
   }
 
   /**
@@ -204,21 +202,20 @@ abstract contract JB721Delegate is
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
+    @param _delegateAllocations Any other delegate allocations to include.
   */
   function _initialize(
     uint256 _projectId,
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    JBPayDelegateAllocation[] memory _allocations
+    JBPayDelegateAllocation[] memory _delegateAllocations
   ) internal {
     ERC721._initialize(_name, _symbol);
+    JBDelegateSource._initialize(_delegateAllocations);
 
     projectId = _projectId;
     directory = _directory;
-
-    allocations = _allocations;
-    allocations.push(JBPayDelegateAllocation(this, 0));
   }
 
   //*********************************************************************//

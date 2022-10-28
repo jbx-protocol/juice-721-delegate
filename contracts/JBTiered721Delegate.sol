@@ -191,6 +191,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     @param _directory The directory of terminals and controllers for projects.
     @param _name The name of the token.
     @param _symbol The symbol that the token should be represented by.
+    @param _delegateAllocations Any other delegate allocations to include.
     @param _fundingCycleStore A contract storing all funding cycle configurations.
     @param _baseUri A URI to use as a base for full token URIs.
     @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
@@ -204,7 +205,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     IJBDirectory _directory,
     string memory _name,
     string memory _symbol,
-    JBPayDelegateAllocation[] memory _allocations,
+    JBPayDelegateAllocation[] memory _delegateAllocations,
     IJBFundingCycleStore _fundingCycleStore,
     string memory _baseUri,
     IJBTokenUriResolver _tokenUriResolver,
@@ -220,7 +221,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     if (address(store) != address(0)) revert();
 
     // Initialize the superclass.
-    JB721Delegate._initialize(_projectId, _directory, _name, _symbol, _allocations);
+    JB721Delegate._initialize(_projectId, _directory, _name, _symbol, _delegateAllocations);
 
     fundingCycleStore = _fundingCycleStore;
     store = _store;
