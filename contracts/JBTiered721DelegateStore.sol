@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
 import './interfaces/IJBTiered721DelegateStore.sol';
 import './libraries/JBBitmap.sol';
 import './structs/JBBitmapWord.sol';

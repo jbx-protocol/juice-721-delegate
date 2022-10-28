@@ -2,10 +2,7 @@
 // OpenZeppelin Contracts (last updated v4.6.0) (governance/utils/Votes.sol)
 pragma solidity ^0.8.0;
 
-import '@openzeppelin/contracts/utils/Counters.sol';
 import '@openzeppelin/contracts/utils/Checkpoints.sol';
-import '@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol';
-import '@openzeppelin/contracts/governance/utils/IVotes.sol';
 
 /**
  * @dev This is a base abstract contract that tracks voting units, which are a measure of voting power that can be
