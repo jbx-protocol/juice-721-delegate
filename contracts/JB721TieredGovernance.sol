@@ -29,6 +29,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
   //*********************************************************************//
 
   error BLOCK_NOT_YET_MINED();
+  error DELEGATE_ADDRESS_ZERO();
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -130,7 +131,6 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     override
     returns (uint256)
   {
-    if (_blockNumber >= block.number) revert BLOCK_NOT_YET_MINED();
     return _totalTierCheckpoints[_tier].getAtBlock(_blockNumber);
   }
 
@@ -145,7 +145,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     @param _setTierDelegatesData An array of tiers to set delegates for.
    */
   function setTierDelegates(JBTiered721SetTierDelegatesData[] memory _setTierDelegatesData)
-    public
+    external
     virtual
     override
   {
@@ -158,6 +158,9 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     for (uint256 _i; _i < _numberOfTierDelegates; ) {
       // Reference the data being iterated on.
       _data = _setTierDelegatesData[_i];
+
+      // No active delegation to the address 0
+      if (_data.delegatee == address(0)) revert DELEGATE_ADDRESS_ZERO();
 
       _delegateTier(msg.sender, _data.delegatee, _data.tierId);
 
@@ -206,7 +209,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _account The account delegating tier voting units.
     @param _delegatee The account to delegate tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _tierId The ID of the tier for which voting units are being transferred.
   */
   function _delegateTier(
     address _account,
@@ -236,7 +239,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _from The account to transfer tier voting units from.
     @param _to The account to transfer tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _tierId The ID of the tier for which voting units are being transferred.
     @param _amount The amount of voting units to delegate.
    */
   function _transferTierVotingUnits(
@@ -266,7 +269,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _from The account to transfer tier voting units from.
     @param _to The account to transfer tier voting units to.
-    @param _tierId The ID of the tier for which voting units are being transfered.
+    @param _tierId The ID of the tier for which voting units are being transferred.
     @param _amount The amount of voting units to delegate.
   */
   function _moveTierDelegateVotes(
@@ -284,7 +287,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
         _subtract,
         _amount
       );
-      emit TierDelegateVotesChanged(_from, _oldValue, _newValue, _tierId, msg.sender);
+      emit TierDelegateVotesChanged(_from, _tierId, _oldValue, _newValue, msg.sender);
     }
 
     // If not moving to the zero address, update the checkpoints to add the amount.
@@ -303,7 +306,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _from The account to transfer voting units from.
     @param _to The account to transfer voting units to.
-    @param _tokenId The ID of the token for which voting units are being transfered.
+    @param _tokenId The ID of the token for which voting units are being transferred.
     @param _tier The tier the token ID is part of.
    */
   function _afterTokenTransferAccounting(
