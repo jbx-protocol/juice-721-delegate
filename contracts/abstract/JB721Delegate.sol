@@ -87,7 +87,7 @@ abstract contract JB721Delegate is
     )
   {
     // Forward the received weight and memo, and use this contract as a pay delegate.
-    return (_data.weight, _data.memo, delegateAllocations);
+    return (_data.weight, _data.memo, _delegateAllocations);
   }
 
   /**
@@ -212,7 +212,7 @@ abstract contract JB721Delegate is
     JBPayDelegateAllocation[] memory _delegateAllocations
   ) internal {
     ERC721._initialize(_name, _symbol);
-    JBDelegateSource._initialize(_delegateAllocations);
+    JBDelegateSource._initialize(_delegateAllocations, 0);
 
     projectId = _projectId;
     directory = _directory;
