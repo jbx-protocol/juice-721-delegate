@@ -71,7 +71,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   function deployDelegateFor(
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData
-  ) external override returns (IJBTiered721Delegate) {
+  ) external override returns (IJBTiered721Delegate newDelegate) {
     // Deploy the governance variant that was requested
     address codeToCopy;
     if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.NONE)
@@ -82,7 +82,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       codeToCopy = address(globalGovernance);
     else revert INVALID_GOVERNANCE_TYPE();
 
-    IJBTiered721Delegate newDelegate = IJBTiered721Delegate(_clone(codeToCopy));
+    newDelegate = IJBTiered721Delegate(_clone(codeToCopy));
     newDelegate.initialize(
       _projectId,
       _deployTiered721DelegateData.directory,
@@ -123,7 +123,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       let _freeMem := mload(0x40)
 
       // Shift the length to the length placeholder, in the constructor (by adding zero's/mul)
-      let _mask := mul(_codeSize,       0x100000000000000000000000000000000000000000000000000000000)
+      let _mask := mul(_codeSize, 0x100000000000000000000000000000000000000000000000000000000)
 
       // Insert the length in the correct spot (after the PUSH3 / 0x62)
       let _initCode := or(_mask, 0x62000000600081600d8239f3fe00000000000000000000000000000000000000)
