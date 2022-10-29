@@ -60,7 +60,7 @@ contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeploy
 
   /** 
     @notice 
-    Launches a new project with a tiered NFT rewards data source attached.
+    Launches a new project with a tiered 721 delegate attached.
 
     @param _owner The address to set as the owner of the project. The project ERC-721 will be owned by this address.
     @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.

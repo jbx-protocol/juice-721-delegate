@@ -573,7 +573,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
         return;
       }
 
-      // Mint rewards if they were specified.
+      // Mint tiers if they were specified.
       if (_tierIdsToMint.length != 0)
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
