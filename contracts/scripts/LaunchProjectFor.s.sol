@@ -5,16 +5,18 @@ import '../JBTiered721DelegateStore.sol';
 import 'forge-std/Script.sol';
 
 // Latest NFTProjectDeployer
-address constant PROJECT_DEPLOYER = 0x36F2Edc39d593dF81e7B311a9Dd74De28A6B38B1;
+address constant PROJECT_DEPLOYER = 0x56a77C3c9565CA77Eafb65F2CB92B9b3d4A21edc;
 
 // JBTiered721DelegateStore
-address constant STORE = 0x41126eC99F8A989fEB503ac7bB4c5e5D40E06FA4;
+address constant STORE = 0xfCc8162d0cd23BdC91e143AD9adc2361262d3f09;
+
+address constant CONTROLLER = 0x7Cb86D43B665196BC719b6974D320bf674AFb395;
 
 // Change values in setUp() and createData()
-contract RinkebyLaunchProjectFor is Script {
+contract GoerliLaunchProjectFor is Script {
   IJBTiered721DelegateProjectDeployer deployer =
     IJBTiered721DelegateProjectDeployer(PROJECT_DEPLOYER);
-  IJBController jbController;
+  IJBController jbController = IJBController(CONTROLLER);
   IJBDirectory jbDirectory;
   IJBFundingCycleStore jbFundingCycleStore;
   IJBPaymentTerminal[] _terminals;
@@ -31,13 +33,12 @@ contract RinkebyLaunchProjectFor is Script {
 
   function setUp() public {
     _projectOwner = msg.sender; // Change me
-    jbController = deployer.controller();
     jbDirectory = jbController.directory();
     jbFundingCycleStore = jbController.fundingCycleStore();
-    name = ''; // Change me
-    symbol = '';
-    baseUri = '';
-    contractUri = '';
+    name = 'a'; // Change me
+    symbol = 'a';
+    baseUri = 'a';
+    contractUri = 'a';
   }
 
   function run() external {
