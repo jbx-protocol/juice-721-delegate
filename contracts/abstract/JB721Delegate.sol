@@ -128,9 +128,6 @@ abstract contract JB721Delegate is
     delegateAllocations = new JBRedemptionDelegateAllocation[](1);
     delegateAllocations[0] = JBRedemptionDelegateAllocation(this, 0);
 
-    // If redemption rate is 0, nothing can be reclaimed from the treasury
-    if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
-
     // Decode the metadata
     (, , uint256[] memory _decodedTokenIds) = abi.decode(
       _data.metadata,
