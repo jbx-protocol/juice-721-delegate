@@ -699,7 +699,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @return The weight.
   */
-  function _redemptionWeightOf(uint256[] memory _tokenIds)
+  function _redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata)
     internal
     view
     virtual
@@ -715,7 +715,13 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @return The total weight.
   */
-  function _totalRedemptionWeight() internal view virtual override returns (uint256) {
+  function _totalRedemptionWeight(JBRedeemParamsData calldata)
+    internal
+    view
+    virtual
+    override
+    returns (uint256)
+  {
     return store.totalRedemptionWeight(address(this));
   }
 

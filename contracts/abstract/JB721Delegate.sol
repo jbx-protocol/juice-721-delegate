@@ -118,7 +118,8 @@ abstract contract JB721Delegate is
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 ||
+      bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) {
       revert INVALID_REDEMPTION_METADATA();
     }
@@ -127,17 +128,17 @@ abstract contract JB721Delegate is
     delegateAllocations = new JBRedemptionDelegateAllocation[](1);
     delegateAllocations[0] = JBRedemptionDelegateAllocation(this, 0);
 
-    // If redemption rate is 0, nothing can be reclaimed from the treasury
-    if (_data.redemptionRate == 0) return (0, _data.memo, delegateAllocations);
-
     // Decode the metadata
-    (, , uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+    (, , uint256[] memory _decodedTokenIds) = abi.decode(
+      _data.metadata,
+      (bytes32, bytes4, uint256[])
+    );
 
     // Get a reference to the redemption rate of the provided tokens.
-    uint256 _redemptionWeight = _redemptionWeightOf(_decodedTokenIds);
+    uint256 _redemptionWeight = _redemptionWeightOf(_decodedTokenIds, _data);
 
     // Get a reference to the total redemption weight.
-    uint256 _total = _totalRedemptionWeight();
+    uint256 _total = _totalRedemptionWeight(_data);
 
     // Get a reference to the linear proportion.
     uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _total);
@@ -239,7 +240,7 @@ abstract contract JB721Delegate is
     // Process the payment.
     _processPayment(_data);
   }
-  
+
   /**
     @notice
     Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
@@ -260,11 +261,15 @@ abstract contract JB721Delegate is
     // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
     // Skip 32 bytes reserved for generic extension parameters.
     if (
-      _data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
+      _data.metadata.length < 36 ||
+      bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId
     ) revert INVALID_REDEMPTION_METADATA();
 
     // Decode the metadata.
-    (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+    (, , uint256[] memory _decodedTokenIds) = abi.decode(
+      _data.metadata,
+      (bytes32, bytes4, uint256[])
+    );
 
     // Get a reference to the number of token IDs being checked.
     uint256 _numberOfTokenIds = _decodedTokenIds.length;
@@ -321,11 +326,18 @@ abstract contract JB721Delegate is
     The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
 
     @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+    @param _data The Juicebox standard project redemption data.
 
     @return The weight.
   */
-  function _redemptionWeightOf(uint256[] memory _tokenIds) internal view virtual returns (uint256) {
+  function _redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata _data)
+    internal
+    view
+    virtual
+    returns (uint256)
+  {
     _tokenIds; // Prevents unused var compiler and natspec complaints.
+    _data; // Prevents unused var compiler and natspec complaints.
     return 0;
   }
 
@@ -333,9 +345,17 @@ abstract contract JB721Delegate is
     @notice
     The cumulative weight that all token IDs have in redemptions. 
 
+    @param _data The Juicebox standard project redemption data.
+
     @return The total weight.
   */
-  function _totalRedemptionWeight() internal view virtual returns (uint256) {
+  function _totalRedemptionWeight(JBRedeemParamsData calldata _data)
+    internal
+    view
+    virtual
+    returns (uint256)
+  {
+    _data; // Prevents unused var compiler and natspec complaints.
     return 0;
   }
 }
