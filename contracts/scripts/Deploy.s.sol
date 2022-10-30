@@ -28,7 +28,7 @@ contract DeployMainnet is Script {
 
     store = new JBTiered721DelegateStore();
 
-    projectDeployer = new JBTiered721DelegateProjectDeployer(jbController, delegateDeployer, store);
+    projectDeployer = new JBTiered721DelegateProjectDeployer(jbController, delegateDeployer, jbOperatorStore);
 
     console.log(address(projectDeployer));
     console.log(address(store));
@@ -58,7 +58,7 @@ contract DeployGoerli is Script {
 
     store = new JBTiered721DelegateStore();
 
-    projectDeployer = new JBTiered721DelegateProjectDeployer(jbController, delegateDeployer, store);
+    projectDeployer = new JBTiered721DelegateProjectDeployer(jbController, delegateDeployer, jbOperatorStore);
 
     console.log(address(projectDeployer));
     console.log(address(store));
