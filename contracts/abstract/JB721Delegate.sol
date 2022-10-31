@@ -76,8 +76,9 @@ abstract contract JB721Delegate is
     @return delegateAllocations The amount to send to delegates instead of adding to the local balance.
   */
   function payParams(JBPayParamsData calldata _data)
-    external
+    public
     view
+    virtual
     override
     returns (
       uint256 weight,
@@ -103,8 +104,9 @@ abstract contract JB721Delegate is
     @return delegateAllocations The amount to send to delegates instead of adding to the beneficiary.
   */
   function redeemParams(JBRedeemParamsData calldata _data)
-    external
+    public
     view
+    virtual
     override
     returns (
       uint256 reclaimAmount,
