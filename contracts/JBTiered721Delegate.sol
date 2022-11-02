@@ -537,7 +537,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     uint256 _credits = creditsOf[_data.beneficiary];
 
     // Set the leftover amount as the initial value, including any credits the beneficiary might already have.
-    uint256 _leftoverAmount = _value + _credits;
+    uint256 _leftoverAmount = _value;
+
+    // If the payer is the beneficiary, use credits.
+    if (_data.payer == _data.beneficiary) _leftoverAmount += _credits;
 
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is not expected.
     bool _expectMintFromExtraFunds;
