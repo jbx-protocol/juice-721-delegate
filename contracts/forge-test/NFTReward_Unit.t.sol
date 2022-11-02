@@ -3082,6 +3082,114 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Make sure the credit has been incremented
     assertEq(delegate.creditsOf(msg.sender), tiers[0].contributionFloor + 10);
   }
+  
+  function testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits_coverage() public {
+    testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits(false);
+  }
+
+  // Only the beneficiary may spend their credits
+  function testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits(bool _payerIsBeneficiary) public {
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+
+    bool _dontMint = true;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](1);
+    _tierIdsToMint[0] = 1;
+
+    bytes memory _dontMintMetadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor + 10, 18, JBCurrencies.ETH), // 10 above the floor
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _dontMintMetadata
+      )
+    );
+
+    // Make sure no new NFT was minted
+    assertEq(
+      _totalSupplyBeforePay,
+      delegate.store().totalSupply(address(delegate))
+    );
+
+    // Make sure the credit has been incremented
+    uint256 _beneficiaryCredits = delegate.creditsOf(msg.sender);
+    assertEq(_beneficiaryCredits, tiers[0].contributionFloor + 10);
+
+    bytes memory _doMintMetadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      false, // _dontMint
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    // If the payer is not the beneficiary this should revert
+    if(!_payerIsBeneficiary) vm.expectRevert(JBTiered721Delegate.SPENDING_BENEFICIARY_CREDITS.selector);
+
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        _payerIsBeneficiary ? msg.sender : address(bytes20(keccak256('someOtherUser'))),
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, 1, 18, JBCurrencies.ETH), // Only pay 1 wei
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        msg.sender,
+        false,
+        '',
+        _doMintMetadata
+      )
+    );
+
+    if(!_payerIsBeneficiary){
+      // If it was not the beneficiary that paid then it should have reverted so no change should have happened
+      assertEq(
+        delegate.creditsOf(msg.sender),
+        _beneficiaryCredits
+      );
+
+      // Make sure no new NFT was minted
+      assertEq(
+        delegate.store().totalSupply(address(delegate)),
+        _totalSupplyBeforePay
+      );
+    }else{
+
+      // Make sure one or multiple NFTs were minted
+      assertGt(
+        delegate.store().totalSupply(address(delegate)),
+        _totalSupplyBeforePay
+      );
+    }
+  }
 
   // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
   function testJBTieredNFTRewardDelegate_didPay_mintCorrectTier() public {
