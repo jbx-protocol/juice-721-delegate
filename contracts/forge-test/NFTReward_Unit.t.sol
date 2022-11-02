@@ -3083,12 +3083,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.creditsOf(msg.sender), tiers[0].contributionFloor + 10);
   }
   
+  function testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits_specifiedTiers_coverage() public {
+    testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits(false, true);
+  }
+
   function testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits_coverage() public {
-    testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits(false);
+    testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits(false, false);
   }
 
   // Only the beneficiary may spend their credits
-  function testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits(bool _payerIsBeneficiary) public {
+  function testJBTieredNFTRewardDelegate_didPay_onlyBeneficiaryMaySpendCredits(bool _payerIsBeneficiary, bool _specifyTiers) public {
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -3101,8 +3105,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     bool _dontMint = true;
     bool _expectMintFromExtraFunds;
     bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](1);
-    _tierIdsToMint[0] = 1;
+    uint16[] memory _tierIdsToMint = new uint16[](_specifyTiers ? 1 : 0);
+
+    if(_specifyTiers)
+      _tierIdsToMint[0] = 1;
 
     bytes memory _dontMintMetadata = abi.encode(
       bytes32(0),
@@ -3145,12 +3151,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false, // _dontMint
-      _expectMintFromExtraFunds,
+      true, //  _expectMintFromExtraFunds, we have the funds to mint tier 0 twice
       _dontOverspend,
       _tierIdsToMint
     );
 
-    // If the payer is not the beneficiary this should revert
+    // If the payer is not the beneficiary and we have specified which NFTs to mint (which costs more than 1 wei) this should revert
     if(!_payerIsBeneficiary) vm.expectRevert(JBTiered721Delegate.SPENDING_BENEFICIARY_CREDITS.selector);
 
     vm.prank(mockTerminalAddress);
@@ -3524,7 +3530,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
-        msg.sender,
+        beneficiary,
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
@@ -3543,7 +3549,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
-        msg.sender,
+        beneficiary,
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
