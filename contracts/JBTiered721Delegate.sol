@@ -579,10 +579,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
 
-    // Check if someone is attempting to spend the beneficiary's credits
-    if (_data.payer != _data.beneficiary && _leftoverAmount < _credits)
-      revert SPENDING_BENEFICIARY_CREDITS();
-
     // If there are funds leftover, mint the best available with it.
     if (_leftoverAmount != 0) {
       _leftoverAmount = _mintBestAvailableTier(
@@ -599,6 +595,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
         creditsOf[_data.beneficiary] = _leftoverAmount;
       } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
     } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
+
+    // Check if someone is attempting to spend the beneficiary's credits.
+    if (_data.payer != _data.beneficiary && _leftoverAmount < _credits)
+      revert SPENDING_BENEFICIARY_CREDITS();
   }
 
   /** 
