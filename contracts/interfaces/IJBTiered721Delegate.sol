@@ -8,9 +8,10 @@ import './../structs/JB721PricingParams.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './../structs/JBTiered721MintForTiersData.sol';
+import './IJB721Delegate.sol';
 import './IJBTiered721DelegateStore.sol';
 
-interface IJBTiered721Delegate {
+interface IJBTiered721Delegate is IJB721Delegate {
   event Mint(
     uint256 indexed tokenId,
     uint256 indexed tierId,
