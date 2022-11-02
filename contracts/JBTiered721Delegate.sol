@@ -33,6 +33,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
   error NOT_AVAILABLE();
   error OVERSPENDING();
+  error SPENDING_BENIFICIARY_CREDITS();
   error PRICING_RESOLVER_CHANGES_PAUSED();
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
@@ -577,6 +578,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       if (_tierIdsToMint.length != 0)
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
+
+    // Check if someone is attempting to spend the beneficiary's credits
+    if (_data.payer != _data.beneficiary && _leftoverAmount < creditsOf[_data.beneficiary])
+      revert SPENDING_BENIFICIARY_CREDITS();
 
     // If there are funds leftover, mint the best available with it.
     if (_leftoverAmount != 0) {
