@@ -596,7 +596,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
     } else if (_credits != 0) creditsOf[_data.beneficiary] = 0;
 
-    // Check if someone is attempting to spend the beneficiary's credits.
+    // Make sure someone isn't attempting to spend the beneficiary's credits on their behalf.
     if (_data.payer != _data.beneficiary && _leftoverAmount < _credits)
       revert SPENDING_BENEFICIARY_CREDITS();
   }
