@@ -541,11 +541,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     // If the payer is the beneficiary, combine the credits with the paid amount
     // if not, then we keep track of the credits that were unused
-    uint256 _stashed;
+    uint256 _stashedCredits;
     if (_data.payer == _data.beneficiary){
       unchecked { _leftoverAmount += _credits; }
     } else{
-      _stashed = _credits;
+      _stashedCredits = _credits;
     }
 
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is not expected.
@@ -576,7 +576,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       // Don't mint if not desired.
       if (_dontMint) {
         // Store credits.
-        unchecked { creditsOf[_data.beneficiary] = _leftoverAmount + _stashed; }
+        unchecked { creditsOf[_data.beneficiary] = _leftoverAmount + _stashedCredits; }
 
         // Return instead of minting.
         return;
@@ -600,9 +600,9 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
         if (_dontOverspend) revert OVERSPENDING();
 
         // Increment the leftover amount.
-        unchecked { creditsOf[_data.beneficiary] = _leftoverAmount + _stashed; }
-      } else if (_credits != _stashed) creditsOf[_data.beneficiary] = _stashed;
-    } else if (_credits != _stashed) creditsOf[_data.beneficiary] = _stashed;
+        unchecked { creditsOf[_data.beneficiary] = _leftoverAmount + _stashedCredits; }
+      } else if (_credits != _stashedCredits) creditsOf[_data.beneficiary] = _stashedCredits;
+    } else if (_credits != _stashedCredits) creditsOf[_data.beneficiary] = _stashedCredits;
   }
 
   /** 
