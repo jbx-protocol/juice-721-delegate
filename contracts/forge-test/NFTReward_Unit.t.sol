@@ -3416,7 +3416,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
-        msg.sender,
+        beneficiary,
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
@@ -3435,7 +3435,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
-        msg.sender,
+        beneficiary,
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
