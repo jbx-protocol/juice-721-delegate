@@ -542,12 +542,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     // If the payer is the beneficiary, combine the credits with the paid amount
     // if not, then we keep track of the credits that were unused
     uint256 _stashedCredits;
-    if (_data.payer == _data.beneficiary){
+    if (_data.payer == _data.beneficiary) {
       unchecked { _leftoverAmount += _credits; }
-    } else{
-      _stashedCredits = _credits;
-    }
-
+    } else _stashedCredits = _credits;
+    
     // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is not expected.
     bool _expectMintFromExtraFunds;
 
