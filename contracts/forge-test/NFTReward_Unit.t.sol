@@ -3416,7 +3416,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
-        msg.sender,
+        beneficiary,
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
@@ -3435,7 +3435,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
-        msg.sender,
+        beneficiary,
         projectId,
         0,
         JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
@@ -3465,6 +3465,90 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: no credit is left?
     assertEq(delegate.creditsOf(beneficiary), 0);
+  }
+
+  function testJBTieredNFTRewardDelegate_didPay_doNotMintWithSomeoneElseCredit() public {
+    uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
+    uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend;
+    uint16[] memory _tierIdsToMint = new uint16[](3);
+    _tierIdsToMint[0] = 1;
+    _tierIdsToMint[1] = 1;
+    _tierIdsToMint[2] = 2;
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    // First call will mint the 3 tiers requested + accumulate half of first floor in credit
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        beneficiary,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+    uint256 _creditBefore = delegate.creditsOf(beneficiary);
+
+    // Second call will mint another 3 tiers requested BUT not with the credit accumulated
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    // Check: total supply has increased with the 3 token?
+    assertEq(_totalSupplyBefore + 3, delegate.store().totalSupply(address(delegate)));
+
+    // Check: correct tiers have been minted
+    // .. On first pay?
+    assertEq(delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(1, 2)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(2, 1)), beneficiary);
+
+    // ... On second pay, without extra from the credit?
+    assertEq(delegate.ownerOf(_generateTokenId(1, 3)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(1, 4)), beneficiary);
+    assertEq(delegate.ownerOf(_generateTokenId(2, 2)), beneficiary);
+
+    // Check: credit is now having both left-overs?
+    assertEq(delegate.creditsOf(beneficiary), _creditBefore * 2);
   }
 
   // Terminal is in currency 1 with 18 decimal, delegate is in currency 2, with 9 decimals
