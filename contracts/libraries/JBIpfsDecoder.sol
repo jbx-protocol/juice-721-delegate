@@ -27,7 +27,7 @@ library JBIpfsDecoder {
   bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
   function decode(string memory _baseUri, bytes32 _hexString)
-    external
+    internal
     pure
     returns (string memory)
   {
