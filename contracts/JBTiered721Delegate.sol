@@ -609,7 +609,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _tokenIds The IDs of the tokens that were burned.
   */
-  function _didBurn(uint256[] memory _tokenIds) internal override {
+  function _didBurn(uint256[] memory _tokenIds) internal virtual override {
     // Add to burned counter.
     store.recordBurn(_tokenIds);
   }
