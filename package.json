@@ -24,6 +24,7 @@
   "scripts": {
     "pretty": "prettier --write \"./**/*.{js,jsx,json,sol}\"",
     "deploy-goerli": "source .env && forge script DeployGoerli --rpc-url $GOERLI_RPC_PROVIDER_URL --broadcast --mnemonic-paths mnemonic.txt --verify --etherscan-api-key $ETHERSCAN_API_KEY --sender $SENDER_ADDRESS --optimize --optimizer-runs 200 -vvv",
-    "deploy-mainnet": "source .env && forge script DeployMainnet --rpc-url $MAINNET_RPC_PROVIDER_URL --broadcast --mnemonic-paths mnemonic.txt --verify --etherscan-api-key $ETHERSCAN_API_KEY --sender $SENDER_ADDRESS --optimize --optimizer-runs 200 -vvv"
+    "deploy-mainnet": "source .env && forge script DeployMainnet --rpc-url $MAINNET_RPC_PROVIDER_URL --broadcast --mnemonic-paths mnemonic.txt --verify --etherscan-api-key $ETHERSCAN_API_KEY --sender $SENDER_ADDRESS --optimize --optimizer-runs 200 -vvv",
+    "decode-metadata": "forge script contracts/scripts/MetadataTool.sol --sig 'decode(bytes)'"
   }
 }
