@@ -543,11 +543,10 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     // if not, then we keep track of the credits that were unused
     uint256 _stashedCredits;
     if (_data.payer == _data.beneficiary) {
-      unchecked { _leftoverAmount += _credits; }
+      unchecked {
+        _leftoverAmount += _credits;
+      }
     } else _stashedCredits = _credits;
-    
-    // Keep a reference to a flag indicating if a mint is expected from discretionary funds. Defaults to false, meaning to mint is not expected.
-    bool _expectMintFromExtraFunds;
 
     // Keep a reference to the flag indicating if the transaction should revert if all provided funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
     bool _dontOverspend;
@@ -559,47 +558,30 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       _data.metadata.length > 68 &&
       bytes4(_data.metadata[64:68]) == type(IJB721Delegate).interfaceId
     ) {
-      // Keep a reference to the flag indicating if the transaction should not mint anything.
-      bool _dontMint;
-
       // Keep a reference to the the specific tier IDs to mint.
       uint16[] memory _tierIdsToMint;
 
       // Decode the metadata.
-      (, , , _dontMint, _expectMintFromExtraFunds, _dontOverspend, _tierIdsToMint) = abi.decode(
+      (, , , _dontOverspend, _tierIdsToMint) = abi.decode(
         _data.metadata,
-        (bytes32, bytes32, bytes4, bool, bool, bool, uint16[])
+        (bytes32, bytes32, bytes4, bool, uint16[])
       );
-
-      // Don't mint if not desired.
-      if (_dontMint) {
-        // Store credits.
-        unchecked { creditsOf[_data.beneficiary] = _leftoverAmount + _stashedCredits; }
-
-        // Return instead of minting.
-        return;
-      }
 
       // Mint tiers if they were specified.
       if (_tierIdsToMint.length != 0)
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
 
-    // If there are funds leftover, mint the best available with it.
+    // If there are funds leftover, add to credits.
     if (_leftoverAmount != 0) {
-      _leftoverAmount = _mintBestAvailableTier(
-        _leftoverAmount,
-        _data.beneficiary,
-        _expectMintFromExtraFunds
-      );
+      // Make sure there are no leftover funds after minting if not expected.
+      if (_dontOverspend) revert OVERSPENDING();
 
-      if (_leftoverAmount != 0) {
-        // Make sure there are no leftover funds after minting if not expected.
-        if (_dontOverspend) revert OVERSPENDING();
-
-        // Increment the leftover amount.
-        unchecked { creditsOf[_data.beneficiary] = _leftoverAmount + _stashedCredits; }
-      } else if (_credits != _stashedCredits) creditsOf[_data.beneficiary] = _stashedCredits;
+      // Increment the leftover amount.
+      unchecked {
+        creditsOf[_data.beneficiary] = _leftoverAmount + _stashedCredits;
+      }
+      // Else reset the credits.
     } else if (_credits != _stashedCredits) creditsOf[_data.beneficiary] = _stashedCredits;
   }
 
@@ -612,43 +594,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   function _didBurn(uint256[] memory _tokenIds) internal virtual override {
     // Add to burned counter.
     store.recordBurn(_tokenIds);
-  }
-
-  /** 
-    @notice
-    Mints a token in the best available tier.
-
-    @param _amount The amount to base the mint on.
-    @param _beneficiary The address to mint for.
-    @param _expectMint A flag indicating if a mint was expected.
-
-    @return  leftoverAmount The amount leftover after the mint.
-  */
-  function _mintBestAvailableTier(
-    uint256 _amount,
-    address _beneficiary,
-    bool _expectMint
-  ) internal returns (uint256 leftoverAmount) {
-    // Keep a reference to the token ID.
-    uint256 _tokenId;
-
-    // Keep a reference to the tier ID.
-    uint256 _tierId;
-
-    // Record the mint.
-    (_tokenId, _tierId, leftoverAmount) = store.recordMintBestAvailableTier(_amount);
-
-    // If there's no best tier, return or revert.
-    if (_tokenId == 0) {
-      // Make sure a mint was not expected.
-      if (_expectMint) revert NOT_AVAILABLE();
-      return leftoverAmount;
-    }
-
-    // Mint the tokens.
-    _mint(_beneficiary, _tokenId);
-
-    emit Mint(_tokenId, _tierId, _beneficiary, _amount - leftoverAmount, msg.sender);
   }
 
   /** 
