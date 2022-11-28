@@ -42,6 +42,20 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
     vm.deal(_user, _payAmount);
     vm.prank(_user);
 
+    bytes memory metadata;
+    {
+      // Craft the metadata: mint the specified tier
+      uint16[] memory rawMetadata = new uint16[](1);
+      rawMetadata[0] = uint16(_tier + 1); // 1 indexed
+      metadata = abi.encode(
+        bytes32(0),
+        bytes32(0),
+        type(IJB721Delegate).interfaceId,
+        false,
+        rawMetadata
+      );
+    }
+
     _jbETHPaymentTerminal.pay{value: _payAmount}(
       projectId,
       100,
@@ -50,7 +64,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       0,
       false,
       'Take my money!',
-      new bytes(0)
+      metadata
     );
 
     // Assert that the user received the votingUnits
@@ -112,6 +126,17 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       _delegate.delegate(_user);
     }
 
+    // Craft the metadata: mint the specified tier
+    uint16[] memory rawMetadata = new uint16[](1);
+    rawMetadata[0] = uint16(_tier + 1); // 1 indexed
+    bytes memory metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      false,
+      rawMetadata
+    );
+
     // Pay and mint an NFT
     vm.deal(_user, _payAmount);
     vm.prank(_user);
@@ -123,7 +148,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       0,
       false,
       'Take my money!',
-      new bytes(0)
+      metadata
     );
 
     // Delegate NFT to self

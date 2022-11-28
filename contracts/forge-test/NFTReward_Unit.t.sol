@@ -3134,7 +3134,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.ownerOf(_generateTokenId(2, 1)), msg.sender);
   }
 
-  function testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(uint8 _amount) public {
+  function testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(uint8 _amount) public {
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -3171,20 +3171,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
       )
     );
 
-    // Make sure a new NFT was minted if amount >= contribution floor
-    if (_amount >= tiers[0].contributionFloor) {
-      assertEq(_totalSupplyBeforePay + 1, delegate.store().totalSupply(address(delegate)));
-
-      // Correct tier has been minted?
-      uint256 highestTier = _amount > 100 ? 10 : _amount / 10;
-      uint256 tokenId = _generateTokenId(highestTier, 1);
-      assertEq(delegate.ownerOf(tokenId), msg.sender);
-    } else assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
+    // Make sure no new NFT was minted if amount >= contribution floor
+    assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
   }
 
   function testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed_coverage() public {
-    testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(100);
-    testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(1);
+    testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(100);
+    testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(1);
   }
 
   function testJBTieredNFTRewardDelegate_didPay_mintFirstBestTierIfMultipleAvailableAtSameFloor() public {
@@ -4270,6 +4263,21 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
+    // Metadata to mint
+    bytes memory metadata;
+    {
+      // Craft the metadata: mint the specified tier
+      uint16[] memory rawMetadata = new uint16[](1);
+      rawMetadata[0] = uint16(1); // 1 indexed
+      metadata = abi.encode(
+        bytes32(0),
+        bytes32(0),
+        type(IJB721Delegate).interfaceId,
+        false,
+        rawMetadata
+      );
+    }
+
     // We mint the NFTs otherwise the voting balance does not get incremented
     // which leads to underflow on redeem
     vm.prank(mockTerminalAddress);
@@ -4284,7 +4292,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _holder,
         false,
         '',
-        new bytes(0)
+        metadata
       )
     );
 

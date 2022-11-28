@@ -234,7 +234,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
   }
 
-  function testMintOnPayUsingFallbackTiers(uint16 valueSent) external {
+  function testNoMintOnPayWhenNotIncludingTierIds(uint16 valueSent) external {
     vm.assume(valueSent >= 10 && valueSent < 2000);
 
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
@@ -250,16 +250,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
-
-    // Check: correct tier and id?
-    vm.expectEmit(true, true, true, true, NFTRewardDataSource);
-    emit Mint(
-      _generateTokenId(highestTier, 1),
-      highestTier,
-      _beneficiary,
-      NFTRewardDeployerData.pricing.tiers[highestTier - 1].contributionFloor,
-      address(_jbETHPaymentTerminal) // msg.sender
-    );
 
     vm.prank(_caller);
     _jbETHPaymentTerminal.pay{value: valueSent}(
@@ -277,8 +267,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       new bytes(0)
     );
 
-    // Check: NFT actually received?
-    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
+    // Check: No NFT was minted
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 0);
+    // Check: User Received the credits
+    assertEq(IJBTiered721Delegate(NFTRewardDataSource).creditsOf(_beneficiary), valueSent);
   }
 
   function testMintBeforeAndAfterTierChange(uint72 _payAmount) public {
@@ -495,8 +487,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        false,
-        false,
         false,
         rawMetadata
       );
