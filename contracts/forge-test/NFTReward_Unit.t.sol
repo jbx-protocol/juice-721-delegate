@@ -3134,48 +3134,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(1);
   }
 
-  function testJBTieredNFTRewardDelegate_didPay_revertIfSupposedToMintBestTierButNoneAvailable(
-    uint8 _amount
-  ) public {
-    // Not enough to mint
-    vm.assume(_amount > 0 && _amount < tiers[0].contributionFloor);
-
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
-
-    bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](0);
-
-    bytes memory _metadata = abi.encode(
-      bytes32(0),
-      bytes32(0),
-      type(IJB721Delegate).interfaceId,
-      _dontOverspend,
-      _tierIdsToMint
-    );
-
-    vm.prank(mockTerminalAddress);
-    vm.expectRevert(JBTiered721Delegate.NOT_AVAILABLE.selector);
-    delegate.didPay(
-      JBDidPayData(
-        msg.sender,
-        projectId,
-        0,
-        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
-        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
-        0,
-        msg.sender,
-        false,
-        '',
-        _metadata
-      )
-    );
-  }
-
   function testJBTieredNFTRewardDelegate_didPay_mintTierAndTrackLeftover() public {
     uint256 _leftover = tiers[0].contributionFloor - 1;
     uint256 _amount = tiers[0].contributionFloor + _leftover;
@@ -4626,6 +4584,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // TODO: mint different tiers
     for (uint256 i; i < _numberOfNFT; i++) {
+      bytes memory _metadata;
+      {
+        uint16[] memory _tierIdsToMint = new uint16[](1);
+        _tierIdsToMint[0] = 1;
+
+        _metadata = abi.encode(
+          bytes32(0),
+          bytes32(0),
+          type(IJB721Delegate).interfaceId,
+          false,
+          _tierIdsToMint
+        );
+      }
+   
       // We mint the NFTs otherwise the voting balance does not get incremented
       // which leads to underflow on redeem
       vm.prank(mockTerminalAddress);
@@ -4640,7 +4612,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           _holder,
           false,
           '',
-          new bytes(0)
+          _metadata
         )
       );
 
