@@ -3263,7 +3263,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_didPay_mintBestTierAndTrackLeftover() public {
+  function testJBTieredNFTRewardDelegate_didPay_mintTierAndTrackLeftover() public {
     uint256 _leftover = tiers[0].contributionFloor - 1;
     uint256 _amount = tiers[0].contributionFloor + _leftover;
 
@@ -3275,7 +3275,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](0);
+    uint16[] memory _tierIdsToMint = new uint16[](1);
+    _tierIdsToMint[0] = uint16(1);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
@@ -3305,8 +3306,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.creditsOf(beneficiary), _leftover);
   }
 
-  // Mint a given tier with a leftover, mint another given tier then, if the accumulated credit is enough, mint the best possible tier
-  function testJBTieredNFTRewardDelegate_didPay_mintCorrectTierAndBestTierIfEnoughCredit() public {
+  // Mint a given tier with a leftover, mint another given tier then, if the accumulated credit is enough, mint an extra tier
+  function testJBTieredNFTRewardDelegate_didPay_mintCorrectTiersWhenUsingPartialCredits() public {
     uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
     uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
 
@@ -3349,6 +3350,23 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+
+    {
+      // We now attempt an additional tier 1 by using the credit we collected from last pay
+      uint16[] memory _moreTierIdsToMint = new uint16[](4);
+      _moreTierIdsToMint[0] = 1;
+      _moreTierIdsToMint[1] = 1;
+      _moreTierIdsToMint[2] = 2;
+      _moreTierIdsToMint[3] = 1;
+
+      _metadata = abi.encode(
+        bytes32(0),
+        bytes32(0),
+        type(IJB721Delegate).interfaceId,
+        _dontOverspend,
+        _moreTierIdsToMint
+      );
+    }
 
     // Second call will mint another 3 tiers requested + mint from the first tier with the credit
     vm.prank(mockTerminalAddress);
