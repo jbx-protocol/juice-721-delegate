@@ -104,8 +104,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
-      false,
-      false,
       rawMetadata
     );
 
@@ -139,10 +137,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Check: NFT actually received?
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
-    if (valueSent < 110) {
-      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
+    if (valueSent < 10) {
+      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 0);
     } else {
-      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 2);
+      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
     }
 
     // Second minted with leftover (if > lowest tier)?
