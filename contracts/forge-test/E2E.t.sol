@@ -199,8 +199,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
-      false,
-      false,
       rawMetadata
     );
 
@@ -403,8 +401,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       type(IJB721Delegate).interfaceId,
       false,
-      false,
-      false,
       rawMetadata
     );
 
@@ -603,8 +599,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      false,
-      false,
       false,
       rawMetadata
     );

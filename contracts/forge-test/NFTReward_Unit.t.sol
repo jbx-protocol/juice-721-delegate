@@ -3044,8 +3044,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint = true;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = 1;
@@ -3054,8 +3052,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3094,8 +3090,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -3106,8 +3100,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3152,8 +3144,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
@@ -3161,8 +3151,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3252,16 +3240,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3303,8 +3287,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds = true;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
@@ -3312,8 +3294,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3347,8 +3327,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
@@ -3356,8 +3334,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3394,8 +3370,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -3406,8 +3380,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3478,8 +3450,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -3490,8 +3460,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3595,8 +3563,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -3607,8 +3573,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3648,9 +3612,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
-
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -3661,8 +3622,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3713,8 +3672,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = _invalidTier;
@@ -3723,8 +3680,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3776,8 +3731,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -3788,8 +3741,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -3837,8 +3788,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.OUT.selector));
       }
 
-      bool _dontMint;
-      bool _expectMintFromExtraFunds;
       bool _dontOverspend = true;
       uint16[] memory tierSelected = new uint16[](1);
       tierSelected[0] = 1;
@@ -3847,8 +3796,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        _dontMint,
-        _expectMintFromExtraFunds,
         _dontOverspend,
         tierSelected
       );
@@ -3967,8 +3914,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend = true;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
@@ -3976,8 +3921,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -4094,8 +4037,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(_delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -4106,8 +4047,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
@@ -4212,8 +4151,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       })
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
     bool _dontOverspend;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
@@ -4224,8 +4161,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
       _dontOverspend,
       _tierIdsToMint
     );
