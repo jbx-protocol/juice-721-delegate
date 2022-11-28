@@ -3033,52 +3033,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
   }
 
-  // If the amount is above contribution floor, a tier is passed but the bool to prevent mint is true, do not mint
-  function testJBTieredNFTRewardDelegate_didPay_doesNotMintIfMetadataDeactivateMintButKeepInCredit() public {
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
-
-    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
-
-    bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](1);
-    _tierIdsToMint[0] = 1;
-
-    bytes memory _metadata = abi.encode(
-      bytes32(0),
-      bytes32(0),
-      type(IJB721Delegate).interfaceId,
-      _dontOverspend,
-      _tierIdsToMint
-    );
-
-    vm.prank(mockTerminalAddress);
-    delegate.didPay(
-      JBDidPayData(
-        msg.sender,
-        projectId,
-        0,
-        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor + 10, 18, JBCurrencies.ETH), // 10 above the floor
-        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
-        0,
-        msg.sender,
-        false,
-        '',
-        _metadata
-      )
-    );
-
-    // Make sure no new NFT was minted
-    assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
-    
-    // Make sure the credit has been incremented
-    assertEq(delegate.creditsOf(msg.sender), tiers[0].contributionFloor + 10);
-  }
-
   // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
   function testJBTieredNFTRewardDelegate_didPay_mintCorrectTier() public {
     // Mock the directory call
