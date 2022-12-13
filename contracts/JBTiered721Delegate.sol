@@ -548,8 +548,8 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       }
     } else _stashedCredits = _credits;
 
-    // Keep a reference to the flag indicating if the transaction should revert if all provided funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
-    bool _dontOverspend;
+    // Keep a reference to the flag indicating if the transaction should not revert if all provided funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
+    bool _allowOverspending;
 
     // Skip the first 32 bytes which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
     // Skip another 32 bytes reserved for generic extension parameters.
@@ -562,10 +562,14 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
       uint16[] memory _tierIdsToMint;
 
       // Decode the metadata.
-      (, , , _dontOverspend, _tierIdsToMint) = abi.decode(
+      (, , , _allowOverspending, _tierIdsToMint) = abi.decode(
         _data.metadata,
         (bytes32, bytes32, bytes4, bool, uint16[])
       );
+
+      // Make sure overspending is allowed if requested.
+      if (_allowOverspending && store.flagsOf(address(this)).preventOverspending)
+        _allowOverspending = false;
 
       // Mint tiers if they were specified.
       if (_tierIdsToMint.length != 0)
@@ -575,7 +579,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     // If there are funds leftover, add to credits.
     if (_leftoverAmount != 0) {
       // Make sure there are no leftover funds after minting if not expected.
-      if (_dontOverspend) revert OVERSPENDING();
+      if (!_allowOverspending) revert OVERSPENDING();
 
       // Increment the leftover amount.
       unchecked {
