@@ -236,8 +236,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   function testNoMintOnPayWhenNotIncludingTierIds(uint16 valueSent) external {
     vm.assume(valueSent >= 10 && valueSent < 2000);
-
-    uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData

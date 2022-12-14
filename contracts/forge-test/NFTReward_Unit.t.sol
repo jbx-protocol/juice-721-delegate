@@ -192,7 +192,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       address(0),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -255,7 +255,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -334,7 +334,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -418,7 +418,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -508,7 +508,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -580,7 +580,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -642,7 +642,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -716,7 +716,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -783,7 +783,7 @@ preventOverspending: false,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -845,7 +845,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -924,7 +924,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -983,7 +983,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1037,7 +1037,7 @@ preventOverspending: false,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1077,7 +1077,7 @@ preventOverspending: false,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1118,7 +1118,7 @@ preventOverspending: false,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1193,7 +1193,7 @@ preventOverspending: false,
       }),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -1267,7 +1267,7 @@ preventOverspending: false,
       JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
       _dataSourceStore,
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -1327,7 +1327,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1429,7 +1429,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1589,7 +1589,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1669,7 +1669,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1762,7 +1762,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1838,7 +1838,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1914,7 +1914,7 @@ preventOverspending: false,
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2041,7 +2041,7 @@ preventOverspending: false,
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2198,7 +2198,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2345,7 +2345,7 @@ preventOverspending: false,
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2510,7 +2510,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -2617,7 +2617,7 @@ preventOverspending: false,
       _tierParam,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2724,7 +2724,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2833,7 +2833,7 @@ preventOverspending: false,
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2951,7 +2951,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -3406,7 +3406,7 @@ preventOverspending: false,
       JB721PricingParams({tiers: tiers, currency: 2, decimals: 9, prices: IJBPrices(_jbPrice)}),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -3423,7 +3423,6 @@ preventOverspending: false,
     );
 
     // Mock the price oracle call
-    uint256 _amountInOtherCurrency = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor;
     uint256 _amountInEth = (tiers[0].contributionFloor * 2 + tiers[1].contributionFloor) * 2;
 
     vm.mockCall(_jbPrice, abi.encodeCall(IJBPrices.priceFor, (1, 2, 18)), abi.encode(2 * 10**9));
@@ -3901,7 +3900,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -3957,8 +3956,6 @@ preventOverspending: false,
         })
       )
     );
-
-    uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(_delegate));
 
     bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
@@ -4068,7 +4065,7 @@ preventOverspending: false,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4179,7 +4176,7 @@ preventOverspending: false,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4302,7 +4299,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4422,7 +4419,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4532,7 +4529,7 @@ preventOverspending: false,
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4657,7 +4654,7 @@ preventOverspending: false,
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
