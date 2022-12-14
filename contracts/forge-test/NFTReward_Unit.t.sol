@@ -3810,6 +3810,61 @@ preventOverspending: false,
     );
   }
 
+   function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftoverAndPrevented(bool _prevent) public {
+    uint256 _leftover = tiers[1].contributionFloor - 1;
+    uint256 _amount = tiers[0].contributionFloor + _leftover;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    // Get the currently selected flags
+    JBTiered721Flags memory flags = delegate.store().flagsOf(address(delegate));
+    // Modify the prevent
+    flags.preventOverspending = _prevent;
+    // Mock the call to return the new flags
+    vm.mockCall(
+      address(delegate.store()),
+      abi.encodeWithSelector(IJBTiered721DelegateStore.flagsOf.selector, address(delegate)),
+      abi.encode(flags)
+    );
+
+    bool _allowOverspending = true;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _allowOverspending,
+      _tierIdsToMint
+    );
+
+    // If prevent is enabled the call should revert, otherwise we should receive credits
+    if(_prevent){
+      vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
+    }
+
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+  }
+
   // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting (if delegate flag pausable is true)
   function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle()
     public
