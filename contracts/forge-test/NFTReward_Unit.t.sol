@@ -3033,7 +3033,7 @@ preventOverspending: false,
   // ----------------
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert if no metadata passed
-  function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloorIfNoMetadata()
+  function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowContributionFloorIfNoMetadata()
     public
   {
     // Mock the directory call
@@ -3043,7 +3043,8 @@ preventOverspending: false,
       abi.encode(true)
     );
 
-    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+    // Make sure the call reverts
+    vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
 
     vm.prank(mockTerminalAddress);
     delegate.didPay(
@@ -3060,9 +3061,6 @@ preventOverspending: false,
         new bytes(0)
       )
     );
-
-    // Make sure no new NFT was minted
-    assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
   }
 
   // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
@@ -3177,7 +3175,7 @@ preventOverspending: false,
       abi.encode(true)
     );
 
-    bool _allowOverspending;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = uint16(1);
 
@@ -3221,7 +3219,7 @@ preventOverspending: false,
       abi.encode(true)
     );
 
-    bool _allowOverspending;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
