@@ -3130,7 +3130,7 @@ preventOverspending: false,
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _allowOverspending;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(

@@ -251,6 +251,16 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
 
+    bool _allowOverspending = true;
+    uint16[] memory rawMetadata = new uint16[](0);
+    bytes memory metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _allowOverspending,
+      rawMetadata
+    );
+
     vm.prank(_caller);
     _jbETHPaymentTerminal.pay{value: valueSent}(
       projectId,
@@ -264,7 +274,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       /* _memo */
       'Take my money!',
       /* _delegateMetadata */
-      new bytes(0)
+      metadata
     );
 
     // Check: No NFT was minted
