@@ -192,6 +192,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       address(0),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -254,6 +255,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -332,6 +334,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -415,6 +418,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -504,6 +508,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -575,6 +580,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -636,6 +642,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -709,6 +716,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -775,6 +783,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -836,6 +845,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -914,6 +924,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -972,6 +983,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1025,6 +1037,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1064,6 +1077,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1104,6 +1118,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1178,6 +1193,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -1251,6 +1267,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
       _dataSourceStore,
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -1310,6 +1327,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1411,6 +1429,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1570,6 +1589,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1649,6 +1669,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1741,6 +1762,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1816,6 +1838,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1891,6 +1914,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2017,6 +2041,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2173,6 +2198,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2319,6 +2345,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2483,6 +2510,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -2589,6 +2617,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParam,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2695,6 +2724,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2803,6 +2833,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2920,6 +2951,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -3044,7 +3076,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3054,7 +3086,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3098,14 +3130,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3145,7 +3177,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = uint16(1);
 
@@ -3153,7 +3185,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3189,7 +3221,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3199,7 +3231,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3234,7 +3266,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        _dontOverspend,
+        _allowOverspending,
         _moreTierIdsToMint
       );
     }
@@ -3286,7 +3318,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontOverspend;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3296,7 +3328,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3376,6 +3408,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JB721PricingParams({tiers: tiers, currency: 2, decimals: 9, prices: IJBPrices(_jbPrice)}),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -3399,7 +3432,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(delegate));
 
-    bool _dontOverspend = true;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3409,7 +3442,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3448,7 +3481,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3458,7 +3491,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3508,7 +3541,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = _invalidTier;
 
@@ -3516,7 +3549,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3567,7 +3600,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3577,7 +3610,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3624,7 +3657,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.OUT.selector));
       }
 
-      bool _dontOverspend = true;
+      bool _allowOverspending = true;
       uint16[] memory tierSelected = new uint16[](1);
       tierSelected[0] = 1;
 
@@ -3632,7 +3665,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        _dontOverspend,
+        _allowOverspending,
         tierSelected
       );
 
@@ -3750,14 +3783,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontOverspend = true;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3815,6 +3848,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -3873,7 +3907,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(_delegate));
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3883,7 +3917,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3981,13 +4015,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
       })
     );
 
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3997,7 +4032,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -4091,6 +4126,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4116,7 +4152,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        false,
+        true,
         rawMetadata
       );
     }
@@ -4213,6 +4249,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4332,6 +4369,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4441,6 +4479,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4565,6 +4604,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4769,6 +4809,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true

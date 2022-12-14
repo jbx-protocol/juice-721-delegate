@@ -51,7 +51,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        false,
+        true,
         rawMetadata
       );
     }
@@ -133,7 +133,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      false,
+      true,
       rawMetadata
     );
 

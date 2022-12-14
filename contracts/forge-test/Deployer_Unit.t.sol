@@ -174,6 +174,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
       flags: JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
