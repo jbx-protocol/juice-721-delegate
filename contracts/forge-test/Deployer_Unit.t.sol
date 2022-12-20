@@ -67,7 +67,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
     JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
 
-    JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer(
+    delegateDeployer = new JBTiered721DelegateDeployer(
       globalGovernance,
       tieredGovernance,
       noGovernance
@@ -174,6 +174,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       reservedTokenBeneficiary: reserveBeneficiary,
       store: store,
       flags: JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true

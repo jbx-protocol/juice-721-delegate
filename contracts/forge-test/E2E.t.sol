@@ -103,9 +103,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      false,
-      false,
-      false,
+      true,
       rawMetadata
     );
 
@@ -139,10 +137,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Check: NFT actually received?
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
-    if (valueSent < 110) {
-      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
+    if (valueSent < 10) {
+      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 0);
     } else {
-      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 2);
+      assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
     }
 
     // Second minted with leftover (if > lowest tier)?
@@ -200,9 +198,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      false,
-      false,
-      false,
+      true,
       rawMetadata
     );
 
@@ -238,10 +234,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
   }
 
-  function testMintOnPayUsingFallbackTiers(uint16 valueSent) external {
+  function testNoMintOnPayWhenNotIncludingTierIds(uint16 valueSent) external {
     vm.assume(valueSent >= 10 && valueSent < 2000);
-
-    uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
@@ -255,14 +249,14 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
 
-    // Check: correct tier and id?
-    vm.expectEmit(true, true, true, true, NFTRewardDataSource);
-    emit Mint(
-      _generateTokenId(highestTier, 1),
-      highestTier,
-      _beneficiary,
-      NFTRewardDeployerData.pricing.tiers[highestTier - 1].contributionFloor,
-      address(_jbETHPaymentTerminal) // msg.sender
+    bool _allowOverspending = true;
+    uint16[] memory rawMetadata = new uint16[](0);
+    bytes memory metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _allowOverspending,
+      rawMetadata
     );
 
     vm.prank(_caller);
@@ -278,89 +272,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       /* _memo */
       'Take my money!',
       /* _delegateMetadata */
-      new bytes(0)
+      metadata
     );
 
-    // Check: NFT actually received?
-    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 1);
-  }
-
-  function testMintBeforeAndAfterTierChange(uint72 _payAmount) public {
-    address _user = address(bytes20(keccak256('user')));
-    (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
-      JBLaunchProjectData memory launchProjectData
-    ) = createData();
-
-    uint256 projectId = deployer.launchProjectFor(
-      _projectOwner,
-      NFTRewardDeployerData,
-      launchProjectData
-    );
-
-    // Get the dataSource
-    IJBTiered721Delegate _delegate = IJBTiered721Delegate(
-      _jbFundingCycleStore.currentOf(projectId).dataSource()
-    );
-
-    // _payAmount has to be at least the lowest tier
-    vm.assume(_payAmount >= NFTRewardDeployerData.pricing.tiers[0].contributionFloor);
-
-    // Pay and mint an NFT
-    vm.deal(_user, _payAmount);
-    vm.prank(_user);
-    _jbETHPaymentTerminal.pay{value: _payAmount}(
-      projectId,
-      100,
-      address(0),
-      _user,
-      0,
-      false,
-      'Take my money!',
-      new bytes(0)
-    );
-
-    // Get the existing tiers
-    JB721Tier[] memory _originalTiers = _delegate.store().tiers(address(_delegate), 0, 10);
-    uint256[] memory _tiersToRemove = new uint256[](_originalTiers.length);
-
-    // Append all the existing tiers
-    for (uint256 _i; _i < _originalTiers.length; _i++) {
-      _tiersToRemove[_i] = _originalTiers[_i].id;
-    }
-
-    // Add 1 new tier
-    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](1);
-    _tierParamsToAdd[0] = JB721TierParams({
-      contributionFloor: _payAmount,
-      lockedUntil: uint48(0),
-      initialQuantity: uint40(100),
-      votingUnits: uint16(0),
-      reservedRate: uint16(0),
-      reservedTokenBeneficiary: reserveBeneficiary,
-      encodedIPFSUri: tokenUris[0],
-      allowManualMint: false,
-      shouldUseBeneficiaryAsDefault: false,
-      transfersPausable: false
-    });
-
-    // Remove all the existing tiers and add a new one at the previous paid price
-    vm.prank(_projectOwner);
-    _delegate.adjustTiers(_tierParamsToAdd, _tiersToRemove);
-
-    // We now pay the exact same amount and expect to receive the new tier and not the old one
-    vm.deal(_user, _payAmount);
-    vm.prank(_user);
-    _jbETHPaymentTerminal.pay{value: _payAmount}(
-      projectId,
-      100,
-      address(0),
-      _user,
-      0,
-      false,
-      'Take my money!',
-      new bytes(0)
-    );
+    // Check: No NFT was minted
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 0);
+    // Check: User Received the credits
+    assertEq(IJBTiered721Delegate(NFTRewardDataSource).creditsOf(_beneficiary), valueSent);
   }
 
   // TODO This needs care (fuzz fails with insuf reserve for val=10)
@@ -404,9 +322,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      false,
-      false,
-      false,
+      true,
       rawMetadata
     );
 
@@ -501,9 +417,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        false,
-        false,
-        false,
+        true,
         rawMetadata
       );
     }
@@ -529,7 +443,11 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Craft the metadata: redeem the tokenId
     uint256[] memory redemptionId = new uint256[](1);
     redemptionId[0] = tokenId;
-    bytes memory redemptionMetadata = abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, redemptionId);
+    bytes memory redemptionMetadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      redemptionId
+    );
 
     vm.prank(_beneficiary);
     _jbETHPaymentTerminal.redeemTokensOf({
@@ -605,9 +523,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      false,
-      false,
-      false,
+      true,
       rawMetadata
     );
 
@@ -647,7 +563,11 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       redemptionId[i] = tokenId;
     }
 
-    bytes memory redemptionMetadata = abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, redemptionId);
+    bytes memory redemptionMetadata = abi.encode(
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      redemptionId
+    );
 
     vm.prank(_beneficiary);
     _jbETHPaymentTerminal.redeemTokensOf({
@@ -755,6 +675,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       reservedTokenBeneficiary: reserveBeneficiary,
       store: new JBTiered721DelegateStore(),
       flags: JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true

@@ -91,14 +91,6 @@ interface IJBTiered721DelegateStore {
     external
     returns (uint256[] memory tokenIds);
 
-  function recordMintBestAvailableTier(uint256 _amount)
-    external
-    returns (
-      uint256 tokenId,
-      uint256 tierId,
-      uint256 leftoverAmount
-    );
-
   function recordBurn(uint256[] memory _tokenIds) external;
 
   function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;

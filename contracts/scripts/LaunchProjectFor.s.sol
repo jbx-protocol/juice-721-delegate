@@ -163,6 +163,7 @@ contract RinkebyLaunchProjectFor is Script {
       reservedTokenBeneficiary: msg.sender,
       store: IJBTiered721DelegateStore(STORE),
       flags: JBTiered721Flags({
+preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true

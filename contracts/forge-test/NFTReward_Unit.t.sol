@@ -192,6 +192,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       address(0),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -254,6 +255,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -332,6 +334,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -415,6 +418,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -504,6 +508,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -575,6 +580,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -636,6 +642,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -709,6 +716,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -775,6 +783,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -836,6 +845,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -914,6 +924,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -972,6 +983,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1025,6 +1037,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1064,6 +1077,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1104,6 +1118,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1178,6 +1193,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -1251,6 +1267,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JB721PricingParams({tiers: _tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
       _dataSourceStore,
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -1310,6 +1327,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1411,6 +1429,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1570,6 +1589,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1649,6 +1669,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1741,6 +1762,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1816,6 +1838,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -1891,6 +1914,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2017,6 +2041,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2173,6 +2198,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2319,6 +2345,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2483,6 +2510,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -2589,6 +2617,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParam,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2695,6 +2724,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2803,6 +2833,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }),
       IJBTiered721DelegateStore(address(_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -2920,6 +2951,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -3001,7 +3033,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   // ----------------
 
   // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert if no metadata passed
-  function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowContributionFloorIfNoMetadata()
+  function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowContributionFloorIfNoMetadata()
     public
   {
     // Mock the directory call
@@ -3011,7 +3043,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+    // Make sure the call reverts
+    vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
 
     vm.prank(mockTerminalAddress);
     delegate.didPay(
@@ -3028,59 +3061,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         new bytes(0)
       )
     );
-
-    // Make sure no new NFT was minted
-    assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
-  }
-
-  // If the amount is above contribution floor, a tier is passed but the bool to prevent mint is true, do not mint
-  function testJBTieredNFTRewardDelegate_didPay_doesNotMintIfMetadataDeactivateMintButKeepInCredit() public {
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
-
-    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
-
-    bool _dontMint = true;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](1);
-    _tierIdsToMint[0] = 1;
-
-    bytes memory _metadata = abi.encode(
-      bytes32(0),
-      bytes32(0),
-      type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
-      _tierIdsToMint
-    );
-
-    vm.prank(mockTerminalAddress);
-    delegate.didPay(
-      JBDidPayData(
-        msg.sender,
-        projectId,
-        0,
-        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor + 10, 18, JBCurrencies.ETH), // 10 above the floor
-        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
-        0,
-        msg.sender,
-        false,
-        '',
-        _metadata
-      )
-    );
-
-    // Make sure no new NFT was minted
-    assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
-    
-    // Make sure the credit has been incremented
-    assertEq(delegate.creditsOf(msg.sender), tiers[0].contributionFloor + 10);
   }
 
   // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
@@ -3094,9 +3074,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3106,9 +3084,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3142,7 +3118,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.ownerOf(_generateTokenId(2, 1)), msg.sender);
   }
 
-  function testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(uint8 _amount) public {
+  function testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(uint8 _amount) public {
     // Mock the directory call
     vm.mockCall(
       address(mockJBDirectory),
@@ -3152,18 +3128,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3183,160 +3155,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
       )
     );
 
-    // Make sure a new NFT was minted if amount >= contribution floor
-    if (_amount >= tiers[0].contributionFloor) {
-      assertEq(_totalSupplyBeforePay + 1, delegate.store().totalSupply(address(delegate)));
-
-      // Correct tier has been minted?
-      uint256 highestTier = _amount > 100 ? 10 : _amount / 10;
-      uint256 tokenId = _generateTokenId(highestTier, 1);
-      assertEq(delegate.ownerOf(tokenId), msg.sender);
-    } else assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
+    // Make sure no new NFT was minted if amount >= contribution floor
+    assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
   }
 
   function testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed_coverage() public {
-    testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(100);
-    testJBTieredNFTRewardDelegate_didPay_mintBestTierIfNonePassed(1);
+    testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(100);
+    testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(1);
   }
 
-  function testJBTieredNFTRewardDelegate_didPay_mintFirstBestTierIfMultipleAvailableAtSameFloor() public {
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
-
-    JB721TierParams[] memory _tierParams = new JB721TierParams[](5);
-
-    // 5 tiers, floors from 10 to 50
-    for (uint256 i; i < 5; i++) {
-      _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
-        initialQuantity: uint40(100),
-        votingUnits: uint16(0),
-        reservedTokenBeneficiary: reserveBeneficiary,
-        reservedRate: uint16(0),
-        encodedIPFSUri: tokenUris[0],
-        allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-                        transfersPausable: false
-      });
-    }
-
-    // Tier id 3 and 4 have same floor
-    _tierParams[2].contributionFloor = 35;
-    _tierParams[3].contributionFloor = 35;
-
-    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IJBFundingCycleStore(mockJBFundingCycleStore),
-      baseUri,
-      IJBTokenUriResolver(mockTokenUriResolver),
-      contractUri,
-      _tierParams,
-      IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({
-        lockReservedTokenChanges: true,
-        lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
-      })
-    );
-
-    _delegate.transferOwnership(owner);
-
-    uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
-
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](0);
-
-    bytes memory _metadata = abi.encode(
-      bytes32(0),
-      type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
-      _tierIdsToMint
-    );
-
-    vm.prank(mockTerminalAddress);
-    _delegate.didPay(
-      JBDidPayData(
-        msg.sender,
-        projectId,
-        0,
-        JBTokenAmount(JBTokens.ETH, 36, 18, JBCurrencies.ETH), // Just above the 
-        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
-        0,
-        msg.sender,
-        false,
-        '',
-        _metadata
-      )
-    );
-
-    // Make sure a new NFT was minted
-      assertEq(_totalSupplyBeforePay + 1, _delegate.store().totalSupply(address(_delegate)));
-
-      // Correct tier has been minted?
-      uint256 tokenId = _generateTokenId(3, 1);
-      assertEq(_delegate.ownerOf(tokenId), msg.sender);
-  }
-
-  function testJBTieredNFTRewardDelegate_didPay_revertIfSupposedToMintBestTierButNoneAvailable(
-    uint8 _amount
-  ) public {
-    // Not enough to mint
-    vm.assume(_amount > 0 && _amount < tiers[0].contributionFloor);
-
-    // Mock the directory call
-    vm.mockCall(
-      address(mockJBDirectory),
-      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
-      abi.encode(true)
-    );
-
-    bool _dontMint;
-    bool _expectMintFromExtraFunds = true;
-    bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](0);
-
-    bytes memory _metadata = abi.encode(
-      bytes32(0),
-      bytes32(0),
-      type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
-      _tierIdsToMint
-    );
-
-    vm.prank(mockTerminalAddress);
-    vm.expectRevert(JBTiered721Delegate.NOT_AVAILABLE.selector);
-    delegate.didPay(
-      JBDidPayData(
-        msg.sender,
-        projectId,
-        0,
-        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
-        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
-        0,
-        msg.sender,
-        false,
-        '',
-        _metadata
-      )
-    );
-  }
-
-  function testJBTieredNFTRewardDelegate_didPay_mintBestTierAndTrackLeftover() public {
+  function testJBTieredNFTRewardDelegate_didPay_mintTierAndTrackLeftover() public {
     uint256 _leftover = tiers[0].contributionFloor - 1;
     uint256 _amount = tiers[0].contributionFloor + _leftover;
 
@@ -3347,18 +3175,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
-    uint16[] memory _tierIdsToMint = new uint16[](0);
+    bool _allowOverspending = true;
+    uint16[] memory _tierIdsToMint = new uint16[](1);
+    _tierIdsToMint[0] = uint16(1);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3382,8 +3207,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.creditsOf(beneficiary), _leftover);
   }
 
-  // Mint a given tier with a leftover, mint another given tier then, if the accumulated credit is enough, mint the best possible tier
-  function testJBTieredNFTRewardDelegate_didPay_mintCorrectTierAndBestTierIfEnoughCredit() public {
+  // Mint a given tier with a leftover, mint another given tier then, if the accumulated credit is enough, mint an extra tier
+  function testJBTieredNFTRewardDelegate_didPay_mintCorrectTiersWhenUsingPartialCredits() public {
     uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
     uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
 
@@ -3394,9 +3219,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3406,9 +3229,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3430,6 +3251,23 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+
+    {
+      // We now attempt an additional tier 1 by using the credit we collected from last pay
+      uint16[] memory _moreTierIdsToMint = new uint16[](4);
+      _moreTierIdsToMint[0] = 1;
+      _moreTierIdsToMint[1] = 1;
+      _moreTierIdsToMint[2] = 2;
+      _moreTierIdsToMint[3] = 1;
+
+      _metadata = abi.encode(
+        bytes32(0),
+        bytes32(0),
+        type(IJB721Delegate).interfaceId,
+        _allowOverspending,
+        _moreTierIdsToMint
+      );
+    }
 
     // Second call will mint another 3 tiers requested + mint from the first tier with the credit
     vm.prank(mockTerminalAddress);
@@ -3478,9 +3316,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3490,9 +3326,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3572,6 +3406,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JB721PricingParams({tiers: tiers, currency: 2, decimals: 9, prices: IJBPrices(_jbPrice)}),
       new JBTiered721DelegateStore(),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
@@ -3588,16 +3423,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     // Mock the price oracle call
-    uint256 _amountInOtherCurrency = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor;
     uint256 _amountInEth = (tiers[0].contributionFloor * 2 + tiers[1].contributionFloor) * 2;
 
     vm.mockCall(_jbPrice, abi.encodeCall(IJBPrices.priceFor, (1, 2, 18)), abi.encode(2 * 10**9));
 
     uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend = true;
+    bool _allowOverspending = true;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3607,9 +3439,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3648,10 +3478,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
-
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3661,9 +3488,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3713,9 +3538,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](1);
     _tierIdsToMint[0] = _invalidTier;
 
@@ -3723,9 +3546,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3776,9 +3597,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -3788,9 +3607,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -3837,9 +3654,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.OUT.selector));
       }
 
-      bool _dontMint;
-      bool _expectMintFromExtraFunds;
-      bool _dontOverspend = true;
+      bool _allowOverspending = true;
       uint16[] memory tierSelected = new uint16[](1);
       tierSelected[0] = 1;
 
@@ -3847,9 +3662,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         bytes32(0),
         bytes32(0),
         type(IJB721Delegate).interfaceId,
-        _dontMint,
-        _expectMintFromExtraFunds,
-        _dontOverspend,
+        _allowOverspending,
         tierSelected
       );
 
@@ -3967,23 +3780,74 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend = true;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](0);
 
     bytes memory _metadata = abi.encode(
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
     vm.prank(mockTerminalAddress);
     vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
+    delegate.didPay(
+      JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+  }
+
+   function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftoverAndPrevented(bool _prevent) public {
+    uint256 _leftover = tiers[1].contributionFloor - 1;
+    uint256 _amount = tiers[0].contributionFloor + _leftover;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    // Get the currently selected flags
+    JBTiered721Flags memory flags = delegate.store().flagsOf(address(delegate));
+    // Modify the prevent
+    flags.preventOverspending = _prevent;
+    // Mock the call to return the new flags
+    vm.mockCall(
+      address(delegate.store()),
+      abi.encodeWithSelector(IJBTiered721DelegateStore.flagsOf.selector, address(delegate)),
+      abi.encode(flags)
+    );
+
+    bool _allowOverspending = true;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _allowOverspending,
+      _tierIdsToMint
+    );
+
+    // If prevent is enabled the call should revert, otherwise we should receive credits
+    if(_prevent){
+      vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
+    }
+
+    vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
         msg.sender,
@@ -4036,6 +3900,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4092,11 +3957,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       )
     );
 
-    uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(_delegate));
-
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -4106,9 +3967,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -4206,15 +4065,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
       })
     );
 
-    bool _dontMint;
-    bool _expectMintFromExtraFunds;
-    bool _dontOverspend;
+    bool _allowOverspending;
     uint16[] memory _tierIdsToMint = new uint16[](3);
     _tierIdsToMint[0] = 1;
     _tierIdsToMint[1] = 1;
@@ -4224,9 +4082,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bytes32(0),
       bytes32(0),
       type(IJB721Delegate).interfaceId,
-      _dontMint,
-      _expectMintFromExtraFunds,
-      _dontOverspend,
+      _allowOverspending,
       _tierIdsToMint
     );
 
@@ -4320,6 +4176,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4335,6 +4192,21 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
+    // Metadata to mint
+    bytes memory metadata;
+    {
+      // Craft the metadata: mint the specified tier
+      uint16[] memory rawMetadata = new uint16[](1);
+      rawMetadata[0] = uint16(1); // 1 indexed
+      metadata = abi.encode(
+        bytes32(0),
+        bytes32(0),
+        type(IJB721Delegate).interfaceId,
+        true,
+        rawMetadata
+      );
+    }
+
     // We mint the NFTs otherwise the voting balance does not get incremented
     // which leads to underflow on redeem
     vm.prank(mockTerminalAddress);
@@ -4349,7 +4221,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _holder,
         false,
         '',
-        new bytes(0)
+        metadata
       )
     );
 
@@ -4427,6 +4299,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4546,6 +4419,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4655,6 +4529,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParams,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4779,6 +4654,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
@@ -4798,6 +4674,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // TODO: mint different tiers
     for (uint256 i; i < _numberOfNFT; i++) {
+      bytes memory _metadata;
+      {
+        uint16[] memory _tierIdsToMint = new uint16[](1);
+        _tierIdsToMint[0] = 1;
+
+        _metadata = abi.encode(
+          bytes32(0),
+          bytes32(0),
+          type(IJB721Delegate).interfaceId,
+          false,
+          _tierIdsToMint
+        );
+      }
+   
       // We mint the NFTs otherwise the voting balance does not get incremented
       // which leads to underflow on redeem
       vm.prank(mockTerminalAddress);
@@ -4812,7 +4702,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           _holder,
           false,
           '',
-          new bytes(0)
+          _metadata
         )
       );
 
@@ -4969,6 +4859,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers,
       IJBTiered721DelegateStore(address(_ForTest_store)),
       JBTiered721Flags({
+        preventOverspending: false,
         lockReservedTokenChanges: false,
         lockVotingUnitChanges: false,
         lockManualMintingChanges: true
