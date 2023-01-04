@@ -753,17 +753,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_tierIdOfToken_returnsCorrectTierNumber(5, 4);
   }
 
-  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNotMinted(uint256 tokenId)
-    public
-  {
-    // Token not minted -> no URI
-    assertEq(delegate.tokenURI(tokenId), '');
-  }
-
-  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNotMinted_coverage() public {
-    testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNotMinted(5);
-  }
-
   function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfResolverUsed(
     uint256 tokenId,
     address holder
@@ -810,10 +799,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfResolverUsed(5, beneficiary);
   }
 
-  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(address holder)
+  function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(bool isMinted, address holder)
     public
   {
-    vm.assume(holder != address(0));
+    // If IsMinted is true then we need a valid holder address, otherwise 0 is allowed
+    vm.assume(!isMinted || holder != address(0));
 
     JB721TierParams[] memory _tiers = new JB721TierParams[](10);
 
@@ -857,7 +847,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i = 1; i <= _tiers.length; i++) {
       uint256 tokenId = _generateTokenId(i, 1);
 
-      _delegate.ForTest_setOwnerOf(tokenId, holder);
+      if(isMinted)
+        _delegate.ForTest_setOwnerOf(tokenId, holder);
 
       assertEq(
         _delegate.tokenURI(tokenId),
@@ -869,7 +860,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed_coverage()
     public
   {
-    testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(beneficiary);
+    testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(true, beneficiary);
+    testJBTieredNFTRewardDelegate_tokenURI_returnsCorrectUriIfNoResolverUsed(false, address(0));
   }
 
   function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
