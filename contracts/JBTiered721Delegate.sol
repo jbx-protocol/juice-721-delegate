@@ -136,9 +136,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     @return The token URI corresponding with the tier or the tokenUriResolver URI.
   */
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
-    // A token without an owner doesn't have a URI.
-    if (_owners[_tokenId] == address(0)) return '';
-
     // Get a reference to the URI resolver.
     IJBTokenUriResolver _resolver = store.tokenUriResolverOf(address(this));
 
