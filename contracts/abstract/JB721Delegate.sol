@@ -137,10 +137,10 @@ abstract contract JB721Delegate is
     );
 
     // Get a reference to the redemption rate of the provided tokens.
-    uint256 _redemptionWeight = _redemptionWeightOf(_decodedTokenIds, _data);
+    uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds, _data);
 
     // Get a reference to the total redemption weight.
-    uint256 _total = _totalRedemptionWeight(_data);
+    uint256 _total = totalRedemptionWeight(_data);
 
     // Get a reference to the linear proportion.
     uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _total);
@@ -169,6 +169,44 @@ abstract contract JB721Delegate is
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
+
+  /** 
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
+
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+    @param _data The Juicebox standard project redemption data.
+
+    @return The weight.
+  */
+  function redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata _data)
+    public
+    view
+    virtual
+    returns (uint256)
+  {
+    _tokenIds; // Prevents unused var compiler and natspec complaints.
+    _data; // Prevents unused var compiler and natspec complaints.
+    return 0;
+  }
+
+  /** 
+    @notice
+    The cumulative weight that all token IDs have in redemptions. 
+
+    @param _data The Juicebox standard project redemption data.
+
+    @return The total weight.
+  */
+  function totalRedemptionWeight(JBRedeemParamsData calldata _data)
+    public
+    view
+    virtual
+    returns (uint256)
+  {
+    _data; // Prevents unused var compiler and natspec complaints.
+    return 0;
+  }
 
   /**
     @notice
@@ -321,43 +359,5 @@ abstract contract JB721Delegate is
   */
   function _didBurn(uint256[] memory _tokenIds) internal virtual {
     _tokenIds;
-  }
-
-  /** 
-    @notice
-    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
-
-    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
-    @param _data The Juicebox standard project redemption data.
-
-    @return The weight.
-  */
-  function _redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata _data)
-    internal
-    view
-    virtual
-    returns (uint256)
-  {
-    _tokenIds; // Prevents unused var compiler and natspec complaints.
-    _data; // Prevents unused var compiler and natspec complaints.
-    return 0;
-  }
-
-  /** 
-    @notice
-    The cumulative weight that all token IDs have in redemptions. 
-
-    @param _data The Juicebox standard project redemption data.
-
-    @return The total weight.
-  */
-  function _totalRedemptionWeight(JBRedeemParamsData calldata _data)
-    internal
-    view
-    virtual
-    returns (uint256)
-  {
-    _data; // Prevents unused var compiler and natspec complaints.
-    return 0;
   }
 }

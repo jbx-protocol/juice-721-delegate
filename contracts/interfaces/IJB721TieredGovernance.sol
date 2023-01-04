@@ -18,7 +18,7 @@ interface IJB721TieredGovernance is IJBTiered721Delegate {
     uint256 indexed tierId,
     uint256 previousBalance,
     uint256 newBalance,
-    address callre
+    address caller
   );
 
   event DelegateChanged(
