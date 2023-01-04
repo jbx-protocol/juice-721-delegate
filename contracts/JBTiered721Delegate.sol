@@ -163,6 +163,40 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     return store.contractUriOf(address(this));
   }
 
+  /** 
+    @notice
+    The cumulative weight the given token IDs have in redemptions compared to the `_totalRedemptionWeight`. 
+
+    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+
+    @return The weight.
+  */
+  function redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata)
+    public
+    view
+    virtual
+    override
+    returns (uint256)
+  {
+    return store.redemptionWeightOf(address(this), _tokenIds);
+  }
+
+  /** 
+    @notice
+    The cumulative weight that all token IDs have in redemptions. 
+
+    @return The total weight.
+  */
+  function totalRedemptionWeight(JBRedeemParamsData calldata)
+    public
+    view
+    virtual
+    override
+    returns (uint256)
+  {
+    return store.totalRedemptionWeight(address(this));
+  }
+
   /**
     @notice
     Indicates if this contract adheres to the specified interface.
@@ -645,40 +679,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
         ++_i;
       }
     }
-  }
-
-  /** 
-    @notice
-    The cumulative weight the given token IDs have in redemptions compared to the `_totalRedemptionWeight`. 
-
-    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
-
-    @return The weight.
-  */
-  function _redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata)
-    internal
-    view
-    virtual
-    override
-    returns (uint256)
-  {
-    return store.redemptionWeightOf(address(this), _tokenIds);
-  }
-
-  /** 
-    @notice
-    The cumulative weight that all token IDs have in redemptions. 
-
-    @return The total weight.
-  */
-  function _totalRedemptionWeight(JBRedeemParamsData calldata)
-    internal
-    view
-    virtual
-    override
-    returns (uint256)
-  {
-    return store.totalRedemptionWeight(address(this));
   }
 
   /**
