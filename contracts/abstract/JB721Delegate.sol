@@ -41,9 +41,10 @@ abstract contract JB721Delegate is
 
   error INVALID_PAYMENT_EVENT();
   error INVALID_REDEMPTION_EVENT();
+  error INVALID_REDEMPTION_METADATA();
+  error NO_DELEGATECALLS();
   error UNAUTHORIZED();
   error UNEXPECTED_TOKEN_REDEEMED();
-  error INVALID_REDEMPTION_METADATA();
 
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
@@ -195,6 +196,16 @@ abstract contract JB721Delegate is
   }
 
   //*********************************************************************//
+  // ------------- internal immutable stored properties ---------------- //
+  //*********************************************************************//
+
+  /**
+    @notice
+    The address of this contract, used to prevent delegatecalls.
+  */
+  address internal addressThis;
+
+  //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
@@ -214,6 +225,7 @@ abstract contract JB721Delegate is
 
     projectId = _projectId;
     directory = _directory;
+    addressThis = address(this);
   }
 
   //*********************************************************************//
@@ -230,6 +242,8 @@ abstract contract JB721Delegate is
     @param _data The Juicebox standard project payment data.
   */
   function didPay(JBDidPayData calldata _data) external payable virtual override {
+    if(address(this) != addressThis) revert NO_DELEGATECALLS();
+
     uint256 _projectId = projectId;
 
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
