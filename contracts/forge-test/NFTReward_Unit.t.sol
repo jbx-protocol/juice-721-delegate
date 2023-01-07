@@ -4000,6 +4000,40 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
+  function testJBTieredNFTRewardDelegate_didPay_revertIfDelegatecall() public {
+    bool _dontMint;
+    bool _expectMintFromExtraFunds;
+    bool _dontOverspend = true;
+    uint16[] memory _tierIdsToMint = new uint16[](0);
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _dontMint,
+      _expectMintFromExtraFunds,
+      _dontOverspend,
+      _tierIdsToMint
+    );
+
+    JBDidPayData memory _didPayData = JBDidPayData(
+        msg.sender,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, 10, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      );
+
+    vm.prank(mockTerminalAddress);
+    vm.expectRevert(abi.encodeWithSelector(JB721Delegate.NO_DELEGATECALLS.selector));
+    address(delegate).delegatecall(abi.encodeCall(delegate.didPay, (_didPayData)));
+  }
+
   // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting (if delegate flag pausable is true)
   function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle()
     public
