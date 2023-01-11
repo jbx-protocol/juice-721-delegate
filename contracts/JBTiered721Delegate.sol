@@ -26,7 +26,7 @@ import './structs/JBTiered721Flags.sol';
   Votes: A helper for voting balance snapshots.
   Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
+contract JBTiered721Delegate is IJBTiered721Delegate, IERC2981, JB721Delegate, Ownable {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -40,6 +40,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
+
+  /**
+    @notice
+    The royalty share taken on each transfer based on eip 2981.
+  */
+  uint256 public constant ROYALTY_SHARE = 100;
 
   /**
     @notice
@@ -203,7 +209,7 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _interfaceId The ID of the interface to check for adherence to.
   */
-  function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
+  function supportsInterface(bytes4 _interfaceId) public view override(JB721Delegate,IERC165) returns (bool) {
     return
       _interfaceId == type(IJBTiered721Delegate).interfaceId ||
       super.supportsInterface(_interfaceId);
@@ -761,5 +767,21 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     _to;
     _tokenId;
     _tier;
+  }
+
+  /**
+    @notice Return royalty info
+    @param _tokenId Token Id
+    @param _salePrice Sales price
+    @return receiver royalty receiver address
+    @return royaltyAmount Royalty Amount
+  */
+  function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override returns (address receiver, uint256 royaltyAmount) {
+      _tokenId; //avoid compiler warning
+      return (directory.projects().ownerOf(projectId), PRBMath.mulDiv(
+        _salePrice,
+        ROYALTY_SHARE,
+        10_000
+      ));
   }
 }
