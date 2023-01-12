@@ -43,12 +43,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, IERC2981, JB721Delegate, O
 
   /**
     @notice
-    The royalty share taken on each transfer based on eip 2981.
-  */
-  uint256 public constant ROYALTY_SHARE = 100;
-
-  /**
-    @notice
     The address of the origin 'JBTiered721Delegate', used to check in the init if the contract is the original or not
   */
   address public override codeOrigin;
@@ -778,10 +772,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, IERC2981, JB721Delegate, O
   */
   function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override returns (address receiver, uint256 royaltyAmount) {
       _tokenId; //avoid compiler warning
+      JB721Tier memory _tier = store.tier(address(this), _tokenId);
       return (directory.projects().ownerOf(projectId), PRBMath.mulDiv(
         _salePrice,
-        ROYALTY_SHARE,
-        10_000
+        _tier.reservedRate,
+        JBConstants.MAX_RESERVED_RATE
       ));
   }
 }
