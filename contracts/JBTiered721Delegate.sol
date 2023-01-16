@@ -27,7 +27,7 @@ import './structs/JBTiered721Flags.sol';
   Votes: A helper for voting balance snapshots.
   Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is IJBTiered721Delegate, IERC2981, JB721Delegate, Ownable {
+contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IERC2981 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -783,6 +783,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, IERC2981, JB721Delegate, O
           _tier.reservedRate,
           JBConstants.MAX_RESERVED_RATE
         ));
-      } else return (directory.projects().ownerOf(projectId), 0); // when no riaylties have been enabled
+      } else return (directory.projects().ownerOf(projectId), 0); // when no royalties have been enabled
   }
 }
