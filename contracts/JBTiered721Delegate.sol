@@ -2,6 +2,7 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import './abstract/JB721Delegate.sol';
 import './interfaces/IJBTiered721Delegate.sol';
@@ -772,11 +773,16 @@ contract JBTiered721Delegate is IJBTiered721Delegate, IERC2981, JB721Delegate, O
   */
   function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override returns (address receiver, uint256 royaltyAmount) {
       _tokenId; //avoid compiler warning
-      JB721Tier memory _tier = store.tier(address(this), _tokenId);
-      return (directory.projects().ownerOf(projectId), PRBMath.mulDiv(
-        _salePrice,
-        _tier.reservedRate,
-        JBConstants.MAX_RESERVED_RATE
-      ));
+      // Get the project's current funding cycle metadata.
+      (, JBFundingCycleMetadata memory _metadata) = IJBController(directory.controllerOf(projectId)).currentFundingCycleOf(projectId);
+      // 4 specifies `useRoyalty` is true
+      if (_metadata.metadata == 4) {
+        JB721Tier memory _tier = store.tier(address(this), _tokenId);
+        return (directory.projects().ownerOf(projectId), PRBMath.mulDiv(
+          _salePrice,
+          _tier.reservedRate,
+          JBConstants.MAX_RESERVED_RATE
+        ));
+      } else return (directory.projects().ownerOf(projectId), 0); // when no riaylties have been enabled
   }
 }
