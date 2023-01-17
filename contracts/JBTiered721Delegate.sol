@@ -453,6 +453,27 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
   }
 
+  /**
+    @notice
+    Set an encoded IPFS uri of a tier.
+
+    @dev
+    Only the contract's owner can set the encoded IPFS uri.
+
+    @param _tierId The ID of the tier to set the encoded IPFS uri of.
+    @param _encodedIPFSUri The encoded IPFS uri to set.
+  */
+  function setEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri)
+    external
+    override
+    onlyOwner
+  {
+    // Store the new value.
+    store.recordSetEncodedIPFSUriOf(_tierId, _encodedIPFSUri);
+
+    emit SetEncodedIPFSUri(_tierId, _encodedIPFSUri, msg.sender);
+  }
+
   //*********************************************************************//
   // ----------------------- public transactions ----------------------- //
   //*********************************************************************//
