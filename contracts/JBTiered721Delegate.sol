@@ -481,9 +481,6 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     // Keep a reference to the reserved token beneficiary.
     address _reservedTokenBeneficiary = store.reservedTokenBeneficiaryOf(address(this), _tierId);
 
-    // Default to owner.
-    if (_reservedTokenBeneficiary == address(0)) _reservedTokenBeneficiary = owner();
-
     // Keep a reference to the token ID being iterated on.
     uint256 _tokenId;
 

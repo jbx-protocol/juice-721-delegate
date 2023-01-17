@@ -648,7 +648,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _currentMaxTierIdOf = maxTierIdOf[msg.sender];
 
     // Make sure the max number of tiers hasn't been reached.
-    if(_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
+    if (_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
 
     // Keep a reference to the current last sorted tier ID.
     uint256 _currentLastSortIndex = _lastSortIndexOf(msg.sender);
@@ -685,9 +685,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_flags.lockVotingUnitChanges && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
 
-      // Make sure a reserved rate isn't set if changes should be locked or if manual minting is allowed.
+      // Make sure a reserved rate isn't set if changes should be locked, if manual minting is allowed, or if a reserved rate beneficiary isn't set.
       if (
-        (_flags.lockReservedTokenChanges || _tierToAdd.allowManualMint) &&
+        (_flags.lockReservedTokenChanges ||
+          _tierToAdd.allowManualMint ||
+          (_tierToAdd.reservedTokenBeneficiary == address(0) &&
+            defaultReservedTokenBeneficiaryOf[msg.sender] == address(0))) &&
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
 
@@ -1193,11 +1196,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return The ID of the token.
   */
-  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
-    internal
-    pure
-    returns (uint256)
-  {
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber) internal pure returns (uint256) {
     return (_tierId * _ONE_BILLION) + _tokenNumber;
   }
 
