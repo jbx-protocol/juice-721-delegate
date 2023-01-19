@@ -72,6 +72,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => mapping(uint256 => address)) internal _reservedTokenBeneficiaryOf;
 
+  /**
+    @notice
+    An optional beneficiary for the royalty of a given tier.
+
+    _nft The NFT contract to which the royalty beneficiary belongs.
+    _tierId the ID of the tier.
+  */
+  mapping(address => mapping(uint256 => address)) internal _royaltyBeneficiaryOf;
+
   /** 
     @notice
     The stored reward tier. 
@@ -160,6 +169,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _nft The NFT contract to which the reserved token beneficiary applies.
   */
   mapping(address => address) public override defaultReservedTokenBeneficiaryOf;
+
+  /** 
+    @notice
+    The beneficiary of royalties when the tier doesn't specify a beneficiary.
+
+    _nft The NFT contract to which the royalty beneficiary applies.
+  */
+  mapping(address => address) public override defaultRoyaltyBeneficiaryOf;
 
   /**
     @notice
@@ -258,6 +275,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           votingUnits: _storedTier.votingUnits,
           reservedRate: _storedTier.reservedRate,
           reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
+          royaltyRate: _storedTier.royaltyRate,
+          royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _currentSortIndex),
           encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
           allowManualMint: _storedTier.allowManualMint,
           transfersPausable: _storedTier.transfersPausable
@@ -298,6 +317,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
+        royaltyRate: _storedTier.royaltyRate,
+        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _id),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
@@ -335,6 +356,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+        royaltyRate: _storedTier.royaltyRate,
+        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _tierId),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
@@ -624,6 +647,31 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return defaultReservedTokenBeneficiaryOf[_nft];
   }
 
+  /** 
+    @notice
+    The royalty beneficiary for each tier. 
+
+    @param _nft The NFT to get the royalty beneficiary within.
+    @param _tierId The ID of the tier to get a royalty beneficiary of.
+
+    @return The reserved token beneficiary.
+  */
+  function royaltyBeneficiaryOf(address _nft, uint256 _tierId)
+    public
+    view
+    override
+    returns (address)
+  {
+    // Get the stored royalty beneficiary.
+    address _storedRoyaltyBeneficiaryOfTier = _royaltyBeneficiaryOf[_nft][_tierId];
+
+    // If the tier has a beneficiary return it.
+    if (_storedRoyaltyBeneficiaryOfTier != address(0)) return _storedRoyaltyBeneficiaryOfTier;
+
+    // Return the default.
+    return defaultRoyaltyBeneficiaryOf[_nft];
+  }
+
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
@@ -648,7 +696,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _currentMaxTierIdOf = maxTierIdOf[msg.sender];
 
     // Make sure the max number of tiers hasn't been reached.
-    if(_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
+    if (_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
 
     // Keep a reference to the current last sorted tier ID.
     uint256 _currentLastSortIndex = _lastSortIndexOf(msg.sender);
@@ -709,15 +757,22 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
+        royaltyRate: uint8(_tierToAdd.royaltyRate),
         allowManualMint: _tierToAdd.allowManualMint,
         transfersPausable: _tierToAdd.transfersPausable
       });
 
       // Set the reserved token beneficiary if needed.
       if (_tierToAdd.reservedTokenBeneficiary != address(0))
-        if (_tierToAdd.shouldUseBeneficiaryAsDefault)
+        if (_tierToAdd.shouldUseReservedTokenBeneficiaryAsDefault)
           defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
         else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
+
+      // Set the royalty beneficiary if needed.
+      if (_tierToAdd.royaltyBeneficiary != address(0))
+        if (_tierToAdd.shouldUseRoyaltyBeneficiaryAsDefault)
+          defaultRoyaltyBeneficiaryOf[msg.sender] = _tierToAdd.royaltyBeneficiary;
+        else _royaltyBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.royaltyBeneficiary;
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
@@ -1193,11 +1248,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return The ID of the token.
   */
-  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
-    internal
-    pure
-    returns (uint256)
-  {
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber) internal pure returns (uint256) {
     return (_tierId * _ONE_BILLION) + _tokenNumber;
   }
 

@@ -39,6 +39,11 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   error TRANSFERS_PAUSED();
 
   //*********************************************************************//
+  // ------------------------- public constants ------------------------ //
+  //*********************************************************************//
+  uint256 public constant MAX_ROYALTY_RATE = 200;
+
+  //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
 
@@ -204,7 +209,12 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _interfaceId The ID of the interface to check for adherence to.
   */
-  function supportsInterface(bytes4 _interfaceId) public view override(JB721Delegate,IERC165) returns (bool) {
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(JB721Delegate, IERC165)
+    returns (bool)
+  {
     return
       _interfaceId == type(IJBTiered721Delegate).interfaceId ||
       super.supportsInterface(_interfaceId);
@@ -765,24 +775,28 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   }
 
   /**
-    @notice Return royalty info
-    @param _tokenId Token Id
-    @param _salePrice Sales price
-    @return receiver royalty receiver address
-    @return royaltyAmount Royalty Amount
+    @notice 
+    Royalty info conforming to EIP-2981.
+
+    @param _tokenId The ID of the token that the royalty is for.
+    @param _salePrice The price being paid for the token.
+
+    @return receiver The address of the royalty's receiver.
+    @return royaltyAmount The amount of the royalty.
   */
-  function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override returns (address receiver, uint256 royaltyAmount) {
-      _tokenId; //avoid compiler warning
-      // Get the project's current funding cycle metadata.
-      (, JBFundingCycleMetadata memory _metadata) = IJBController(directory.controllerOf(projectId)).currentFundingCycleOf(projectId);
-      // 4 specifies `useRoyalty` is true
-      if (_metadata.metadata == 4) {
-        JB721Tier memory _tier = store.tier(address(this), _tokenId);
-        return (directory.projects().ownerOf(projectId), PRBMath.mulDiv(
-          _salePrice,
-          _tier.reservedRate,
-          JBConstants.MAX_RESERVED_RATE
-        ));
-      } else return (directory.projects().ownerOf(projectId), 0); // when no royalties have been enabled
+  function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
+    external
+    view
+    override
+    returns (address receiver, uint256 royaltyAmount)
+  {
+    // Get a reference to the tier.
+    JB721Tier memory _tier = store.tier(address(this), _tokenId);
+
+    // Return the royalty portion of the sale.
+    return (
+      store.royaltyBeneficiaryOf(address(this), _tier.id),
+      PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE)
+    );
   }
 }
