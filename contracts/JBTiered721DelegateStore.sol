@@ -270,11 +270,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _lastTierId);
     }
 
-    // // Resize the array if there are removed tiers
-    // if (_numberOfIncludedTiers != _size)
-    //   assembly ("memory-safe"){
-    //     mstore(_tiers, _numberOfIncludedTiers)
-    //   }
+    // Resize the array if there are removed tiers
+    if (_numberOfIncludedTiers != _size)
+      assembly ("memory-safe"){
+        mstore(_tiers, _numberOfIncludedTiers)
+      }
   }
 
   /** 
