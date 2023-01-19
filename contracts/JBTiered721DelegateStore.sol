@@ -28,6 +28,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error CANT_MINT_MANUALLY();
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
+  error INVALID_CATEGORY_SORT_ORDER();
   error INVALID_PRICE_SORT_ORDER();
   error INVALID_QUANTITY();
   error INVALID_TIER();
@@ -259,6 +260,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           reservedRate: _storedTier.reservedRate,
           reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
           encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
+          category: _storedTier.category,
           allowManualMint: _storedTier.allowManualMint,
           transfersPausable: _storedTier.transfersPausable
         });
@@ -268,11 +270,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _lastTierId);
     }
 
-    // Resize the array if there are removed tiers
-    if (_numberOfIncludedTiers != _size)
-      assembly ("memory-safe"){
-        mstore(_tiers, _numberOfIncludedTiers)
-      }
+    // // Resize the array if there are removed tiers
+    // if (_numberOfIncludedTiers != _size)
+    //   assembly ("memory-safe"){
+    //     mstore(_tiers, _numberOfIncludedTiers)
+    //   }
   }
 
   /** 
@@ -299,6 +301,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
+        category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
       });
@@ -336,6 +339,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
+        category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
       });
@@ -648,7 +652,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _currentMaxTierIdOf = maxTierIdOf[msg.sender];
 
     // Make sure the max number of tiers hasn't been reached.
-    if(_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
+    if (_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
 
     // Keep a reference to the current last sorted tier ID.
     uint256 _currentLastSortIndex = _lastSortIndexOf(msg.sender);
@@ -678,8 +682,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_tierToAdd.initialQuantity > _ONE_BILLION - 1) revert INVALID_QUANTITY();
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
-      if (_i != 0 && _tierToAdd.contributionFloor < _tiersToAdd[_i - 1].contributionFloor)
-        revert INVALID_PRICE_SORT_ORDER();
+      if (_i != 0) {
+        // Get a reference to the previous tier.
+        JB721TierParams memory _previousTier = _tiersToAdd[_i - 1];
+
+        // Check category sort order.
+        if (_tierToAdd.category < _previousTier.category) revert INVALID_CATEGORY_SORT_ORDER();
+
+        // Check price sort order.
+        if (_tierToAdd.contributionFloor < _previousTier.contributionFloor)
+          revert INVALID_PRICE_SORT_ORDER();
+      }
 
       // Make sure there are no voting units set if they're not allowed.
       if (_flags.lockVotingUnitChanges && _tierToAdd.votingUnits != 0)
@@ -709,6 +722,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
+        category: uint8(_tierToAdd.category),
         allowManualMint: _tierToAdd.allowManualMint,
         transfersPausable: _tierToAdd.transfersPausable
       });
@@ -732,7 +746,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           _currentSortIndex
         );
 
-        // Keep a reference to the idex to iterate on next.
+        // Keep a reference to the index to iterate on next.
         uint256 _next;
 
         while (_currentSortIndex != 0) {
@@ -743,8 +757,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Set the next index.
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentLastSortIndex);
 
-          // If the contribution floor is less than the tier being iterated on, store the order.
+          // If the category or contribution floor is less than the tier being iterated on, store the order.
           if (
+            _tierToAdd.category < _storedTierOf[msg.sender][_currentSortIndex].category ||
             _tierToAdd.contributionFloor <
             _storedTierOf[msg.sender][_currentSortIndex].contributionFloor
           ) {
@@ -1193,11 +1208,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return The ID of the token.
   */
-  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
-    internal
-    pure
-    returns (uint256)
-  {
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber) internal pure returns (uint256) {
     return (_tierId * _ONE_BILLION) + _tokenNumber;
   }
 
