@@ -248,6 +248,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
         _storedTier = _storedTierOf[_nft][_currentSortIndex];
+        
+        // Get a reference to the reserved token beneficiary.
+        address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _currentSortIndex);
+
         // Add the tier to the array being returned.
         _tiers[_numberOfIncludedTiers++] = JB721Tier({
           id: _currentSortIndex,
@@ -256,8 +260,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           remainingQuantity: _storedTier.remainingQuantity,
           initialQuantity: _storedTier.initialQuantity,
           votingUnits: _storedTier.votingUnits,
-          reservedRate: _storedTier.reservedRate,
-          reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
+          // No reserved rate if no beneficiary set.
+          reservedRate: _reservedTokenBeneficiary == address(0) ? 0 :_storedTier.reservedRate,
+          reservedTokenBeneficiary: _reservedTokenBeneficiary,
           encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
           allowManualMint: _storedTier.allowManualMint,
           transfersPausable: _storedTier.transfersPausable
@@ -288,6 +293,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get the stored tier.
     JBStored721Tier memory _storedTier = _storedTierOf[_nft][_id];
 
+    // Get a reference to the reserved token beneficiary.
+    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _id);
+
     return
       JB721Tier({
         id: _id,
@@ -296,8 +304,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
-        reservedRate: _storedTier.reservedRate,
-        reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
+        // No reserved rate if no beneficiary set.
+        reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
+        reservedTokenBeneficiary: _reservedTokenBeneficiary,
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
@@ -325,6 +334,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get the stored tier.
     JBStored721Tier memory _storedTier = _storedTierOf[_nft][_tierId];
 
+    // Get a reference to the reserved token beneficiary.
+    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _tierId);
+
     return
       JB721Tier({
         id: _tierId,
@@ -333,8 +345,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
-        reservedRate: _storedTier.reservedRate,
-        reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+        // No reserved rate if beneficiary is not set.
+        reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
+        reservedTokenBeneficiary: _reservedTokenBeneficiary,
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
@@ -1159,7 +1172,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   ) internal view returns (uint256) {
     // No reserves outstanding if no mints or no reserved rate.
     if (
-      _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity
+      _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0)
     ) return 0;
 
     // The number of reserved tokens of the tier already minted.
