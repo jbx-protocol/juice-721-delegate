@@ -793,10 +793,13 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     // Get a reference to the tier.
     JB721Tier memory _tier = store.tier(address(this), _tokenId);
 
+    // Get a reference to the beneficiary.
+    address _beneficiary = store.royaltyBeneficiaryOf(address(this), _tier.id);
+
+    // If no beneificary, return no royalty.
+    if (_beneficiary == address(0)) return (address(0), 0);
+
     // Return the royalty portion of the sale.
-    return (
-      store.royaltyBeneficiaryOf(address(this), _tier.id),
-      PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE)
-    );
+    return (_beneficiary, PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE));
   }
 }
