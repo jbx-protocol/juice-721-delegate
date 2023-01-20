@@ -149,9 +149,12 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
         transfersPausable: false
       });
     }
