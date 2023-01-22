@@ -686,7 +686,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         JB721TierParams memory _previousTier = _tiersToAdd[_i - 1];
 
         // Check category sort order.
-        if (_tierToAdd.category < _previousTier.category) revert INVALID_CATEGORY_SORT_ORDER();
+        if (_tierToAdd.category == 0 || _tierToAdd.category < _previousTier.category) revert INVALID_CATEGORY_SORT_ORDER();
       }
 
       // Make sure there are no voting units set if they're not allowed.
