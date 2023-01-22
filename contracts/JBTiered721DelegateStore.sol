@@ -29,7 +29,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
   error INVALID_CATEGORY_SORT_ORDER();
-  error INVALID_PRICE_SORT_ORDER();
   error INVALID_QUANTITY();
   error INVALID_TIER();
   error MAX_TIERS_EXCEEDED();
@@ -688,10 +687,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
         // Check category sort order.
         if (_tierToAdd.category < _previousTier.category) revert INVALID_CATEGORY_SORT_ORDER();
-
-        // Check price sort order.
-        if (_tierToAdd.contributionFloor < _previousTier.contributionFloor)
-          revert INVALID_PRICE_SORT_ORDER();
       }
 
       // Make sure there are no voting units set if they're not allowed.
@@ -759,9 +754,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
           // If the category or contribution floor is less than the tier being iterated on, store the order.
           if (
-            _tierToAdd.category < _storedTierOf[msg.sender][_currentSortIndex].category ||
-            _tierToAdd.contributionFloor <
-            _storedTierOf[msg.sender][_currentSortIndex].contributionFloor
+            _tierToAdd.category < _storedTierOf[msg.sender][_currentSortIndex].category 
           ) {
             // If the index being iterated on isn't the next index, set the after.
             if (_currentSortIndex != _tierId + 1)
