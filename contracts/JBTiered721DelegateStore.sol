@@ -110,6 +110,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => uint256) internal _trackedLastSortTierIdOf;
 
+  /** 
+    @notice
+    The ID of the first tier in each category.
+
+    _nft The NFT contract to get the tier ID of.
+    _category The category to get the first tier ID of.
+  */
+  mapping(address => mapping(uint256 => uint256)) internal _startingTierIdOfCategory;
+
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -234,7 +243,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _numberOfIncludedTiers;
 
     // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(_nft);
+    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(_nft, _category);
 
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
@@ -252,7 +261,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _storedTier = _storedTierOf[_nft][_currentSortIndex];
 
         // If a category is specified and matches, add the the returned values.
-        if (_category > 0 && _storedTier.category == _category) 
+        if (_category == 0 || _storedTier.category == _category)
           // Add the tier to the array being returned.
           _tiers[_numberOfIncludedTiers++] = JB721Tier({
             id: _currentSortIndex,
@@ -268,8 +277,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             allowManualMint: _storedTier.allowManualMint,
             transfersPausable: _storedTier.transfersPausable
           });
-        // If the tier's category is greater than the category sought after, break.
-        else if (_category < _storedTier.category) _currentSortIndex = 0;
+          // If the tier's category is greater than the category sought after, break.
+        else if (_category > 0 && _storedTier.category > _category) _currentSortIndex = 0;
       }
 
       // Set the next sort index.
@@ -278,7 +287,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Resize the array if there are removed tiers
     if (_numberOfIncludedTiers != _size)
-      assembly ("memory-safe"){
+      assembly ("memory-safe") {
         mstore(_tiers, _numberOfIncludedTiers)
       }
   }
@@ -669,7 +678,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
     // If there's no sort index, start with the first index.
-    uint256 _startSortIndex = _currentMaxTierIdOf == 0 ? 0 : _firstSortIndexOf(msg.sender);
+    uint256 _startSortIndex = _currentMaxTierIdOf == 0 ? 0 : _firstSortIndexOf(msg.sender, 0);
 
     // Keep track of the previous index.
     uint256 _previous;
@@ -693,7 +702,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         JB721TierParams memory _previousTier = _tiersToAdd[_i - 1];
 
         // Check category sort order.
-        if (_tierToAdd.category == 0 || _tierToAdd.category < _previousTier.category) revert INVALID_CATEGORY_SORT_ORDER();
+        if (_tierToAdd.category == 0 || _tierToAdd.category < _previousTier.category)
+          revert INVALID_CATEGORY_SORT_ORDER();
       }
 
       // Make sure there are no voting units set if they're not allowed.
@@ -729,6 +739,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         transfersPausable: _tierToAdd.transfersPausable
       });
 
+      // If this is the first tier in a new category, store its ID as such.
+      if (_startingTierIdOfCategory[msg.sender][_tierToAdd.category] == 0)
+        _startingTierIdOfCategory[msg.sender][_tierToAdd.category] = _tierId;
+
       // Set the reserved token beneficiary if needed.
       if (_tierToAdd.reservedTokenBeneficiary != address(0))
         if (_tierToAdd.shouldUseBeneficiaryAsDefault)
@@ -760,9 +774,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentLastSortIndex);
 
           // If the category is less than the tier being iterated on, store the order.
-          if (
-            _tierToAdd.category < _storedTierOf[msg.sender][_currentSortIndex].category 
-          ) {
+          if (_tierToAdd.category < _storedTierOf[msg.sender][_currentSortIndex].category) {
             // If the index being iterated on isn't the next index, set the after.
             if (_currentSortIndex != _tierId + 1)
               _tierIdAfter[msg.sender][_tierId] = _currentSortIndex;
@@ -1118,7 +1130,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _lastTierId = _lastSortIndexOf(_nft);
 
     // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _firstSortIndexOf(_nft);
+    uint256 _currentSortIndex = _firstSortIndexOf(_nft, 0);
 
     // Keep track of the previous non-removed index.
     uint256 _previous;
@@ -1241,11 +1253,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     The first sorted tier index of an NFT.
 
     @param _nft The NFT to get the first sorted tier index of.
+    @param _category The category to get the first sorted tier index of. Send 0 for the first overall sort index.
 
     @return index The first sorted tier index.
   */
-  function _firstSortIndexOf(address _nft) internal view returns (uint256 index) {
-    index = _tierIdAfter[_nft][0];
+  function _firstSortIndexOf(address _nft, uint256 _category)
+    internal
+    view
+    returns (uint256 index)
+  {
+    index = _category == 0 ? _tierIdAfter[_nft][0] : _startingTierIdOfCategory[_nft][_category];
     // Start at the first index if nothing is specified.
     if (index == 0) index = 1;
   }
