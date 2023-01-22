@@ -752,7 +752,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Set the next index.
           _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentLastSortIndex);
 
-          // If the category or contribution floor is less than the tier being iterated on, store the order.
+          // If the category is less than the tier being iterated on, store the order.
           if (
             _tierToAdd.category < _storedTierOf[msg.sender][_currentSortIndex].category 
           ) {
