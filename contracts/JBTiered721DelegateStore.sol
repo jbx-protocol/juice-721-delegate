@@ -212,6 +212,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     Gets an array of all the active tiers. 
 
     @param _nft The NFT contract to get tiers for.
+    @param _category The category of the tiers to get. Send 0 for any category.
     @param _startingId The start index of the array of tiers sorted by contribution floor. Send 0 to start at the beginning.
     @param _size The number of tiers to include.
 
@@ -219,6 +220,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function tiers(
     address _nft,
+    uint256 _category,
     uint256 _startingId,
     uint256 _size
   ) external view override returns (JB721Tier[] memory _tiers) {
@@ -248,21 +250,26 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
         _storedTier = _storedTierOf[_nft][_currentSortIndex];
-        // Add the tier to the array being returned.
-        _tiers[_numberOfIncludedTiers++] = JB721Tier({
-          id: _currentSortIndex,
-          contributionFloor: _storedTier.contributionFloor,
-          lockedUntil: _storedTier.lockedUntil,
-          remainingQuantity: _storedTier.remainingQuantity,
-          initialQuantity: _storedTier.initialQuantity,
-          votingUnits: _storedTier.votingUnits,
-          reservedRate: _storedTier.reservedRate,
-          reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
-          encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
-          category: _storedTier.category,
-          allowManualMint: _storedTier.allowManualMint,
-          transfersPausable: _storedTier.transfersPausable
-        });
+
+        // If a category is specified and matches, add the the returned values.
+        if (_category > 0 && _storedTier.category == _category) 
+          // Add the tier to the array being returned.
+          _tiers[_numberOfIncludedTiers++] = JB721Tier({
+            id: _currentSortIndex,
+            contributionFloor: _storedTier.contributionFloor,
+            lockedUntil: _storedTier.lockedUntil,
+            remainingQuantity: _storedTier.remainingQuantity,
+            initialQuantity: _storedTier.initialQuantity,
+            votingUnits: _storedTier.votingUnits,
+            reservedRate: _storedTier.reservedRate,
+            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
+            encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
+            category: _storedTier.category,
+            allowManualMint: _storedTier.allowManualMint,
+            transfersPausable: _storedTier.transfersPausable
+          });
+        // If the tier's category is greater than the category sought after, break.
+        else if (_category < _storedTier.category) _currentSortIndex = 0;
       }
 
       // Set the next sort index.
