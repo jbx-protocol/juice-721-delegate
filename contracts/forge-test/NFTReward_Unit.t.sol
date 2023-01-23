@@ -2095,7 +2095,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         category: uint8(100),
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        transfersPausable: false
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
@@ -2134,7 +2134,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: Are all the tiers sorted?
     for (uint256 i = 1; i < _storedTiers.length; i++) {
-      assertLe(_storedTiers[i - 1].contributionFloor, _storedTiers[i].contributionFloor);
+      assertLe(_storedTiers[i - 1].category, _storedTiers[i].category);
     }
   }
 
@@ -2446,7 +2446,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParamsToAdd[i] = JB721TierParams({
         contributionFloor: uint80(floorTiersToAdd[i]) * 11,
         lockedUntil: uint48(0),
-        initialQuantity: uint40(100),
+        initialQuantity: uint40(100 + i),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
@@ -2454,7 +2454,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         category: uint8(100),
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2497,7 +2497,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: Are all the tiers sorted?
     for (uint256 j = 1; j < _storedTiers.length; j++) {
-      assertLe(_storedTiers[j - 1].contributionFloor, _storedTiers[j].contributionFloor);
+      assertLe(_storedTiers[j - 1].category, _storedTiers[j].category);
     }
   }
 
@@ -2852,7 +2852,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         category: uint8(100),
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
-                        transfersPausable: false
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2979,7 +2979,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         category: uint8(100),
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
-                        transfersPausable: false
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -4811,90 +4811,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < _numberOfNFT; i++)
       assertEq(_ForTest_store.numberOfBurnedFor(address(_delegate), 1), _numberOfNFT);
   }
-
-  function testJBTieredNFTRewardDelegate_adjustTiers_tiersSortedAccordingToCategory(
-    uint8 initialNumberOfTiers,
-    uint8 numberTiersToAdd
-  ) public {
-     // Include adding X new tiers when 0 preexisting ones
-    vm.assume(initialNumberOfTiers < 30);
-    vm.assume(numberTiersToAdd > 1 && numberTiersToAdd < 30);
-
-    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
-
-    for (uint256 i; i < initialNumberOfTiers; i++) {
-      _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
-        initialQuantity: uint40(100),
-        votingUnits: uint16(0),
-        reservedRate: uint16(i),
-        reservedTokenBeneficiary: reserveBeneficiary,
-        encodedIPFSUri: tokenUris[0],
-        category: uint8(100),
-        allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-        transfersPausable: false
-      });
-    }
-
-    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-      projectId,
-      IJBDirectory(mockJBDirectory),
-      name,
-      symbol,
-      IJBFundingCycleStore(mockJBFundingCycleStore),
-      baseUri,
-      IJBTokenUriResolver(mockTokenUriResolver),
-      contractUri,
-      _tierParams,
-      IJBTiered721DelegateStore(address(_ForTest_store)),
-      JBTiered721Flags({
-        preventOverspending: false,
-        lockReservedTokenChanges: false,
-        lockVotingUnitChanges: true,
-        lockManualMintingChanges: true
-      })
-    );
-
-    _delegate.transferOwnership(owner);
-
-    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](numberTiersToAdd);
-
-    for (uint256 i; i < numberTiersToAdd; i++) {
-      _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 100),
-        lockedUntil: uint48(0),
-        initialQuantity: uint40(100),
-        votingUnits: uint16(0),
-        reservedRate: uint16(i),
-        reservedTokenBeneficiary: reserveBeneficiary,
-        encodedIPFSUri: tokenUris[0],
-        category: uint8(101),
-        allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-        transfersPausable: false
-      });
-  }
-    _tierParamsToAdd[numberTiersToAdd - 1].category = uint8(102);
-
-    vm.prank(owner);
-    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
-
-    JB721Tier[] memory _storedTiers = _delegate.store().tiers(
-      address(_delegate),
-      0,
-      0,
-      initialNumberOfTiers + numberTiersToAdd
-    );
-
-    // Check: Are all the tiers sorted?
-    for (uint256 i = 1; i < _storedTiers.length; i++) {
-      assert(_storedTiers[i - 1].category <= _storedTiers[i].category || _storedTiers[i - 1].contributionFloor < _storedTiers[i].contributionFloor);
-    }
-  }
-
 
   function testJBTieredNFTRewardDelegate_adjustTiers_revertIfInvalidCategorySortOrder(
     uint8 initialNumberOfTiers,
