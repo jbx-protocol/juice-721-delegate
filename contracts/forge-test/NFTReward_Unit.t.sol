@@ -2446,12 +2446,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierParamsToAdd[i] = JB721TierParams({
         contributionFloor: uint80(floorTiersToAdd[i]) * 11,
         lockedUntil: uint48(0),
-        initialQuantity: uint40(100 + i),
+        initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
-        category: uint8(100),
+        category: uint8(100 + i),
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
         transfersPausable: false
