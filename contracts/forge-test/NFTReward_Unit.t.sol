@@ -267,8 +267,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     _delegate.transferOwnership(owner);
 
-    assertTrue(_isIn(_delegate.test_store().tiers(address(_delegate), 0, numberOfTiers), _tiers));
-    assertTrue(_isIn(_tiers, _delegate.test_store().tiers(address(_delegate), 0, numberOfTiers)));
+    assertTrue(_isIn(_delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers), _tiers));
+    assertTrue(_isIn(_tiers, _delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers)));
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers_coverage() public {
@@ -288,7 +288,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](numberOfTiers);
     JB721Tier[] memory _nonRemovedTiers = new JB721Tier[](numberOfTiers - 2);
-
+     // to avoid stack too deep
+    {
     uint256 j;
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
@@ -325,7 +326,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         j++;
       }
     }
-
+    }
+    // to avoid stack too deep
+    {
     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
       projectId,
@@ -353,17 +356,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: tier array returned is resized
     assertEq(
-      _delegate.test_store().tiers(address(_delegate), 0, numberOfTiers).length,
+      _delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers).length,
       numberOfTiers - 2
     );
 
     // Check: all and only the non-removed tiers are in the tier array returned
     assertTrue(
-      _isIn(_delegate.test_store().tiers(address(_delegate), 0, numberOfTiers), _nonRemovedTiers)
+      _isIn(_delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers), _nonRemovedTiers)
     );
     assertTrue(
-      _isIn(_nonRemovedTiers, _delegate.test_store().tiers(address(_delegate), 0, numberOfTiers))
+      _isIn(_nonRemovedTiers, _delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers))
     );
+    }
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiersExcludingRemovedOnes_coverage()
@@ -1226,8 +1230,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
     assertEq(_delegate.contractURI(), contractUri);
     assertEq(_delegate.owner(), owner);
-    assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, nbTiers), _tiers)); // Order is not insured
-    assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, nbTiers)));
+    assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, 0, nbTiers), _tiers)); // Order is not insured
+    assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, 0, nbTiers)));
   }
 
   function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity_coverage()
@@ -2117,6 +2121,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
       0,
+      0,
       initialNumberOfTiers + floorTiersToAdd.length
     );
 
@@ -2283,6 +2288,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
         address(_delegate),
+        0,
         0,
         finalNumberOfTiers
       );
@@ -2474,6 +2480,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _delegate.adjustTiers(_tierParamsToAdd, tierIdToRemove);
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
+      0,
       0,
       7 // 7 tiers remaining - Hardcoded to avoid stack too deep
     );
@@ -2908,7 +2915,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: one less tier
     assertEq(
-      _delegate.store().tiers(address(_delegate), 0, initialNumberOfTiers).length,
+      _delegate.store().tiers(address(_delegate), 0, 0, initialNumberOfTiers).length,
       initialNumberOfTiers - 1
     );
   }
@@ -4878,6 +4885,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
       0,
+      0,
       initialNumberOfTiers + numberTiersToAdd
     );
 
@@ -5372,7 +5380,7 @@ contract ForTest_JBTiered721DelegateStore is
     uint256 _numberOfIncludedTiers;
 
     // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _firstSortIndexOf(_nft);
+    uint256 _currentSortIndex = _firstSortedTierIdOf(_nft, 0);
 
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
@@ -5397,7 +5405,7 @@ contract ForTest_JBTiered721DelegateStore is
       });
 
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierId);
+      _currentSortIndex = _nextSortedTierIdOf(_nft, _currentSortIndex, _maxTierId);
     }
 
     // Drop the empty tiers at the end of the array (coming from maxTierIdOf which *might* be bigger than actual bigger tier)
