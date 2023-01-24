@@ -11,6 +11,7 @@ pragma solidity ^0.8.16;
   @member reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
   @member reservedRateBeneficiary The beneificary of the reserved tokens for this tier.
   @member encodedIPFSUri The URI to use for each token within the tier.
+  @member category A category to group NFT tiers by.
   @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
 */
@@ -24,6 +25,7 @@ struct JB721Tier {
   uint256 reservedRate;
   address reservedTokenBeneficiary;
   bytes32 encodedIPFSUri;
+  uint256 category;
   bool allowManualMint;
   bool transfersPausable;
 }

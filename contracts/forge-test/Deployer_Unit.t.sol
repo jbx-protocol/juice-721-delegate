@@ -150,6 +150,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
         transfersPausable: false
