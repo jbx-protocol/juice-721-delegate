@@ -29,6 +29,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
   error INVALID_CATEGORY_SORT_ORDER();
+  error INVALID_LOCKED_UNTIL();
   error INVALID_QUANTITY();
   error INVALID_TIER();
   error MAX_TIERS_EXCEEDED();
@@ -782,13 +783,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure there is some quantity.
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
 
+      // Make sure the locked until is in the future if provided.
+      if (_tierToAdd.lockedUntil != 0 && _tierToAdd.lockedUntil < block.timestamp)
+        revert INVALID_LOCKED_UNTIL();
+
       // Get a reference to the tier ID.
       uint256 _tierId = _currentMaxTierIdOf + _i + 1;
 
       // Add the tier with the iterative ID.
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
         contributionFloor: uint80(_tierToAdd.contributionFloor),
-        lockedUntil: uint40(_tierToAdd.lockedUntil - _BASE_LOCK_TIMESTAMP),
+        lockedUntil: _tierToAdd.lockedUntil == 0
+          ? uint40(0)
+          : uint40(_tierToAdd.lockedUntil - _BASE_LOCK_TIMESTAMP),
         remainingQuantity: uint40(_tierToAdd.initialQuantity),
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
