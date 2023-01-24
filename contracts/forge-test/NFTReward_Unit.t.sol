@@ -2134,7 +2134,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: Are all the tiers sorted?
     for (uint256 i = 1; i < _storedTiers.length; i++) {
-      assertLe(_storedTiers[i - 1].category, _storedTiers[i].category);
+      assertLt(_storedTiers[i - 1].category, _storedTiers[i].category);
     }
   }
 
