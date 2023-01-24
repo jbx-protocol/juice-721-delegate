@@ -263,7 +263,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _storedTier = _storedTierOf[_nft][_currentSortedTierId];
 
         // Get a reference to the reserved token beneficiary.
-        address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _currentSortIndex);
+        address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _currentSortedTierId);
 
         // If a category is specified and matches, add the the returned values.
         if (_category == 0 || _storedTier.category == _category)
@@ -726,9 +726,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure a reserved rate isn't set if changes should be locked, if manual minting is allowed, or if a reserved rate beneficiary isn't set.
       if (
         (_flags.lockReservedTokenChanges ||
-          _tierToAdd.allowManualMint ||
-          (_tierToAdd.reservedTokenBeneficiary == address(0) &&
-            defaultReservedTokenBeneficiaryOf[msg.sender] == address(0))) &&
+          _tierToAdd.allowManualMint) &&
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
 
