@@ -10,6 +10,7 @@ import 'forge-std/Test.sol';
 
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
+import '@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol';
 
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
@@ -64,6 +65,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   JBTiered721Delegate delegate; 
   JBTiered721Delegate noGovernanceOrigin; // noGovernanceOrigin
+  JBDelegatesRegistry delegatesRegistry;
 
   address delegate_i = address(bytes20(keccak256('delegate_implementation')));
 
@@ -172,11 +174,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     noGovernanceOrigin = new JBTiered721Delegate();
     JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
     JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+    delegatesRegistry = new JBDelegatesRegistry();
 
     JBTiered721DelegateDeployer jbDelegateDeployer = new JBTiered721DelegateDeployer(
       globalGovernance,
       tieredGovernance,
-      noGovernanceOrigin
+      noGovernanceOrigin,
+      delegatesRegistry
     );
 
     JBDeployTiered721DelegateData memory delegateData = JBDeployTiered721DelegateData(
