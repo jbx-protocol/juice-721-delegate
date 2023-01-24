@@ -651,6 +651,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         reservedRate: 10,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
         shouldUseBeneficiaryAsDefault: false,
         transfersPausable: false
