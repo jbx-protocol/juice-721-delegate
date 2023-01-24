@@ -17,6 +17,7 @@ interface IJBTiered721DelegateStore {
 
   function tiers(
     address _nft,
+    uint256 _category,
     uint256 _startingSortIndex,
     uint256 _size
   ) external view returns (JB721Tier[] memory tiers);

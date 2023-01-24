@@ -141,6 +141,7 @@ contract RinkebyLaunchProjectFor is Script {
         royaltyRate: uint8(0),
         royaltyBeneficiary: address(0),
         encodedIPFSUri: 0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89,
+        category: 100,
         allowManualMint: false,
         shouldUseReservedTokenBeneficiaryAsDefault: true,
         shouldUseRoyaltyBeneficiaryAsDefault: true,

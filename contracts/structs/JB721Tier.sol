@@ -13,6 +13,7 @@ pragma solidity ^0.8.16;
   @member royaltyRate The percentage of each of the NFT sales that should be routed to the royalty beneficiary. Out of MAX_ROYALTY_RATE.
   @member royaltyBeneficiary The beneificary of the royalty.
   @member encodedIPFSUri The URI to use for each token within the tier.
+  @member category A category to group NFT tiers by.
   @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
 */
@@ -28,6 +29,7 @@ struct JB721Tier {
   uint256 royaltyRate;
   address royaltyBeneficiary;
   bytes32 encodedIPFSUri;
+  uint256 category;
   bool allowManualMint;
   bool transfersPausable;
 }

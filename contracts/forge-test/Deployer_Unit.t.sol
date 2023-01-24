@@ -152,6 +152,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         royaltyRate: uint8(1),
         royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
         shouldUseRoyaltyBeneficiaryAsDefault: true,
         shouldUseReservedTokenBeneficiaryAsDefault: false,
