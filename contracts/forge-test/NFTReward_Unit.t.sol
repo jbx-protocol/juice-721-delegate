@@ -15,6 +15,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
   AccessJBLib internal _accessJBLib;
 
+  uint256 private constant _BASE_LOCK_TIMESTAMP = 1672531200;
+
   address beneficiary = address(bytes20(keccak256('beneficiary')));
   address owner = address(bytes20(keccak256('owner')));
   address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
@@ -238,7 +240,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -320,7 +322,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -1226,7 +1228,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2120,7 +2122,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2186,7 +2188,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         contributionFloor: _tierParamsToAdd[i].contributionFloor,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -2261,7 +2263,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2327,7 +2329,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         contributionFloor: _tierParamsToAdd[i].contributionFloor,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -2573,7 +2575,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2720,7 +2722,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2794,7 +2796,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tiersRemaining[_arrayIndex] = JB721Tier({
           id: i + 1,
           contributionFloor: _tierDataRemaining[_arrayIndex].contributionFloor,
-          lockedUntil: _tierDataRemaining[_arrayIndex].lockedUntil,
+          lockedUntil: _tierDataRemaining[_arrayIndex].lockedUntil + _BASE_LOCK_TIMESTAMP,
           remainingQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
           initialQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
           votingUnits: _tierDataRemaining[_arrayIndex].votingUnits,
@@ -2840,7 +2842,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         contributionFloor: _tierParamsToAdd[i].contributionFloor,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
