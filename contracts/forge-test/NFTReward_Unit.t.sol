@@ -421,7 +421,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -487,7 +487,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JB721Tier({
           id: givenTier,
           contributionFloor: 0,
-          lockedUntil: 0,
+          lockedUntil: _BASE_LOCK_TIMESTAMP,
           remainingQuantity: 0,
           initialQuantity: 0,
           votingUnits: 0,
