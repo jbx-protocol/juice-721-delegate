@@ -6,6 +6,7 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol';
+import '@openzeppelin/contracts/interfaces/IERC2981.sol';
 import '@paulrberg/contracts/math/PRBMath.sol';
 import '../interfaces/IJB721Delegate.sol';
 import './ERC721.sol';
@@ -229,6 +230,7 @@ abstract contract JB721Delegate is
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
       _interfaceId == type(IJBPayDelegate).interfaceId ||
       _interfaceId == type(IJBRedemptionDelegate).interfaceId ||
+      _interfaceId == type(IERC2981).interfaceId ||
       super.supportsInterface(_interfaceId);
   }
 

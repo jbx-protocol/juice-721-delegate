@@ -19,7 +19,7 @@ import './interfaces/IJBTiered721DelegateProjectDeployer.sol';
   Inherits from -
   JBOperatable: Several functions in this contract can only be accessed by a project owner, or an address that has been preconfigured to be an operator of the project.
 */
-contract JBTiered721DelegateProjectDeployer is IJBTiered721DelegateProjectDeployer, JBOperatable {
+contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721DelegateProjectDeployer {
   //*********************************************************************//
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
