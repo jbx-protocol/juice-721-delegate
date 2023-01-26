@@ -71,10 +71,14 @@ interface IJBTiered721DelegateStore {
 
   function defaultReservedTokenBeneficiaryOf(address _nft) external view returns (address);
 
+  function defaultRoyaltyBeneficiaryOf(address _nft) external view returns (address);
+
   function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
     external
     view
     returns (address);
+
+  function royaltyBeneficiaryOf(address _nft, uint256 _tierId) external view returns (address);
 
   function baseUriOf(address _nft) external view returns (string memory);
 

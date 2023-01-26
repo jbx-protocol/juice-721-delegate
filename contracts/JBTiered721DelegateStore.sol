@@ -29,6 +29,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
   error INVALID_CATEGORY_SORT_ORDER();
+  error INVALID_LOCKED_UNTIL();
   error INVALID_QUANTITY();
   error INVALID_TIER();
   error MAX_TIERS_EXCEEDED();
@@ -46,6 +47,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
 
   uint256 private constant _ONE_BILLION = 1_000_000_000;
+
+  /** 
+    @notice 
+    The timestamp to add on to tier lock timestamps. 
+
+    @dev
+    Useful so the stored lock timestamp per-tier can fit in a smaller storage slot.
+    
+  */
+  uint256 private constant _BASE_LOCK_TIMESTAMP = 1672531200;
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -71,6 +82,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _tierId the ID of the tier.
   */
   mapping(address => mapping(uint256 => address)) internal _reservedTokenBeneficiaryOf;
+
+  /**
+    @notice
+    An optional beneficiary for the royalty of a given tier.
+
+    _nft The NFT contract to which the royalty beneficiary belongs.
+    _tierId the ID of the tier.
+  */
+  mapping(address => mapping(uint256 => address)) internal _royaltyBeneficiaryOf;
 
   /** 
     @notice
@@ -170,6 +190,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => address) public override defaultReservedTokenBeneficiaryOf;
 
+  /** 
+    @notice
+    The beneficiary of royalties when the tier doesn't specify a beneficiary.
+
+    _nft The NFT contract to which the royalty beneficiary applies.
+  */
+  mapping(address => address) public override defaultRoyaltyBeneficiaryOf;
+
   /**
     @notice
     The first owner of each token ID, stored on first transfer out.
@@ -268,12 +296,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           _tiers[_numberOfIncludedTiers++] = JB721Tier({
             id: _currentSortedTierId,
             contributionFloor: _storedTier.contributionFloor,
-            lockedUntil: _storedTier.lockedUntil,
+            lockedUntil: _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
             remainingQuantity: _storedTier.remainingQuantity,
             initialQuantity: _storedTier.initialQuantity,
             votingUnits: _storedTier.votingUnits,
             reservedRate: _storedTier.reservedRate,
             reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortedTierId),
+            royaltyRate: _storedTier.royaltyRate,
+            royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _currentSortedTierId),
             encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortedTierId],
             category: _storedTier.category,
             allowManualMint: _storedTier.allowManualMint,
@@ -311,12 +341,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       JB721Tier({
         id: _id,
         contributionFloor: _storedTier.contributionFloor,
-        lockedUntil: _storedTier.lockedUntil,
+        lockedUntil: _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
+        royaltyRate: _storedTier.royaltyRate,
+        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _id),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
@@ -349,12 +381,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       JB721Tier({
         id: _tierId,
         contributionFloor: _storedTier.contributionFloor,
-        lockedUntil: _storedTier.lockedUntil,
+        lockedUntil: _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+        royaltyRate: _storedTier.royaltyRate,
+        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _tierId),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
@@ -645,6 +679,31 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return defaultReservedTokenBeneficiaryOf[_nft];
   }
 
+  /** 
+    @notice
+    The royalty beneficiary for each tier. 
+
+    @param _nft The NFT to get the royalty beneficiary within.
+    @param _tierId The ID of the tier to get a royalty beneficiary of.
+
+    @return The reserved token beneficiary.
+  */
+  function royaltyBeneficiaryOf(address _nft, uint256 _tierId)
+    public
+    view
+    override
+    returns (address)
+  {
+    // Get the stored royalty beneficiary.
+    address _storedRoyaltyBeneficiaryOfTier = _royaltyBeneficiaryOf[_nft][_tierId];
+
+    // If the tier has a beneficiary return it.
+    if (_storedRoyaltyBeneficiaryOfTier != address(0)) return _storedRoyaltyBeneficiaryOfTier;
+
+    // Return the default.
+    return defaultRoyaltyBeneficiaryOf[_nft];
+  }
+
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
@@ -724,17 +783,24 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure there is some quantity.
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
 
+      // Make sure the locked until is in the future if provided.
+      if (_tierToAdd.lockedUntil != 0 && _tierToAdd.lockedUntil < block.timestamp)
+        revert INVALID_LOCKED_UNTIL();
+
       // Get a reference to the tier ID.
       uint256 _tierId = _currentMaxTierIdOf + _i + 1;
 
       // Add the tier with the iterative ID.
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
         contributionFloor: uint80(_tierToAdd.contributionFloor),
-        lockedUntil: uint48(_tierToAdd.lockedUntil),
+        lockedUntil: _tierToAdd.lockedUntil == 0
+          ? uint40(0)
+          : uint40(_tierToAdd.lockedUntil - _BASE_LOCK_TIMESTAMP),
         remainingQuantity: uint40(_tierToAdd.initialQuantity),
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
+        royaltyRate: uint8(_tierToAdd.royaltyRate),
         category: uint8(_tierToAdd.category),
         allowManualMint: _tierToAdd.allowManualMint,
         transfersPausable: _tierToAdd.transfersPausable
@@ -746,9 +812,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Set the reserved token beneficiary if needed.
       if (_tierToAdd.reservedTokenBeneficiary != address(0))
-        if (_tierToAdd.shouldUseBeneficiaryAsDefault)
+        if (_tierToAdd.shouldUseReservedTokenBeneficiaryAsDefault)
           defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
         else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
+
+      // Set the royalty beneficiary if needed.
+      if (_tierToAdd.royaltyBeneficiary != address(0))
+        if (_tierToAdd.shouldUseRoyaltyBeneficiaryAsDefault)
+          defaultRoyaltyBeneficiaryOf[msg.sender] = _tierToAdd.royaltyBeneficiary;
+        else _royaltyBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.royaltyBeneficiary;
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
@@ -943,7 +1015,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
-      if (_storedTierOf[msg.sender][_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
+      if (_storedTierOf[msg.sender][_tierId].lockedUntil + _BASE_LOCK_TIMESTAMP >= block.timestamp) revert TIER_LOCKED();
 
       // Set the tier as removed.
       _isTierRemovedBitmapWord[msg.sender].removeTier(_tierId);

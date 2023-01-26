@@ -2,6 +2,7 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import './abstract/JB721Delegate.sol';
 import './interfaces/IJBTiered721Delegate.sol';
@@ -26,7 +27,7 @@ import './structs/JBTiered721Flags.sol';
   Votes: A helper for voting balance snapshots.
   Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
+contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IERC2981 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -36,6 +37,11 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
   error PRICING_RESOLVER_CHANGES_PAUSED();
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
+
+  //*********************************************************************//
+  // ------------------------- public constants ------------------------ //
+  //*********************************************************************//
+  uint256 public constant MAX_ROYALTY_RATE = 200;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -203,7 +209,12 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
 
     @param _interfaceId The ID of the interface to check for adherence to.
   */
-  function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
+  function supportsInterface(bytes4 _interfaceId)
+    public
+    view
+    override(JB721Delegate, IERC165)
+    returns (bool)
+  {
     return
       _interfaceId == type(IJBTiered721Delegate).interfaceId ||
       super.supportsInterface(_interfaceId);
@@ -761,5 +772,34 @@ contract JBTiered721Delegate is IJBTiered721Delegate, JB721Delegate, Ownable {
     _to;
     _tokenId;
     _tier;
+  }
+
+  /**
+    @notice 
+    Royalty info conforming to EIP-2981.
+
+    @param _tokenId The ID of the token that the royalty is for.
+    @param _salePrice The price being paid for the token.
+
+    @return receiver The address of the royalty's receiver.
+    @return royaltyAmount The amount of the royalty.
+  */
+  function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
+    external
+    view
+    override
+    returns (address receiver, uint256 royaltyAmount)
+  {
+    // Get a reference to the tier.
+    JB721Tier memory _tier = store.tier(address(this), _tokenId);
+
+    // Get a reference to the beneficiary.
+    address _beneficiary = store.royaltyBeneficiaryOf(address(this), _tier.id);
+
+    // If no beneificary, return no royalty.
+    if (_beneficiary == address(0)) return (address(0), 0);
+
+    // Return the royalty portion of the sale.
+    return (_beneficiary, PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE));
   }
 }
