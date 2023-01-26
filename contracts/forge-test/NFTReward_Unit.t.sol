@@ -16,6 +16,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
   AccessJBLib internal _accessJBLib;
 
+  uint256 private constant _BASE_LOCK_TIMESTAMP = 1672531200;
+
   address beneficiary = address(bytes20(keccak256('beneficiary')));
   address owner = address(bytes20(keccak256('owner')));
   address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
@@ -120,10 +122,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
           votingUnits: uint16(0),
           reservedRate: uint16(0),
           reservedTokenBeneficiary: reserveBeneficiary,
+          royaltyRate: uint8(1),
+          royaltyBeneficiary: reserveBeneficiary,
           encodedIPFSUri: tokenUris[i],
+          category: uint8(100),
           allowManualMint: false,
-          shouldUseBeneficiaryAsDefault: false,
-                transfersPausable: false
+          shouldUseRoyaltyBeneficiaryAsDefault: true,
+          shouldUseReservedTokenBeneficiaryAsDefault: false,
+          transfersPausable: false
         })
       );
     }
@@ -223,26 +229,33 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
-        reservedTokenBeneficiary: reserveBeneficiary,
         reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-              transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -268,8 +281,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     _delegate.transferOwnership(owner);
 
-    assertTrue(_isIn(_delegate.test_store().tiers(address(_delegate), 0, numberOfTiers), _tiers));
-    assertTrue(_isIn(_tiers, _delegate.test_store().tiers(address(_delegate), 0, numberOfTiers)));
+    assertTrue(_isIn(_delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers), _tiers));
+    assertTrue(_isIn(_tiers, _delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers)));
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers_coverage() public {
@@ -289,7 +302,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](numberOfTiers);
     JB721Tier[] memory _nonRemovedTiers = new JB721Tier[](numberOfTiers - 2);
-
+     // to avoid stack too deep
+    {
     uint256 j;
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
@@ -297,24 +311,31 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
-        reservedTokenBeneficiary: reserveBeneficiary,
         reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
         transfersPausable: _tierParams[i].transfersPausable
       });
@@ -324,7 +345,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         j++;
       }
     }
-
+    }
+    // to avoid stack too deep
+    {
     ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
     ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
       projectId,
@@ -352,17 +375,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: tier array returned is resized
     assertEq(
-      _delegate.test_store().tiers(address(_delegate), 0, numberOfTiers).length,
+      _delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers).length,
       numberOfTiers - 2
     );
 
     // Check: all and only the non-removed tiers are in the tier array returned
     assertTrue(
-      _isIn(_delegate.test_store().tiers(address(_delegate), 0, numberOfTiers), _nonRemovedTiers)
+      _isIn(_delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers), _nonRemovedTiers)
     );
     assertTrue(
-      _isIn(_nonRemovedTiers, _delegate.test_store().tiers(address(_delegate), 0, numberOfTiers))
+      _isIn(_nonRemovedTiers, _delegate.test_store().tiers(address(_delegate), 0, 0, numberOfTiers))
     );
+    }
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiersExcludingRemovedOnes_coverage()
@@ -388,24 +412,31 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-              transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -438,13 +469,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           contributionFloor: uint80(_tierParams[i].contributionFloor),
-          lockedUntil: uint48(_tierParams[i].lockedUntil),
+          lockedUntil: uint40(_tierParams[i].lockedUntil),
           remainingQuantity: uint40(_tierParams[i].initialQuantity),
           initialQuantity: uint40(_tierParams[i].initialQuantity),
           votingUnits: uint16(_tierParams[i].votingUnits),
           reservedRate: uint16(_tierParams[i].reservedRate),
+          royaltyRate: uint8(_tierParams[i].royaltyRate),
+          category: uint8(_tierParams[i].category), 
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
     }
@@ -458,15 +491,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JB721Tier({
           id: givenTier,
           contributionFloor: 0,
-          lockedUntil: 0,
+          lockedUntil: _BASE_LOCK_TIMESTAMP,
           remainingQuantity: 0,
           initialQuantity: 0,
           votingUnits: 0,
           reservedRate: 0,
+          royaltyRate: 1,
+          royaltyBeneficiary: address(0),
           reservedTokenBeneficiary: address(0),
           encodedIPFSUri: bytes32(0),
+          category: uint8(100), 
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
   }
@@ -492,10 +528,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100), 
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
       });
     }
 
@@ -527,13 +567,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(100 - (i + 1)),
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
     }
@@ -564,10 +606,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
       });
     }
 
@@ -626,10 +672,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
       });
     }
 
@@ -661,13 +711,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
       _delegate.test_store().ForTest_setReservesMintedFor(
@@ -699,11 +751,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i), // Include a 0 voting unit tier
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -818,11 +874,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -891,11 +951,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       if (i >= firstTier && i < lastTier) {
@@ -958,11 +1022,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -994,13 +1062,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           contributionFloor: uint80(i * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -1148,25 +1218,32 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-              transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -1209,8 +1286,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
     assertEq(_delegate.contractURI(), contractUri);
     assertEq(_delegate.owner(), owner);
-    assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, nbTiers), _tiers)); // Order is not insured
-    assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, nbTiers)));
+    assertTrue(_isIn(_delegate.store().tiers(address(_delegate), 0, 0, nbTiers), _tiers)); // Order is not insured
+    assertTrue(_isIn(_tiers, _delegate.store().tiers(address(_delegate), 0, 0, nbTiers)));
   }
 
   function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity_coverage()
@@ -1235,11 +1312,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -1302,11 +1383,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -1338,13 +1423,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -1404,11 +1491,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -1440,13 +1531,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -1564,11 +1657,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -1600,13 +1697,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -1644,11 +1743,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -1680,13 +1783,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           contributionFloor: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
           reservedRate: uint16(reservedRate),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -1734,11 +1839,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: true, // Allow this type of mint
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiersToMint[i] = uint16(i)+1;
@@ -1804,11 +1913,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: true, // Allow this type of mint
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiersToMintOne[i] = uint16(i)+1;
@@ -1884,11 +1997,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
+        category: uint8(100),
         allowManualMint: true,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiersToMint[i] = uint16(i)+1;
@@ -1974,13 +2091,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
-  function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
+  function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers_With_Non_Sequential_Categories(
     uint16 initialNumberOfTiers,
     uint16[] memory floorTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
-    vm.assume(initialNumberOfTiers < 15);
-    vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
+    vm.assume(initialNumberOfTiers < 15 && initialNumberOfTiers > 0);
+    vm.assume(floorTiersToAdd.length > 1 && floorTiersToAdd.length < 15);
 
     // Floor are sorted in ascending order
     floorTiersToAdd = _sortArray(floorTiersToAdd);
@@ -1996,24 +2113,31 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
         encodedIPFSUri: tokenUris[0],
+        category: uint8(i * 2 + 1),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-              transfersPausable: false
+        transfersPausable: false
       });
     }
 
@@ -2056,23 +2180,30 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
         encodedIPFSUri: tokenUris[0],
+        category: uint8(i * 2 + 2),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         contributionFloor: _tierParamsToAdd[i].contributionFloor,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-              transfersPausable: _tierParamsToAdd[i].transfersPausable
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -2083,6 +2214,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
+      0,
       0,
       initialNumberOfTiers + floorTiersToAdd.length
     );
@@ -2096,7 +2228,281 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: Are all the tiers sorted?
     for (uint256 i = 1; i < _storedTiers.length; i++) {
-      assertLe(_storedTiers[i - 1].contributionFloor, _storedTiers[i].contributionFloor);
+      assertLt(_storedTiers[i - 1].category, _storedTiers[i].category);
+    }
+  }
+
+  function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers(
+    uint16 initialNumberOfTiers,
+    uint16[] memory floorTiersToAdd
+  ) public {
+    // Include adding X new tiers when 0 preexisting ones
+    vm.assume(initialNumberOfTiers < 15);
+    vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
+
+    // Floor are sorted in ascending order
+    floorTiersToAdd = _sortArray(floorTiersToAdd);
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+    JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+
+      _tiers[i] = JB721Tier({
+        id: i + 1,
+        contributionFloor: _tierParams[i].contributionFloor,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
+        remainingQuantity: _tierParams[i].initialQuantity,
+        initialQuantity: _tierParams[i].initialQuantity,
+        votingUnits: _tierParams[i].votingUnits,
+        reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
+        reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
+        allowManualMint: _tierParams[i].allowManualMint,
+        transfersPausable: false
+      });
+    }
+
+    JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
+      IJBTiered721DelegateStore(address(_store)),
+      JBTiered721Flags({
+        preventOverspending: false,
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
+    JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
+
+    for (uint256 i; i < floorTiersToAdd.length; i++) {
+      _tierParamsToAdd[i] = JB721TierParams({
+        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+      _tiersAdded[i] = JB721Tier({
+        id: _tiers.length + (i + 1),
+        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
+        remainingQuantity: _tierParamsToAdd[i].initialQuantity,
+        initialQuantity: _tierParamsToAdd[i].initialQuantity,
+        votingUnits: _tierParamsToAdd[i].votingUnits,
+        reservedRate: _tierParamsToAdd[i].reservedRate,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
+        reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
+      });
+      vm.expectEmit(true, true, true, true, address(_delegate));
+      emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
+    }
+
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
+
+    JB721Tier[] memory _storedTiers = _delegate.store().tiers(
+      address(_delegate),
+      0,
+      0,
+      initialNumberOfTiers + floorTiersToAdd.length
+    );
+
+    // Check: Expected number of tiers?
+    assertEq(_storedTiers.length, _tiers.length + _tiersAdded.length);
+
+    // Check: Are all tiers in the new tiers (unsorted)?
+    assertTrue(_isIn(_tiers, _storedTiers)); // Original tiers
+    assertTrue(_isIn(_tiersAdded, _storedTiers)); // New tiers
+
+    // Check: Are all the tiers sorted?
+    for (uint256 i = 1; i < _storedTiers.length; i++) {
+      assertLe(_storedTiers[i - 1].category, _storedTiers[i].category);
+    }
+  }
+
+  function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers_fetch_specifc_tier(
+    uint16 initialNumberOfTiers,
+    uint16[] memory floorTiersToAdd
+  ) public {
+    // Include adding X new tiers when 0 preexisting ones
+    vm.assume(initialNumberOfTiers < 15);
+    vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
+
+    // Floor are sorted in ascending order
+    floorTiersToAdd = _sortArray(floorTiersToAdd);
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+    JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+
+      _tiers[i] = JB721Tier({
+        id: i + 1,
+        contributionFloor: _tierParams[i].contributionFloor,
+        lockedUntil: _tierParams[i].lockedUntil,
+        remainingQuantity: _tierParams[i].initialQuantity,
+        initialQuantity: _tierParams[i].initialQuantity,
+        votingUnits: _tierParams[i].votingUnits,
+        reservedRate: _tierParams[i].reservedRate,
+        reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
+        allowManualMint: _tierParams[i].allowManualMint,
+        transfersPausable: false
+      });
+    }
+
+    JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
+      IJBTiered721DelegateStore(address(_store)),
+      JBTiered721Flags({
+        preventOverspending: false,
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
+    JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
+
+    for (uint256 i; i < floorTiersToAdd.length; i++) {
+      _tierParamsToAdd[i] = JB721TierParams({
+        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(101),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+      _tiersAdded[i] = JB721Tier({
+        id: _tiers.length + (i + 1),
+        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil,
+        remainingQuantity: _tierParamsToAdd[i].initialQuantity,
+        initialQuantity: _tierParamsToAdd[i].initialQuantity,
+        votingUnits: _tierParamsToAdd[i].votingUnits,
+        reservedRate: _tierParamsToAdd[i].reservedRate,
+        reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
+      });
+      vm.expectEmit(true, true, true, true, address(_delegate));
+      emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
+    }
+
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
+
+    JB721Tier[] memory _storedTiers = _delegate.store().tiers(
+      address(_delegate),
+      101,
+      0,
+      initialNumberOfTiers + floorTiersToAdd.length
+    );
+    // Check: Are all the tiers sorted?
+    for (uint256 i = 0; i < _storedTiers.length; i++) {
+      assertEq(_storedTiers[i].category, uint8(101));
     }
   }
 
@@ -2159,25 +2565,32 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-              transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2249,6 +2662,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
         address(_delegate),
         0,
+        0,
         finalNumberOfTiers
       );
 
@@ -2297,26 +2711,33 @@ contract TestJBTieredNFTRewardDelegate is Test {
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedRate: uint16(i),
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
         id: i + 1,
         contributionFloor: _tierParams[i].contributionFloor,
-        lockedUntil: _tierParams[i].lockedUntil,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-              transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2365,25 +2786,32 @@ contract TestJBTieredNFTRewardDelegate is Test {
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(i),
+          royaltyRate: uint8(1),
+          royaltyBeneficiary: reserveBeneficiary,
+          shouldUseRoyaltyBeneficiaryAsDefault: true,
           reservedTokenBeneficiary: reserveBeneficiary,
           encodedIPFSUri: tokenUris[0],
+          category: uint8(100),
           allowManualMint: false,
-          shouldUseBeneficiaryAsDefault: false,
-                transfersPausable: false
+          shouldUseReservedTokenBeneficiaryAsDefault: false,
+          transfersPausable: false
         });
 
         _tiersRemaining[_arrayIndex] = JB721Tier({
           id: i + 1,
           contributionFloor: _tierDataRemaining[_arrayIndex].contributionFloor,
-          lockedUntil: _tierDataRemaining[_arrayIndex].lockedUntil,
+          lockedUntil: _tierDataRemaining[_arrayIndex].lockedUntil + _BASE_LOCK_TIMESTAMP,
           remainingQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
           initialQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
           votingUnits: _tierDataRemaining[_arrayIndex].votingUnits,
           reservedRate: _tierDataRemaining[_arrayIndex].reservedRate,
+          royaltyRate: _tierDataRemaining[_arrayIndex].royaltyRate,
+          royaltyBeneficiary: _tierDataRemaining[_arrayIndex].royaltyBeneficiary,
           reservedTokenBeneficiary: _tierDataRemaining[_arrayIndex].reservedTokenBeneficiary,
           encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri,
+          category: _tierDataRemaining[_arrayIndex].category,
           allowManualMint: _tierDataRemaining[_arrayIndex].allowManualMint,
-                transfersPausable: _tierDataRemaining[_arrayIndex].transfersPausable
+          transfersPausable: _tierDataRemaining[_arrayIndex].transfersPausable
         });
         _arrayIndex++;
       } else {
@@ -2404,23 +2832,30 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100 + i),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         contributionFloor: _tierParamsToAdd[i].contributionFloor,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
         transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
@@ -2433,6 +2868,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _delegate.adjustTiers(_tierParamsToAdd, tierIdToRemove);
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
+      0,
       0,
       7 // 7 tiers remaining - Hardcoded to avoid stack too deep
     );
@@ -2449,7 +2885,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: Are all the tiers sorted?
     for (uint256 j = 1; j < _storedTiers.length; j++) {
-      assertLe(_storedTiers[j - 1].contributionFloor, _storedTiers[j].contributionFloor);
+      assertLe(_storedTiers[j - 1].category, _storedTiers[j].category);
     }
   }
 
@@ -2471,11 +2907,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2486,8 +2926,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
         transfersPausable: _tierParams[i].transfersPausable
       });
@@ -2525,11 +2968,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2540,8 +2987,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
         transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
@@ -2578,11 +3028,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2593,8 +3047,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParam[i].initialQuantity,
         votingUnits: _tierParam[i].votingUnits,
         reservedRate: _tierParam[i].reservedRate,
+        royaltyRate: _tierParam[i].royaltyRate,
+        royaltyBeneficiary: _tierParam[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParam[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParam[i].encodedIPFSUri,
+        category: _tierParam[i].category,
         allowManualMint: _tierParam[i].allowManualMint,
         transfersPausable: _tierParam[i].transfersPausable
       });
@@ -2632,11 +3089,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i + 1),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-              transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2647,8 +3108,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
         transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
@@ -2685,10 +3149,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
         transfersPausable: false
       });
 
@@ -2700,10 +3168,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-                transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2739,11 +3210,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(0),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-                transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiersAdded[i] = JB721Tier({
@@ -2754,10 +3229,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
         reservedRate: _tierParamsToAdd[i].reservedRate,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-                transfersPausable: _tierParamsToAdd[i].transfersPausable
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -2787,11 +3265,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-                        transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2802,10 +3284,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-                        transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2853,7 +3338,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Check: one less tier
     assertEq(
-      _delegate.store().tiers(address(_delegate), 0, initialNumberOfTiers).length,
+      _delegate.store().tiers(address(_delegate), 0, 0, initialNumberOfTiers).length,
       initialNumberOfTiers - 1
     );
   }
@@ -2912,11 +3397,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-                        transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
 
       _tiers[i] = JB721Tier({
@@ -2927,10 +3416,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
         reservedRate: _tierParams[i].reservedRate,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
         reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-                        transfersPausable: _tierParams[i].transfersPausable
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -3876,9 +4368,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         votingUnits: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         encodedIPFSUri: tokenUris[0],
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        category: uint8(100),
         transfersPausable: true
       });
     }
@@ -4274,11 +4770,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-                                transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -4311,13 +4811,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           contributionFloor: uint80(i * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                                  transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -4394,10 +4896,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
         transfersPausable: false
       });
     }
@@ -4431,11 +4937,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           contributionFloor: uint80(i * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
           transfersPausable: false
         })
@@ -4503,11 +5011,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
-                                transfersPausable: false
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false
       });
     }
 
@@ -4541,13 +5053,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           contributionFloor: uint80(i * 10),
-          lockedUntil: uint48(0),
+          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
+          royaltyRate: uint8(1),
+          category: uint8(100),
           allowManualMint: false,
-                                  transfersPausable: false
+          transfersPausable: false
         })
       );
 
@@ -4739,6 +5253,86 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Burn should be counted (_numberOfNft in first tier)
     for (uint256 i; i < _numberOfNFT; i++)
       assertEq(_ForTest_store.numberOfBurnedFor(address(_delegate), 1), _numberOfNFT);
+  }
+
+  function testJBTieredNFTRewardDelegate_adjustTiers_revertIfInvalidCategorySortOrder(
+    uint8 initialNumberOfTiers,
+    uint8 numberTiersToAdd
+  ) public {
+     // Include adding X new tiers when 0 preexisting ones
+    vm.assume(initialNumberOfTiers < 30);
+    vm.assume(numberTiersToAdd > 1);
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+    }
+
+    ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+    ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      _tierParams,
+      IJBTiered721DelegateStore(address(_ForTest_store)),
+      JBTiered721Flags({
+        preventOverspending: false,
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: true,
+        lockManualMintingChanges: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](numberTiersToAdd);
+
+    for (uint256 i; i < numberTiersToAdd; i++) {
+      _tierParamsToAdd[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 100),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+  }
+    _tierParamsToAdd[numberTiersToAdd - 1].category = uint8(99);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(JBTiered721DelegateStore.INVALID_CATEGORY_SORT_ORDER.selector)
+    );
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
   }
 
   function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT_coverage() public {
@@ -5151,7 +5745,7 @@ contract ForTest_JBTiered721DelegateStore is
     uint256 _numberOfIncludedTiers;
 
     // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _firstSortIndexOf(_nft);
+    uint256 _currentSortIndex = _firstSortedTierIdOf(_nft, 0);
 
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
@@ -5168,14 +5762,17 @@ contract ForTest_JBTiered721DelegateStore is
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
+        royaltyRate: _storedTier.royaltyRate,
+        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _currentSortIndex),
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
+        category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
-                                transfersPausable: _storedTier.transfersPausable
+        transfersPausable: _storedTier.transfersPausable
       });
 
       // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _maxTierId);
+      _currentSortIndex = _nextSortedTierIdOf(_nft, _currentSortIndex, _maxTierId);
     }
 
     // Drop the empty tiers at the end of the array (coming from maxTierIdOf which *might* be bigger than actual bigger tier)

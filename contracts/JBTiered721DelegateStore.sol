@@ -28,7 +28,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error CANT_MINT_MANUALLY();
   error INSUFFICIENT_AMOUNT();
   error INSUFFICIENT_RESERVES();
-  error INVALID_PRICE_SORT_ORDER();
+  error INVALID_CATEGORY_SORT_ORDER();
+  error INVALID_LOCKED_UNTIL();
   error INVALID_QUANTITY();
   error INVALID_TIER();
   error MAX_TIERS_EXCEEDED();
@@ -47,19 +48,29 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   uint256 private constant _ONE_BILLION = 1_000_000_000;
 
+  /** 
+    @notice 
+    The timestamp to add on to tier lock timestamps. 
+
+    @dev
+    Useful so the stored lock timestamp per-tier can fit in a smaller storage slot.
+    
+  */
+  uint256 private constant _BASE_LOCK_TIMESTAMP = 1672531200;
+
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
   //*********************************************************************//
 
   /** 
     @notice
-    The index that should come after the given index when sorting by contribution floor.
+    The tier ID that should come after the given tier ID when sorting by contribution floor.
 
     @dev
-    If empty, assume the next index should come after. 
+    If empty, assume the next tier ID should come after. 
 
-    _nft The NFT contract to get tier order index from.
-    _index The index to get a tier after relative to.
+    _nft The NFT contract to get ordered tier ID from.
+    _tierId The tier ID to get a tier after relative to.
   */
   mapping(address => mapping(uint256 => uint256)) internal _tierIdAfter;
 
@@ -71,6 +82,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _tierId the ID of the tier.
   */
   mapping(address => mapping(uint256 => address)) internal _reservedTokenBeneficiaryOf;
+
+  /**
+    @notice
+    An optional beneficiary for the royalty of a given tier.
+
+    _nft The NFT contract to which the royalty beneficiary belongs.
+    _tierId the ID of the tier.
+  */
+  mapping(address => mapping(uint256 => address)) internal _royaltyBeneficiaryOf;
 
   /** 
     @notice
@@ -109,6 +129,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     _nft The NFT contract to which the tier belongs.
   */
   mapping(address => uint256) internal _trackedLastSortTierIdOf;
+
+  /** 
+    @notice
+    The ID of the first tier in each category.
+
+    _nft The NFT contract to get the tier ID of.
+    _category The category to get the first tier ID of.
+  */
+  mapping(address => mapping(uint256 => uint256)) internal _startingTierIdOfCategory;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -161,6 +190,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   mapping(address => address) public override defaultReservedTokenBeneficiaryOf;
 
+  /** 
+    @notice
+    The beneficiary of royalties when the tier doesn't specify a beneficiary.
+
+    _nft The NFT contract to which the royalty beneficiary applies.
+  */
+  mapping(address => address) public override defaultRoyaltyBeneficiaryOf;
+
   /**
     @notice
     The first owner of each token ID, stored on first transfer out.
@@ -212,18 +249,20 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     Gets an array of all the active tiers. 
 
     @param _nft The NFT contract to get tiers for.
-    @param _startingId The start index of the array of tiers sorted by contribution floor. Send 0 to start at the beginning.
+    @param _category The category of the tiers to get. Send 0 for any category.
+    @param _startingId The starting tier ID of the array of tiers sorted by contribution floor. Send 0 to start at the beginning.
     @param _size The number of tiers to include.
 
     @return _tiers All the tiers.
   */
   function tiers(
     address _nft,
+    uint256 _category,
     uint256 _startingId,
     uint256 _size
   ) external view override returns (JB721Tier[] memory _tiers) {
     // Keep a reference to the last tier ID.
-    uint256 _lastTierId = _lastSortIndexOf(_nft);
+    uint256 _lastTierId = _lastSortedTierIdOf(_nft);
 
     // Initialize an array with the appropriate length.
     _tiers = new JB721Tier[](_size);
@@ -231,46 +270,56 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Count the number of included tiers.
     uint256 _numberOfIncludedTiers;
 
-    // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _startingId != 0 ? _startingId : _firstSortIndexOf(_nft);
+    // Get a reference to the tier ID being iterated on, starting with the first tier ID if not specified.
+    uint256 _currentSortedTierId = _startingId != 0
+      ? _startingId
+      : _firstSortedTierIdOf(_nft, _category);
 
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
     // Initialize a BitmapWord for isRemoved
-    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
 
     // Make the sorted array.
-    while (_currentSortIndex != 0 && _numberOfIncludedTiers < _size) {
-      // Is the current index outside the currently stored word for isRemoved?
-      if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
+    while (_currentSortedTierId != 0 && _numberOfIncludedTiers < _size) {
+      // Reset the bitmap if the current tier ID is outside the currently stored word.
+      if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
+        _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
 
-      if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
-        _storedTier = _storedTierOf[_nft][_currentSortIndex];
-        // Add the tier to the array being returned.
-        _tiers[_numberOfIncludedTiers++] = JB721Tier({
-          id: _currentSortIndex,
-          contributionFloor: _storedTier.contributionFloor,
-          lockedUntil: _storedTier.lockedUntil,
-          remainingQuantity: _storedTier.remainingQuantity,
-          initialQuantity: _storedTier.initialQuantity,
-          votingUnits: _storedTier.votingUnits,
-          reservedRate: _storedTier.reservedRate,
-          reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
-          encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
-          allowManualMint: _storedTier.allowManualMint,
-          transfersPausable: _storedTier.transfersPausable
-        });
+      if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
+        _storedTier = _storedTierOf[_nft][_currentSortedTierId];
+
+        // If a category is specified and matches, add the the returned values.
+        if (_category == 0 || _storedTier.category == _category)
+          // Add the tier to the array being returned.
+          _tiers[_numberOfIncludedTiers++] = JB721Tier({
+            id: _currentSortedTierId,
+            contributionFloor: _storedTier.contributionFloor,
+            lockedUntil: _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
+            remainingQuantity: _storedTier.remainingQuantity,
+            initialQuantity: _storedTier.initialQuantity,
+            votingUnits: _storedTier.votingUnits,
+            reservedRate: _storedTier.reservedRate,
+            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortedTierId),
+            royaltyRate: _storedTier.royaltyRate,
+            royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _currentSortedTierId),
+            encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortedTierId],
+            category: _storedTier.category,
+            allowManualMint: _storedTier.allowManualMint,
+            transfersPausable: _storedTier.transfersPausable
+          });
+          // If the tier's category is greater than the category sought after, break.
+        else if (_category > 0 && _storedTier.category > _category) _currentSortedTierId = 0;
       }
 
-      // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _lastTierId);
+      // Set the next sorted tier ID.
+      _currentSortedTierId = _nextSortedTierIdOf(_nft, _currentSortedTierId, _lastTierId);
     }
 
     // Resize the array if there are removed tiers
     if (_numberOfIncludedTiers != _size)
-      assembly ("memory-safe"){
+      assembly ("memory-safe") {
         mstore(_tiers, _numberOfIncludedTiers)
       }
   }
@@ -292,13 +341,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       JB721Tier({
         id: _id,
         contributionFloor: _storedTier.contributionFloor,
-        lockedUntil: _storedTier.lockedUntil,
+        lockedUntil: _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
+        royaltyRate: _storedTier.royaltyRate,
+        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _id),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
+        category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
       });
@@ -329,13 +381,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       JB721Tier({
         id: _tierId,
         contributionFloor: _storedTier.contributionFloor,
-        lockedUntil: _storedTier.lockedUntil,
+        lockedUntil: _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+        royaltyRate: _storedTier.royaltyRate,
+        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _tierId),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
+        category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable
       });
@@ -624,6 +679,31 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return defaultReservedTokenBeneficiaryOf[_nft];
   }
 
+  /** 
+    @notice
+    The royalty beneficiary for each tier. 
+
+    @param _nft The NFT to get the royalty beneficiary within.
+    @param _tierId The ID of the tier to get a royalty beneficiary of.
+
+    @return The reserved token beneficiary.
+  */
+  function royaltyBeneficiaryOf(address _nft, uint256 _tierId)
+    public
+    view
+    override
+    returns (address)
+  {
+    // Get the stored royalty beneficiary.
+    address _storedRoyaltyBeneficiaryOfTier = _royaltyBeneficiaryOf[_nft][_tierId];
+
+    // If the tier has a beneficiary return it.
+    if (_storedRoyaltyBeneficiaryOfTier != address(0)) return _storedRoyaltyBeneficiaryOfTier;
+
+    // Return the default.
+    return defaultRoyaltyBeneficiaryOf[_nft];
+  }
+
   //*********************************************************************//
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
@@ -648,20 +728,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _currentMaxTierIdOf = maxTierIdOf[msg.sender];
 
     // Make sure the max number of tiers hasn't been reached.
-    if(_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
+    if (_currentMaxTierIdOf + _numberOfNewTiers > type(uint16).max) revert MAX_TIERS_EXCEEDED();
 
     // Keep a reference to the current last sorted tier ID.
-    uint256 _currentLastSortIndex = _lastSortIndexOf(msg.sender);
+    uint256 _currentLastSortedTierId = _lastSortedTierIdOf(msg.sender);
 
     // Initialize an array with the appropriate length.
     tierIds = new uint256[](_numberOfNewTiers);
 
     // Keep a reference to the starting sort ID for sorting new tiers if needed.
     // There's no need for sorting if there are currently no tiers.
-    // If there's no sort index, start with the first index.
-    uint256 _startSortIndex = _currentMaxTierIdOf == 0 ? 0 : _firstSortIndexOf(msg.sender);
+    uint256 _startSortedTierId = _currentMaxTierIdOf == 0 ? 0 : _firstSortedTierIdOf(msg.sender, 0);
 
-    // Keep track of the previous index.
+    // Keep track of the previous tier ID.
     uint256 _previous;
 
     // Keep a reference to the tier being iterated on.
@@ -678,8 +757,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_tierToAdd.initialQuantity > _ONE_BILLION - 1) revert INVALID_QUANTITY();
 
       // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
-      if (_i != 0 && _tierToAdd.contributionFloor < _tiersToAdd[_i - 1].contributionFloor)
-        revert INVALID_PRICE_SORT_ORDER();
+      if (_i != 0) {
+        // Get a reference to the previous tier.
+        JB721TierParams memory _previousTier = _tiersToAdd[_i - 1];
+
+        // Check category sort order.
+        if (_tierToAdd.category == 0 || _tierToAdd.category < _previousTier.category)
+          revert INVALID_CATEGORY_SORT_ORDER();
+      }
 
       // Make sure there are no voting units set if they're not allowed.
       if (_flags.lockVotingUnitChanges && _tierToAdd.votingUnits != 0)
@@ -698,101 +783,116 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure there is some quantity.
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
 
+      // Make sure the locked until is in the future if provided.
+      if (_tierToAdd.lockedUntil != 0 && _tierToAdd.lockedUntil < block.timestamp)
+        revert INVALID_LOCKED_UNTIL();
+
       // Get a reference to the tier ID.
       uint256 _tierId = _currentMaxTierIdOf + _i + 1;
 
       // Add the tier with the iterative ID.
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
         contributionFloor: uint80(_tierToAdd.contributionFloor),
-        lockedUntil: uint48(_tierToAdd.lockedUntil),
+        lockedUntil: _tierToAdd.lockedUntil == 0
+          ? uint40(0)
+          : uint40(_tierToAdd.lockedUntil - _BASE_LOCK_TIMESTAMP),
         remainingQuantity: uint40(_tierToAdd.initialQuantity),
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint16(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
+        royaltyRate: uint8(_tierToAdd.royaltyRate),
+        category: uint8(_tierToAdd.category),
         allowManualMint: _tierToAdd.allowManualMint,
         transfersPausable: _tierToAdd.transfersPausable
       });
 
+      // If this is the first tier in a new category, store its ID as such.
+      if (_startingTierIdOfCategory[msg.sender][_tierToAdd.category] == 0)
+        _startingTierIdOfCategory[msg.sender][_tierToAdd.category] = _tierId;
+
       // Set the reserved token beneficiary if needed.
       if (_tierToAdd.reservedTokenBeneficiary != address(0))
-        if (_tierToAdd.shouldUseBeneficiaryAsDefault)
+        if (_tierToAdd.shouldUseReservedTokenBeneficiaryAsDefault)
           defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
         else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
+
+      // Set the royalty beneficiary if needed.
+      if (_tierToAdd.royaltyBeneficiary != address(0))
+        if (_tierToAdd.shouldUseRoyaltyBeneficiaryAsDefault)
+          defaultRoyaltyBeneficiaryOf[msg.sender] = _tierToAdd.royaltyBeneficiary;
+        else _royaltyBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.royaltyBeneficiary;
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
         encodedIPFSUriOf[msg.sender][_tierId] = _tierToAdd.encodedIPFSUri;
 
-      if (_startSortIndex != 0) {
-        // Keep track of the sort index.
-        uint256 _currentSortIndex = _startSortIndex;
+      if (_startSortedTierId != 0) {
+        // Keep track of the sorted tier ID.
+        uint256 _currentSortedTierId = _startSortedTierId;
 
         // Initialize a BitmapWord for isRemoved
         JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(
-          _currentSortIndex
+          _currentSortedTierId
         );
 
-        // Keep a reference to the idex to iterate on next.
+        // Keep a reference to the tier ID to iterate on next.
         uint256 _next;
 
-        while (_currentSortIndex != 0) {
-          // Is the current index outside the currently stored word?
-          if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
-            _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_currentSortIndex);
+        while (_currentSortedTierId != 0) {
+          // Reset the bitmap word if the current tier ID is outside the currently stored word.
+          if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
+            _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_currentSortedTierId);
 
-          // Set the next index.
-          _next = _nextSortIndex(msg.sender, _currentSortIndex, _currentLastSortIndex);
+          // Set the next tier ID.
+          _next = _nextSortedTierIdOf(msg.sender, _currentSortedTierId, _currentLastSortedTierId);
 
-          // If the contribution floor is less than the tier being iterated on, store the order.
-          if (
-            _tierToAdd.contributionFloor <
-            _storedTierOf[msg.sender][_currentSortIndex].contributionFloor
-          ) {
-            // If the index being iterated on isn't the next index, set the after.
-            if (_currentSortIndex != _tierId + 1)
-              _tierIdAfter[msg.sender][_tierId] = _currentSortIndex;
+          // If the category is less than the tier being iterated on, store the order.
+          if (_tierToAdd.category < _storedTierOf[msg.sender][_currentSortedTierId].category) {
+            // If the tier ID being iterated on isn't the next tier ID, set the after.
+            if (_currentSortedTierId != _tierId + 1)
+              _tierIdAfter[msg.sender][_tierId] = _currentSortedTierId;
 
-            // If this is the last tier being added, track the current last sort index if it's not already tracked.
+            // If this is the last tier being added, track the current last sorted tier ID if it's not already tracked.
             if (
               _i == _numberOfNewTiers - 1 &&
-              _trackedLastSortTierIdOf[msg.sender] != _currentLastSortIndex
-            ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortIndex;
+              _trackedLastSortTierIdOf[msg.sender] != _currentLastSortedTierId
+            ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortedTierId;
 
-            // If the previous after index was set to something else, set the previous after.
+            // If the previous after tier ID was set to something else, set the previous after.
             if (_previous != _tierId - 1 || _tierIdAfter[msg.sender][_previous] != 0)
-              // Set the tier after the previous one being iterated on as the tier being added, or 0 if the index is incremented.
+              // Set the tier after the previous one being iterated on as the tier being added, or 0 if the tier ID is incremented.
               _tierIdAfter[msg.sender][_previous] = _previous == _tierId - 1 ? 0 : _tierId;
 
-            // For the next tier being added, start at this current index.
-            _startSortIndex = _currentSortIndex;
+            // For the next tier being added, start at this current tier ID.
+            _startSortedTierId = _currentSortedTierId;
 
             // The tier just added is the previous for the next tier being added.
             _previous = _tierId;
 
             // Set current to zero to break out of the loop.
-            _currentSortIndex = 0;
+            _currentSortedTierId = 0;
           }
           // If the tier being iterated on is the last tier, add the tier after it.
           else if (_next == 0 || _next > _currentMaxTierIdOf) {
-            if (_tierId != _currentSortIndex + 1)
-              _tierIdAfter[msg.sender][_currentSortIndex] = _tierId;
+            if (_tierId != _currentSortedTierId + 1)
+              _tierIdAfter[msg.sender][_currentSortedTierId] = _tierId;
 
-            // For the next tier being added, start at this current index.
-            _startSortIndex = _tierId;
+            // For the next tier being added, start at this current tier ID.
+            _startSortedTierId = _tierId;
 
             // Break out.
-            _currentSortIndex = 0;
+            _currentSortedTierId = 0;
 
-            // If there's currently a last sort index tracked, override it.
+            // If there's currently a last sorted tier ID tracked, override it.
             if (_trackedLastSortTierIdOf[msg.sender] != 0) _trackedLastSortTierIdOf[msg.sender] = 0;
           }
-          // Move on to the next index.
+          // Move on to the next tier ID.
           else {
-            // Set the previous index to be the current index.
-            _previous = _currentSortIndex;
+            // Set the previous tier ID to be the current tier ID.
+            _previous = _currentSortedTierId;
 
-            // Go to the next index.
-            _currentSortIndex = _next;
+            // Go to the next tier ID.
+            _currentSortedTierId = _next;
           }
         }
       }
@@ -915,7 +1015,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
-      if (_storedTierOf[msg.sender][_tierId].lockedUntil >= block.timestamp) revert TIER_LOCKED();
+      if (_storedTierOf[msg.sender][_tierId].lockedUntil + _BASE_LOCK_TIMESTAMP >= block.timestamp) revert TIER_LOCKED();
 
       // Set the tier as removed.
       _isTierRemovedBitmapWord[msg.sender].removeTier(_tierId);
@@ -964,7 +1064,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Set the tier ID being iterated on.
       _tierId = _tierIds[_i];
 
-      // Is the current index outside the currently stored word?
+      // Reset the bitmap if the current tier ID is outside the currently stored word.
       if (_bitmapWord.refreshBitmapNeeded(_tierId))
         _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierId);
 
@@ -1100,36 +1200,36 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function cleanTiers(address _nft) external override {
     // Keep a reference to the last tier ID.
-    uint256 _lastTierId = _lastSortIndexOf(_nft);
+    uint256 _lastSortedTierId = _lastSortedTierIdOf(_nft);
 
-    // Get a reference to the index being iterated on, starting with the starting index.
-    uint256 _currentSortIndex = _firstSortIndexOf(_nft);
+    // Get a reference to the tier ID being iterated on, starting with the starting tier ID.
+    uint256 _currentSortedTierId = _firstSortedTierIdOf(_nft, 0);
 
-    // Keep track of the previous non-removed index.
+    // Keep track of the previous non-removed tier ID.
     uint256 _previous;
 
     // Initialize a BitmapWord for isRemoved.
-    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
 
     // Make the sorted array.
-    while (_currentSortIndex != 0) {
-      // Is the current index outside the currently stored word?
-      if (_bitmapWord.refreshBitmapNeeded(_currentSortIndex))
-        _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortIndex);
+    while (_currentSortedTierId != 0) {
+      // Reset the bitmap if the current tier ID is outside the currently stored word.
+      if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
+        _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
 
-      if (!_bitmapWord.isTierIdRemoved(_currentSortIndex)) {
-        // If the current index being iterated on isn't an increment of the previous, set the correct tier after if needed.
-        if (_currentSortIndex != _previous + 1) {
-          if (_tierIdAfter[_nft][_previous] != _currentSortIndex)
-            _tierIdAfter[_nft][_previous] = _currentSortIndex;
-          // Otherwise if the current index is an increment of the previous and the after index isn't 0, set it to 0.
+      if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
+        // If the current tier ID being iterated on isn't an increment of the previous, set the correct tier after if needed.
+        if (_currentSortedTierId != _previous + 1) {
+          if (_tierIdAfter[_nft][_previous] != _currentSortedTierId)
+            _tierIdAfter[_nft][_previous] = _currentSortedTierId;
+          // Otherwise if the current tier ID is an increment of the previous and the tier ID after isn't 0, set it to 0.
         } else if (_tierIdAfter[_nft][_previous] != 0) _tierIdAfter[_nft][_previous] = 0;
 
-        // Set the previous index to be the current index.
-        _previous = _currentSortIndex;
+        // Set the previous tier ID to be the current tier ID.
+        _previous = _currentSortedTierId;
       }
-      // Set the next sort index.
-      _currentSortIndex = _nextSortIndex(_nft, _currentSortIndex, _lastTierId);
+      // Set the next sorted tier ID.
+      _currentSortedTierId = _nextSortedTierIdOf(_nft, _currentSortedTierId, _lastSortedTierId);
     }
 
     emit CleanTiers(_nft, msg.sender);
@@ -1193,63 +1293,64 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return The ID of the token.
   */
-  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber)
-    internal
-    pure
-    returns (uint256)
-  {
+  function _generateTokenId(uint256 _tierId, uint256 _tokenNumber) internal pure returns (uint256) {
     return (_tierId * _ONE_BILLION) + _tokenNumber;
   }
 
   /** 
     @notice 
-    The next sorted index. 
+    The next sorted tier ID. 
 
-    @param _nft The NFT for which the sort index applies.
-    @param _index The index relative to which the next sorted index will be returned.
-    @param _max The maximum possible index.
+    @param _nft The NFT for which the sorted tier ID applies.
+    @param _id The ID relative to which the next sorted ID will be returned.
+    @param _max The maximum possible ID.
 
-    @return The index.
+    @return The ID.
   */
-  function _nextSortIndex(
+  function _nextSortedTierIdOf(
     address _nft,
-    uint256 _index,
+    uint256 _id,
     uint256 _max
   ) internal view returns (uint256) {
     // If this is the last tier, set current to zero to break out of the loop.
-    if (_index == _max) return 0;
-    // Update the current index to be the one saved to be after, if it exists.
-    uint256 _storedNext = _tierIdAfter[_nft][_index];
+    if (_id == _max) return 0;
+    // Update the current tier ID to be the one saved to be after, if it exists.
+    uint256 _storedNext = _tierIdAfter[_nft][_id];
     if (_storedNext != 0) return _storedNext;
     // Otherwise increment the current.
-    return _index + 1;
+    return _id + 1;
   }
 
   /** 
     @notice
-    The first sorted tier index of an NFT.
+    The first sorted tier ID of an NFT.
 
-    @param _nft The NFT to get the first sorted tier index of.
+    @param _nft The NFT to get the first sorted tier ID of.
+    @param _category The category to get the first sorted tier ID of. Send 0 for the first overall sorted ID.
 
-    @return index The first sorted tier index.
+    @return id The first sorted tier ID.
   */
-  function _firstSortIndexOf(address _nft) internal view returns (uint256 index) {
-    index = _tierIdAfter[_nft][0];
-    // Start at the first index if nothing is specified.
-    if (index == 0) index = 1;
+  function _firstSortedTierIdOf(address _nft, uint256 _category)
+    internal
+    view
+    returns (uint256 id)
+  {
+    id = _category == 0 ? _tierIdAfter[_nft][0] : _startingTierIdOfCategory[_nft][_category];
+    // Start at the first tier ID if nothing is specified.
+    if (id == 0) id = 1;
   }
 
   /** 
     @notice
-    The last sorted tier index of an NFT.
+    The last sorted tier ID of an NFT.
 
-    @param _nft The NFT to get the last sorted tier index of.
+    @param _nft The NFT to get the last sorted tier ID of.
 
-    @return index The last sorted tier index.
+    @return id The last sorted tier ID.
   */
-  function _lastSortIndexOf(address _nft) internal view returns (uint256 index) {
-    index = _trackedLastSortTierIdOf[_nft];
-    // Start at the first index if nothing is specified.
-    if (index == 0) index = maxTierIdOf[_nft];
+  function _lastSortedTierIdOf(address _nft) internal view returns (uint256 id) {
+    id = _trackedLastSortTierIdOf[_nft];
+    // Start at the first ID if nothing is specified.
+    if (id == 0) id = maxTierIdOf[_nft];
   }
 }

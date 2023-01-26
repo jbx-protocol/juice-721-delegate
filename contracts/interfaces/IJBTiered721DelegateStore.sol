@@ -17,6 +17,7 @@ interface IJBTiered721DelegateStore {
 
   function tiers(
     address _nft,
+    uint256 _category,
     uint256 _startingSortIndex,
     uint256 _size
   ) external view returns (JB721Tier[] memory tiers);
@@ -70,10 +71,14 @@ interface IJBTiered721DelegateStore {
 
   function defaultReservedTokenBeneficiaryOf(address _nft) external view returns (address);
 
+  function defaultRoyaltyBeneficiaryOf(address _nft) external view returns (address);
+
   function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
     external
     view
     returns (address);
+
+  function royaltyBeneficiaryOf(address _nft, uint256 _tierId) external view returns (address);
 
   function baseUriOf(address _nft) external view returns (string memory);
 

@@ -110,9 +110,24 @@
                       "type": "address"
                     },
                     {
+                      "internalType": "uint8",
+                      "name": "royaltyRate",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "royaltyBeneficiary",
+                      "type": "address"
+                    },
+                    {
                       "internalType": "bytes32",
                       "name": "encodedIPFSUri",
                       "type": "bytes32"
+                    },
+                    {
+                      "internalType": "uint8",
+                      "name": "category",
+                      "type": "uint8"
                     },
                     {
                       "internalType": "bool",
@@ -121,7 +136,12 @@
                     },
                     {
                       "internalType": "bool",
-                      "name": "shouldUseBeneficiaryAsDefault",
+                      "name": "shouldUseReservedTokenBeneficiaryAsDefault",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "shouldUseRoyaltyBeneficiaryAsDefault",
                       "type": "bool"
                     },
                     {
@@ -541,9 +561,24 @@
                       "type": "address"
                     },
                     {
+                      "internalType": "uint8",
+                      "name": "royaltyRate",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "royaltyBeneficiary",
+                      "type": "address"
+                    },
+                    {
                       "internalType": "bytes32",
                       "name": "encodedIPFSUri",
                       "type": "bytes32"
+                    },
+                    {
+                      "internalType": "uint8",
+                      "name": "category",
+                      "type": "uint8"
                     },
                     {
                       "internalType": "bool",
@@ -552,7 +587,12 @@
                     },
                     {
                       "internalType": "bool",
-                      "name": "shouldUseBeneficiaryAsDefault",
+                      "name": "shouldUseReservedTokenBeneficiaryAsDefault",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "shouldUseRoyaltyBeneficiaryAsDefault",
                       "type": "bool"
                     },
                     {
@@ -989,9 +1029,24 @@
                       "type": "address"
                     },
                     {
+                      "internalType": "uint8",
+                      "name": "royaltyRate",
+                      "type": "uint8"
+                    },
+                    {
+                      "internalType": "address",
+                      "name": "royaltyBeneficiary",
+                      "type": "address"
+                    },
+                    {
                       "internalType": "bytes32",
                       "name": "encodedIPFSUri",
                       "type": "bytes32"
+                    },
+                    {
+                      "internalType": "uint8",
+                      "name": "category",
+                      "type": "uint8"
                     },
                     {
                       "internalType": "bool",
@@ -1000,7 +1055,12 @@
                     },
                     {
                       "internalType": "bool",
-                      "name": "shouldUseBeneficiaryAsDefault",
+                      "name": "shouldUseReservedTokenBeneficiaryAsDefault",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "shouldUseRoyaltyBeneficiaryAsDefault",
                       "type": "bool"
                     },
                     {
@@ -1345,1872 +1405,151 @@
   "methodIdentifiers": {
     "controller()": "f77c4791",
     "delegateDeployer()": "8f3d964b",
-    "launchFundingCyclesFor(uint256,(address,string,string,address,string,address,string,address,((uint80,uint48,uint40,uint16,uint16,address,bytes32,bool,bool,bool)[],uint256,uint256,address),address,address,(bool,bool,bool,bool),uint8),((uint256,uint256,uint256,address),((bool,bool,bool),uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,uint256),uint256,(uint256,(bool,bool,uint256,uint256,address,uint256,address)[])[],(address,address,uint256,uint256,uint256,uint256)[],address[],string))": "a8c19c27",
-    "launchProjectFor(address,(address,string,string,address,string,address,string,address,((uint80,uint48,uint40,uint16,uint16,address,bytes32,bool,bool,bool)[],uint256,uint256,address),address,address,(bool,bool,bool,bool),uint8),((string,uint256),(uint256,uint256,uint256,address),((bool,bool,bool),uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,uint256),uint256,(uint256,(bool,bool,uint256,uint256,address,uint256,address)[])[],(address,address,uint256,uint256,uint256,uint256)[],address[],string))": "ab15e800",
-    "reconfigureFundingCyclesOf(uint256,(address,string,string,address,string,address,string,address,((uint80,uint48,uint40,uint16,uint16,address,bytes32,bool,bool,bool)[],uint256,uint256,address),address,address,(bool,bool,bool,bool),uint8),((uint256,uint256,uint256,address),((bool,bool,bool),uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,uint256),uint256,(uint256,(bool,bool,uint256,uint256,address,uint256,address)[])[],(address,address,uint256,uint256,uint256,uint256)[],string))": "14fe7ffe"
-  },
-  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"controller\",\"outputs\":[{\"internalType\":\"contract IJBController\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"delegateDeployer\",\"outputs\":[{\"internalType\":\"contract IJBTiered721DelegateDeployer\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"contract IJBDirectory\",\"name\":\"directory\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"contract IJBFundingCycleStore\",\"name\":\"fundingCycleStore\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"baseUri\",\"type\":\"string\"},{\"internalType\":\"contract IJBTokenUriResolver\",\"name\":\"tokenUriResolver\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"contractUri\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"components\":[{\"internalType\":\"uint80\",\"name\":\"contributionFloor\",\"type\":\"uint80\"},{\"internalType\":\"uint48\",\"name\":\"lockedUntil\",\"type\":\"uint48\"},{\"internalType\":\"uint40\",\"name\":\"initialQuantity\",\"type\":\"uint40\"},{\"internalType\":\"uint16\",\"name\":\"votingUnits\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"reservedRate\",\"type\":\"uint16\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"encodedIPFSUri\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"allowManualMint\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"shouldUseBeneficiaryAsDefault\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"transfersPausable\",\"type\":\"bool\"}],\"internalType\":\"struct JB721TierParams[]\",\"name\":\"tiers\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"currency\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"decimals\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBPrices\",\"name\":\"prices\",\"type\":\"address\"}],\"internalType\":\"struct JB721PricingParams\",\"name\":\"pricing\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"contract IJBTiered721DelegateStore\",\"name\":\"store\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"lockReservedTokenChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockVotingUnitChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockManualMintingChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preventOverspending\",\"type\":\"bool\"}],\"internalType\":\"struct JBTiered721Flags\",\"name\":\"flags\",\"type\":\"tuple\"},{\"internalType\":\"enum JB721GovernanceType\",\"name\":\"governanceType\",\"type\":\"uint8\"}],\"internalType\":\"struct JBDeployTiered721DelegateData\",\"name\":\"_deployTieredNFTRewardDelegateData\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"discountRate\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBFundingCycleBallot\",\"name\":\"ballot\",\"type\":\"address\"}],\"internalType\":\"struct JBFundingCycleData\",\"name\":\"data\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"bool\",\"name\":\"allowSetTerminals\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowSetController\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseTransfers\",\"type\":\"bool\"}],\"internalType\":\"struct JBGlobalFundingCycleMetadata\",\"name\":\"global\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"reservedRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"redemptionRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ballotRedemptionRate\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"pausePay\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseDistributions\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseRedeem\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseBurn\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowMinting\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowTerminalMigration\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowControllerMigration\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"holdFees\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preferClaimedTokenOverride\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"useTotalOverflowForRedemptions\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"useDataSourceForRedeem\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"metadata\",\"type\":\"uint256\"}],\"internalType\":\"struct JBPayDataSourceFundingCycleMetadata\",\"name\":\"metadata\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"mustStartAtOrAfter\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"group\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"preferClaimed\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preferAddToBalance\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"percent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"internalType\":\"address payable\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lockedUntil\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBSplitAllocator\",\"name\":\"allocator\",\"type\":\"address\"}],\"internalType\":\"struct JBSplit[]\",\"name\":\"splits\",\"type\":\"tuple[]\"}],\"internalType\":\"struct JBGroupedSplits[]\",\"name\":\"groupedSplits\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"contract IJBPaymentTerminal\",\"name\":\"terminal\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"distributionLimit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"distributionLimitCurrency\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"overflowAllowance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"overflowAllowanceCurrency\",\"type\":\"uint256\"}],\"internalType\":\"struct JBFundAccessConstraints[]\",\"name\":\"fundAccessConstraints\",\"type\":\"tuple[]\"},{\"internalType\":\"contract IJBPaymentTerminal[]\",\"name\":\"terminals\",\"type\":\"address[]\"},{\"internalType\":\"string\",\"name\":\"memo\",\"type\":\"string\"}],\"internalType\":\"struct JBLaunchFundingCyclesData\",\"name\":\"_launchFundingCyclesData\",\"type\":\"tuple\"}],\"name\":\"launchFundingCyclesFor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"configuration\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"contract IJBDirectory\",\"name\":\"directory\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"contract IJBFundingCycleStore\",\"name\":\"fundingCycleStore\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"baseUri\",\"type\":\"string\"},{\"internalType\":\"contract IJBTokenUriResolver\",\"name\":\"tokenUriResolver\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"contractUri\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"components\":[{\"internalType\":\"uint80\",\"name\":\"contributionFloor\",\"type\":\"uint80\"},{\"internalType\":\"uint48\",\"name\":\"lockedUntil\",\"type\":\"uint48\"},{\"internalType\":\"uint40\",\"name\":\"initialQuantity\",\"type\":\"uint40\"},{\"internalType\":\"uint16\",\"name\":\"votingUnits\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"reservedRate\",\"type\":\"uint16\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"encodedIPFSUri\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"allowManualMint\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"shouldUseBeneficiaryAsDefault\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"transfersPausable\",\"type\":\"bool\"}],\"internalType\":\"struct JB721TierParams[]\",\"name\":\"tiers\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"currency\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"decimals\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBPrices\",\"name\":\"prices\",\"type\":\"address\"}],\"internalType\":\"struct JB721PricingParams\",\"name\":\"pricing\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"contract IJBTiered721DelegateStore\",\"name\":\"store\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"lockReservedTokenChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockVotingUnitChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockManualMintingChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preventOverspending\",\"type\":\"bool\"}],\"internalType\":\"struct JBTiered721Flags\",\"name\":\"flags\",\"type\":\"tuple\"},{\"internalType\":\"enum JB721GovernanceType\",\"name\":\"governanceType\",\"type\":\"uint8\"}],\"internalType\":\"struct JBDeployTiered721DelegateData\",\"name\":\"_deployTieredNFTRewardDelegateData\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"content\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"domain\",\"type\":\"uint256\"}],\"internalType\":\"struct JBProjectMetadata\",\"name\":\"projectMetadata\",\"type\":\"tuple\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"discountRate\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBFundingCycleBallot\",\"name\":\"ballot\",\"type\":\"address\"}],\"internalType\":\"struct JBFundingCycleData\",\"name\":\"data\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"bool\",\"name\":\"allowSetTerminals\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowSetController\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseTransfers\",\"type\":\"bool\"}],\"internalType\":\"struct JBGlobalFundingCycleMetadata\",\"name\":\"global\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"reservedRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"redemptionRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ballotRedemptionRate\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"pausePay\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseDistributions\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseRedeem\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseBurn\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowMinting\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowTerminalMigration\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowControllerMigration\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"holdFees\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preferClaimedTokenOverride\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"useTotalOverflowForRedemptions\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"useDataSourceForRedeem\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"metadata\",\"type\":\"uint256\"}],\"internalType\":\"struct JBPayDataSourceFundingCycleMetadata\",\"name\":\"metadata\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"mustStartAtOrAfter\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"group\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"preferClaimed\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preferAddToBalance\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"percent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"internalType\":\"address payable\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lockedUntil\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBSplitAllocator\",\"name\":\"allocator\",\"type\":\"address\"}],\"internalType\":\"struct JBSplit[]\",\"name\":\"splits\",\"type\":\"tuple[]\"}],\"internalType\":\"struct JBGroupedSplits[]\",\"name\":\"groupedSplits\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"contract IJBPaymentTerminal\",\"name\":\"terminal\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"distributionLimit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"distributionLimitCurrency\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"overflowAllowance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"overflowAllowanceCurrency\",\"type\":\"uint256\"}],\"internalType\":\"struct JBFundAccessConstraints[]\",\"name\":\"fundAccessConstraints\",\"type\":\"tuple[]\"},{\"internalType\":\"contract IJBPaymentTerminal[]\",\"name\":\"terminals\",\"type\":\"address[]\"},{\"internalType\":\"string\",\"name\":\"memo\",\"type\":\"string\"}],\"internalType\":\"struct JBLaunchProjectData\",\"name\":\"_launchProjectData\",\"type\":\"tuple\"}],\"name\":\"launchProjectFor\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"contract IJBDirectory\",\"name\":\"directory\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"contract IJBFundingCycleStore\",\"name\":\"fundingCycleStore\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"baseUri\",\"type\":\"string\"},{\"internalType\":\"contract IJBTokenUriResolver\",\"name\":\"tokenUriResolver\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"contractUri\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"components\":[{\"internalType\":\"uint80\",\"name\":\"contributionFloor\",\"type\":\"uint80\"},{\"internalType\":\"uint48\",\"name\":\"lockedUntil\",\"type\":\"uint48\"},{\"internalType\":\"uint40\",\"name\":\"initialQuantity\",\"type\":\"uint40\"},{\"internalType\":\"uint16\",\"name\":\"votingUnits\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"reservedRate\",\"type\":\"uint16\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"encodedIPFSUri\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"allowManualMint\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"shouldUseBeneficiaryAsDefault\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"transfersPausable\",\"type\":\"bool\"}],\"internalType\":\"struct JB721TierParams[]\",\"name\":\"tiers\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"currency\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"decimals\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBPrices\",\"name\":\"prices\",\"type\":\"address\"}],\"internalType\":\"struct JB721PricingParams\",\"name\":\"pricing\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"contract IJBTiered721DelegateStore\",\"name\":\"store\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"lockReservedTokenChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockVotingUnitChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockManualMintingChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preventOverspending\",\"type\":\"bool\"}],\"internalType\":\"struct JBTiered721Flags\",\"name\":\"flags\",\"type\":\"tuple\"},{\"internalType\":\"enum JB721GovernanceType\",\"name\":\"governanceType\",\"type\":\"uint8\"}],\"internalType\":\"struct JBDeployTiered721DelegateData\",\"name\":\"_deployTieredNFTRewardDelegateData\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"weight\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"discountRate\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBFundingCycleBallot\",\"name\":\"ballot\",\"type\":\"address\"}],\"internalType\":\"struct JBFundingCycleData\",\"name\":\"data\",\"type\":\"tuple\"},{\"components\":[{\"components\":[{\"internalType\":\"bool\",\"name\":\"allowSetTerminals\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowSetController\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseTransfers\",\"type\":\"bool\"}],\"internalType\":\"struct JBGlobalFundingCycleMetadata\",\"name\":\"global\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"reservedRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"redemptionRate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ballotRedemptionRate\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"pausePay\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseDistributions\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseRedeem\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"pauseBurn\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowMinting\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowTerminalMigration\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"allowControllerMigration\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"holdFees\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preferClaimedTokenOverride\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"useTotalOverflowForRedemptions\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"useDataSourceForRedeem\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"metadata\",\"type\":\"uint256\"}],\"internalType\":\"struct JBPayDataSourceFundingCycleMetadata\",\"name\":\"metadata\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"mustStartAtOrAfter\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"group\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"preferClaimed\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preferAddToBalance\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"percent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"internalType\":\"address payable\",\"name\":\"beneficiary\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"lockedUntil\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBSplitAllocator\",\"name\":\"allocator\",\"type\":\"address\"}],\"internalType\":\"struct JBSplit[]\",\"name\":\"splits\",\"type\":\"tuple[]\"}],\"internalType\":\"struct JBGroupedSplits[]\",\"name\":\"groupedSplits\",\"type\":\"tuple[]\"},{\"components\":[{\"internalType\":\"contract IJBPaymentTerminal\",\"name\":\"terminal\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"distributionLimit\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"distributionLimitCurrency\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"overflowAllowance\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"overflowAllowanceCurrency\",\"type\":\"uint256\"}],\"internalType\":\"struct JBFundAccessConstraints[]\",\"name\":\"fundAccessConstraints\",\"type\":\"tuple[]\"},{\"internalType\":\"string\",\"name\":\"memo\",\"type\":\"string\"}],\"internalType\":\"struct JBReconfigureFundingCyclesData\",\"name\":\"_reconfigureFundingCyclesData\",\"type\":\"tuple\"}],\"name\":\"reconfigureFundingCyclesOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"configuration\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IJBTiered721DelegateProjectDeployer.sol\":\"IJBTiered721DelegateProjectDeployer\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@jbx-protocol/=node_modules/@jbx-protocol/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@paulrberg/=node_modules/@paulrberg/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":prb-math/=node_modules/prb-math/\"]},\"sources\":{\"contracts/enums/JB721GovernanceType.sol\":{\"keccak256\":\"0x3080b119a8e69d7c98ac4392f436bf9168433feca073e48b2151881543094095\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://997adf9da18f439c0d86c9ea7be60a7a9363bda800e8c250952bad2410cc0c16\",\"dweb:/ipfs/QmNVQEmC8gtgmTVwZbgycU84xd9wiWWrimHA4ih7QvqXzw\"]},\"contracts/interfaces/IJB721Delegate.sol\":{\"keccak256\":\"0xa8fbb99c63314f21fb37435c4c3beb7b036b1fa423091ecb4908333612598e6f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f06796c0da61e0642eb7d2170e0ddd2ebd97d33c42b8f01ea5dd233882b2fb87\",\"dweb:/ipfs/QmXmfmSScCwpimkyJEB3USwvzfA18zoL4KqkPvE2ZPuP8J\"]},\"contracts/interfaces/IJBTiered721Delegate.sol\":{\"keccak256\":\"0x323d9023292e6994e22d253adb9c185dc73fbee4bbb2bc266ddcc80ee47c292a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4f34da8e019554376049670eeec991bad268f0dd19bbca0790fbe027d57457cc\",\"dweb:/ipfs/QmUxjktmXDKxDz4cuUX2t1Kv6EKZXubsUvRUoann63F4ER\"]},\"contracts/interfaces/IJBTiered721DelegateDeployer.sol\":{\"keccak256\":\"0xe739ea2c97a4b3064453da5fd0c7b30e4fa16a642cde36fc3ec3b3b4b8b5f475\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ccd168ea152a8a47c4cfee4e95ebcc6bcf4a9d7229a83dff08ebedab3593852d\",\"dweb:/ipfs/QmNkYw1XMs97Mf2Nbs1rmbnpdymhRP62rJ1UB4PQ5CFGRE\"]},\"contracts/interfaces/IJBTiered721DelegateProjectDeployer.sol\":{\"keccak256\":\"0xb25add35e33982bc25dc4d72e1bb73b2e233c8bb601f647286c2e84d061d0e34\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d6f6dbc0b3be8497d42f55d6a2263526bc2feec54894356fe1d54c77b99b9d6a\",\"dweb:/ipfs/QmeDkBYopTiW2BwtDumoFLU5srfj6hacfnxvt8jKJp2ZQZ\"]},\"contracts/interfaces/IJBTiered721DelegateStore.sol\":{\"keccak256\":\"0x1f360dc9d5d181665c40063abc9f390b942f80fa8772e3d99ef9986a3cae3ebc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://266bcce6d9593f1cfcc53fe60b4752670e273a050fec0c9aae712096fe3d9b16\",\"dweb:/ipfs/QmR6x3ZyYKcf9ncyeEZpTXdTpXbUQw588R93fnFQ9vhsib\"]},\"contracts/structs/JB721PricingParams.sol\":{\"keccak256\":\"0x65c6b3a05158713e76ccf22091405b9f7bb023b3e382b2da1babbd6c69961586\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fdfbdd554f5a17ede36c57fa7e004548be852f9d840adeb46abc5389d3c4a684\",\"dweb:/ipfs/QmYUA3NuZVLXMtsPpKpuVxn4DAnz55CpxvqmSuREwf8JaU\"]},\"contracts/structs/JB721Tier.sol\":{\"keccak256\":\"0xbbe8975ee48958845da812af2e7bb6ab733bbb7c3e512f29804bf790cd8b2de7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e87b6593e8341621c2fa1283296ca402e9671d1b421ce58bf4d906f196c2385f\",\"dweb:/ipfs/QmPv7thJmfj2qCTDW5FUsyauFAgovnwu8cCmZhfDmVC17z\"]},\"contracts/structs/JB721TierParams.sol\":{\"keccak256\":\"0x8e4f755335fc5b78e5cd1390ee4209c0edbb63a17cd413fee2e2c64cadf15b56\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://44348545c0affb4bb969fd92bdee79c93a777c02691c840f299c14ec2209b16a\",\"dweb:/ipfs/QmWfXobGC96SDnNgDLXGsb44HwzbL3tjTBB4DEk4t2Qtxz\"]},\"contracts/structs/JBDeployTiered721DelegateData.sol\":{\"keccak256\":\"0x748af4b9eb0e5411c74b2cc694a365a19e4b20418883aba0f816953989579498\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11fe82016c414b6df04c4eee90cd3e1758e684333d87a9e837fae7032a036ddc\",\"dweb:/ipfs/QmZ8AgMMcz3PMGsxo48wMvotuuUGekGnf5omrXkLpjQ4dx\"]},\"contracts/structs/JBLaunchFundingCyclesData.sol\":{\"keccak256\":\"0xc944a7c7e779c367b0ddd5ec4794b026c5d680af66ed52ebff457cbc5cf2f0e4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://30dc0f8e17c3108f76a025785c671912423123790400cd2c63e133012ee0385c\",\"dweb:/ipfs/QmeUrDPtieVQqgh68ciM7c6p7R5fWEdodoDj5Fad1siKEY\"]},\"contracts/structs/JBLaunchProjectData.sol\":{\"keccak256\":\"0xd3e02eda607c14282ee795ceddf393892164d83db09edb7889bb976ebadc7aad\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a8f95294a54061caecc574f47d697e9519e73e5c9b09578ef7ad6a52cf3cc46e\",\"dweb:/ipfs/QmPvwqfQLWHasefB78mb4mD3BJLL47QktvCj1gYSf8LZvm\"]},\"contracts/structs/JBPayDataSourceFundingCycleMetadata.sol\":{\"keccak256\":\"0x1268de308cfc29a4651baa0a28e470799120fb7815086a0d7c62afa4dd2c6caf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9a0741d2c1cd0980f13109b7e04d0e14def5eed1af89bcd697c9a27577c47cd9\",\"dweb:/ipfs/QmaGav6q2TFhejkgqgRdpyuNWBRW9YNjXBPcxG2rvkC8U4\"]},\"contracts/structs/JBReconfigureFundingCyclesData.sol\":{\"keccak256\":\"0xbabb82cf799f70b67f19f8ccd82844d712e60f8f1c72ba13352486e30498812d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5c8a86e9bcf1214c973e5006d346025b2d4e8bd1fc62896b44c35aa237c4ccd3\",\"dweb:/ipfs/Qmb7kEBhqXpYyDgwzsux9sVw86Qj8BbSyTUyR3asPV3h8K\"]},\"contracts/structs/JBTiered721Flags.sol\":{\"keccak256\":\"0x42f9625c893559b44bbe79d7fc3f6190a0dceea673b6137ef393c44d517a9ae2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b13d3d700323e73f4f2f67b3c41b20ded126009a4ac2acec0fba444d0ce6032f\",\"dweb:/ipfs/QmWkbrzcNDtFxdApDBy8rCsBLu3ovzzZJeA9Tin9pcncSs\"]},\"contracts/structs/JBTiered721MintForTiersData.sol\":{\"keccak256\":\"0x357b55115f542c89e1ccb0338d7b84913018ab00be1582a0e3323dacdb579c42\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://539586eb3ffeb85ce7a9cbf33fc8c438b34feef2aff1a5e66edcbfaf1210ff4e\",\"dweb:/ipfs/QmaCWYcygXBpg6z7bm8TiA7KXGFvC2Yqkv2i8Eaw2mtYV2\"]},\"contracts/structs/JBTiered721MintReservesForTiersData.sol\":{\"keccak256\":\"0xc04c71a3bbf7daad10971d9507c123e22e5996c4b1497c05deff1c0d6d59b9d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0e93c80696a98d57053462a156be6f8290ee931666b77f6ff97df4bb2a3b0cc1\",\"dweb:/ipfs/QmZUqXnsaYMz4orNoQ3ybm2So1sHA7qQ46jxu4QRMhFTsq\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/enums/JBBallotState.sol\":{\"keccak256\":\"0x891fcac63470398b3a11239da7feba6b07d640809fcefd2404303b823d7378f8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e6adfceaf284b669a8c1cbcf2da7f18ab31a2d1066f9db8bc914349e7401de7\",\"dweb:/ipfs/QmXLHVRPPZdXUkgAHQbHUtEzAvCJk1P6rJ7wrwfTcfW6fw\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol\":{\"keccak256\":\"0xb1ee4b41f2a06f28f69c74cb729b8964f2e75f3c545a68f85bd9082b5575bc85\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://160aef4e645dde9524564b2bd302e7c766bdf1f67c4fa58516ed59d1dbb7c2a6\",\"dweb:/ipfs/QmaTpyWKi4itYaaxTKU6JUarJHRmxCMP65cp2NJ6ejJDZW\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol\":{\"keccak256\":\"0x715321646db00514d1355ed43c40cd3f01e94959552fd07797b315d9c49cdb1d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c34c9e1c727ffc63dd42fb6e6ffb3116c8ba15d6a322a300f10f29478974768d\",\"dweb:/ipfs/QmYToaGrbMyyWAuyepYcDd8M6KcmosY8AWhT3uJmPM6Pvy\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol\":{\"keccak256\":\"0x49553a56209237846bc400cf27f260824a6bd06fd8094a7eb5abb9de75779598\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://559372746f94f28b385bc336df263f583dca5377350645c0b28110b083bdb41a\",\"dweb:/ipfs/QmeQRYqPjXBQCtMKXSFtHVD2ewEPoUAPDxLh4oWTRSKbmx\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol\":{\"keccak256\":\"0xaead823851433be0c2ddc8f8086813e6cd647de3a1bc0f7570a5d6b38c378b5a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7f11fd52ba9ef67b40811d8a2298ae8b69447d2565b3f1069cbb8f0f13bc65e7\",\"dweb:/ipfs/QmVbBzpTxZWar9xvj6x1vW91hJDv2iPVq7aG6waMxaHUPQ\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBMigratable.sol\":{\"keccak256\":\"0xc81053e4b4754fc510aa04fecd3ab1460f01e3e27761e7a8c94f631a978ae127\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4c57ab7d0c0e6d9be798055d68b6f253421458b3beb38d0a3596da104000ca9e\",\"dweb:/ipfs/QmXn1CaffHoP2s43vkUszihdNk1TdfAxejngfdk2VmBVFU\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol\":{\"keccak256\":\"0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95\",\"dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPriceFeed.sol\":{\"keccak256\":\"0x57c71282fec1b34b00cf991ffed2e36031c393e35bfa7ca5d723eb6572fb7122\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f51c97ac194d3120a2fb5428eeeff759b75b7cbc5708465afc914619016a7c9b\",\"dweb:/ipfs/QmemTqsGqoPqG97EsdRTMAbB6RfCz8CJxGYPNnDTV6LJ2t\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol\":{\"keccak256\":\"0x82a175b1f4b95b506c98406576cd59cbe04615e3df24f9cf3587b61b8ee323b1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5493e394cf47fca51a4091f1e6d285cc9e4ff9916e5bdfb8e174fe652a2b9833\",\"dweb:/ipfs/QmTXafZatcjYbNMpUYYk1AWNZLkRFK7VVdAYYudGf4z3HJ\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol\":{\"keccak256\":\"0x7cfc021d0bd7e73b1ba8f4845d7d35e3419d6a14d3d25ca3a8010e7f91062fe4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ff265e13e60da56b93104260ed69ab01153437ec2af9d453781f22ca295eaef9\",\"dweb:/ipfs/QmfGCSLX2Wy26ojf4U12udsdtjSSacbLcZGwCjTw7MjWF8\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitAllocator.sol\":{\"keccak256\":\"0x5efb6f51fc161f42ff58989386ad99028e4039a0ba897d66f358c3dfcf686105\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://171df7cf5285170894d7d7d00ecb14271204b55d330fa65e1bf9ebfb21741c29\",\"dweb:/ipfs/QmXBmzjVVgGd1hZoStw2qoypJnqyWgYeMXMLyYS7f6Zonu\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitsStore.sol\":{\"keccak256\":\"0x66dab3dd394e318b850401ca92c2963b906cc0ad5562fa5d4f6f850175d1c77a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://948dae4e7eddc75f32fe75b25f97a7bad0e7b335a8a5a8dfd81b532dd325dd27\",\"dweb:/ipfs/QmZY1s7r85NWVdqhmUE71Pkuo7CPk8SMgAwUrj8bLpTaWC\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBToken.sol\":{\"keccak256\":\"0xe8969210417736c85d71101bf1c0bd8ebbf9d1e62a93e758148bd5709a6c7097\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://214c67c2ebeabd1b412ac9b0b6de4c02765c8311a3dc258568a2aa7322d58fb7\",\"dweb:/ipfs/QmeEbk8YWRVtMpxWQGfYbMrgYc2qsPhQF5jpufK26RrCXY\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenStore.sol\":{\"keccak256\":\"0x98459e3af050d41dfeffdc97f1c93330207ba450f8ff3613224b49a89eeca9c6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0e98bda797088b1bb2a756eaed911ab12b092ffdad5467e82650bfa9bf8dd046\",\"dweb:/ipfs/QmbuKq4xSC8LL62smwrHWCWKiWawEu8Ne2n7q8DhKHKvtD\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol\":{\"keccak256\":\"0xd267fd8ca7c21c2c71794acdb9a98314c33a35fc559e0bf0897a6686d196d174\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://aa7053d4300ed1374f3f993e6e2163d0a05ee780e4e99eb007b55eabc93c724e\",\"dweb:/ipfs/QmYZAUn7VCwqpDWYZNCXLNYMRQpD334YgPRiGCfxQApzuT\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol\":{\"keccak256\":\"0x85ebaa57b788cbdedc7a3d0eec4892eda5d79db7c1a6103797f10d0d989775b2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1a911a9d1d0a6f0e475854838877d2d3ae606028381c2aef7fac192a33e3d329\",\"dweb:/ipfs/QmTih57fwyaXdjvXCrG9BbdayD6H2AHQrYkuL4v4rYhMyF\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol\":{\"keccak256\":\"0xcdd3ac9b6fa67e62ada88d09b73bc35ade1cd77d43db712289266a788928b4c2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8ba0be407022bbeb0e9272884653209ee262b8a4e00ffbba1298c3b119feccba\",\"dweb:/ipfs/QmbtLQzSN3hut4jYVsYPiYDfRkDdGkZmTWBnV2wJKrdM3K\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol\":{\"keccak256\":\"0x2aa6368bf4dfc5797e8b02a978293de0c777fae2658de2c825a103587240f3b0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2d7a980ab9b67ad1569d4407b747903cab668a332214117f5ad44feb50af0a3a\",\"dweb:/ipfs/QmSuEzmrmDSihrTKYCk8miq7VQi7WD6jmQePkjDyzt7UpC\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol\":{\"keccak256\":\"0x783604440cac8d176332eab28166f188ee5c230378c08cfc95fea4f7187dc77d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://81409f9675aabd5ece88efbf08d1acb5581c2aac5b6394824f575f5f2edb5788\",\"dweb:/ipfs/QmPWdUztAEssCEnuFFkj74kNFEfVUxbNFmD5GmVB2Qvj1h\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBGlobalFundingCycleMetadata.sol\":{\"keccak256\":\"0x05d85530305fec6d6eca54cdbc2cd9110cbda0146598032b0203aa4b622944ff\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec56eff6784c7b60ebc3098037573d8ece138794a9a58ebe8412e75927e984cd\",\"dweb:/ipfs/QmdkEeE6JDyCiV3YBKf7h3FymEHCAHHAtBokUkJwFWVPSf\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol\":{\"keccak256\":\"0x80be1b220da4ac04851ea540ebb94c1ec2b0442ec5bd1e88fdf78a56becd8b5a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b73e5da7d38bfadd565c202aa1a5a6c08a51542699e8e3683b8888009bc62563\",\"dweb:/ipfs/QmUNTy4XVvfAMqP7wCjj84deTvCehkBL1diZoWkyMCVsPw\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol\":{\"keccak256\":\"0x90ad7b1014c0a9f945fe7a2efde9d5de41e40574fa27969070b1d2ff52033ea0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1fafc65a9fd74605b7d6c6f0a92b3237a8e3efdd160affb8c117bad00dcf9494\",\"dweb:/ipfs/QmQkcVt11WLqrxHVrcDCF6dNxzg2kKHEghAgSbfLF6CHkt\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplit.sol\":{\"keccak256\":\"0xc80a16606da8abf76d0f73abc38aee041e24f29342c1939018f70c286e89f105\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d257df1f322904fdbf34a0d28880cc96a1ba3905d19488d83156a7d3476d820f\",\"dweb:/ipfs/QmP6WFuoK6ePEQ2zxRnpu1kWDdFSUTGaEV57eZ4gs9FqC8\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol\":{\"keccak256\":\"0x39f5c41bd31d36774744698ac94484b6cab62d7038df2f29d947668959782e63\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cf81d025aa0f6f93bdcd0b863730f7c574de7c3c4a595ba88e342f46c4b724e4\",\"dweb:/ipfs/QmaQ1frbYciPVV1Qmsfmgts9fgbXKZLQ8jGf9XRikHSmci\"]},\"node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f\",\"dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]}},\"version\":1}",
-  "metadata": {
-    "compiler": {
-      "version": "0.8.17+commit.8df45f5f"
-    },
-    "language": "Solidity",
-    "output": {
-      "abi": [
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "controller",
-          "outputs": [
-            {
-              "internalType": "contract IJBController",
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [],
-          "stateMutability": "view",
-          "type": "function",
-          "name": "delegateDeployer",
-          "outputs": [
-            {
-              "internalType": "contract IJBTiered721DelegateDeployer",
-              "name": "",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_projectId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "struct JBDeployTiered721DelegateData",
-              "name": "_deployTieredNFTRewardDelegateData",
-              "type": "tuple",
-              "components": [
-                {
-                  "internalType": "contract IJBDirectory",
-                  "name": "directory",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "symbol",
-                  "type": "string"
-                },
-                {
-                  "internalType": "contract IJBFundingCycleStore",
-                  "name": "fundingCycleStore",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "baseUri",
-                  "type": "string"
-                },
-                {
-                  "internalType": "contract IJBTokenUriResolver",
-                  "name": "tokenUriResolver",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "contractUri",
-                  "type": "string"
-                },
-                {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
-                },
-                {
-                  "internalType": "struct JB721PricingParams",
-                  "name": "pricing",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "struct JB721TierParams[]",
-                      "name": "tiers",
-                      "type": "tuple[]",
-                      "components": [
-                        {
-                          "internalType": "uint80",
-                          "name": "contributionFloor",
-                          "type": "uint80"
-                        },
-                        {
-                          "internalType": "uint48",
-                          "name": "lockedUntil",
-                          "type": "uint48"
-                        },
-                        {
-                          "internalType": "uint40",
-                          "name": "initialQuantity",
-                          "type": "uint40"
-                        },
-                        {
-                          "internalType": "uint16",
-                          "name": "votingUnits",
-                          "type": "uint16"
-                        },
-                        {
-                          "internalType": "uint16",
-                          "name": "reservedRate",
-                          "type": "uint16"
-                        },
-                        {
-                          "internalType": "address",
-                          "name": "reservedTokenBeneficiary",
-                          "type": "address"
-                        },
-                        {
-                          "internalType": "bytes32",
-                          "name": "encodedIPFSUri",
-                          "type": "bytes32"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "allowManualMint",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "shouldUseBeneficiaryAsDefault",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "transfersPausable",
-                          "type": "bool"
-                        }
-                      ]
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "currency",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "decimals",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "contract IJBPrices",
-                      "name": "prices",
-                      "type": "address"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "address",
-                  "name": "reservedTokenBeneficiary",
-                  "type": "address"
-                },
-                {
-                  "internalType": "contract IJBTiered721DelegateStore",
-                  "name": "store",
-                  "type": "address"
-                },
-                {
-                  "internalType": "struct JBTiered721Flags",
-                  "name": "flags",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "bool",
-                      "name": "lockReservedTokenChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "lockVotingUnitChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "lockManualMintingChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "preventOverspending",
-                      "type": "bool"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "enum JB721GovernanceType",
-                  "name": "governanceType",
-                  "type": "uint8"
-                }
-              ]
-            },
-            {
-              "internalType": "struct JBLaunchFundingCyclesData",
-              "name": "_launchFundingCyclesData",
-              "type": "tuple",
-              "components": [
-                {
-                  "internalType": "struct JBFundingCycleData",
-                  "name": "data",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "uint256",
-                      "name": "duration",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "weight",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "discountRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "contract IJBFundingCycleBallot",
-                      "name": "ballot",
-                      "type": "address"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "struct JBPayDataSourceFundingCycleMetadata",
-                  "name": "metadata",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "struct JBGlobalFundingCycleMetadata",
-                      "name": "global",
-                      "type": "tuple",
-                      "components": [
-                        {
-                          "internalType": "bool",
-                          "name": "allowSetTerminals",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "allowSetController",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "pauseTransfers",
-                          "type": "bool"
-                        }
-                      ]
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "reservedRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "redemptionRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "ballotRedemptionRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pausePay",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseDistributions",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseRedeem",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseBurn",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowMinting",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowTerminalMigration",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowControllerMigration",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "holdFees",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "preferClaimedTokenOverride",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "useTotalOverflowForRedemptions",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "useDataSourceForRedeem",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "metadata",
-                      "type": "uint256"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "mustStartAtOrAfter",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "struct JBGroupedSplits[]",
-                  "name": "groupedSplits",
-                  "type": "tuple[]",
-                  "components": [
-                    {
-                      "internalType": "uint256",
-                      "name": "group",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "struct JBSplit[]",
-                      "name": "splits",
-                      "type": "tuple[]",
-                      "components": [
-                        {
-                          "internalType": "bool",
-                          "name": "preferClaimed",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "preferAddToBalance",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "percent",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "projectId",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "address payable",
-                          "name": "beneficiary",
-                          "type": "address"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "lockedUntil",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "contract IJBSplitAllocator",
-                          "name": "allocator",
-                          "type": "address"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "internalType": "struct JBFundAccessConstraints[]",
-                  "name": "fundAccessConstraints",
-                  "type": "tuple[]",
-                  "components": [
-                    {
-                      "internalType": "contract IJBPaymentTerminal",
-                      "name": "terminal",
-                      "type": "address"
-                    },
-                    {
-                      "internalType": "address",
-                      "name": "token",
-                      "type": "address"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "distributionLimit",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "distributionLimitCurrency",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "overflowAllowance",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "overflowAllowanceCurrency",
-                      "type": "uint256"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "contract IJBPaymentTerminal[]",
-                  "name": "terminals",
-                  "type": "address[]"
-                },
-                {
-                  "internalType": "string",
-                  "name": "memo",
-                  "type": "string"
-                }
-              ]
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "launchFundingCyclesFor",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "configuration",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "_owner",
-              "type": "address"
-            },
-            {
-              "internalType": "struct JBDeployTiered721DelegateData",
-              "name": "_deployTieredNFTRewardDelegateData",
-              "type": "tuple",
-              "components": [
-                {
-                  "internalType": "contract IJBDirectory",
-                  "name": "directory",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "symbol",
-                  "type": "string"
-                },
-                {
-                  "internalType": "contract IJBFundingCycleStore",
-                  "name": "fundingCycleStore",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "baseUri",
-                  "type": "string"
-                },
-                {
-                  "internalType": "contract IJBTokenUriResolver",
-                  "name": "tokenUriResolver",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "contractUri",
-                  "type": "string"
-                },
-                {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
-                },
-                {
-                  "internalType": "struct JB721PricingParams",
-                  "name": "pricing",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "struct JB721TierParams[]",
-                      "name": "tiers",
-                      "type": "tuple[]",
-                      "components": [
-                        {
-                          "internalType": "uint80",
-                          "name": "contributionFloor",
-                          "type": "uint80"
-                        },
-                        {
-                          "internalType": "uint48",
-                          "name": "lockedUntil",
-                          "type": "uint48"
-                        },
-                        {
-                          "internalType": "uint40",
-                          "name": "initialQuantity",
-                          "type": "uint40"
-                        },
-                        {
-                          "internalType": "uint16",
-                          "name": "votingUnits",
-                          "type": "uint16"
-                        },
-                        {
-                          "internalType": "uint16",
-                          "name": "reservedRate",
-                          "type": "uint16"
-                        },
-                        {
-                          "internalType": "address",
-                          "name": "reservedTokenBeneficiary",
-                          "type": "address"
-                        },
-                        {
-                          "internalType": "bytes32",
-                          "name": "encodedIPFSUri",
-                          "type": "bytes32"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "allowManualMint",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "shouldUseBeneficiaryAsDefault",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "transfersPausable",
-                          "type": "bool"
-                        }
-                      ]
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "currency",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "decimals",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "contract IJBPrices",
-                      "name": "prices",
-                      "type": "address"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "address",
-                  "name": "reservedTokenBeneficiary",
-                  "type": "address"
-                },
-                {
-                  "internalType": "contract IJBTiered721DelegateStore",
-                  "name": "store",
-                  "type": "address"
-                },
-                {
-                  "internalType": "struct JBTiered721Flags",
-                  "name": "flags",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "bool",
-                      "name": "lockReservedTokenChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "lockVotingUnitChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "lockManualMintingChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "preventOverspending",
-                      "type": "bool"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "enum JB721GovernanceType",
-                  "name": "governanceType",
-                  "type": "uint8"
-                }
-              ]
-            },
-            {
-              "internalType": "struct JBLaunchProjectData",
-              "name": "_launchProjectData",
-              "type": "tuple",
-              "components": [
-                {
-                  "internalType": "struct JBProjectMetadata",
-                  "name": "projectMetadata",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "string",
-                      "name": "content",
-                      "type": "string"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "domain",
-                      "type": "uint256"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "struct JBFundingCycleData",
-                  "name": "data",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "uint256",
-                      "name": "duration",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "weight",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "discountRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "contract IJBFundingCycleBallot",
-                      "name": "ballot",
-                      "type": "address"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "struct JBPayDataSourceFundingCycleMetadata",
-                  "name": "metadata",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "struct JBGlobalFundingCycleMetadata",
-                      "name": "global",
-                      "type": "tuple",
-                      "components": [
-                        {
-                          "internalType": "bool",
-                          "name": "allowSetTerminals",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "allowSetController",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "pauseTransfers",
-                          "type": "bool"
-                        }
-                      ]
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "reservedRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "redemptionRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "ballotRedemptionRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pausePay",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseDistributions",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseRedeem",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseBurn",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowMinting",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowTerminalMigration",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowControllerMigration",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "holdFees",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "preferClaimedTokenOverride",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "useTotalOverflowForRedemptions",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "useDataSourceForRedeem",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "metadata",
-                      "type": "uint256"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "mustStartAtOrAfter",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "struct JBGroupedSplits[]",
-                  "name": "groupedSplits",
-                  "type": "tuple[]",
-                  "components": [
-                    {
-                      "internalType": "uint256",
-                      "name": "group",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "struct JBSplit[]",
-                      "name": "splits",
-                      "type": "tuple[]",
-                      "components": [
-                        {
-                          "internalType": "bool",
-                          "name": "preferClaimed",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "preferAddToBalance",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "percent",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "projectId",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "address payable",
-                          "name": "beneficiary",
-                          "type": "address"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "lockedUntil",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "contract IJBSplitAllocator",
-                          "name": "allocator",
-                          "type": "address"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "internalType": "struct JBFundAccessConstraints[]",
-                  "name": "fundAccessConstraints",
-                  "type": "tuple[]",
-                  "components": [
-                    {
-                      "internalType": "contract IJBPaymentTerminal",
-                      "name": "terminal",
-                      "type": "address"
-                    },
-                    {
-                      "internalType": "address",
-                      "name": "token",
-                      "type": "address"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "distributionLimit",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "distributionLimitCurrency",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "overflowAllowance",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "overflowAllowanceCurrency",
-                      "type": "uint256"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "contract IJBPaymentTerminal[]",
-                  "name": "terminals",
-                  "type": "address[]"
-                },
-                {
-                  "internalType": "string",
-                  "name": "memo",
-                  "type": "string"
-                }
-              ]
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "launchProjectFor",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "projectId",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_projectId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "struct JBDeployTiered721DelegateData",
-              "name": "_deployTieredNFTRewardDelegateData",
-              "type": "tuple",
-              "components": [
-                {
-                  "internalType": "contract IJBDirectory",
-                  "name": "directory",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "string",
-                  "name": "symbol",
-                  "type": "string"
-                },
-                {
-                  "internalType": "contract IJBFundingCycleStore",
-                  "name": "fundingCycleStore",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "baseUri",
-                  "type": "string"
-                },
-                {
-                  "internalType": "contract IJBTokenUriResolver",
-                  "name": "tokenUriResolver",
-                  "type": "address"
-                },
-                {
-                  "internalType": "string",
-                  "name": "contractUri",
-                  "type": "string"
-                },
-                {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
-                },
-                {
-                  "internalType": "struct JB721PricingParams",
-                  "name": "pricing",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "struct JB721TierParams[]",
-                      "name": "tiers",
-                      "type": "tuple[]",
-                      "components": [
-                        {
-                          "internalType": "uint80",
-                          "name": "contributionFloor",
-                          "type": "uint80"
-                        },
-                        {
-                          "internalType": "uint48",
-                          "name": "lockedUntil",
-                          "type": "uint48"
-                        },
-                        {
-                          "internalType": "uint40",
-                          "name": "initialQuantity",
-                          "type": "uint40"
-                        },
-                        {
-                          "internalType": "uint16",
-                          "name": "votingUnits",
-                          "type": "uint16"
-                        },
-                        {
-                          "internalType": "uint16",
-                          "name": "reservedRate",
-                          "type": "uint16"
-                        },
-                        {
-                          "internalType": "address",
-                          "name": "reservedTokenBeneficiary",
-                          "type": "address"
-                        },
-                        {
-                          "internalType": "bytes32",
-                          "name": "encodedIPFSUri",
-                          "type": "bytes32"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "allowManualMint",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "shouldUseBeneficiaryAsDefault",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "transfersPausable",
-                          "type": "bool"
-                        }
-                      ]
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "currency",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "decimals",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "contract IJBPrices",
-                      "name": "prices",
-                      "type": "address"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "address",
-                  "name": "reservedTokenBeneficiary",
-                  "type": "address"
-                },
-                {
-                  "internalType": "contract IJBTiered721DelegateStore",
-                  "name": "store",
-                  "type": "address"
-                },
-                {
-                  "internalType": "struct JBTiered721Flags",
-                  "name": "flags",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "bool",
-                      "name": "lockReservedTokenChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "lockVotingUnitChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "lockManualMintingChanges",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "preventOverspending",
-                      "type": "bool"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "enum JB721GovernanceType",
-                  "name": "governanceType",
-                  "type": "uint8"
-                }
-              ]
-            },
-            {
-              "internalType": "struct JBReconfigureFundingCyclesData",
-              "name": "_reconfigureFundingCyclesData",
-              "type": "tuple",
-              "components": [
-                {
-                  "internalType": "struct JBFundingCycleData",
-                  "name": "data",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "uint256",
-                      "name": "duration",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "weight",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "discountRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "contract IJBFundingCycleBallot",
-                      "name": "ballot",
-                      "type": "address"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "struct JBPayDataSourceFundingCycleMetadata",
-                  "name": "metadata",
-                  "type": "tuple",
-                  "components": [
-                    {
-                      "internalType": "struct JBGlobalFundingCycleMetadata",
-                      "name": "global",
-                      "type": "tuple",
-                      "components": [
-                        {
-                          "internalType": "bool",
-                          "name": "allowSetTerminals",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "allowSetController",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "pauseTransfers",
-                          "type": "bool"
-                        }
-                      ]
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "reservedRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "redemptionRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "ballotRedemptionRate",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pausePay",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseDistributions",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseRedeem",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "pauseBurn",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowMinting",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowTerminalMigration",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "allowControllerMigration",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "holdFees",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "preferClaimedTokenOverride",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "useTotalOverflowForRedemptions",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "bool",
-                      "name": "useDataSourceForRedeem",
-                      "type": "bool"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "metadata",
-                      "type": "uint256"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "mustStartAtOrAfter",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "struct JBGroupedSplits[]",
-                  "name": "groupedSplits",
-                  "type": "tuple[]",
-                  "components": [
-                    {
-                      "internalType": "uint256",
-                      "name": "group",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "struct JBSplit[]",
-                      "name": "splits",
-                      "type": "tuple[]",
-                      "components": [
-                        {
-                          "internalType": "bool",
-                          "name": "preferClaimed",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "bool",
-                          "name": "preferAddToBalance",
-                          "type": "bool"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "percent",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "projectId",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "address payable",
-                          "name": "beneficiary",
-                          "type": "address"
-                        },
-                        {
-                          "internalType": "uint256",
-                          "name": "lockedUntil",
-                          "type": "uint256"
-                        },
-                        {
-                          "internalType": "contract IJBSplitAllocator",
-                          "name": "allocator",
-                          "type": "address"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "internalType": "struct JBFundAccessConstraints[]",
-                  "name": "fundAccessConstraints",
-                  "type": "tuple[]",
-                  "components": [
-                    {
-                      "internalType": "contract IJBPaymentTerminal",
-                      "name": "terminal",
-                      "type": "address"
-                    },
-                    {
-                      "internalType": "address",
-                      "name": "token",
-                      "type": "address"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "distributionLimit",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "distributionLimitCurrency",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "overflowAllowance",
-                      "type": "uint256"
-                    },
-                    {
-                      "internalType": "uint256",
-                      "name": "overflowAllowanceCurrency",
-                      "type": "uint256"
-                    }
-                  ]
-                },
-                {
-                  "internalType": "string",
-                  "name": "memo",
-                  "type": "string"
-                }
-              ]
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function",
-          "name": "reconfigureFundingCyclesOf",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "configuration",
-              "type": "uint256"
-            }
-          ]
-        }
-      ],
-      "devdoc": {
-        "kind": "dev",
-        "methods": {},
-        "version": 1
-      },
-      "userdoc": {
-        "kind": "user",
-        "methods": {},
-        "version": 1
-      }
-    },
-    "settings": {
-      "remappings": [
-        ":@jbx-protocol/=node_modules/@jbx-protocol/",
-        ":@openzeppelin/=node_modules/@openzeppelin/",
-        ":@paulrberg/=node_modules/@paulrberg/",
-        ":ds-test/=lib/forge-std/lib/ds-test/src/",
-        ":forge-std/=lib/forge-std/src/",
-        ":prb-math/=node_modules/prb-math/"
-      ],
-      "optimizer": {
-        "enabled": true,
-        "runs": 200
-      },
-      "metadata": {
-        "bytecodeHash": "ipfs"
-      },
-      "compilationTarget": {
-        "contracts/interfaces/IJBTiered721DelegateProjectDeployer.sol": "IJBTiered721DelegateProjectDeployer"
-      },
-      "libraries": {}
-    },
-    "sources": {
-      "contracts/enums/JB721GovernanceType.sol": {
-        "keccak256": "0x3080b119a8e69d7c98ac4392f436bf9168433feca073e48b2151881543094095",
-        "urls": [
-          "bzz-raw://997adf9da18f439c0d86c9ea7be60a7a9363bda800e8c250952bad2410cc0c16",
-          "dweb:/ipfs/QmNVQEmC8gtgmTVwZbgycU84xd9wiWWrimHA4ih7QvqXzw"
-        ],
-        "license": "MIT"
-      },
-      "contracts/interfaces/IJB721Delegate.sol": {
-        "keccak256": "0xa8fbb99c63314f21fb37435c4c3beb7b036b1fa423091ecb4908333612598e6f",
-        "urls": [
-          "bzz-raw://f06796c0da61e0642eb7d2170e0ddd2ebd97d33c42b8f01ea5dd233882b2fb87",
-          "dweb:/ipfs/QmXmfmSScCwpimkyJEB3USwvzfA18zoL4KqkPvE2ZPuP8J"
-        ],
-        "license": "MIT"
-      },
-      "contracts/interfaces/IJBTiered721Delegate.sol": {
-        "keccak256": "0x323d9023292e6994e22d253adb9c185dc73fbee4bbb2bc266ddcc80ee47c292a",
-        "urls": [
-          "bzz-raw://4f34da8e019554376049670eeec991bad268f0dd19bbca0790fbe027d57457cc",
-          "dweb:/ipfs/QmUxjktmXDKxDz4cuUX2t1Kv6EKZXubsUvRUoann63F4ER"
-        ],
-        "license": "MIT"
-      },
-      "contracts/interfaces/IJBTiered721DelegateDeployer.sol": {
-        "keccak256": "0xe739ea2c97a4b3064453da5fd0c7b30e4fa16a642cde36fc3ec3b3b4b8b5f475",
-        "urls": [
-          "bzz-raw://ccd168ea152a8a47c4cfee4e95ebcc6bcf4a9d7229a83dff08ebedab3593852d",
-          "dweb:/ipfs/QmNkYw1XMs97Mf2Nbs1rmbnpdymhRP62rJ1UB4PQ5CFGRE"
-        ],
-        "license": "MIT"
-      },
-      "contracts/interfaces/IJBTiered721DelegateProjectDeployer.sol": {
-        "keccak256": "0xb25add35e33982bc25dc4d72e1bb73b2e233c8bb601f647286c2e84d061d0e34",
-        "urls": [
-          "bzz-raw://d6f6dbc0b3be8497d42f55d6a2263526bc2feec54894356fe1d54c77b99b9d6a",
-          "dweb:/ipfs/QmeDkBYopTiW2BwtDumoFLU5srfj6hacfnxvt8jKJp2ZQZ"
-        ],
-        "license": "MIT"
-      },
-      "contracts/interfaces/IJBTiered721DelegateStore.sol": {
-        "keccak256": "0x1f360dc9d5d181665c40063abc9f390b942f80fa8772e3d99ef9986a3cae3ebc",
-        "urls": [
-          "bzz-raw://266bcce6d9593f1cfcc53fe60b4752670e273a050fec0c9aae712096fe3d9b16",
-          "dweb:/ipfs/QmR6x3ZyYKcf9ncyeEZpTXdTpXbUQw588R93fnFQ9vhsib"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JB721PricingParams.sol": {
-        "keccak256": "0x65c6b3a05158713e76ccf22091405b9f7bb023b3e382b2da1babbd6c69961586",
-        "urls": [
-          "bzz-raw://fdfbdd554f5a17ede36c57fa7e004548be852f9d840adeb46abc5389d3c4a684",
-          "dweb:/ipfs/QmYUA3NuZVLXMtsPpKpuVxn4DAnz55CpxvqmSuREwf8JaU"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JB721Tier.sol": {
-        "keccak256": "0xbbe8975ee48958845da812af2e7bb6ab733bbb7c3e512f29804bf790cd8b2de7",
-        "urls": [
-          "bzz-raw://e87b6593e8341621c2fa1283296ca402e9671d1b421ce58bf4d906f196c2385f",
-          "dweb:/ipfs/QmPv7thJmfj2qCTDW5FUsyauFAgovnwu8cCmZhfDmVC17z"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JB721TierParams.sol": {
-        "keccak256": "0x8e4f755335fc5b78e5cd1390ee4209c0edbb63a17cd413fee2e2c64cadf15b56",
-        "urls": [
-          "bzz-raw://44348545c0affb4bb969fd92bdee79c93a777c02691c840f299c14ec2209b16a",
-          "dweb:/ipfs/QmWfXobGC96SDnNgDLXGsb44HwzbL3tjTBB4DEk4t2Qtxz"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBDeployTiered721DelegateData.sol": {
-        "keccak256": "0x748af4b9eb0e5411c74b2cc694a365a19e4b20418883aba0f816953989579498",
-        "urls": [
-          "bzz-raw://11fe82016c414b6df04c4eee90cd3e1758e684333d87a9e837fae7032a036ddc",
-          "dweb:/ipfs/QmZ8AgMMcz3PMGsxo48wMvotuuUGekGnf5omrXkLpjQ4dx"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBLaunchFundingCyclesData.sol": {
-        "keccak256": "0xc944a7c7e779c367b0ddd5ec4794b026c5d680af66ed52ebff457cbc5cf2f0e4",
-        "urls": [
-          "bzz-raw://30dc0f8e17c3108f76a025785c671912423123790400cd2c63e133012ee0385c",
-          "dweb:/ipfs/QmeUrDPtieVQqgh68ciM7c6p7R5fWEdodoDj5Fad1siKEY"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBLaunchProjectData.sol": {
-        "keccak256": "0xd3e02eda607c14282ee795ceddf393892164d83db09edb7889bb976ebadc7aad",
-        "urls": [
-          "bzz-raw://a8f95294a54061caecc574f47d697e9519e73e5c9b09578ef7ad6a52cf3cc46e",
-          "dweb:/ipfs/QmPvwqfQLWHasefB78mb4mD3BJLL47QktvCj1gYSf8LZvm"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBPayDataSourceFundingCycleMetadata.sol": {
-        "keccak256": "0x1268de308cfc29a4651baa0a28e470799120fb7815086a0d7c62afa4dd2c6caf",
-        "urls": [
-          "bzz-raw://9a0741d2c1cd0980f13109b7e04d0e14def5eed1af89bcd697c9a27577c47cd9",
-          "dweb:/ipfs/QmaGav6q2TFhejkgqgRdpyuNWBRW9YNjXBPcxG2rvkC8U4"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBReconfigureFundingCyclesData.sol": {
-        "keccak256": "0xbabb82cf799f70b67f19f8ccd82844d712e60f8f1c72ba13352486e30498812d",
-        "urls": [
-          "bzz-raw://5c8a86e9bcf1214c973e5006d346025b2d4e8bd1fc62896b44c35aa237c4ccd3",
-          "dweb:/ipfs/Qmb7kEBhqXpYyDgwzsux9sVw86Qj8BbSyTUyR3asPV3h8K"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBTiered721Flags.sol": {
-        "keccak256": "0x42f9625c893559b44bbe79d7fc3f6190a0dceea673b6137ef393c44d517a9ae2",
-        "urls": [
-          "bzz-raw://b13d3d700323e73f4f2f67b3c41b20ded126009a4ac2acec0fba444d0ce6032f",
-          "dweb:/ipfs/QmWkbrzcNDtFxdApDBy8rCsBLu3ovzzZJeA9Tin9pcncSs"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBTiered721MintForTiersData.sol": {
-        "keccak256": "0x357b55115f542c89e1ccb0338d7b84913018ab00be1582a0e3323dacdb579c42",
-        "urls": [
-          "bzz-raw://539586eb3ffeb85ce7a9cbf33fc8c438b34feef2aff1a5e66edcbfaf1210ff4e",
-          "dweb:/ipfs/QmaCWYcygXBpg6z7bm8TiA7KXGFvC2Yqkv2i8Eaw2mtYV2"
-        ],
-        "license": "MIT"
-      },
-      "contracts/structs/JBTiered721MintReservesForTiersData.sol": {
-        "keccak256": "0xc04c71a3bbf7daad10971d9507c123e22e5996c4b1497c05deff1c0d6d59b9d0",
-        "urls": [
-          "bzz-raw://0e93c80696a98d57053462a156be6f8290ee931666b77f6ff97df4bb2a3b0cc1",
-          "dweb:/ipfs/QmZUqXnsaYMz4orNoQ3ybm2So1sHA7qQ46jxu4QRMhFTsq"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/enums/JBBallotState.sol": {
-        "keccak256": "0x891fcac63470398b3a11239da7feba6b07d640809fcefd2404303b823d7378f8",
-        "urls": [
-          "bzz-raw://6e6adfceaf284b669a8c1cbcf2da7f18ab31a2d1066f9db8bc914349e7401de7",
-          "dweb:/ipfs/QmXLHVRPPZdXUkgAHQbHUtEzAvCJk1P6rJ7wrwfTcfW6fw"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol": {
-        "keccak256": "0xb1ee4b41f2a06f28f69c74cb729b8964f2e75f3c545a68f85bd9082b5575bc85",
-        "urls": [
-          "bzz-raw://160aef4e645dde9524564b2bd302e7c766bdf1f67c4fa58516ed59d1dbb7c2a6",
-          "dweb:/ipfs/QmaTpyWKi4itYaaxTKU6JUarJHRmxCMP65cp2NJ6ejJDZW"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol": {
-        "keccak256": "0x715321646db00514d1355ed43c40cd3f01e94959552fd07797b315d9c49cdb1d",
-        "urls": [
-          "bzz-raw://c34c9e1c727ffc63dd42fb6e6ffb3116c8ba15d6a322a300f10f29478974768d",
-          "dweb:/ipfs/QmYToaGrbMyyWAuyepYcDd8M6KcmosY8AWhT3uJmPM6Pvy"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol": {
-        "keccak256": "0x49553a56209237846bc400cf27f260824a6bd06fd8094a7eb5abb9de75779598",
-        "urls": [
-          "bzz-raw://559372746f94f28b385bc336df263f583dca5377350645c0b28110b083bdb41a",
-          "dweb:/ipfs/QmeQRYqPjXBQCtMKXSFtHVD2ewEPoUAPDxLh4oWTRSKbmx"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol": {
-        "keccak256": "0xaead823851433be0c2ddc8f8086813e6cd647de3a1bc0f7570a5d6b38c378b5a",
-        "urls": [
-          "bzz-raw://7f11fd52ba9ef67b40811d8a2298ae8b69447d2565b3f1069cbb8f0f13bc65e7",
-          "dweb:/ipfs/QmVbBzpTxZWar9xvj6x1vW91hJDv2iPVq7aG6waMxaHUPQ"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBMigratable.sol": {
-        "keccak256": "0xc81053e4b4754fc510aa04fecd3ab1460f01e3e27761e7a8c94f631a978ae127",
-        "urls": [
-          "bzz-raw://4c57ab7d0c0e6d9be798055d68b6f253421458b3beb38d0a3596da104000ca9e",
-          "dweb:/ipfs/QmXn1CaffHoP2s43vkUszihdNk1TdfAxejngfdk2VmBVFU"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol": {
-        "keccak256": "0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2",
-        "urls": [
-          "bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95",
-          "dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPriceFeed.sol": {
-        "keccak256": "0x57c71282fec1b34b00cf991ffed2e36031c393e35bfa7ca5d723eb6572fb7122",
-        "urls": [
-          "bzz-raw://f51c97ac194d3120a2fb5428eeeff759b75b7cbc5708465afc914619016a7c9b",
-          "dweb:/ipfs/QmemTqsGqoPqG97EsdRTMAbB6RfCz8CJxGYPNnDTV6LJ2t"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol": {
-        "keccak256": "0x82a175b1f4b95b506c98406576cd59cbe04615e3df24f9cf3587b61b8ee323b1",
-        "urls": [
-          "bzz-raw://5493e394cf47fca51a4091f1e6d285cc9e4ff9916e5bdfb8e174fe652a2b9833",
-          "dweb:/ipfs/QmTXafZatcjYbNMpUYYk1AWNZLkRFK7VVdAYYudGf4z3HJ"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol": {
-        "keccak256": "0x7cfc021d0bd7e73b1ba8f4845d7d35e3419d6a14d3d25ca3a8010e7f91062fe4",
-        "urls": [
-          "bzz-raw://ff265e13e60da56b93104260ed69ab01153437ec2af9d453781f22ca295eaef9",
-          "dweb:/ipfs/QmfGCSLX2Wy26ojf4U12udsdtjSSacbLcZGwCjTw7MjWF8"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitAllocator.sol": {
-        "keccak256": "0x5efb6f51fc161f42ff58989386ad99028e4039a0ba897d66f358c3dfcf686105",
-        "urls": [
-          "bzz-raw://171df7cf5285170894d7d7d00ecb14271204b55d330fa65e1bf9ebfb21741c29",
-          "dweb:/ipfs/QmXBmzjVVgGd1hZoStw2qoypJnqyWgYeMXMLyYS7f6Zonu"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitsStore.sol": {
-        "keccak256": "0x66dab3dd394e318b850401ca92c2963b906cc0ad5562fa5d4f6f850175d1c77a",
-        "urls": [
-          "bzz-raw://948dae4e7eddc75f32fe75b25f97a7bad0e7b335a8a5a8dfd81b532dd325dd27",
-          "dweb:/ipfs/QmZY1s7r85NWVdqhmUE71Pkuo7CPk8SMgAwUrj8bLpTaWC"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBToken.sol": {
-        "keccak256": "0xe8969210417736c85d71101bf1c0bd8ebbf9d1e62a93e758148bd5709a6c7097",
-        "urls": [
-          "bzz-raw://214c67c2ebeabd1b412ac9b0b6de4c02765c8311a3dc258568a2aa7322d58fb7",
-          "dweb:/ipfs/QmeEbk8YWRVtMpxWQGfYbMrgYc2qsPhQF5jpufK26RrCXY"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenStore.sol": {
-        "keccak256": "0x98459e3af050d41dfeffdc97f1c93330207ba450f8ff3613224b49a89eeca9c6",
-        "urls": [
-          "bzz-raw://0e98bda797088b1bb2a756eaed911ab12b092ffdad5467e82650bfa9bf8dd046",
-          "dweb:/ipfs/QmbuKq4xSC8LL62smwrHWCWKiWawEu8Ne2n7q8DhKHKvtD"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol": {
-        "keccak256": "0xd267fd8ca7c21c2c71794acdb9a98314c33a35fc559e0bf0897a6686d196d174",
-        "urls": [
-          "bzz-raw://aa7053d4300ed1374f3f993e6e2163d0a05ee780e4e99eb007b55eabc93c724e",
-          "dweb:/ipfs/QmYZAUn7VCwqpDWYZNCXLNYMRQpD334YgPRiGCfxQApzuT"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol": {
-        "keccak256": "0x85ebaa57b788cbdedc7a3d0eec4892eda5d79db7c1a6103797f10d0d989775b2",
-        "urls": [
-          "bzz-raw://1a911a9d1d0a6f0e475854838877d2d3ae606028381c2aef7fac192a33e3d329",
-          "dweb:/ipfs/QmTih57fwyaXdjvXCrG9BbdayD6H2AHQrYkuL4v4rYhMyF"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol": {
-        "keccak256": "0xcdd3ac9b6fa67e62ada88d09b73bc35ade1cd77d43db712289266a788928b4c2",
-        "urls": [
-          "bzz-raw://8ba0be407022bbeb0e9272884653209ee262b8a4e00ffbba1298c3b119feccba",
-          "dweb:/ipfs/QmbtLQzSN3hut4jYVsYPiYDfRkDdGkZmTWBnV2wJKrdM3K"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol": {
-        "keccak256": "0x2aa6368bf4dfc5797e8b02a978293de0c777fae2658de2c825a103587240f3b0",
-        "urls": [
-          "bzz-raw://2d7a980ab9b67ad1569d4407b747903cab668a332214117f5ad44feb50af0a3a",
-          "dweb:/ipfs/QmSuEzmrmDSihrTKYCk8miq7VQi7WD6jmQePkjDyzt7UpC"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol": {
-        "keccak256": "0x783604440cac8d176332eab28166f188ee5c230378c08cfc95fea4f7187dc77d",
-        "urls": [
-          "bzz-raw://81409f9675aabd5ece88efbf08d1acb5581c2aac5b6394824f575f5f2edb5788",
-          "dweb:/ipfs/QmPWdUztAEssCEnuFFkj74kNFEfVUxbNFmD5GmVB2Qvj1h"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBGlobalFundingCycleMetadata.sol": {
-        "keccak256": "0x05d85530305fec6d6eca54cdbc2cd9110cbda0146598032b0203aa4b622944ff",
-        "urls": [
-          "bzz-raw://ec56eff6784c7b60ebc3098037573d8ece138794a9a58ebe8412e75927e984cd",
-          "dweb:/ipfs/QmdkEeE6JDyCiV3YBKf7h3FymEHCAHHAtBokUkJwFWVPSf"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBGroupedSplits.sol": {
-        "keccak256": "0x80be1b220da4ac04851ea540ebb94c1ec2b0442ec5bd1e88fdf78a56becd8b5a",
-        "urls": [
-          "bzz-raw://b73e5da7d38bfadd565c202aa1a5a6c08a51542699e8e3683b8888009bc62563",
-          "dweb:/ipfs/QmUNTy4XVvfAMqP7wCjj84deTvCehkBL1diZoWkyMCVsPw"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol": {
-        "keccak256": "0x90ad7b1014c0a9f945fe7a2efde9d5de41e40574fa27969070b1d2ff52033ea0",
-        "urls": [
-          "bzz-raw://1fafc65a9fd74605b7d6c6f0a92b3237a8e3efdd160affb8c117bad00dcf9494",
-          "dweb:/ipfs/QmQkcVt11WLqrxHVrcDCF6dNxzg2kKHEghAgSbfLF6CHkt"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplit.sol": {
-        "keccak256": "0xc80a16606da8abf76d0f73abc38aee041e24f29342c1939018f70c286e89f105",
-        "urls": [
-          "bzz-raw://d257df1f322904fdbf34a0d28880cc96a1ba3905d19488d83156a7d3476d820f",
-          "dweb:/ipfs/QmP6WFuoK6ePEQ2zxRnpu1kWDdFSUTGaEV57eZ4gs9FqC8"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplitAllocationData.sol": {
-        "keccak256": "0x39f5c41bd31d36774744698ac94484b6cab62d7038df2f29d947668959782e63",
-        "urls": [
-          "bzz-raw://cf81d025aa0f6f93bdcd0b863730f7c574de7c3c4a595ba88e342f46c4b724e4",
-          "dweb:/ipfs/QmaQ1frbYciPVV1Qmsfmgts9fgbXKZLQ8jGf9XRikHSmci"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
-        "keccak256": "0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f",
-        "urls": [
-          "bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f",
-          "dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x"
-        ],
-        "license": "MIT"
-      },
-      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
-        "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
-        "urls": [
-          "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
-          "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
-        ],
-        "license": "MIT"
-      }
-    },
-    "version": 1
+    "launchFundingCyclesFor(uint256,(address,string,string,address,string,address,string,address,((uint80,uint48,uint40,uint16,uint16,address,uint8,address,bytes32,uint8,bool,bool,bool,bool)[],uint256,uint256,address),address,address,(bool,bool,bool,bool),uint8),((uint256,uint256,uint256,address),((bool,bool,bool),uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,uint256),uint256,(uint256,(bool,bool,uint256,uint256,address,uint256,address)[])[],(address,address,uint256,uint256,uint256,uint256)[],address[],string))": "805105d2",
+    "launchProjectFor(address,(address,string,string,address,string,address,string,address,((uint80,uint48,uint40,uint16,uint16,address,uint8,address,bytes32,uint8,bool,bool,bool,bool)[],uint256,uint256,address),address,address,(bool,bool,bool,bool),uint8),((string,uint256),(uint256,uint256,uint256,address),((bool,bool,bool),uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,uint256),uint256,(uint256,(bool,bool,uint256,uint256,address,uint256,address)[])[],(address,address,uint256,uint256,uint256,uint256)[],address[],string))": "5509e185",
+    "reconfigureFundingCyclesOf(uint256,(address,string,string,address,string,address,string,address,((uint80,uint48,uint40,uint16,uint16,address,uint8,address,bytes32,uint8,bool,bool,bool,bool)[],uint256,uint256,address),address,address,(bool,bool,bool,bool),uint8),((uint256,uint256,uint256,address),((bool,bool,bool),uint256,uint256,uint256,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,bool,uint256),uint256,(uint256,(bool,bool,uint256,uint256,address,uint256,address)[])[],(address,address,uint256,uint256,uint256,uint256)[],string))": "ecacb274"
   },
   "ast": {
     "absolutePath": "contracts/interfaces/IJBTiered721DelegateProjectDeployer.sol",
-    "id": 27576,
+    "id": 29891,
     "exportedSymbols": {
       "IERC165": [
-        71674
+        74054
       ],
       "IERC721": [
-        70131
+        72511
       ],
       "IJB721Delegate": [
-        27201
+        29516
       ],
       "IJBController": [
-        63768
+        66129
       ],
       "IJBDirectory": [
-        63918
+        66279
       ],
       "IJBFundingCycleBallot": [
-        63952
+        66313
       ],
       "IJBFundingCycleStore": [
-        64089
+        66450
       ],
       "IJBMigratable": [
-        64099
+        66460
       ],
       "IJBPaymentTerminal": [
-        64262
+        66623
       ],
       "IJBPriceFeed": [
-        64625
+        66986
       ],
       "IJBPrices": [
-        64669
+        67030
       ],
       "IJBProjects": [
-        64748
+        67109
       ],
       "IJBSplitAllocator": [
-        65029
+        67390
       ],
       "IJBSplitsStore": [
-        65085
+        67446
       ],
       "IJBTiered721Delegate": [
-        27486
+        29801
       ],
       "IJBTiered721DelegateDeployer": [
-        27513
+        29828
       ],
       "IJBTiered721DelegateProjectDeployer": [
-        27575
+        29890
       ],
       "IJBTiered721DelegateStore": [
-        27903
+        30236
       ],
       "IJBToken": [
-        65161
+        67522
       ],
       "IJBTokenStore": [
-        65357
+        67718
       ],
       "IJBTokenUriResolver": [
-        65367
+        67728
       ],
       "JB721GovernanceType": [
-        6248
+        6523
       ],
       "JB721PricingParams": [
-        29072
+        31415
       ],
       "JB721Tier": [
-        29097
+        31446
       ],
       "JB721TierParams": [
-        29120
+        31477
       ],
       "JBBallotState": [
-        63346
+        65707
       ],
       "JBDeployTiered721DelegateData": [
-        29170
+        31527
       ],
       "JBFundAccessConstraints": [
-        66332
+        68693
       ],
       "JBFundingCycle": [
-        66355
+        68716
       ],
       "JBFundingCycleData": [
-        66368
+        68729
       ],
       "JBFundingCycleMetadata": [
-        66409
+        68770
       ],
       "JBGlobalFundingCycleMetadata": [
-        66418
+        68779
       ],
       "JBGroupedSplits": [
-        66428
+        68789
       ],
       "JBLaunchFundingCyclesData": [
-        29200
+        31557
       ],
       "JBLaunchProjectData": [
-        29234
+        31591
       ],
       "JBPayDataSourceFundingCycleMetadata": [
-        29271
+        31628
       ],
       "JBProjectMetadata": [
-        66481
+        68842
       ],
       "JBReconfigureFundingCyclesData": [
-        29296
+        31653
       ],
       "JBSplit": [
-        66540
+        68901
       ],
       "JBSplitAllocationData": [
-        66557
+        68918
       ],
       "JBTiered721Flags": [
-        29326
+        31687
       ],
       "JBTiered721MintForTiersData": [
-        29341
+        31702
       ],
       "JBTiered721MintReservesForTiersData": [
-        29348
+        31709
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:1444:21",
     "nodes": [
       {
-        "id": 27515,
+        "id": 29830,
         "nodeType": "PragmaDirective",
         "src": "32:23:21",
-        "nodes": [],
         "literals": [
           "solidity",
           "^",
@@ -3219,119 +1558,110 @@
         ]
       },
       {
-        "id": 27516,
+        "id": 29831,
         "nodeType": "ImportDirective",
         "src": "57:81:21",
-        "nodes": [],
         "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol",
         "file": "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 63769,
+        "scope": 29891,
+        "sourceUnit": 66130,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27517,
+        "id": 29832,
         "nodeType": "ImportDirective",
         "src": "139:79:21",
-        "nodes": [],
         "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol",
         "file": "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 64749,
+        "scope": 29891,
+        "sourceUnit": 67110,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27518,
+        "id": 29833,
         "nodeType": "ImportDirective",
         "src": "219:82:21",
-        "nodes": [],
         "absolutePath": "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol",
         "file": "@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 66482,
+        "scope": 29891,
+        "sourceUnit": 68843,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27519,
+        "id": 29834,
         "nodeType": "ImportDirective",
         "src": "302:54:21",
-        "nodes": [],
         "absolutePath": "contracts/structs/JBDeployTiered721DelegateData.sol",
         "file": "../structs/JBDeployTiered721DelegateData.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 29171,
+        "scope": 29891,
+        "sourceUnit": 31528,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27520,
+        "id": 29835,
         "nodeType": "ImportDirective",
         "src": "357:44:21",
-        "nodes": [],
         "absolutePath": "contracts/structs/JBLaunchProjectData.sol",
         "file": "../structs/JBLaunchProjectData.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 29235,
+        "scope": 29891,
+        "sourceUnit": 31592,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27521,
+        "id": 29836,
         "nodeType": "ImportDirective",
         "src": "402:50:21",
-        "nodes": [],
         "absolutePath": "contracts/structs/JBLaunchFundingCyclesData.sol",
         "file": "../structs/JBLaunchFundingCyclesData.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 29201,
+        "scope": 29891,
+        "sourceUnit": 31558,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27522,
+        "id": 29837,
         "nodeType": "ImportDirective",
         "src": "453:55:21",
-        "nodes": [],
         "absolutePath": "contracts/structs/JBReconfigureFundingCyclesData.sol",
         "file": "../structs/JBReconfigureFundingCyclesData.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 29297,
+        "scope": 29891,
+        "sourceUnit": 31654,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27523,
+        "id": 29838,
         "nodeType": "ImportDirective",
         "src": "509:44:21",
-        "nodes": [],
         "absolutePath": "contracts/interfaces/IJBTiered721DelegateDeployer.sol",
         "file": "./IJBTiered721DelegateDeployer.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 27576,
-        "sourceUnit": 27514,
+        "scope": 29891,
+        "sourceUnit": 29829,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 27575,
+        "id": 29890,
         "nodeType": "ContractDefinition",
         "src": "555:920:21",
         "nodes": [
           {
-            "id": 27529,
+            "id": 29844,
             "nodeType": "FunctionDefinition",
             "src": "605:60:21",
-            "nodes": [],
             "functionSelector": "f77c4791",
             "implemented": false,
             "kind": "function",
@@ -3339,47 +1669,47 @@
             "name": "controller",
             "nameLocation": "614:10:21",
             "parameters": {
-              "id": 27524,
+              "id": 29839,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "624:2:21"
             },
             "returnParameters": {
-              "id": 27528,
+              "id": 29843,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27527,
+                  "id": 29842,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27529,
+                  "scope": 29844,
                   "src": "650:13:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IJBController_$63768",
+                    "typeIdentifier": "t_contract$_IJBController_$66129",
                     "typeString": "contract IJBController"
                   },
                   "typeName": {
-                    "id": 27526,
+                    "id": 29841,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27525,
+                      "id": 29840,
                       "name": "IJBController",
                       "nameLocations": [
                         "650:13:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 63768,
+                      "referencedDeclaration": 66129,
                       "src": "650:13:21"
                     },
-                    "referencedDeclaration": 63768,
+                    "referencedDeclaration": 66129,
                     "src": "650:13:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IJBController_$63768",
+                      "typeIdentifier": "t_contract$_IJBController_$66129",
                       "typeString": "contract IJBController"
                     }
                   },
@@ -3388,16 +1718,15 @@
               ],
               "src": "649:15:21"
             },
-            "scope": 27575,
+            "scope": 29890,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 27535,
+            "id": 29850,
             "nodeType": "FunctionDefinition",
             "src": "669:81:21",
-            "nodes": [],
             "functionSelector": "8f3d964b",
             "implemented": false,
             "kind": "function",
@@ -3405,47 +1734,47 @@
             "name": "delegateDeployer",
             "nameLocation": "678:16:21",
             "parameters": {
-              "id": 27530,
+              "id": 29845,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "694:2:21"
             },
             "returnParameters": {
-              "id": 27534,
+              "id": 29849,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27533,
+                  "id": 29848,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27535,
+                  "scope": 29850,
                   "src": "720:28:21",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IJBTiered721DelegateDeployer_$27513",
+                    "typeIdentifier": "t_contract$_IJBTiered721DelegateDeployer_$29828",
                     "typeString": "contract IJBTiered721DelegateDeployer"
                   },
                   "typeName": {
-                    "id": 27532,
+                    "id": 29847,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27531,
+                      "id": 29846,
                       "name": "IJBTiered721DelegateDeployer",
                       "nameLocations": [
                         "720:28:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 27513,
+                      "referencedDeclaration": 29828,
                       "src": "720:28:21"
                     },
-                    "referencedDeclaration": 27513,
+                    "referencedDeclaration": 29828,
                     "src": "720:28:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IJBTiered721DelegateDeployer_$27513",
+                      "typeIdentifier": "t_contract$_IJBTiered721DelegateDeployer_$29828",
                       "typeString": "contract IJBTiered721DelegateDeployer"
                     }
                   },
@@ -3454,34 +1783,33 @@
               ],
               "src": "719:30:21"
             },
-            "scope": 27575,
+            "scope": 29890,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 27548,
+            "id": 29863,
             "nodeType": "FunctionDefinition",
             "src": "754:215:21",
-            "nodes": [],
-            "functionSelector": "ab15e800",
+            "functionSelector": "5509e185",
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "launchProjectFor",
             "nameLocation": "763:16:21",
             "parameters": {
-              "id": 27544,
+              "id": 29859,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27537,
+                  "id": 29852,
                   "mutability": "mutable",
                   "name": "_owner",
                   "nameLocation": "793:6:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27548,
+                  "scope": 29863,
                   "src": "785:14:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3490,7 +1818,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 27536,
+                    "id": 29851,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "785:7:21",
@@ -3504,36 +1832,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 27540,
+                  "id": 29855,
                   "mutability": "mutable",
                   "name": "_deployTieredNFTRewardDelegateData",
                   "nameLocation": "842:34:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27548,
+                  "scope": 29863,
                   "src": "805:71:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$29170_memory_ptr",
+                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_memory_ptr",
                     "typeString": "struct JBDeployTiered721DelegateData"
                   },
                   "typeName": {
-                    "id": 27539,
+                    "id": 29854,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27538,
+                      "id": 29853,
                       "name": "JBDeployTiered721DelegateData",
                       "nameLocations": [
                         "805:29:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29170,
+                      "referencedDeclaration": 31527,
                       "src": "805:29:21"
                     },
-                    "referencedDeclaration": 29170,
+                    "referencedDeclaration": 31527,
                     "src": "805:29:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$29170_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_storage_ptr",
                       "typeString": "struct JBDeployTiered721DelegateData"
                     }
                   },
@@ -3541,36 +1869,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 27543,
+                  "id": 29858,
                   "mutability": "mutable",
                   "name": "_launchProjectData",
                   "nameLocation": "909:18:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27548,
+                  "scope": 29863,
                   "src": "882:45:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBLaunchProjectData_$29234_memory_ptr",
+                    "typeIdentifier": "t_struct$_JBLaunchProjectData_$31591_memory_ptr",
                     "typeString": "struct JBLaunchProjectData"
                   },
                   "typeName": {
-                    "id": 27542,
+                    "id": 29857,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27541,
+                      "id": 29856,
                       "name": "JBLaunchProjectData",
                       "nameLocations": [
                         "882:19:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29234,
+                      "referencedDeclaration": 31591,
                       "src": "882:19:21"
                     },
-                    "referencedDeclaration": 29234,
+                    "referencedDeclaration": 31591,
                     "src": "882:19:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBLaunchProjectData_$29234_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBLaunchProjectData_$31591_storage_ptr",
                       "typeString": "struct JBLaunchProjectData"
                     }
                   },
@@ -3580,17 +1908,17 @@
               "src": "779:152:21"
             },
             "returnParameters": {
-              "id": 27547,
+              "id": 29862,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27546,
+                  "id": 29861,
                   "mutability": "mutable",
                   "name": "projectId",
                   "nameLocation": "958:9:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27548,
+                  "scope": 29863,
                   "src": "950:17:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3599,7 +1927,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 27545,
+                    "id": 29860,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "950:7:21",
@@ -3613,34 +1941,33 @@
               ],
               "src": "949:19:21"
             },
-            "scope": 27575,
+            "scope": 29890,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 27561,
+            "id": 29876,
             "nodeType": "FunctionDefinition",
             "src": "973:241:21",
-            "nodes": [],
-            "functionSelector": "a8c19c27",
+            "functionSelector": "805105d2",
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "launchFundingCyclesFor",
             "nameLocation": "982:22:21",
             "parameters": {
-              "id": 27557,
+              "id": 29872,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27550,
+                  "id": 29865,
                   "mutability": "mutable",
                   "name": "_projectId",
                   "nameLocation": "1018:10:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27561,
+                  "scope": 29876,
                   "src": "1010:18:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3649,7 +1976,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 27549,
+                    "id": 29864,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1010:7:21",
@@ -3662,36 +1989,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 27553,
+                  "id": 29868,
                   "mutability": "mutable",
                   "name": "_deployTieredNFTRewardDelegateData",
                   "nameLocation": "1071:34:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27561,
+                  "scope": 29876,
                   "src": "1034:71:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$29170_memory_ptr",
+                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_memory_ptr",
                     "typeString": "struct JBDeployTiered721DelegateData"
                   },
                   "typeName": {
-                    "id": 27552,
+                    "id": 29867,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27551,
+                      "id": 29866,
                       "name": "JBDeployTiered721DelegateData",
                       "nameLocations": [
                         "1034:29:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29170,
+                      "referencedDeclaration": 31527,
                       "src": "1034:29:21"
                     },
-                    "referencedDeclaration": 29170,
+                    "referencedDeclaration": 31527,
                     "src": "1034:29:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$29170_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_storage_ptr",
                       "typeString": "struct JBDeployTiered721DelegateData"
                     }
                   },
@@ -3699,36 +2026,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 27556,
+                  "id": 29871,
                   "mutability": "mutable",
                   "name": "_launchFundingCyclesData",
                   "nameLocation": "1144:24:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27561,
+                  "scope": 29876,
                   "src": "1111:57:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBLaunchFundingCyclesData_$29200_memory_ptr",
+                    "typeIdentifier": "t_struct$_JBLaunchFundingCyclesData_$31557_memory_ptr",
                     "typeString": "struct JBLaunchFundingCyclesData"
                   },
                   "typeName": {
-                    "id": 27555,
+                    "id": 29870,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27554,
+                      "id": 29869,
                       "name": "JBLaunchFundingCyclesData",
                       "nameLocations": [
                         "1111:25:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29200,
+                      "referencedDeclaration": 31557,
                       "src": "1111:25:21"
                     },
-                    "referencedDeclaration": 29200,
+                    "referencedDeclaration": 31557,
                     "src": "1111:25:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBLaunchFundingCyclesData_$29200_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBLaunchFundingCyclesData_$31557_storage_ptr",
                       "typeString": "struct JBLaunchFundingCyclesData"
                     }
                   },
@@ -3738,17 +2065,17 @@
               "src": "1004:168:21"
             },
             "returnParameters": {
-              "id": 27560,
+              "id": 29875,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27559,
+                  "id": 29874,
                   "mutability": "mutable",
                   "name": "configuration",
                   "nameLocation": "1199:13:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27561,
+                  "scope": 29876,
                   "src": "1191:21:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3757,7 +2084,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 27558,
+                    "id": 29873,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1191:7:21",
@@ -3771,34 +2098,33 @@
               ],
               "src": "1190:23:21"
             },
-            "scope": 27575,
+            "scope": 29890,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 27574,
+            "id": 29889,
             "nodeType": "FunctionDefinition",
             "src": "1218:255:21",
-            "nodes": [],
-            "functionSelector": "14fe7ffe",
+            "functionSelector": "ecacb274",
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "reconfigureFundingCyclesOf",
             "nameLocation": "1227:26:21",
             "parameters": {
-              "id": 27570,
+              "id": 29885,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27563,
+                  "id": 29878,
                   "mutability": "mutable",
                   "name": "_projectId",
                   "nameLocation": "1267:10:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27574,
+                  "scope": 29889,
                   "src": "1259:18:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3807,7 +2133,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 27562,
+                    "id": 29877,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1259:7:21",
@@ -3820,36 +2146,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 27566,
+                  "id": 29881,
                   "mutability": "mutable",
                   "name": "_deployTieredNFTRewardDelegateData",
                   "nameLocation": "1320:34:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27574,
+                  "scope": 29889,
                   "src": "1283:71:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$29170_memory_ptr",
+                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_memory_ptr",
                     "typeString": "struct JBDeployTiered721DelegateData"
                   },
                   "typeName": {
-                    "id": 27565,
+                    "id": 29880,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27564,
+                      "id": 29879,
                       "name": "JBDeployTiered721DelegateData",
                       "nameLocations": [
                         "1283:29:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29170,
+                      "referencedDeclaration": 31527,
                       "src": "1283:29:21"
                     },
-                    "referencedDeclaration": 29170,
+                    "referencedDeclaration": 31527,
                     "src": "1283:29:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$29170_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_storage_ptr",
                       "typeString": "struct JBDeployTiered721DelegateData"
                     }
                   },
@@ -3857,36 +2183,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 27569,
+                  "id": 29884,
                   "mutability": "mutable",
                   "name": "_reconfigureFundingCyclesData",
                   "nameLocation": "1398:29:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27574,
+                  "scope": 29889,
                   "src": "1360:67:21",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBReconfigureFundingCyclesData_$29296_memory_ptr",
+                    "typeIdentifier": "t_struct$_JBReconfigureFundingCyclesData_$31653_memory_ptr",
                     "typeString": "struct JBReconfigureFundingCyclesData"
                   },
                   "typeName": {
-                    "id": 27568,
+                    "id": 29883,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 27567,
+                      "id": 29882,
                       "name": "JBReconfigureFundingCyclesData",
                       "nameLocations": [
                         "1360:30:21"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29296,
+                      "referencedDeclaration": 31653,
                       "src": "1360:30:21"
                     },
-                    "referencedDeclaration": 29296,
+                    "referencedDeclaration": 31653,
                     "src": "1360:30:21",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBReconfigureFundingCyclesData_$29296_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBReconfigureFundingCyclesData_$31653_storage_ptr",
                       "typeString": "struct JBReconfigureFundingCyclesData"
                     }
                   },
@@ -3896,17 +2222,17 @@
               "src": "1253:178:21"
             },
             "returnParameters": {
-              "id": 27573,
+              "id": 29888,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 27572,
+                  "id": 29887,
                   "mutability": "mutable",
                   "name": "configuration",
                   "nameLocation": "1458:13:21",
                   "nodeType": "VariableDeclaration",
-                  "scope": 27574,
+                  "scope": 29889,
                   "src": "1450:21:21",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -3915,7 +2241,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 27571,
+                    "id": 29886,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1450:7:21",
@@ -3929,7 +2255,7 @@
               ],
               "src": "1449:23:21"
             },
-            "scope": 27575,
+            "scope": 29890,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -3942,11 +2268,11 @@
         "contractKind": "interface",
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          27575
+          29890
         ],
         "name": "IJBTiered721DelegateProjectDeployer",
         "nameLocation": "565:35:21",
-        "scope": 27576,
+        "scope": 29891,
         "usedErrors": []
       }
     ],
