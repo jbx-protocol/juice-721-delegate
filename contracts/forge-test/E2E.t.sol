@@ -650,10 +650,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         votingUnits: uint16((i + 1) * 10),
         reservedRate: 10,
         reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         category: uint8(100),
         allowManualMint: false,
-        shouldUseBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
         transfersPausable: false
       });
     }
