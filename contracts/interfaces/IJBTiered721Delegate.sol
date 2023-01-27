@@ -33,6 +33,8 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
+  event SetEncodedIPFSUri(uint256 indexed tierId, bytes32 encodedIPFSUri, address caller);
+
   function codeOrigin() external view returns (address);
 
   function store() external view returns (IJBTiered721DelegateStore);
@@ -66,6 +68,8 @@ interface IJBTiered721Delegate is IJB721Delegate {
     returns (uint256[] memory tokenIds);
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
+
+  function setEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri) external;
 
   function initialize(
     uint256 _projectId,
