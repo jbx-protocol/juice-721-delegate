@@ -122,6 +122,8 @@ interface IJBTiered721DelegateStore {
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
 
+  function recordSetEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri) external;
+
   function recordFlags(JBTiered721Flags calldata _flag) external;
 
   function cleanTiers(address _nft) external;

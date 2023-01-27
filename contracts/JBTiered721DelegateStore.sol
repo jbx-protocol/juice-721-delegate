@@ -1184,6 +1184,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
+    Sets the encoded IPFS URI of a tier. 
+
+    @param _tierId The ID of the tier to set the encoded IPFS uri of.
+    @param _encodedIPFSUri The encoded IPFS uri to set.
+  */
+  function recordSetEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri) external override {
+    encodedIPFSUriOf[msg.sender][_tierId] = _encodedIPFSUri;
+  }
+
+  /** 
+    @notice
     Sets flags. 
 
     @param _flags The flag to sets.
