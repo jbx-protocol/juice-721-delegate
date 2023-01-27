@@ -785,7 +785,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the max is enforced.
       if (_tierToAdd.initialQuantity > _ONE_BILLION - 1) revert INVALID_QUANTITY();
 
-      // Make sure the tier's contribution floor is greater than or equal to the previous contribution floor.
+      // Make sure the tier's category is greater than or equal to the previous tier's category.
       if (_i != 0) {
         // Get a reference to the previous tier.
         JB721TierParams memory _previousTier = _tiersToAdd[_i - 1];
@@ -881,15 +881,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Set the next tier ID.
           _next = _nextSortedTierIdOf(msg.sender, _currentSortedTierId, _currentLastSortedTierId);
 
-          // If the category is less than the tier being iterated on, store the order.
-          if (_tierToAdd.category < _storedTierOf[msg.sender][_currentSortedTierId].category) {
+          // If the category is less than or equal to the tier being iterated on, store the order.
+          if (_tierToAdd.category <= _storedTierOf[msg.sender][_currentSortedTierId].category) {
             // If the tier ID being iterated on isn't the next tier ID, set the after.
             if (_currentSortedTierId != _tierId + 1)
               _tierIdAfter[msg.sender][_tierId] = _currentSortedTierId;
 
-            // If this is the last tier being added, track the current last sorted tier ID if it's not already tracked.
+            // If this is the first tier being added, track the current last sorted tier ID if it's not already tracked.
             if (
-              _i == _numberOfNewTiers - 1 &&
+              _i == 0 &&
               _trackedLastSortTierIdOf[msg.sender] != _currentLastSortedTierId
             ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortedTierId;
 
@@ -917,9 +917,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Break out.
             _currentSortedTierId = 0;
-
-            // If there's currently a last sorted tier ID tracked, override it.
-            if (_trackedLastSortTierIdOf[msg.sender] != 0) _trackedLastSortTierIdOf[msg.sender] = 0;
           }
           // Move on to the next tier ID.
           else {
@@ -928,6 +925,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Go to the next tier ID.
             _currentSortedTierId = _next;
+
+            // If there's currently a last sorted tier ID tracked, override it.
+            if (_trackedLastSortTierIdOf[msg.sender] != 0) _trackedLastSortTierIdOf[msg.sender] = 0;
           }
         }
       }
