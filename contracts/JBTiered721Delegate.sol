@@ -141,7 +141,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @return The token URI corresponding with the tier or the tokenUriResolver URI.
   */
-  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+  function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
     // Get a reference to the URI resolver.
     IJBTokenUriResolver _resolver = store.tokenUriResolverOf(address(this));
 
