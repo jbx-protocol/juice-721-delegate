@@ -882,6 +882,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Break out.
             _currentSortedTierId = 0;
+
+            // If there's currently a last sorted tier ID tracked, override it.
+            if (_trackedLastSortTierIdOf[msg.sender] != 0) _trackedLastSortTierIdOf[msg.sender] = 0;
           }
           // Move on to the next tier ID.
           else {
@@ -890,9 +893,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Go to the next tier ID.
             _currentSortedTierId = _next;
-
-            // If there's currently a last sorted tier ID tracked, override it.
-            if (_trackedLastSortTierIdOf[msg.sender] != 0) _trackedLastSortTierIdOf[msg.sender] = 0;
           }
         }
       }
