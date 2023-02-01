@@ -825,13 +825,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Set the reserved token beneficiary if needed.
       if (_tierToAdd.reservedTokenBeneficiary != address(0))
-        if (_tierToAdd.shouldUseReservedTokenBeneficiaryAsDefault)
+        if (_tierToAdd.shouldUseReservedTokenBeneficiaryAsDefault && defaultReservedTokenBeneficiaryOf[msg.sender] != _tierToAdd.reservedTokenBeneficiary)
           defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
         else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
 
       // Set the royalty beneficiary if needed.
       if (_tierToAdd.royaltyBeneficiary != address(0))
-        if (_tierToAdd.shouldUseRoyaltyBeneficiaryAsDefault)
+        if (_tierToAdd.shouldUseRoyaltyBeneficiaryAsDefault && defaultRoyaltyBeneficiaryOf[msg.sender] != _tierToAdd.royaltyBeneficiary)
           defaultRoyaltyBeneficiaryOf[msg.sender] = _tierToAdd.royaltyBeneficiary;
         else _royaltyBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.royaltyBeneficiary;
 
