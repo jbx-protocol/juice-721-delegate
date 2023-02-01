@@ -141,7 +141,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @return The token URI corresponding with the tier or the tokenUriResolver URI.
   */
-  function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+  function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
     // Get a reference to the URI resolver.
     IJBTokenUriResolver _resolver = store.tokenUriResolverOf(address(this));
 
@@ -286,7 +286,8 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     if (
       _flags.lockReservedTokenChanges ||
       _flags.lockVotingUnitChanges ||
-      _flags.lockManualMintingChanges
+      _flags.lockManualMintingChanges ||
+      _flags.preventOverspending
     ) _store.recordFlags(_flags);
 
     // Transfer ownership to the initializer.
@@ -462,6 +463,27 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     store.recordSetTokenUriResolver(_tokenUriResolver);
 
     emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
+  }
+
+  /**
+    @notice
+    Set an encoded IPFS uri of a tier.
+
+    @dev
+    Only the contract's owner can set the encoded IPFS uri.
+
+    @param _tierId The ID of the tier to set the encoded IPFS uri of.
+    @param _encodedIPFSUri The encoded IPFS uri to set.
+  */
+  function setEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri)
+    external
+    override
+    onlyOwner
+  {
+    // Store the new value.
+    store.recordSetEncodedIPFSUriOf(_tierId, _encodedIPFSUri);
+
+    emit SetEncodedIPFSUri(_tierId, _encodedIPFSUri, msg.sender);
   }
 
   //*********************************************************************//
