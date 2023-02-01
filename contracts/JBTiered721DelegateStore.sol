@@ -30,6 +30,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INSUFFICIENT_RESERVES();
   error INVALID_CATEGORY_SORT_ORDER();
   error INVALID_LOCKED_UNTIL();
+  error INVALID_ROYALTY_RATE();
   error INVALID_QUANTITY();
   error INVALID_TIER();
   error MAX_TIERS_EXCEEDED();
@@ -41,6 +42,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
+
+  //*********************************************************************//
+  // ------------------------- public constants ------------------------ //
+  //*********************************************************************//
+  uint256 public constant override MAX_ROYALTY_RATE = 200;
 
   //*********************************************************************//
   // -------------------- private constant properties ------------------ //
@@ -786,6 +792,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the locked until is in the future if provided.
       if (_tierToAdd.lockedUntil != 0 && _tierToAdd.lockedUntil < block.timestamp)
         revert INVALID_LOCKED_UNTIL();
+
+      // Make sure the royalty rate is within the bounds.
+      if (_tierToAdd.royaltyRate > MAX_ROYALTY_RATE) revert INVALID_ROYALTY_RATE();
 
       // Get a reference to the tier ID.
       uint256 _tierId = _currentMaxTierIdOf + _i + 1;

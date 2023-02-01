@@ -39,11 +39,6 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   error TRANSFERS_PAUSED();
 
   //*********************************************************************//
-  // ------------------------- public constants ------------------------ //
-  //*********************************************************************//
-  uint256 public constant MAX_ROYALTY_RATE = 200;
-
-  //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
 
@@ -822,6 +817,6 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     if (_beneficiary == address(0)) return (address(0), 0);
 
     // Return the royalty portion of the sale.
-    return (_beneficiary, PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE));
+    return (_beneficiary, PRBMath.mulDiv(_salePrice, _tier.royaltyRate, store.MAX_ROYALTY_RATE()));
   }
 }
