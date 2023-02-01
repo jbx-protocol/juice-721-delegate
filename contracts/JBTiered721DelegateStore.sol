@@ -782,7 +782,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_flags.lockVotingUnitChanges && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
 
-      // Make sure a reserved rate isn't set if changes should be locked, if manual minting is allowed, or if a reserved rate beneficiary isn't set.
+      // Make sure a reserved rate isn't set if changes should be locked, or if manual minting is allowed.
       if (
         (_flags.lockReservedTokenChanges ||
           _tierToAdd.allowManualMint) &&
