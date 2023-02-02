@@ -1863,6 +1863,21 @@ contract TestJBTieredNFTRewardDelegate is Test {
         reservedMinted
       );
     }
+    
+    // fetching existing tiers
+    JB721Tier[] memory _storedTiers = _delegate.test_store().tiers(
+        address(_delegate),
+        0,
+        0,
+        10
+    );
+    
+    // making sure reserved rate is 0
+    for (uint256 i; i < 10; i++)
+      assertEq(
+        _storedTiers[i].reservedRate,
+        0
+      );
 
     for (uint256 i; i < 10; i++)
       assertEq(
