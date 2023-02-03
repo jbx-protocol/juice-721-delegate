@@ -2,6 +2,7 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBTokens.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import './abstract/JB721Delegate.sol';
@@ -32,10 +33,12 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
+  error INCORRECT_DECIMAL_AMOUNT();
   error NOT_AVAILABLE();
   error OVERSPENDING();
   error PRICING_RESOLVER_CHANGES_PAUSED();
   error RESERVED_TOKEN_MINTING_PAUSED();
+  error TERMINAL_NOT_FOUND();
   error TRANSFERS_PAUSED();
 
   //*********************************************************************//
@@ -220,12 +223,80 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
       super.supportsInterface(_interfaceId);
   }
 
+  /**
+    @notice 
+    Royalty info conforming to EIP-2981.
+
+    @param _tokenId The ID of the token that the royalty is for.
+    @param _salePrice The price being paid for the token.
+
+    @return receiver The address of the royalty's receiver.
+    @return royaltyAmount The amount of the royalty.
+  */
+  function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
+    external
+    view
+    override
+    returns (address receiver, uint256 royaltyAmount)
+  {
+    // Get a reference to the tier.
+    JB721Tier memory _tier = store.tier(address(this), _tokenId);
+
+    // Get a reference to the beneficiary.
+    address _beneficiary = store.royaltyBeneficiaryOf(address(this), _tier.id);
+
+    // If no beneificary, set this contract as the beneficiary to route to the project's treasury.
+    if (_beneficiary == address(0)) _beneficiary = address(this);
+
+    // Return the royalty portion of the sale.
+    return (_beneficiary, PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE));
+  }
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
   constructor() {
     codeOrigin = address(this);
+  }
+
+  //*********************************************************************//
+  // ------------------------- default receive ------------------------- //
+  //*********************************************************************//
+
+  /** 
+    @notice
+    Received funds are paid to the project's treasury to which this collection belongs.
+
+    @dev
+    This function is called automatically when the contract receives an ETH payment.
+  */
+  receive() external payable virtual override {
+    // Find the terminal for the specified project.
+    IJBPaymentTerminal _terminal = directory.primaryTerminalOf(projectId, JBTokens.ETH);
+
+    // There must be a terminal.
+    if (_terminal == IJBPaymentTerminal(address(0))) revert TERMINAL_NOT_FOUND();
+
+    // The amount's decimals must match the terminal's expected decimals.
+    if (_terminal.decimalsForToken(JBTokens.ETH) != 18) revert INCORRECT_DECIMAL_AMOUNT();
+
+    // Send the projectId in the metadata.
+    bytes memory _projectMetadata = new bytes(32);
+    _projectMetadata = bytes(abi.encodePacked(projectId));
+
+    // Send funds to the terminal.
+    // If the token is ETH, send it in msg.value.
+    _terminal.pay{value: address(this).balance}(
+      projectId,
+      address(this).balance, // ignored if the token is JBTokens.ETH.
+      JBTokens.ETH,
+      tx.origin,
+      0, // Can't determine expectation of returned tokens ahead of time.
+      false,
+      '',
+      _projectMetadata
+    );
   }
 
   /**
@@ -794,34 +865,5 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     _to;
     _tokenId;
     _tier;
-  }
-
-  /**
-    @notice 
-    Royalty info conforming to EIP-2981.
-
-    @param _tokenId The ID of the token that the royalty is for.
-    @param _salePrice The price being paid for the token.
-
-    @return receiver The address of the royalty's receiver.
-    @return royaltyAmount The amount of the royalty.
-  */
-  function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
-    external
-    view
-    override
-    returns (address receiver, uint256 royaltyAmount)
-  {
-    // Get a reference to the tier.
-    JB721Tier memory _tier = store.tier(address(this), _tokenId);
-
-    // Get a reference to the beneficiary.
-    address _beneficiary = store.royaltyBeneficiaryOf(address(this), _tier.id);
-
-    // If no beneificary, return no royalty.
-    if (_beneficiary == address(0)) return (address(0), 0);
-
-    // Return the royalty portion of the sale.
-    return (_beneficiary, PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE));
   }
 }

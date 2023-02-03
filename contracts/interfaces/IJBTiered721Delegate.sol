@@ -84,4 +84,6 @@ interface IJBTiered721Delegate is IJB721Delegate {
     IJBTiered721DelegateStore _store,
     JBTiered721Flags memory _flags
   ) external;
+
+  receive() external payable;
 }
