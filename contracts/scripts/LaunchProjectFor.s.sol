@@ -145,7 +145,8 @@ contract RinkebyLaunchProjectFor is Script {
         allowManualMint: false,
         shouldUseReservedTokenBeneficiaryAsDefault: true,
         shouldUseRoyaltyBeneficiaryAsDefault: true,
-        transfersPausable: false
+        transfersPausable: false,
+        splits: new JBSplit[](0)
       });
     }
 
@@ -167,7 +168,7 @@ contract RinkebyLaunchProjectFor is Script {
       reservedTokenBeneficiary: msg.sender,
       store: IJBTiered721DelegateStore(STORE),
       flags: JBTiered721Flags({
-preventOverspending: false,
+        preventOverspending: false,
         lockReservedTokenChanges: true,
         lockVotingUnitChanges: true,
         lockManualMintingChanges: true
