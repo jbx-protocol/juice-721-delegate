@@ -36,6 +36,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
+  error CANT_SUPPORT_SPLITS();
   error INCORRECT_DECIMAL_AMOUNT();
   error NOT_AVAILABLE();
   error OVERSPENDING();
@@ -224,6 +225,81 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     return
       _interfaceId == type(IJBTiered721Delegate).interfaceId ||
       super.supportsInterface(_interfaceId);
+  }
+
+  /**
+    @notice 
+    Part of IJBFundingCycleDataSource, this function gets called when the project receives a payment. It will set itself as the delegate to get a callback from the terminal.
+
+    @param _data The Juicebox standard project payment data.
+
+    @return weight The weight that tokens should get minted in accordance with.
+    @return memo The memo that should be forwarded to the event.
+    @return delegateAllocations The amount to send to delegates instead of adding to the local balance.
+  */
+  function payParams(JBPayParamsData calldata _data)
+    public
+    view
+    virtual
+    override
+    returns (
+      uint256 weight,
+      string memory memo,
+      JBPayDelegateAllocation[] memory delegateAllocations
+    )
+  {
+    // Forward the received weight and memo, and use this contract as a pay delegate.
+    weight = _data.weight;
+    memo = _data.memo;
+    delegateAllocations = new JBPayDelegateAllocation[](1);
+    delegateAllocations[0] = JBPayDelegateAllocation(this, 0);
+
+    // Send funds that should be forwarded to splits to the delegate.
+
+    // Normalize the currency.
+    uint256 _value;
+    if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
+    else if (prices != IJBPrices(address(0)))
+      _value = PRBMath.mulDiv(
+        _data.amount.value,
+        10**pricingDecimals,
+        prices.priceFor(_data.amount.currency, pricingCurrency, _data.amount.decimals)
+      );
+    else return (weight, memo, delegateAllocations);
+
+    // Keep a reference to the split orders.
+    JB721SplitOrders memory _splitOrders;
+
+    // Skip the first 32 bytes which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
+    // Skip another 32 bytes reserved for generic extension parameters.
+    // Check the 4 bytes interfaceId to verify the metadata is intended for this contract.
+    if (
+      _data.metadata.length > 68 &&
+      bytes4(_data.metadata[64:68]) == type(IJB721Delegate).interfaceId
+    ) {
+      // Keep a reference to the the specific tier IDs to mint.
+      uint16[] memory _tierIdsToMint;
+
+      // Decode the metadata.
+      (, , , , _tierIdsToMint) = abi.decode(
+        _data.metadata,
+        (bytes32, bytes32, bytes4, bool, uint16[])
+      );
+
+      // Mint tiers if they were specified.
+      if (_tierIdsToMint.length != 0) _splitOrders = store.splitOrdersFor(_tierIdsToMint);
+    }
+
+    // If there aren't splits, don't forward anything.
+    if (_splitOrders.orders.length == 0) return (weight, memo, delegateAllocations);
+
+    // The percentage of the amount paid that should be forwarded to splits.
+    uint256 _splitsAmount = PRBMath.mulDiv(_data.amount.value, _splitOrders.totalValue, _value);
+
+    // Set the delegate to receive the amount to split between.
+    delegateAllocations[0].amount = _splitsAmount;
+
+    return (weight, memo, delegateAllocations);
   }
 
   //*********************************************************************//
@@ -665,27 +741,56 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
       // Else reset the credits.
     } else if (_credits != _stashedCredits) creditsOf[_data.beneficiary] = _stashedCredits;
 
-    if (_splitOrders.orders.length != 0) {
-      // Get the amount that should be saved for splits.
-      uint256 _splitPortion = PRBMath.mulDiv(msg.value, _splitOrders.amount, _value);
+    // Store the number of orders.
+    uint256 _numberOfOrders = _splitOrders.orders.length;
 
-      // Get the split group for the tiers being paid.
-      // Determien how much from msg.value that each tier's group should be getting.
-      // Route the amounts to the split groups.
-      // TODO tiers with splits are off limits from credits.
-      for (uint256 _i; _i < _splitOrders.orders.length; ) {
-        _payTo(
-          _splitOrders.orders[_i].splits,
-          _data.amount.token,
-          PRBMath.mulDiv(_splitPortion, _splitOrders.orders[_i].amount, _splitOrders.amount), // calculate amount.
-          _data.amount.decimals,
-          address(0) // project owner.
-        );
-        unchecked {
-          ++_i;
-        }
+    // Done if there are no splits to forward to.
+    if (_numberOfOrders == 0) return;
+
+    // The contributed value has to be enough to cover the splits. Credits cannot be used to get NFTs with splits.
+    if (_splitOrders.totalValue > _value) revert CANT_SUPPORT_SPLITS();
+
+    // Get a reference to the project's owner, who will be the beneficiary of the splits.
+    address _projectOwner = directory.projects().ownerOf(projectId);
+
+    for (uint256 _i; _i < _numberOfOrders; ) {
+      // The amount to pay the splits being iterated on.
+      uint256 _splitAmount = PRBMath.mulDiv(
+        _data.forwardedAmount.value,
+        _splitOrders.orders[_i].value,
+        _splitOrders.totalValue
+      );
+
+      // Pay the splits.
+      _payTo(
+        _splitOrders.orders[_i].splits,
+        _data.forwardedAmount.token,
+        _splitAmount,
+        _data.forwardedAmount.decimals,
+        _projectOwner
+      );
+
+      unchecked {
+        ++_i;
       }
     }
+
+    // Get a reference to any amount leftover in this contract.
+    uint256 _leftoverBalance = _data.forwardedAmount.token == JBTokens.ETH
+      ? address(this).balance
+      : IERC20(_data.forwardedAmount.token).balanceOf(address(this));
+
+    // Send anything leftover back to the project.
+    if (_leftoverBalance != 0)
+      // Add anything left back to the project's balance.
+      _addToBalanceOf(
+        projectId,
+        _data.forwardedAmount.token,
+        _leftoverBalance,
+        _data.forwardedAmount.decimals,
+        '',
+        new bytes(0)
+      );
   }
 
   /** 

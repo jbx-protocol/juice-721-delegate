@@ -11,6 +11,11 @@ import './../structs/JBTiered721Flags.sol';
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
 
+  function splitOrdersFor(uint16[] calldata _tierIds)
+    external
+    view
+    returns (JB721SplitOrders memory splitOrders);
+
   function splitsStore() external view returns (IJBSplitsStore);
 
   function totalSupply(address _nft) external view returns (uint256);
