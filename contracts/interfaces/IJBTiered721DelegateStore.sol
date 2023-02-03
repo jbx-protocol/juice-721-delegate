@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBSplitsStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
+import './../structs/JB721SplitOrders.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JB721Tier.sol';
 import './../structs/JBTiered721Flags.sol';
 
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
+
+  function splitsStore() external view returns (IJBSplitsStore);
 
   function totalSupply(address _nft) external view returns (uint256);
 
@@ -104,7 +108,13 @@ interface IJBTiered721DelegateStore {
     uint256 _amount,
     uint16[] calldata _tierIds,
     bool _isManualMint
-  ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
+  )
+    external
+    returns (
+      uint256[] memory tokenIds,
+      uint256 leftoverAmount,
+      JB721SplitOrders memory splitOrders
+    );
 
   function recordTransferForTier(
     uint256 _tierId,

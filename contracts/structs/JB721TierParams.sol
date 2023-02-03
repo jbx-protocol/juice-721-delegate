@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBSplit.sol';
+
 /**
   @member contributionFloor The minimum contribution to qualify for this tier.
   @member lockedUntil The time up to which this tier cannot be removed or paused.
@@ -16,6 +18,7 @@ pragma solidity ^0.8.0;
   @member shouldUseReservedRateBeneficiaryAsDefault A flag indicating if the `reservedTokenBeneficiary` should be stored as the default beneficiary for all tiers.
   @member shouldUseRoyaltyBeneficiaryAsDefault A flag indicating if the `royaltyBeneficiary` should be stored as the default beneficiary for all tiers.
   @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
+  @member splits A group of splits to route funds to.
 */
 struct JB721TierParams {
   uint80 contributionFloor;
@@ -32,4 +35,5 @@ struct JB721TierParams {
   bool shouldUseReservedTokenBeneficiaryAsDefault;
   bool shouldUseRoyaltyBeneficiaryAsDefault;
   bool transfersPausable;
+  JBSplit[] splits;
 }

@@ -27,6 +27,13 @@ interface IJBTiered721Delegate is IJB721Delegate {
     address caller
   );
 
+  event DistributeToSplit(
+    JBSplit split,
+    uint256 amount,
+    address defaultBeneficiary,
+    address caller
+  );
+
   event AddTier(uint256 indexed tierId, JB721TierParams data, address caller);
 
   event RemoveTier(uint256 indexed tierId, address caller);

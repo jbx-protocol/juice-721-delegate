@@ -143,6 +143,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
 
+   /**
+    @notice
+    The contract that stores splits for each project.
+  */ 
+  IJBSplitsStore public override splitsStore;
+
   /** 
     @notice
     The biggest tier ID used. 
@@ -702,6 +708,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Return the default.
     return defaultRoyaltyBeneficiaryOf[_nft];
+  }  
+
+  //*********************************************************************//
+  // ---------------------------- constructor -------------------------- //
+  //*********************************************************************//
+
+  /**
+    @param _splitsStore A contract that stores splits for each project.
+  */
+  constructor(
+    IJBSplitsStore _splitsStore
+  ) {
+    splitsStore = _splitsStore;
   }
 
   //*********************************************************************//
@@ -748,6 +767,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Keep a reference to the flags.
     JBTiered721Flags memory _flags = _flagsOf[msg.sender];
+
+    // Keep a reference to the split groups.
+    JBGroupedSplits[] memory _groupedSplits = new JBGroupedSplits[](_numberOfNewTiers);
+    
+    // A counter of how many tiers have stored splits.
+    uint256 _splitCounter;
 
     for (uint256 _i; _i < _numberOfNewTiers; ) {
       // Set the tier being iterated on.
@@ -804,6 +829,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         category: uint8(_tierToAdd.category),
         allowManualMint: _tierToAdd.allowManualMint,
         transfersPausable: _tierToAdd.transfersPausable
+      });
+
+      // Store the grouped split.
+      _groupedSplits[_splitCounter++] = JBGroupedSplits({
+        group: _tierId,
+        splits: _tierToAdd.splits
       });
 
       // If this is the first tier in a new category, store its ID as such.
@@ -906,6 +937,18 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     }
 
     maxTierIdOf[msg.sender] = _currentMaxTierIdOf + _numberOfNewTiers;
+
+    // Store the splits if needed. 
+    if (_splitCounter != 0) {
+
+      // Resize the array if needed.
+      if (_groupedSplits.length != _splitCounter)
+        assembly ("memory-safe") {
+          mstore(_groupedSplits, _splitCounter)
+        }
+
+      splitsStore.set(1, uint256(uint160(address(this))), _groupedSplits);
+    } 
   }
 
   /** 
@@ -1036,17 +1079,21 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return tokenIds The IDs of the tokens minted.
     @return leftoverAmount The amount leftover after the mint.
+    @return splitOrders Instructions for splitting amounts.
   */
   function recordMint(
     uint256 _amount,
     uint16[] calldata _tierIds,
     bool _isManualMint
-  ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount) {
+  ) external override returns (uint256[] memory tokenIds, uint256 leftoverAmount, JB721SplitOrders memory splitOrders) {
     // Set the leftover amount as the initial amount.
     leftoverAmount = _amount;
 
     // Get a reference to the number of tiers.
     uint256 _numberOfTiers = _tierIds.length;
+
+    // Initialize the split order creating space for the max amount.
+    splitOrders.orders = new JB721SplitOrder[](_numberOfTiers);
 
     // Keep a reference to the tier being iterated on.
     JBStored721Tier storage _storedTier;
@@ -1059,6 +1106,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Initialize a BitmapWord for isRemoved.
     JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierIds[0]);
+    
+    // A counter of how many mints should lead to split orders.
+    uint256 _splitOrderCounter;
 
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
@@ -1090,6 +1140,20 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         0
       ) revert OUT();
 
+      // Get splits.
+      JBSplit[] memory _splits = splitsStore.splitsOf(1, uint256(uint160(address(this))), _tierId); 
+
+      // Populate the split order if needed.
+      if (_splits.length != 0)
+        // Add to the total amount of the split orders.
+        splitOrders.amount += _storedTier.contributionFloor;
+
+        // Add a split order.
+        splitOrders.orders[_i] = JB721SplitOrder({
+          amount: _storedTier.contributionFloor,
+          splits: _splits
+        });
+  
       // Mint the tokens.
       unchecked {
         // Keep a reference to the token ID.
@@ -1108,6 +1172,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         ++_i;
       }
     }
+
+    // Resize the array if needed.
+    if (splitOrders.orders.length != _splitOrderCounter) 
+      assembly ("memory-safe") {
+        mstore(splitOrders, _splitOrderCounter)
+      }
   }
 
   /** 
