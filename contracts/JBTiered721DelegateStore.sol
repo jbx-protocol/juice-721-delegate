@@ -554,6 +554,76 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return _bitmapWord.isTierIdRemoved(_tierId);
   }
 
+  /** 
+    @notice
+    The amount that should be forwarded to splits from mints to the specified tier IDs. 
+
+    @param _tierIds The IDs of the tiers that would require fulfillment of splits if minted from.
+
+    @return splitOrder The information specifying how funds should be forwarded to splits.
+  */
+  function splitOrdersFor(
+    uint16[] calldata _tierIds
+  ) external view returns (JB721SplitOrders memory splitOrders) {
+    // Get a reference to the number of tiers.
+    uint256 _numberOfTiers = _tierIds.length;
+
+    // Initialize the split order creating space for the max amount.
+    splitOrders.orders = new JB721SplitOrder[](_numberOfTiers);
+
+    // Keep a reference to the tier being iterated on.
+    JBStored721Tier storage _storedTier;
+
+    // Keep a reference to the tier ID being iterated on.
+    uint256 _tierId;
+
+    // Initialize a BitmapWord for isRemoved.
+    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierIds[0]);
+    
+    // A counter of how many mints should lead to split orders.
+    uint256 _splitOrderCounter;
+
+    for (uint256 _i; _i < _numberOfTiers; ) {
+      // Set the tier ID being iterated on.
+      _tierId = _tierIds[_i];
+
+      // Reset the bitmap if the current tier ID is outside the currently stored word.
+      if (_bitmapWord.refreshBitmapNeeded(_tierId))
+        _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierId);
+
+      // Make sure the tier hasn't been removed.
+      if (_bitmapWord.isTierIdRemoved(_tierId)) continue;
+
+      // Keep a reference to the tier being iterated on.
+      _storedTier = _storedTierOf[msg.sender][_tierId];
+
+      // Get splits.
+      JBSplit[] memory _splits = splitsStore.splitsOf(1, uint256(uint160(address(this))), _tierId); 
+
+      // Populate the split order if needed.
+      if (_splits.length != 0)
+        // Add to the total amount of the split orders.
+        splitOrders.totalValue += _storedTier.contributionFloor;
+
+        // Add a split order.
+        splitOrders.orders[_i] = JB721SplitOrder({
+          value: _storedTier.contributionFloor,
+          splits: _splits
+        });
+
+      unchecked {
+        ++_i;
+      }
+    }
+
+    // Resize the array if needed.
+    if (splitOrders.orders.length != _splitOrderCounter) 
+      assembly ("memory-safe") {
+        mstore(splitOrders, _splitOrderCounter)
+      }
+  }
+
+
   //*********************************************************************//
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
@@ -1069,75 +1139,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     }
   }
   
-  /** 
-    @notice
-    The amount that should be forwarded to splits from mints to the specified tier IDs. 
-
-    @param _tierIds The IDs of the tiers that would require fulfillment of splits if minted from.
-
-    @return splitOrder The information specifying how funds should be forwarded to splits.
-  */
-  function splitOrdersFor(
-    uint16[] calldata _tierIds
-  ) external view returns (JB721SplitOrders memory splitOrders) {
-    // Get a reference to the number of tiers.
-    uint256 _numberOfTiers = _tierIds.length;
-
-    // Initialize the split order creating space for the max amount.
-    splitOrders.orders = new JB721SplitOrder[](_numberOfTiers);
-
-    // Keep a reference to the tier being iterated on.
-    JBStored721Tier storage _storedTier;
-
-    // Keep a reference to the tier ID being iterated on.
-    uint256 _tierId;
-
-    // Initialize a BitmapWord for isRemoved.
-    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierIds[0]);
-    
-    // A counter of how many mints should lead to split orders.
-    uint256 _splitOrderCounter;
-
-    for (uint256 _i; _i < _numberOfTiers; ) {
-      // Set the tier ID being iterated on.
-      _tierId = _tierIds[_i];
-
-      // Reset the bitmap if the current tier ID is outside the currently stored word.
-      if (_bitmapWord.refreshBitmapNeeded(_tierId))
-        _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierId);
-
-      // Make sure the tier hasn't been removed.
-      if (_bitmapWord.isTierIdRemoved(_tierId)) continue;
-
-      // Keep a reference to the tier being iterated on.
-      _storedTier = _storedTierOf[msg.sender][_tierId];
-
-      // Get splits.
-      JBSplit[] memory _splits = splitsStore.splitsOf(1, uint256(uint160(address(this))), _tierId); 
-
-      // Populate the split order if needed.
-      if (_splits.length != 0)
-        // Add to the total amount of the split orders.
-        splitOrders.totalValue += _storedTier.contributionFloor;
-
-        // Add a split order.
-        splitOrders.orders[_i] = JB721SplitOrder({
-          value: _storedTier.contributionFloor,
-          splits: _splits
-        });
-
-      unchecked {
-        ++_i;
-      }
-    }
-
-    // Resize the array if needed.
-    if (splitOrders.orders.length != _splitOrderCounter) 
-      assembly ("memory-safe") {
-        mstore(splitOrders, _splitOrderCounter)
-      }
-  }
-
   /** 
     @notice
     Mints a token in all provided tiers.
