@@ -78,6 +78,7 @@ abstract contract JB721Delegate is
   */
   function payParams(JBPayParamsData calldata _data)
     public
+    view
     virtual
     override
     returns (
@@ -105,6 +106,7 @@ abstract contract JB721Delegate is
   */
   function redeemParams(JBRedeemParamsData calldata _data)
     public
+    view
     virtual
     override
     returns (

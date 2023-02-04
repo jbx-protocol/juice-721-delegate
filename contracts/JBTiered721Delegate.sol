@@ -239,6 +239,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   */
   function payParams(JBPayParamsData calldata _data)
     public
+    view
     virtual
     override
     returns (
