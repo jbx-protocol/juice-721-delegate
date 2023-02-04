@@ -560,7 +560,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _tierIds The IDs of the tiers that would require fulfillment of splits if minted from.
 
-    @return splitOrder The information specifying how funds should be forwarded to splits.
+    @return splitOrders The information specifying how funds should be forwarded to splits.
   */
   function splitOrdersFor(
     uint16[] calldata _tierIds
