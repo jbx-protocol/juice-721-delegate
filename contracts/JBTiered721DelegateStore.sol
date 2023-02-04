@@ -947,7 +947,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           mstore(_groupedSplits, _splitCounter)
         }
 
-      splitsStore.set(1, uint256(uint160(address(this))), _groupedSplits);
+      splitsStore.set(1, uint256(uint160(address(msg.sender))), _groupedSplits);
     } 
   }
 
@@ -1141,7 +1141,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       ) revert OUT();
 
       // Get splits.
-      JBSplit[] memory _splits = splitsStore.splitsOf(1, uint256(uint160(address(this))), _tierId); 
+      JBSplit[] memory _splits = splitsStore.splitsOf(1, uint256(uint160(address(msg.sender))), _tierId); 
 
       // Populate the split order if needed.
       if (_splits.length != 0)
