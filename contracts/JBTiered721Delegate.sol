@@ -239,7 +239,6 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   */
   function payParams(JBPayParamsData calldata _data)
     public
-    view
     virtual
     override
     returns (
@@ -252,52 +251,8 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     weight = _data.weight;
     memo = _data.memo;
     delegateAllocations = new JBPayDelegateAllocation[](1);
-    delegateAllocations[0] = JBPayDelegateAllocation(this, 0);
-
-    // Send funds that should be forwarded to splits to the delegate.
-
-    // Normalize the currency.
-    uint256 _value;
-    if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
-    else if (prices != IJBPrices(address(0)))
-      _value = PRBMath.mulDiv(
-        _data.amount.value,
-        10**pricingDecimals,
-        prices.priceFor(_data.amount.currency, pricingCurrency, _data.amount.decimals)
-      );
-    else return (weight, memo, delegateAllocations);
-
-    // Keep a reference to the split orders.
-    JB721SplitOrders memory _splitOrders;
-
-    // Skip the first 32 bytes which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
-    // Skip another 32 bytes reserved for generic extension parameters.
-    // Check the 4 bytes interfaceId to verify the metadata is intended for this contract.
-    if (
-      _data.metadata.length > 68 &&
-      bytes4(_data.metadata[64:68]) == type(IJB721Delegate).interfaceId
-    ) {
-      // Keep a reference to the the specific tier IDs to mint.
-      uint16[] memory _tierIdsToMint;
-
-      // Decode the metadata.
-      (, , , , _tierIdsToMint) = abi.decode(
-        _data.metadata,
-        (bytes32, bytes32, bytes4, bool, uint16[])
-      );
-
-      // Mint tiers if they were specified.
-      if (_tierIdsToMint.length != 0) _splitOrders = store.splitOrdersFor(_tierIdsToMint);
-    }
-
-    // If there aren't splits, don't forward anything.
-    if (_splitOrders.orders.length == 0) return (weight, memo, delegateAllocations);
-
-    // The percentage of the amount paid that should be forwarded to splits.
-    uint256 _splitsAmount = PRBMath.mulDiv(_data.amount.value, _splitOrders.totalValue, _value);
-
-    // Set the delegate to receive the amount to split between.
-    delegateAllocations[0].amount = _splitsAmount;
+    // Forward the entire amount being paid.
+    delegateAllocations[0] = JBPayDelegateAllocation(this, _data.amount.value);
 
     return (weight, memo, delegateAllocations);
   }
@@ -697,7 +652,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     // Keep a reference to the flag indicating if the transaction should not revert if all provided funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
     bool _allowOverspending;
 
-    // Keep a reference to the split orders.
+    // Pass the split orders via a mutex.
     JB721SplitOrders memory _splitOrders;
 
     // Skip the first 32 bytes which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
@@ -744,34 +699,34 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     // Store the number of orders.
     uint256 _numberOfOrders = _splitOrders.orders.length;
 
-    // Done if there are no splits to forward to.
-    if (_numberOfOrders == 0) return;
+    // Forward funds to splits if needed.
+    if (_numberOfOrders != 0) {
+      // The contributed value has to be enough to cover the splits. Credits cannot be used to get NFTs with splits.
+      if (_splitOrders.totalValue > _value) revert CANT_SUPPORT_SPLITS();
 
-    // The contributed value has to be enough to cover the splits. Credits cannot be used to get NFTs with splits.
-    if (_splitOrders.totalValue > _value) revert CANT_SUPPORT_SPLITS();
+      // Get a reference to the project's owner, who will be the beneficiary of the splits.
+      address _projectOwner = directory.projects().ownerOf(projectId);
 
-    // Get a reference to the project's owner, who will be the beneficiary of the splits.
-    address _projectOwner = directory.projects().ownerOf(projectId);
+      for (uint256 _i; _i < _numberOfOrders; ) {
+        // The amount to pay the splits being iterated on.
+        uint256 _splitAmount = PRBMath.mulDiv(
+          _data.forwardedAmount.value,
+          _splitOrders.orders[_i].value,
+          _splitOrders.totalValue
+        );
 
-    for (uint256 _i; _i < _numberOfOrders; ) {
-      // The amount to pay the splits being iterated on.
-      uint256 _splitAmount = PRBMath.mulDiv(
-        _data.forwardedAmount.value,
-        _splitOrders.orders[_i].value,
-        _splitOrders.totalValue
-      );
+        // Pay the splits.
+        _payTo(
+          _splitOrders.orders[_i].splits,
+          _data.forwardedAmount.token,
+          _splitAmount,
+          _data.forwardedAmount.decimals,
+          _projectOwner
+        );
 
-      // Pay the splits.
-      _payTo(
-        _splitOrders.orders[_i].splits,
-        _data.forwardedAmount.token,
-        _splitAmount,
-        _data.forwardedAmount.decimals,
-        _projectOwner
-      );
-
-      unchecked {
-        ++_i;
+        unchecked {
+          ++_i;
+        }
       }
     }
 
