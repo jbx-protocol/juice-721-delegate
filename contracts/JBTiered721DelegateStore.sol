@@ -1149,7 +1149,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         splitOrders.totalValue += _storedTier.contributionFloor;
 
         // Add a split order.
-        splitOrders.orders[_i] = JB721SplitOrder({
+        splitOrders.orders[++_splitOrderCounter] = JB721SplitOrder({
           value: _storedTier.contributionFloor,
           splits: _splits
         });
