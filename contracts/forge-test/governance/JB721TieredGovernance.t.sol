@@ -17,7 +17,9 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
 
     // Set the governance type to tiered
     NFTRewardDeployerData.governanceType = JB721GovernanceType.TIERED;
-
+    JB721TieredGovernance _delegate;
+    // to handle stack too deep
+    {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
@@ -25,7 +27,7 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     );
 
     // Get the dataSource
-    JB721TieredGovernance _delegate = JB721TieredGovernance(
+    _delegate = JB721TieredGovernance(
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
 
@@ -66,6 +68,7 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
       'Take my money!',
       metadata
     );
+    }
 
     // Assert that the user received the votingUnits
     assertEq(

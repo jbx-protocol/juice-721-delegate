@@ -290,6 +290,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
         _storedTier = _storedTierOf[_nft][_currentSortedTierId];
 
+        // Get a reference to the reserved token beneficiary.
+        address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _currentSortedTierId);
+
         // If a category is specified and matches, add the the returned values.
         if (_category == 0 || _storedTier.category == _category)
           // Add the tier to the array being returned.
@@ -300,8 +303,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             remainingQuantity: _storedTier.remainingQuantity,
             initialQuantity: _storedTier.initialQuantity,
             votingUnits: _storedTier.votingUnits,
-            reservedRate: _storedTier.reservedRate,
-            reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortedTierId),
+            // No reserved rate if no beneficiary set.
+            reservedRate: _reservedTokenBeneficiary == address(0) ? 0 :_storedTier.reservedRate,
+            reservedTokenBeneficiary: _reservedTokenBeneficiary,
             royaltyRate: _storedTier.royaltyRate,
             royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _currentSortedTierId),
             encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortedTierId],
@@ -337,6 +341,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get the stored tier.
     JBStored721Tier memory _storedTier = _storedTierOf[_nft][_id];
 
+    // Get a reference to the reserved token beneficiary.
+    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _id);
+
     return
       JB721Tier({
         id: _id,
@@ -345,8 +352,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
-        reservedRate: _storedTier.reservedRate,
-        reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _id),
+        // No reserved rate if no beneficiary set.
+        reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
+        reservedTokenBeneficiary: _reservedTokenBeneficiary,
         royaltyRate: _storedTier.royaltyRate,
         royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _id),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
@@ -377,6 +385,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get the stored tier.
     JBStored721Tier memory _storedTier = _storedTierOf[_nft][_tierId];
 
+    // Get a reference to the reserved token beneficiary.
+    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _tierId);
+
     return
       JB721Tier({
         id: _tierId,
@@ -385,8 +396,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
-        reservedRate: _storedTier.reservedRate,
-        reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _tierId),
+        // No reserved rate if beneficiary is not set.
+        reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
+        reservedTokenBeneficiary: _reservedTokenBeneficiary,
         royaltyRate: _storedTier.royaltyRate,
         royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _tierId),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
@@ -770,9 +782,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_flags.lockVotingUnitChanges && _tierToAdd.votingUnits != 0)
         revert VOTING_UNITS_NOT_ALLOWED();
 
-      // Make sure a reserved rate isn't set if changes should be locked or if manual minting is allowed.
+      // Make sure a reserved rate isn't set if changes should be locked, or if manual minting is allowed.
       if (
-        (_flags.lockReservedTokenChanges || _tierToAdd.allowManualMint) &&
+        (_flags.lockReservedTokenChanges ||
+          _tierToAdd.allowManualMint) &&
         _tierToAdd.reservedRate != 0
       ) revert RESERVED_RATE_NOT_ALLOWED();
 
@@ -812,15 +825,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Set the reserved token beneficiary if needed.
       if (_tierToAdd.reservedTokenBeneficiary != address(0))
-        if (_tierToAdd.shouldUseReservedTokenBeneficiaryAsDefault)
-          defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
-        else _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
+        if (_tierToAdd.shouldUseReservedTokenBeneficiaryAsDefault) {
+          if (defaultReservedTokenBeneficiaryOf[msg.sender] != _tierToAdd.reservedTokenBeneficiary)
+            defaultReservedTokenBeneficiaryOf[msg.sender] = _tierToAdd.reservedTokenBeneficiary;
+        } else  _reservedTokenBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.reservedTokenBeneficiary;
 
       // Set the royalty beneficiary if needed.
       if (_tierToAdd.royaltyBeneficiary != address(0))
-        if (_tierToAdd.shouldUseRoyaltyBeneficiaryAsDefault)
-          defaultRoyaltyBeneficiaryOf[msg.sender] = _tierToAdd.royaltyBeneficiary;
-        else _royaltyBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.royaltyBeneficiary;
+        if (_tierToAdd.shouldUseRoyaltyBeneficiaryAsDefault) {
+          if (defaultRoyaltyBeneficiaryOf[msg.sender] != _tierToAdd.royaltyBeneficiary)
+            defaultRoyaltyBeneficiaryOf[msg.sender] = _tierToAdd.royaltyBeneficiary;
+        } else _royaltyBeneficiaryOf[msg.sender][_tierId] = _tierToAdd.royaltyBeneficiary;
 
       // Set the encodedIPFSUri if needed.
       if (_tierToAdd.encodedIPFSUri != bytes32(0))
@@ -1267,7 +1282,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   ) internal view returns (uint256) {
     // No reserves outstanding if no mints or no reserved rate.
     if (
-      _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity
+      _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0)
     ) return 0;
 
     // The number of reserved tokens of the tier already minted.
