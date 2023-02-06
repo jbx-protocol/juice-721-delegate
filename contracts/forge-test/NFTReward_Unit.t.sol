@@ -2219,7 +2219,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint16[] memory floorTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
-    vm.assume(initialNumberOfTiers < 15 && initialNumberOfTiers > 0);
+    vm.assume(initialNumberOfTiers < 15 && initialNumberOfTiers > 2);
     vm.assume(floorTiersToAdd.length > 1 && floorTiersToAdd.length < 15);
 
     // Floor are sorted in ascending orderen
@@ -2332,6 +2332,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
     }
 
+
+
     vm.startPrank(owner);
     _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
     // clean tiers
@@ -2373,6 +2375,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
+
+    uint256[] memory tiersToRemove = new uint256[](2);
+    tiersToRemove[0] = initialNumberOfTiers - 1;
+    tiersToRemove[1] = initialNumberOfTiers - 2;
+
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, tiersToRemove);
 
     JB721Tier[] memory _storedTiers = _delegate.store().tiers(
       address(_delegate),
