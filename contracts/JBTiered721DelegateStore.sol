@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import '@paulrberg/contracts/math/PRBMath.sol';
 import './interfaces/IJBTiered721DelegateStore.sol';
 import './libraries/JBBitmap.sol';
 import './structs/JBBitmapWord.sol';
@@ -30,6 +31,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INSUFFICIENT_RESERVES();
   error INVALID_CATEGORY_SORT_ORDER();
   error INVALID_LOCKED_UNTIL();
+  error INVALID_ROYALTY_RATE();
   error INVALID_QUANTITY();
   error INVALID_TIER();
   error MAX_TIERS_EXCEEDED();
@@ -41,6 +43,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
+
+  //*********************************************************************//
+  // ------------------------- public constants ------------------------ //
+  //*********************************************************************//
+  uint256 public constant override MAX_ROYALTY_RATE = 200;
 
   //*********************************************************************//
   // -------------------- private constant properties ------------------ //
@@ -313,7 +320,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             reservedRate: _reservedTokenBeneficiary == address(0) ? 0 :_storedTier.reservedRate,
             reservedTokenBeneficiary: _reservedTokenBeneficiary,
             royaltyRate: _storedTier.royaltyRate,
-            royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _currentSortedTierId),
+            royaltyBeneficiary: _resolvedRoyaltyBeneficiaryOf(_nft, _currentSortedTierId),
             encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortedTierId],
             category: _storedTier.category,
             allowManualMint: _storedTier.allowManualMint,
@@ -362,7 +369,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
         reservedTokenBeneficiary: _reservedTokenBeneficiary,
         royaltyRate: _storedTier.royaltyRate,
-        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _id),
+        royaltyBeneficiary: _resolvedRoyaltyBeneficiaryOf(_nft, _id),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
@@ -406,7 +413,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
         reservedTokenBeneficiary: _reservedTokenBeneficiary,
         royaltyRate: _storedTier.royaltyRate,
-        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _tierId),
+        royaltyBeneficiary: _resolvedRoyaltyBeneficiaryOf(_nft, _tierId),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
@@ -555,8 +562,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     @notice
     Tier removed from the current tiering
 
-    @param _nft The NFT for which the removed tier is queried
-    @param _tierId The tier ID
+    @param _nft The NFT for which the removed tier is being queried.
+    @param _tierId The tier ID to check if removed.
 
     @return True if the tier has been removed
   */
@@ -564,6 +571,41 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_tierId);
 
     return _bitmapWord.isTierIdRemoved(_tierId);
+  }
+
+  /**
+    @notice 
+    Royalty info conforming to EIP-2981.
+
+    @param _nft The NFT for which the royalty applies.
+    @param _tokenId The ID of the token that the royalty is for.
+    @param _salePrice The price being paid for the token.
+
+    @return receiver The address of the royalty's receiver.
+    @return royaltyAmount The amount of the royalty.
+  */
+  function royaltyInfo(
+    address _nft,
+    uint256 _tokenId,
+    uint256 _salePrice
+  ) external view override returns (address receiver, uint256 royaltyAmount) {
+    // Get a reference to the tier's ID.
+    uint256 _tierId = tierIdOfToken(_tokenId);
+
+    // Get the stored royalty beneficiary.
+    address _royaltyBeneficiaryOfTier = _resolvedRoyaltyBeneficiaryOf(_nft, _tierId);
+
+    // If no beneificary, return no royalty.
+    if (_royaltyBeneficiaryOfTier == address(0)) return (address(0), 0);
+
+    // Get the stored tier.
+    JBStored721Tier memory _storedTier = _storedTierOf[_nft][_tierId];
+
+    // Return the royalty portion of the sale.
+    return (
+      _royaltyBeneficiaryOfTier,
+      PRBMath.mulDiv(_salePrice, _storedTier.royaltyRate, MAX_ROYALTY_RATE)
+    );
   }
 
   //*********************************************************************//
@@ -697,31 +739,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return defaultReservedTokenBeneficiaryOf[_nft];
   }
 
-  /** 
-    @notice
-    The royalty beneficiary for each tier. 
-
-    @param _nft The NFT to get the royalty beneficiary within.
-    @param _tierId The ID of the tier to get a royalty beneficiary of.
-
-    @return The reserved token beneficiary.
-  */
-  function royaltyBeneficiaryOf(address _nft, uint256 _tierId)
-    public
-    view
-    override
-    returns (address)
-  {
-    // Get the stored royalty beneficiary.
-    address _storedRoyaltyBeneficiaryOfTier = _royaltyBeneficiaryOf[_nft][_tierId];
-
-    // If the tier has a beneficiary return it.
-    if (_storedRoyaltyBeneficiaryOfTier != address(0)) return _storedRoyaltyBeneficiaryOfTier;
-
-    // Return the default.
-    return defaultRoyaltyBeneficiaryOf[_nft];
-  }  
-
   //*********************************************************************//
   // ---------------------------- constructor -------------------------- //
   //*********************************************************************//
@@ -824,6 +841,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the locked until is in the future if provided.
       if (_tierToAdd.lockedUntil != 0 && _tierToAdd.lockedUntil < block.timestamp)
         revert INVALID_LOCKED_UNTIL();
+
+      // Make sure the royalty rate is within the bounds.
+      if (_tierToAdd.royaltyRate > MAX_ROYALTY_RATE) revert INVALID_ROYALTY_RATE();
 
       // Get a reference to the tier ID.
       uint256 _tierId = _currentMaxTierIdOf + _i + 1;
@@ -1073,7 +1093,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
-      if (_storedTierOf[msg.sender][_tierId].lockedUntil + _BASE_LOCK_TIMESTAMP >= block.timestamp) revert TIER_LOCKED();
+      if (_storedTierOf[msg.sender][_tierId].lockedUntil + _BASE_LOCK_TIMESTAMP >= block.timestamp)
+        revert TIER_LOCKED();
 
       // Set the tier as removed.
       _isTierRemovedBitmapWord[msg.sender].removeTier(_tierId);
@@ -1334,6 +1355,30 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
+
+  /** 
+    @notice
+    The royalty beneficiary for each tier. 
+
+    @param _nft The NFT to get the royalty beneficiary within.
+    @param _tierId The ID of the tier to get a royalty beneficiary of.
+
+    @return The reserved token beneficiary.
+  */
+  function _resolvedRoyaltyBeneficiaryOf(address _nft, uint256 _tierId)
+    internal
+    view
+    returns (address)
+  {
+    // Get the stored royalty beneficiary.
+    address _storedRoyaltyBeneficiaryOfTier = _royaltyBeneficiaryOf[_nft][_tierId];
+
+    // If the tier has a beneficiary return it.
+    if (_storedRoyaltyBeneficiaryOfTier != address(0)) return _storedRoyaltyBeneficiaryOfTier;
+
+    // Return the default.
+    return defaultRoyaltyBeneficiaryOf[_nft];
+  }
 
   /** 
     @notice

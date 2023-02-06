@@ -42,11 +42,6 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   error TRANSFERS_PAUSED();
 
   //*********************************************************************//
-  // ------------------------- public constants ------------------------ //
-  //*********************************************************************//
-  uint256 public constant MAX_ROYALTY_RATE = 200;
-
-  //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
 
@@ -115,6 +110,25 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     // Otherwise, the first owner must be the current owner.
     return _owners[_tokenId];
+  }
+
+  /**
+    @notice 
+    Royalty info conforming to EIP-2981.
+
+    @param _tokenId The ID of the token that the royalty is for.
+    @param _salePrice The price being paid for the token.
+
+    @return The address of the royalty's receiver.
+    @return The amount of the royalty.
+  */
+  function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
+    external
+    view
+    override
+    returns (address, uint256)
+  {
+    return store.royaltyInfo(address(this), _tokenId, _salePrice);
   }
 
   //*********************************************************************//
@@ -890,34 +904,5 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     _to;
     _tokenId;
     _tier;
-  }
-
-  /**
-    @notice 
-    Royalty info conforming to EIP-2981.
-
-    @param _tokenId The ID of the token that the royalty is for.
-    @param _salePrice The price being paid for the token.
-
-    @return receiver The address of the royalty's receiver.
-    @return royaltyAmount The amount of the royalty.
-  */
-  function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
-    external
-    view
-    override
-    returns (address receiver, uint256 royaltyAmount)
-  {
-    // Get a reference to the tier.
-    JB721Tier memory _tier = store.tier(address(this), _tokenId);
-
-    // Get a reference to the beneficiary.
-    address _beneficiary = store.royaltyBeneficiaryOf(address(this), _tier.id);
-
-    // If no beneificary, return no royalty.
-    if (_beneficiary == address(0)) return (address(0), 0);
-
-    // Return the royalty portion of the sale.
-    return (_beneficiary, PRBMath.mulDiv(_salePrice, _tier.royaltyRate, MAX_ROYALTY_RATE));
   }
 }

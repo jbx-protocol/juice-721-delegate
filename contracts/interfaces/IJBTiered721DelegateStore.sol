@@ -11,6 +11,8 @@ import './../structs/JBTiered721Flags.sol';
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
 
+  function MAX_ROYALTY_RATE() external view returns (uint256);
+
   function splitsStore() external view returns (IJBSplitsStore);
 
   function totalSupply(address _nft) external view returns (uint256);
@@ -82,8 +84,6 @@ interface IJBTiered721DelegateStore {
     view
     returns (address);
 
-  function royaltyBeneficiaryOf(address _nft, uint256 _tierId) external view returns (address);
-
   function baseUriOf(address _nft) external view returns (string memory);
 
   function contractUriOf(address _nft) external view returns (string memory);
@@ -91,6 +91,12 @@ interface IJBTiered721DelegateStore {
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
   function encodedTierIPFSUriOf(address _nft, uint256 _tokenId) external view returns (bytes32);
+
+  function royaltyInfo(
+    address _nft,
+    uint256 _tokenId,
+    uint256 _salePrice
+  ) external view returns (address receiver, uint256 royaltyAmount);
 
   function recordAddTiers(JB721TierParams[] memory _tierData)
     external
