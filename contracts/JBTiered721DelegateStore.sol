@@ -574,14 +574,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the tier's ID.
     uint256 _tierId = tierIdOfToken(_tokenId);
 
-    // Get the stored tier.
-    JBStored721Tier memory _storedTier = _storedTierOf[_nft][_tierId];
-
     // Get the stored royalty beneficiary.
     address _royaltyBeneficiaryOfTier = _resolvedRoyaltyBeneficiaryOf(_nft, _tierId);
 
     // If no beneificary, return no royalty.
     if (_royaltyBeneficiaryOfTier == address(0)) return (address(0), 0);
+
+    // Get the stored tier.
+    JBStored721Tier memory _storedTier = _storedTierOf[_nft][_tierId];
 
     // Return the royalty portion of the sale.
     return (
