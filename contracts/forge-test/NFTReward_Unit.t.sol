@@ -5640,7 +5640,7 @@ contract ForTest_JBTiered721DelegateStore is
         votingUnits: _storedTier.votingUnits,
         reservedRate: _storedTier.reservedRate,
         royaltyRate: _storedTier.royaltyRate,
-        royaltyBeneficiary: royaltyBeneficiaryOf(_nft, _currentSortIndex),
+        royaltyBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
         reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
         encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
         category: _storedTier.category,
