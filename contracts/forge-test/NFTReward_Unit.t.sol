@@ -2201,6 +2201,47 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
+  function testJBTieredNFTRewardDelegate_setRoyaltyBeneficiary(address _newBeneficiary)
+    public
+  {
+    // Make sure the beneficiary is actually changing
+    vm.assume(
+      _newBeneficiary != delegate.store().defaultRoyaltyBeneficiaryOf(address(delegate))
+    );
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](1);
+    _tierParams[0] = JB721TierParams({
+        contributionFloor: uint80(10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(1),
+        royaltyBeneficiary: _newBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(1),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
+      });
+
+      vm.prank(owner);
+      delegate.adjustTiers(_tierParams, new uint256[](0));
+
+      assertEq(
+       delegate.store().defaultRoyaltyBeneficiaryOf(address(delegate)),
+       _newBeneficiary
+      );
+
+      (address receiver, ) = delegate.store().royaltyInfo(address(delegate), _generateTokenId(11, 1), 1 ether);
+      assertEq(
+        receiver,
+        _newBeneficiary
+      );
+  }
+
   function testJBTieredNFTRewardDelegate_setReservedTokenBeneficiary_revertsOnNonOwner(
     address _sender,
     address _newBeneficiary
