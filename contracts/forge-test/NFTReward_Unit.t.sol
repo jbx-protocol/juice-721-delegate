@@ -2201,6 +2201,32 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
   }
 
+  function testJBTieredNFTRewardDelegate_add_tier_reverts_if_invalid_royalty_rate() public
+  {
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](1);
+    _tierParams[0] = JB721TierParams({
+        contributionFloor: uint80(10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(201),
+        royaltyBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(1),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: true,
+        transfersPausable: false
+      });
+
+      vm.expectRevert(abi.encodeWithSignature('INVALID_ROYALTY_RATE()'));
+
+      vm.prank(owner);
+      delegate.adjustTiers(_tierParams, new uint256[](0));
+  }
+  
   function testJBTieredNFTRewardDelegate_setRoyaltyBeneficiary(address _newBeneficiary)
     public
   {
