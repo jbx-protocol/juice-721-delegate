@@ -65,12 +65,14 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
     @param _projectId The ID of the project this contract's functionality applies to.
     @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
+    @param _directory The directory of terminals and controllers for projects.
 
     @return newDelegate The address of the newly deployed delegate.
   */
   function deployDelegateFor(
     uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTiered721DelegateData
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
+    IJBDirectory _directory
   ) external override returns (IJBTiered721Delegate newDelegate) {
     // Deploy the governance variant that was requested
     if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.NONE)
@@ -83,7 +85,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
     newDelegate.initialize(
       _projectId,
-      _deployTiered721DelegateData.directory,
+      _directory,
       _deployTiered721DelegateData.name,
       _deployTiered721DelegateData.symbol,
       _deployTiered721DelegateData.fundingCycleStore,
@@ -99,7 +101,12 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     if (_deployTiered721DelegateData.owner != address(0))
       Ownable(address(newDelegate)).transferOwnership(_deployTiered721DelegateData.owner);
 
-    emit DelegateDeployed(_projectId, newDelegate, _deployTiered721DelegateData.governanceType);
+    emit DelegateDeployed(
+      _projectId,
+      newDelegate,
+      _deployTiered721DelegateData.governanceType,
+      _directory
+    );
 
     return newDelegate;
   }
