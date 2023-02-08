@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import '@jbx-protocol/juice-contracts-v3/contracts/JBController.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/JBController3_1.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/JBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/JBETHPaymentTerminal.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/JBERC20PaymentTerminal.sol';
@@ -61,7 +61,7 @@ contract TestBaseWorkflow is Test {
   JBFundingCycleStore internal _jbFundingCycleStore;
   JBTokenStore internal _jbTokenStore;
   JBSplitsStore internal _jbSplitsStore;
-  JBController internal _jbController;
+  JBController3_1 internal _jbController;
   JBSingleTokenPaymentTerminalStore internal _jbPaymentTerminalStore;
   JBETHPaymentTerminal internal _jbETHPaymentTerminal;
   JBProjectMetadata internal _projectMetadata;
@@ -114,7 +114,7 @@ contract TestBaseWorkflow is Test {
     _jbSplitsStore = new JBSplitsStore(_jbOperatorStore, _jbProjects, _jbDirectory);
     vm.label(address(_jbSplitsStore), 'JBSplitsStore');
 
-    _jbController = new JBController(
+    _jbController = new JBController3_1(
       _jbOperatorStore,
       _jbProjects,
       _jbDirectory,

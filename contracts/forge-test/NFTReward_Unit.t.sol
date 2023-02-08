@@ -186,7 +186,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     JBDeployTiered721DelegateData memory delegateData = JBDeployTiered721DelegateData(
-            IJBDirectory(mockJBDirectory),
       name,
       symbol,
       IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -209,7 +208,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     delegate = JBTiered721Delegate(address(jbDelegateDeployer.deployDelegateFor(
       projectId,
-      delegateData
+      delegateData,
+      IJBDirectory(mockJBDirectory)
     )));
   }
 
