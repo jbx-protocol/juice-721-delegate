@@ -86,8 +86,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
-      mockJBController,
-      abi.encodeWithSelector(IJBController.projects.selector),
+      mockJBDirectory,
+      abi.encodeWithSelector(IJBDirectory.projects.selector),
       abi.encode(mockJBProjects)
     );
     vm.mockCall(
@@ -110,8 +110,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
-      mockJBController,
-      abi.encodeWithSelector(IJBController.projects.selector),
+      mockJBDirectory,
+      abi.encodeWithSelector(IJBDirectory.projects.selector),
       abi.encode(mockJBProjects)
     );
     vm.mockCall(mockJBProjects, abi.encodeWithSelector(IJBProjects.count.selector), abi.encode(5));
