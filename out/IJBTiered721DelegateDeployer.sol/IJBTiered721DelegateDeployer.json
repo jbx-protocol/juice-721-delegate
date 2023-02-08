@@ -246,96 +246,582 @@
   "methodIdentifiers": {
     "deployDelegateFor(uint256,(address,string,string,address,string,address,string,address,((uint80,uint48,uint40,uint16,uint16,address,uint8,address,bytes32,uint8,bool,bool,bool,bool)[],uint256,uint256,address),address,address,(bool,bool,bool,bool),uint8))": "69854153"
   },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"contract IJBTiered721Delegate\",\"name\":\"newDelegate\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"enum JB721GovernanceType\",\"name\":\"governanceType\",\"type\":\"uint8\"}],\"name\":\"DelegateDeployed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"components\":[{\"internalType\":\"contract IJBDirectory\",\"name\":\"directory\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"symbol\",\"type\":\"string\"},{\"internalType\":\"contract IJBFundingCycleStore\",\"name\":\"fundingCycleStore\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"baseUri\",\"type\":\"string\"},{\"internalType\":\"contract IJBTokenUriResolver\",\"name\":\"tokenUriResolver\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"contractUri\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"components\":[{\"internalType\":\"uint80\",\"name\":\"contributionFloor\",\"type\":\"uint80\"},{\"internalType\":\"uint48\",\"name\":\"lockedUntil\",\"type\":\"uint48\"},{\"internalType\":\"uint40\",\"name\":\"initialQuantity\",\"type\":\"uint40\"},{\"internalType\":\"uint16\",\"name\":\"votingUnits\",\"type\":\"uint16\"},{\"internalType\":\"uint16\",\"name\":\"reservedRate\",\"type\":\"uint16\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"royaltyRate\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"royaltyBeneficiary\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"encodedIPFSUri\",\"type\":\"bytes32\"},{\"internalType\":\"uint8\",\"name\":\"category\",\"type\":\"uint8\"},{\"internalType\":\"bool\",\"name\":\"allowManualMint\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"shouldUseReservedTokenBeneficiaryAsDefault\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"shouldUseRoyaltyBeneficiaryAsDefault\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"transfersPausable\",\"type\":\"bool\"}],\"internalType\":\"struct JB721TierParams[]\",\"name\":\"tiers\",\"type\":\"tuple[]\"},{\"internalType\":\"uint256\",\"name\":\"currency\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"decimals\",\"type\":\"uint256\"},{\"internalType\":\"contract IJBPrices\",\"name\":\"prices\",\"type\":\"address\"}],\"internalType\":\"struct JB721PricingParams\",\"name\":\"pricing\",\"type\":\"tuple\"},{\"internalType\":\"address\",\"name\":\"reservedTokenBeneficiary\",\"type\":\"address\"},{\"internalType\":\"contract IJBTiered721DelegateStore\",\"name\":\"store\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"bool\",\"name\":\"lockReservedTokenChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockVotingUnitChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"lockManualMintingChanges\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"preventOverspending\",\"type\":\"bool\"}],\"internalType\":\"struct JBTiered721Flags\",\"name\":\"flags\",\"type\":\"tuple\"},{\"internalType\":\"enum JB721GovernanceType\",\"name\":\"governanceType\",\"type\":\"uint8\"}],\"internalType\":\"struct JBDeployTiered721DelegateData\",\"name\":\"_deployTieredNFTRewardDelegateData\",\"type\":\"tuple\"}],\"name\":\"deployDelegateFor\",\"outputs\":[{\"internalType\":\"contract IJBTiered721Delegate\",\"name\":\"delegate\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IJBTiered721DelegateDeployer.sol\":\"IJBTiered721DelegateDeployer\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@jbx-protocol/=node_modules/@jbx-protocol/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":@paulrberg/=node_modules/@paulrberg/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":forge-std/=lib/forge-std/src/\",\":prb-math/=node_modules/prb-math/\"]},\"sources\":{\"contracts/enums/JB721GovernanceType.sol\":{\"keccak256\":\"0x3080b119a8e69d7c98ac4392f436bf9168433feca073e48b2151881543094095\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://997adf9da18f439c0d86c9ea7be60a7a9363bda800e8c250952bad2410cc0c16\",\"dweb:/ipfs/QmNVQEmC8gtgmTVwZbgycU84xd9wiWWrimHA4ih7QvqXzw\"]},\"contracts/interfaces/IJB721Delegate.sol\":{\"keccak256\":\"0xa8fbb99c63314f21fb37435c4c3beb7b036b1fa423091ecb4908333612598e6f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f06796c0da61e0642eb7d2170e0ddd2ebd97d33c42b8f01ea5dd233882b2fb87\",\"dweb:/ipfs/QmXmfmSScCwpimkyJEB3USwvzfA18zoL4KqkPvE2ZPuP8J\"]},\"contracts/interfaces/IJBTiered721Delegate.sol\":{\"keccak256\":\"0x2db55477cf61db90c942634c04c60bfa339e42029970a2a551cb3aae6ea0e458\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0885cd1f5fea9444441d66890ecd58ff06ab0b0bb50150b3713ac580c8bb31e1\",\"dweb:/ipfs/QmPwogFzqn7hoXwxEYRfCGLZLeitGcDn2eagyzRnUGXrHD\"]},\"contracts/interfaces/IJBTiered721DelegateDeployer.sol\":{\"keccak256\":\"0xe739ea2c97a4b3064453da5fd0c7b30e4fa16a642cde36fc3ec3b3b4b8b5f475\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ccd168ea152a8a47c4cfee4e95ebcc6bcf4a9d7229a83dff08ebedab3593852d\",\"dweb:/ipfs/QmNkYw1XMs97Mf2Nbs1rmbnpdymhRP62rJ1UB4PQ5CFGRE\"]},\"contracts/interfaces/IJBTiered721DelegateStore.sol\":{\"keccak256\":\"0x0d4b3e267f06ca46f0b82f9a7bae4abe53c42f0601f7053582a2278a0ca9eaf0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5e88e4d594ec0000258f6f7c613e2dc77b1d790fd433058606ef235060baa5eb\",\"dweb:/ipfs/QmeYKMQ8w7gsoFp33oQLmW5hp2csi5v99ssDTiYiBSZXPt\"]},\"contracts/structs/JB721PricingParams.sol\":{\"keccak256\":\"0x65c6b3a05158713e76ccf22091405b9f7bb023b3e382b2da1babbd6c69961586\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fdfbdd554f5a17ede36c57fa7e004548be852f9d840adeb46abc5389d3c4a684\",\"dweb:/ipfs/QmYUA3NuZVLXMtsPpKpuVxn4DAnz55CpxvqmSuREwf8JaU\"]},\"contracts/structs/JB721Tier.sol\":{\"keccak256\":\"0x22bf1899c34e0d0ca59479fd2abb25ff866d29f743cdeb2f61bb1e5af130f5f6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63cb55ed4ac9e80158aa121d06cd237dc7197dffe21401954b4c1f5c8ae5a47c\",\"dweb:/ipfs/QmRQVQdLSWfxqd9dCF9FhLbcVdp6ZqkcpWi56Y79NocHea\"]},\"contracts/structs/JB721TierParams.sol\":{\"keccak256\":\"0xd4f356e3dfc057162840d91f896171255e5e218da07fb88f2a1e917322e87eb6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ffcc1a35c04396da6df89d45776999b674f1b70380a3086267108d25a1b18076\",\"dweb:/ipfs/QmcWscbiLGPUMTpm5YayuSRwGFsZc617Hd9KSrAzfVhrS8\"]},\"contracts/structs/JBDeployTiered721DelegateData.sol\":{\"keccak256\":\"0x748af4b9eb0e5411c74b2cc694a365a19e4b20418883aba0f816953989579498\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11fe82016c414b6df04c4eee90cd3e1758e684333d87a9e837fae7032a036ddc\",\"dweb:/ipfs/QmZ8AgMMcz3PMGsxo48wMvotuuUGekGnf5omrXkLpjQ4dx\"]},\"contracts/structs/JBTiered721Flags.sol\":{\"keccak256\":\"0x42f9625c893559b44bbe79d7fc3f6190a0dceea673b6137ef393c44d517a9ae2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b13d3d700323e73f4f2f67b3c41b20ded126009a4ac2acec0fba444d0ce6032f\",\"dweb:/ipfs/QmWkbrzcNDtFxdApDBy8rCsBLu3ovzzZJeA9Tin9pcncSs\"]},\"contracts/structs/JBTiered721MintForTiersData.sol\":{\"keccak256\":\"0x357b55115f542c89e1ccb0338d7b84913018ab00be1582a0e3323dacdb579c42\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://539586eb3ffeb85ce7a9cbf33fc8c438b34feef2aff1a5e66edcbfaf1210ff4e\",\"dweb:/ipfs/QmaCWYcygXBpg6z7bm8TiA7KXGFvC2Yqkv2i8Eaw2mtYV2\"]},\"contracts/structs/JBTiered721MintReservesForTiersData.sol\":{\"keccak256\":\"0xc04c71a3bbf7daad10971d9507c123e22e5996c4b1497c05deff1c0d6d59b9d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0e93c80696a98d57053462a156be6f8290ee931666b77f6ff97df4bb2a3b0cc1\",\"dweb:/ipfs/QmZUqXnsaYMz4orNoQ3ybm2So1sHA7qQ46jxu4QRMhFTsq\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/enums/JBBallotState.sol\":{\"keccak256\":\"0x891fcac63470398b3a11239da7feba6b07d640809fcefd2404303b823d7378f8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e6adfceaf284b669a8c1cbcf2da7f18ab31a2d1066f9db8bc914349e7401de7\",\"dweb:/ipfs/QmXLHVRPPZdXUkgAHQbHUtEzAvCJk1P6rJ7wrwfTcfW6fw\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol\":{\"keccak256\":\"0x715321646db00514d1355ed43c40cd3f01e94959552fd07797b315d9c49cdb1d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c34c9e1c727ffc63dd42fb6e6ffb3116c8ba15d6a322a300f10f29478974768d\",\"dweb:/ipfs/QmYToaGrbMyyWAuyepYcDd8M6KcmosY8AWhT3uJmPM6Pvy\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol\":{\"keccak256\":\"0x49553a56209237846bc400cf27f260824a6bd06fd8094a7eb5abb9de75779598\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://559372746f94f28b385bc336df263f583dca5377350645c0b28110b083bdb41a\",\"dweb:/ipfs/QmeQRYqPjXBQCtMKXSFtHVD2ewEPoUAPDxLh4oWTRSKbmx\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol\":{\"keccak256\":\"0xaead823851433be0c2ddc8f8086813e6cd647de3a1bc0f7570a5d6b38c378b5a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7f11fd52ba9ef67b40811d8a2298ae8b69447d2565b3f1069cbb8f0f13bc65e7\",\"dweb:/ipfs/QmVbBzpTxZWar9xvj6x1vW91hJDv2iPVq7aG6waMxaHUPQ\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol\":{\"keccak256\":\"0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95\",\"dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPriceFeed.sol\":{\"keccak256\":\"0x57c71282fec1b34b00cf991ffed2e36031c393e35bfa7ca5d723eb6572fb7122\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f51c97ac194d3120a2fb5428eeeff759b75b7cbc5708465afc914619016a7c9b\",\"dweb:/ipfs/QmemTqsGqoPqG97EsdRTMAbB6RfCz8CJxGYPNnDTV6LJ2t\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol\":{\"keccak256\":\"0x82a175b1f4b95b506c98406576cd59cbe04615e3df24f9cf3587b61b8ee323b1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5493e394cf47fca51a4091f1e6d285cc9e4ff9916e5bdfb8e174fe652a2b9833\",\"dweb:/ipfs/QmTXafZatcjYbNMpUYYk1AWNZLkRFK7VVdAYYudGf4z3HJ\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol\":{\"keccak256\":\"0x7cfc021d0bd7e73b1ba8f4845d7d35e3419d6a14d3d25ca3a8010e7f91062fe4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ff265e13e60da56b93104260ed69ab01153437ec2af9d453781f22ca295eaef9\",\"dweb:/ipfs/QmfGCSLX2Wy26ojf4U12udsdtjSSacbLcZGwCjTw7MjWF8\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol\":{\"keccak256\":\"0xd267fd8ca7c21c2c71794acdb9a98314c33a35fc559e0bf0897a6686d196d174\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://aa7053d4300ed1374f3f993e6e2163d0a05ee780e4e99eb007b55eabc93c724e\",\"dweb:/ipfs/QmYZAUn7VCwqpDWYZNCXLNYMRQpD334YgPRiGCfxQApzuT\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol\":{\"keccak256\":\"0xcdd3ac9b6fa67e62ada88d09b73bc35ade1cd77d43db712289266a788928b4c2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8ba0be407022bbeb0e9272884653209ee262b8a4e00ffbba1298c3b119feccba\",\"dweb:/ipfs/QmbtLQzSN3hut4jYVsYPiYDfRkDdGkZmTWBnV2wJKrdM3K\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol\":{\"keccak256\":\"0x2aa6368bf4dfc5797e8b02a978293de0c777fae2658de2c825a103587240f3b0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2d7a980ab9b67ad1569d4407b747903cab668a332214117f5ad44feb50af0a3a\",\"dweb:/ipfs/QmSuEzmrmDSihrTKYCk8miq7VQi7WD6jmQePkjDyzt7UpC\"]},\"node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol\":{\"keccak256\":\"0x90ad7b1014c0a9f945fe7a2efde9d5de41e40574fa27969070b1d2ff52033ea0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1fafc65a9fd74605b7d6c6f0a92b3237a8e3efdd160affb8c117bad00dcf9494\",\"dweb:/ipfs/QmQkcVt11WLqrxHVrcDCF6dNxzg2kKHEghAgSbfLF6CHkt\"]},\"node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol\":{\"keccak256\":\"0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f\",\"dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x\"]},\"node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f\",\"dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.17+commit.8df45f5f"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "projectId",
+              "type": "uint256",
+              "indexed": true
+            },
+            {
+              "internalType": "contract IJBTiered721Delegate",
+              "name": "newDelegate",
+              "type": "address",
+              "indexed": false
+            },
+            {
+              "internalType": "enum JB721GovernanceType",
+              "name": "governanceType",
+              "type": "uint8",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "DelegateDeployed",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_projectId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "struct JBDeployTiered721DelegateData",
+              "name": "_deployTieredNFTRewardDelegateData",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "contract IJBDirectory",
+                  "name": "directory",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "string",
+                  "name": "symbol",
+                  "type": "string"
+                },
+                {
+                  "internalType": "contract IJBFundingCycleStore",
+                  "name": "fundingCycleStore",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "baseUri",
+                  "type": "string"
+                },
+                {
+                  "internalType": "contract IJBTokenUriResolver",
+                  "name": "tokenUriResolver",
+                  "type": "address"
+                },
+                {
+                  "internalType": "string",
+                  "name": "contractUri",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "owner",
+                  "type": "address"
+                },
+                {
+                  "internalType": "struct JB721PricingParams",
+                  "name": "pricing",
+                  "type": "tuple",
+                  "components": [
+                    {
+                      "internalType": "struct JB721TierParams[]",
+                      "name": "tiers",
+                      "type": "tuple[]",
+                      "components": [
+                        {
+                          "internalType": "uint80",
+                          "name": "contributionFloor",
+                          "type": "uint80"
+                        },
+                        {
+                          "internalType": "uint48",
+                          "name": "lockedUntil",
+                          "type": "uint48"
+                        },
+                        {
+                          "internalType": "uint40",
+                          "name": "initialQuantity",
+                          "type": "uint40"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "votingUnits",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "reservedRate",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "reservedTokenBeneficiary",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint8",
+                          "name": "royaltyRate",
+                          "type": "uint8"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "royaltyBeneficiary",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "bytes32",
+                          "name": "encodedIPFSUri",
+                          "type": "bytes32"
+                        },
+                        {
+                          "internalType": "uint8",
+                          "name": "category",
+                          "type": "uint8"
+                        },
+                        {
+                          "internalType": "bool",
+                          "name": "allowManualMint",
+                          "type": "bool"
+                        },
+                        {
+                          "internalType": "bool",
+                          "name": "shouldUseReservedTokenBeneficiaryAsDefault",
+                          "type": "bool"
+                        },
+                        {
+                          "internalType": "bool",
+                          "name": "shouldUseRoyaltyBeneficiaryAsDefault",
+                          "type": "bool"
+                        },
+                        {
+                          "internalType": "bool",
+                          "name": "transfersPausable",
+                          "type": "bool"
+                        }
+                      ]
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "currency",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "uint256",
+                      "name": "decimals",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "contract IJBPrices",
+                      "name": "prices",
+                      "type": "address"
+                    }
+                  ]
+                },
+                {
+                  "internalType": "address",
+                  "name": "reservedTokenBeneficiary",
+                  "type": "address"
+                },
+                {
+                  "internalType": "contract IJBTiered721DelegateStore",
+                  "name": "store",
+                  "type": "address"
+                },
+                {
+                  "internalType": "struct JBTiered721Flags",
+                  "name": "flags",
+                  "type": "tuple",
+                  "components": [
+                    {
+                      "internalType": "bool",
+                      "name": "lockReservedTokenChanges",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "lockVotingUnitChanges",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "lockManualMintingChanges",
+                      "type": "bool"
+                    },
+                    {
+                      "internalType": "bool",
+                      "name": "preventOverspending",
+                      "type": "bool"
+                    }
+                  ]
+                },
+                {
+                  "internalType": "enum JB721GovernanceType",
+                  "name": "governanceType",
+                  "type": "uint8"
+                }
+              ]
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "deployDelegateFor",
+          "outputs": [
+            {
+              "internalType": "contract IJBTiered721Delegate",
+              "name": "delegate",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@jbx-protocol/=node_modules/@jbx-protocol/",
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":@paulrberg/=node_modules/@paulrberg/",
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":forge-std/=lib/forge-std/src/",
+        ":prb-math/=node_modules/prb-math/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/interfaces/IJBTiered721DelegateDeployer.sol": "IJBTiered721DelegateDeployer"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/enums/JB721GovernanceType.sol": {
+        "keccak256": "0x3080b119a8e69d7c98ac4392f436bf9168433feca073e48b2151881543094095",
+        "urls": [
+          "bzz-raw://997adf9da18f439c0d86c9ea7be60a7a9363bda800e8c250952bad2410cc0c16",
+          "dweb:/ipfs/QmNVQEmC8gtgmTVwZbgycU84xd9wiWWrimHA4ih7QvqXzw"
+        ],
+        "license": "MIT"
+      },
+      "contracts/interfaces/IJB721Delegate.sol": {
+        "keccak256": "0xa8fbb99c63314f21fb37435c4c3beb7b036b1fa423091ecb4908333612598e6f",
+        "urls": [
+          "bzz-raw://f06796c0da61e0642eb7d2170e0ddd2ebd97d33c42b8f01ea5dd233882b2fb87",
+          "dweb:/ipfs/QmXmfmSScCwpimkyJEB3USwvzfA18zoL4KqkPvE2ZPuP8J"
+        ],
+        "license": "MIT"
+      },
+      "contracts/interfaces/IJBTiered721Delegate.sol": {
+        "keccak256": "0x2db55477cf61db90c942634c04c60bfa339e42029970a2a551cb3aae6ea0e458",
+        "urls": [
+          "bzz-raw://0885cd1f5fea9444441d66890ecd58ff06ab0b0bb50150b3713ac580c8bb31e1",
+          "dweb:/ipfs/QmPwogFzqn7hoXwxEYRfCGLZLeitGcDn2eagyzRnUGXrHD"
+        ],
+        "license": "MIT"
+      },
+      "contracts/interfaces/IJBTiered721DelegateDeployer.sol": {
+        "keccak256": "0xe739ea2c97a4b3064453da5fd0c7b30e4fa16a642cde36fc3ec3b3b4b8b5f475",
+        "urls": [
+          "bzz-raw://ccd168ea152a8a47c4cfee4e95ebcc6bcf4a9d7229a83dff08ebedab3593852d",
+          "dweb:/ipfs/QmNkYw1XMs97Mf2Nbs1rmbnpdymhRP62rJ1UB4PQ5CFGRE"
+        ],
+        "license": "MIT"
+      },
+      "contracts/interfaces/IJBTiered721DelegateStore.sol": {
+        "keccak256": "0x0d4b3e267f06ca46f0b82f9a7bae4abe53c42f0601f7053582a2278a0ca9eaf0",
+        "urls": [
+          "bzz-raw://5e88e4d594ec0000258f6f7c613e2dc77b1d790fd433058606ef235060baa5eb",
+          "dweb:/ipfs/QmeYKMQ8w7gsoFp33oQLmW5hp2csi5v99ssDTiYiBSZXPt"
+        ],
+        "license": "MIT"
+      },
+      "contracts/structs/JB721PricingParams.sol": {
+        "keccak256": "0x65c6b3a05158713e76ccf22091405b9f7bb023b3e382b2da1babbd6c69961586",
+        "urls": [
+          "bzz-raw://fdfbdd554f5a17ede36c57fa7e004548be852f9d840adeb46abc5389d3c4a684",
+          "dweb:/ipfs/QmYUA3NuZVLXMtsPpKpuVxn4DAnz55CpxvqmSuREwf8JaU"
+        ],
+        "license": "MIT"
+      },
+      "contracts/structs/JB721Tier.sol": {
+        "keccak256": "0x22bf1899c34e0d0ca59479fd2abb25ff866d29f743cdeb2f61bb1e5af130f5f6",
+        "urls": [
+          "bzz-raw://63cb55ed4ac9e80158aa121d06cd237dc7197dffe21401954b4c1f5c8ae5a47c",
+          "dweb:/ipfs/QmRQVQdLSWfxqd9dCF9FhLbcVdp6ZqkcpWi56Y79NocHea"
+        ],
+        "license": "MIT"
+      },
+      "contracts/structs/JB721TierParams.sol": {
+        "keccak256": "0xd4f356e3dfc057162840d91f896171255e5e218da07fb88f2a1e917322e87eb6",
+        "urls": [
+          "bzz-raw://ffcc1a35c04396da6df89d45776999b674f1b70380a3086267108d25a1b18076",
+          "dweb:/ipfs/QmcWscbiLGPUMTpm5YayuSRwGFsZc617Hd9KSrAzfVhrS8"
+        ],
+        "license": "MIT"
+      },
+      "contracts/structs/JBDeployTiered721DelegateData.sol": {
+        "keccak256": "0x748af4b9eb0e5411c74b2cc694a365a19e4b20418883aba0f816953989579498",
+        "urls": [
+          "bzz-raw://11fe82016c414b6df04c4eee90cd3e1758e684333d87a9e837fae7032a036ddc",
+          "dweb:/ipfs/QmZ8AgMMcz3PMGsxo48wMvotuuUGekGnf5omrXkLpjQ4dx"
+        ],
+        "license": "MIT"
+      },
+      "contracts/structs/JBTiered721Flags.sol": {
+        "keccak256": "0x42f9625c893559b44bbe79d7fc3f6190a0dceea673b6137ef393c44d517a9ae2",
+        "urls": [
+          "bzz-raw://b13d3d700323e73f4f2f67b3c41b20ded126009a4ac2acec0fba444d0ce6032f",
+          "dweb:/ipfs/QmWkbrzcNDtFxdApDBy8rCsBLu3ovzzZJeA9Tin9pcncSs"
+        ],
+        "license": "MIT"
+      },
+      "contracts/structs/JBTiered721MintForTiersData.sol": {
+        "keccak256": "0x357b55115f542c89e1ccb0338d7b84913018ab00be1582a0e3323dacdb579c42",
+        "urls": [
+          "bzz-raw://539586eb3ffeb85ce7a9cbf33fc8c438b34feef2aff1a5e66edcbfaf1210ff4e",
+          "dweb:/ipfs/QmaCWYcygXBpg6z7bm8TiA7KXGFvC2Yqkv2i8Eaw2mtYV2"
+        ],
+        "license": "MIT"
+      },
+      "contracts/structs/JBTiered721MintReservesForTiersData.sol": {
+        "keccak256": "0xc04c71a3bbf7daad10971d9507c123e22e5996c4b1497c05deff1c0d6d59b9d0",
+        "urls": [
+          "bzz-raw://0e93c80696a98d57053462a156be6f8290ee931666b77f6ff97df4bb2a3b0cc1",
+          "dweb:/ipfs/QmZUqXnsaYMz4orNoQ3ybm2So1sHA7qQ46jxu4QRMhFTsq"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/enums/JBBallotState.sol": {
+        "keccak256": "0x891fcac63470398b3a11239da7feba6b07d640809fcefd2404303b823d7378f8",
+        "urls": [
+          "bzz-raw://6e6adfceaf284b669a8c1cbcf2da7f18ab31a2d1066f9db8bc914349e7401de7",
+          "dweb:/ipfs/QmXLHVRPPZdXUkgAHQbHUtEzAvCJk1P6rJ7wrwfTcfW6fw"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol": {
+        "keccak256": "0x715321646db00514d1355ed43c40cd3f01e94959552fd07797b315d9c49cdb1d",
+        "urls": [
+          "bzz-raw://c34c9e1c727ffc63dd42fb6e6ffb3116c8ba15d6a322a300f10f29478974768d",
+          "dweb:/ipfs/QmYToaGrbMyyWAuyepYcDd8M6KcmosY8AWhT3uJmPM6Pvy"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol": {
+        "keccak256": "0x49553a56209237846bc400cf27f260824a6bd06fd8094a7eb5abb9de75779598",
+        "urls": [
+          "bzz-raw://559372746f94f28b385bc336df263f583dca5377350645c0b28110b083bdb41a",
+          "dweb:/ipfs/QmeQRYqPjXBQCtMKXSFtHVD2ewEPoUAPDxLh4oWTRSKbmx"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol": {
+        "keccak256": "0xaead823851433be0c2ddc8f8086813e6cd647de3a1bc0f7570a5d6b38c378b5a",
+        "urls": [
+          "bzz-raw://7f11fd52ba9ef67b40811d8a2298ae8b69447d2565b3f1069cbb8f0f13bc65e7",
+          "dweb:/ipfs/QmVbBzpTxZWar9xvj6x1vW91hJDv2iPVq7aG6waMxaHUPQ"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol": {
+        "keccak256": "0xb7826f5ed609359ce322c09e83236c47ba385df1c3cad3607e56fd0a2e00eee2",
+        "urls": [
+          "bzz-raw://cbb0de0e73f73a04fcfc8f08cab3588b6d608cf5268af737cff6a530f6062c95",
+          "dweb:/ipfs/QmPGb8aEbZNHNnrCvuGH52RLvV3kjL3agxQiFrjHoLHaup"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPriceFeed.sol": {
+        "keccak256": "0x57c71282fec1b34b00cf991ffed2e36031c393e35bfa7ca5d723eb6572fb7122",
+        "urls": [
+          "bzz-raw://f51c97ac194d3120a2fb5428eeeff759b75b7cbc5708465afc914619016a7c9b",
+          "dweb:/ipfs/QmemTqsGqoPqG97EsdRTMAbB6RfCz8CJxGYPNnDTV6LJ2t"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol": {
+        "keccak256": "0x82a175b1f4b95b506c98406576cd59cbe04615e3df24f9cf3587b61b8ee323b1",
+        "urls": [
+          "bzz-raw://5493e394cf47fca51a4091f1e6d285cc9e4ff9916e5bdfb8e174fe652a2b9833",
+          "dweb:/ipfs/QmTXafZatcjYbNMpUYYk1AWNZLkRFK7VVdAYYudGf4z3HJ"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol": {
+        "keccak256": "0x7cfc021d0bd7e73b1ba8f4845d7d35e3419d6a14d3d25ca3a8010e7f91062fe4",
+        "urls": [
+          "bzz-raw://ff265e13e60da56b93104260ed69ab01153437ec2af9d453781f22ca295eaef9",
+          "dweb:/ipfs/QmfGCSLX2Wy26ojf4U12udsdtjSSacbLcZGwCjTw7MjWF8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol": {
+        "keccak256": "0xd267fd8ca7c21c2c71794acdb9a98314c33a35fc559e0bf0897a6686d196d174",
+        "urls": [
+          "bzz-raw://aa7053d4300ed1374f3f993e6e2163d0a05ee780e4e99eb007b55eabc93c724e",
+          "dweb:/ipfs/QmYZAUn7VCwqpDWYZNCXLNYMRQpD334YgPRiGCfxQApzuT"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol": {
+        "keccak256": "0xcdd3ac9b6fa67e62ada88d09b73bc35ade1cd77d43db712289266a788928b4c2",
+        "urls": [
+          "bzz-raw://8ba0be407022bbeb0e9272884653209ee262b8a4e00ffbba1298c3b119feccba",
+          "dweb:/ipfs/QmbtLQzSN3hut4jYVsYPiYDfRkDdGkZmTWBnV2wJKrdM3K"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleData.sol": {
+        "keccak256": "0x2aa6368bf4dfc5797e8b02a978293de0c777fae2658de2c825a103587240f3b0",
+        "urls": [
+          "bzz-raw://2d7a980ab9b67ad1569d4407b747903cab668a332214117f5ad44feb50af0a3a",
+          "dweb:/ipfs/QmSuEzmrmDSihrTKYCk8miq7VQi7WD6jmQePkjDyzt7UpC"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol": {
+        "keccak256": "0x90ad7b1014c0a9f945fe7a2efde9d5de41e40574fa27969070b1d2ff52033ea0",
+        "urls": [
+          "bzz-raw://1fafc65a9fd74605b7d6c6f0a92b3237a8e3efdd160affb8c117bad00dcf9494",
+          "dweb:/ipfs/QmQkcVt11WLqrxHVrcDCF6dNxzg2kKHEghAgSbfLF6CHkt"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
+        "keccak256": "0xed6a749c5373af398105ce6ee3ac4763aa450ea7285d268c85d9eeca809cdb1f",
+        "urls": [
+          "bzz-raw://20a97f891d06f0fe91560ea1a142aaa26fdd22bed1b51606b7d48f670deeb50f",
+          "dweb:/ipfs/QmTbCtZKChpaX5H2iRiTDMcSz29GSLCpTCDgJpcMR4wg8x"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol": {
+        "keccak256": "0x447a5f3ddc18419d41ff92b3773fb86471b1db25773e07f877f548918a185bf1",
+        "urls": [
+          "bzz-raw://be161e54f24e5c6fae81a12db1a8ae87bc5ae1b0ddc805d82a1440a68455088f",
+          "dweb:/ipfs/QmP7C3CHdY9urF4dEMb9wmsp1wMxHF6nhA2yQE5SKiPAdy"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
   "ast": {
     "absolutePath": "contracts/interfaces/IJBTiered721DelegateDeployer.sol",
-    "id": 29829,
+    "id": 30088,
     "exportedSymbols": {
       "IERC165": [
-        74054
+        74320
       ],
       "IERC721": [
-        72511
+        72777
       ],
       "IJB721Delegate": [
-        29516
+        29760
       ],
       "IJBDirectory": [
-        66279
+        66545
       ],
       "IJBFundingCycleBallot": [
-        66313
+        66579
       ],
       "IJBFundingCycleStore": [
-        66450
+        66716
       ],
       "IJBPaymentTerminal": [
-        66623
+        66889
       ],
       "IJBPriceFeed": [
-        66986
+        67252
       ],
       "IJBPrices": [
-        67030
+        67296
       ],
       "IJBProjects": [
-        67109
+        67375
       ],
       "IJBTiered721Delegate": [
-        29801
+        30060
       ],
       "IJBTiered721DelegateDeployer": [
-        29828
+        30087
       ],
       "IJBTiered721DelegateStore": [
-        30236
+        30502
       ],
       "IJBTokenUriResolver": [
-        67728
+        67994
       ],
       "JB721GovernanceType": [
-        6523
+        6660
       ],
       "JB721PricingParams": [
-        31415
+        31681
       ],
       "JB721Tier": [
-        31446
+        31712
       ],
       "JB721TierParams": [
-        31477
+        31743
       ],
       "JBBallotState": [
-        65707
+        65973
       ],
       "JBDeployTiered721DelegateData": [
-        31527
+        31793
       ],
       "JBFundingCycle": [
-        68716
+        68982
       ],
       "JBFundingCycleData": [
-        68729
+        68995
       ],
       "JBProjectMetadata": [
-        68842
+        69108
       ],
       "JBTiered721Flags": [
-        31687
+        31953
       ],
       "JBTiered721MintForTiersData": [
-        31702
+        31968
       ],
       "JBTiered721MintReservesForTiersData": [
-        31709
+        31975
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:528:20",
     "nodes": [
       {
-        "id": 29803,
+        "id": 30062,
         "nodeType": "PragmaDirective",
         "src": "32:23:20",
+        "nodes": [],
         "literals": [
           "solidity",
           "^",
@@ -344,67 +830,71 @@
         ]
       },
       {
-        "id": 29804,
+        "id": 30063,
         "nodeType": "ImportDirective",
         "src": "57:42:20",
+        "nodes": [],
         "absolutePath": "contracts/enums/JB721GovernanceType.sol",
         "file": "../enums/JB721GovernanceType.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 29829,
-        "sourceUnit": 6524,
+        "scope": 30088,
+        "sourceUnit": 6661,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 29805,
+        "id": 30064,
         "nodeType": "ImportDirective",
         "src": "100:54:20",
+        "nodes": [],
         "absolutePath": "contracts/structs/JBDeployTiered721DelegateData.sol",
         "file": "../structs/JBDeployTiered721DelegateData.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 29829,
-        "sourceUnit": 31528,
+        "scope": 30088,
+        "sourceUnit": 31794,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 29806,
+        "id": 30065,
         "nodeType": "ImportDirective",
         "src": "155:36:20",
+        "nodes": [],
         "absolutePath": "contracts/interfaces/IJBTiered721Delegate.sol",
         "file": "./IJBTiered721Delegate.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 29829,
-        "sourceUnit": 29802,
+        "scope": 30088,
+        "sourceUnit": 30061,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 29828,
+        "id": 30087,
         "nodeType": "ContractDefinition",
         "src": "193:366:20",
         "nodes": [
           {
-            "id": 29816,
+            "id": 30075,
             "nodeType": "EventDefinition",
             "src": "236:136:20",
+            "nodes": [],
             "anonymous": false,
             "eventSelector": "a1dcc57d57a99af26e68a9d0181c52742fdf009c0bbe62ed6a635c312b2ec2f5",
             "name": "DelegateDeployed",
             "nameLocation": "242:16:20",
             "parameters": {
-              "id": 29815,
+              "id": 30074,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 29808,
+                  "id": 30067,
                   "indexed": true,
                   "mutability": "mutable",
                   "name": "projectId",
                   "nameLocation": "280:9:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29816,
+                  "scope": 30075,
                   "src": "264:25:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -413,7 +903,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 29807,
+                    "id": 30066,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "264:7:20",
@@ -426,37 +916,37 @@
                 },
                 {
                   "constant": false,
-                  "id": 29811,
+                  "id": 30070,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "newDelegate",
                   "nameLocation": "316:11:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29816,
+                  "scope": 30075,
                   "src": "295:32:20",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IJBTiered721Delegate_$29801",
+                    "typeIdentifier": "t_contract$_IJBTiered721Delegate_$30060",
                     "typeString": "contract IJBTiered721Delegate"
                   },
                   "typeName": {
-                    "id": 29810,
+                    "id": 30069,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 29809,
+                      "id": 30068,
                       "name": "IJBTiered721Delegate",
                       "nameLocations": [
                         "295:20:20"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29801,
+                      "referencedDeclaration": 30060,
                       "src": "295:20:20"
                     },
-                    "referencedDeclaration": 29801,
+                    "referencedDeclaration": 30060,
                     "src": "295:20:20",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IJBTiered721Delegate_$29801",
+                      "typeIdentifier": "t_contract$_IJBTiered721Delegate_$30060",
                       "typeString": "contract IJBTiered721Delegate"
                     }
                   },
@@ -464,37 +954,37 @@
                 },
                 {
                   "constant": false,
-                  "id": 29814,
+                  "id": 30073,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "governanceType",
                   "nameLocation": "353:14:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29816,
+                  "scope": 30075,
                   "src": "333:34:20",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_enum$_JB721GovernanceType_$6523",
+                    "typeIdentifier": "t_enum$_JB721GovernanceType_$6660",
                     "typeString": "enum JB721GovernanceType"
                   },
                   "typeName": {
-                    "id": 29813,
+                    "id": 30072,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 29812,
+                      "id": 30071,
                       "name": "JB721GovernanceType",
                       "nameLocations": [
                         "333:19:20"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 6523,
+                      "referencedDeclaration": 6660,
                       "src": "333:19:20"
                     },
-                    "referencedDeclaration": 6523,
+                    "referencedDeclaration": 6660,
                     "src": "333:19:20",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_enum$_JB721GovernanceType_$6523",
+                      "typeIdentifier": "t_enum$_JB721GovernanceType_$6660",
                       "typeString": "enum JB721GovernanceType"
                     }
                   },
@@ -505,9 +995,10 @@
             }
           },
           {
-            "id": 29827,
+            "id": 30086,
             "nodeType": "FunctionDefinition",
             "src": "376:181:20",
+            "nodes": [],
             "functionSelector": "69854153",
             "implemented": false,
             "kind": "function",
@@ -515,17 +1006,17 @@
             "name": "deployDelegateFor",
             "nameLocation": "385:17:20",
             "parameters": {
-              "id": 29822,
+              "id": 30081,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 29818,
+                  "id": 30077,
                   "mutability": "mutable",
                   "name": "_projectId",
                   "nameLocation": "416:10:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29827,
+                  "scope": 30086,
                   "src": "408:18:20",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -534,7 +1025,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 29817,
+                    "id": 30076,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "408:7:20",
@@ -547,36 +1038,36 @@
                 },
                 {
                   "constant": false,
-                  "id": 29821,
+                  "id": 30080,
                   "mutability": "mutable",
                   "name": "_deployTieredNFTRewardDelegateData",
                   "nameLocation": "469:34:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29827,
+                  "scope": 30086,
                   "src": "432:71:20",
                   "stateVariable": false,
                   "storageLocation": "memory",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_memory_ptr",
+                    "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31793_memory_ptr",
                     "typeString": "struct JBDeployTiered721DelegateData"
                   },
                   "typeName": {
-                    "id": 29820,
+                    "id": 30079,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 29819,
+                      "id": 30078,
                       "name": "JBDeployTiered721DelegateData",
                       "nameLocations": [
                         "432:29:20"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 31527,
+                      "referencedDeclaration": 31793,
                       "src": "432:29:20"
                     },
-                    "referencedDeclaration": 31527,
+                    "referencedDeclaration": 31793,
                     "src": "432:29:20",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31527_storage_ptr",
+                      "typeIdentifier": "t_struct$_JBDeployTiered721DelegateData_$31793_storage_ptr",
                       "typeString": "struct JBDeployTiered721DelegateData"
                     }
                   },
@@ -586,41 +1077,41 @@
               "src": "402:105:20"
             },
             "returnParameters": {
-              "id": 29826,
+              "id": 30085,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 29825,
+                  "id": 30084,
                   "mutability": "mutable",
                   "name": "delegate",
                   "nameLocation": "547:8:20",
                   "nodeType": "VariableDeclaration",
-                  "scope": 29827,
+                  "scope": 30086,
                   "src": "526:29:20",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_IJBTiered721Delegate_$29801",
+                    "typeIdentifier": "t_contract$_IJBTiered721Delegate_$30060",
                     "typeString": "contract IJBTiered721Delegate"
                   },
                   "typeName": {
-                    "id": 29824,
+                    "id": 30083,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 29823,
+                      "id": 30082,
                       "name": "IJBTiered721Delegate",
                       "nameLocations": [
                         "526:20:20"
                       ],
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 29801,
+                      "referencedDeclaration": 30060,
                       "src": "526:20:20"
                     },
-                    "referencedDeclaration": 29801,
+                    "referencedDeclaration": 30060,
                     "src": "526:20:20",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_IJBTiered721Delegate_$29801",
+                      "typeIdentifier": "t_contract$_IJBTiered721Delegate_$30060",
                       "typeString": "contract IJBTiered721Delegate"
                     }
                   },
@@ -629,7 +1120,7 @@
               ],
               "src": "525:31:20"
             },
-            "scope": 29828,
+            "scope": 30087,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -642,11 +1133,11 @@
         "contractKind": "interface",
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          29828
+          30087
         ],
         "name": "IJBTiered721DelegateDeployer",
         "nameLocation": "203:28:20",
-        "scope": 29829,
+        "scope": 30088,
         "usedErrors": []
       }
     ],
