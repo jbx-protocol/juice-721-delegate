@@ -1,6 +1,7 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
+import '@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol';
 
 import '../JBTiered721DelegateProjectDeployer.sol';
 import '../JBTiered721DelegateDeployer.sol';
@@ -44,6 +45,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
   IJBTiered721DelegateStore store;
   IJBTiered721DelegateProjectDeployer deployer;
   IJBTiered721DelegateDeployer delegateDeployer;
+  JBDelegatesRegistry delegatesRegistry;
 
   function setUp() public {
     vm.label(owner, 'owner');
@@ -66,11 +68,13 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     JBTiered721Delegate noGovernance = new JBTiered721Delegate();
     JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
     JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+    delegatesRegistry = new JBDelegatesRegistry();
 
     delegateDeployer = new JBTiered721DelegateDeployer(
       globalGovernance,
       tieredGovernance,
-      noGovernance
+      noGovernance,
+      delegatesRegistry
     );
 
     deployer = new JBTiered721DelegateProjectDeployer(
