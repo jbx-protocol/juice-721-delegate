@@ -290,7 +290,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 firstRemovedTier,
     uint256 secondRemovedTier
   ) public {
-    numberOfTiers = bound(numberOfTiers, 0, 30);
+    numberOfTiers = bound(numberOfTiers, 1, 30);
     firstRemovedTier = bound(firstRemovedTier, 1, numberOfTiers);
     secondRemovedTier = bound(secondRemovedTier, 1, numberOfTiers);
     vm.assume(firstRemovedTier != secondRemovedTier);
@@ -717,7 +717,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 numberOfTiers,
     address holder
   ) public {
-    numberOfTiers = bound(numberOfTiers, 0, 30);
+    numberOfTiers = bound(numberOfTiers, 1, 30);
 
 
     JB721TierParams[] memory _tiers = new JB721TierParams[](numberOfTiers);
@@ -1281,7 +1281,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 errorIndex
   ) public {
     nbTiers = bound(nbTiers, 1, 20);
-    errorIndex = bound(errorIndex, 1, nbTiers - 1);
+    errorIndex = bound(errorIndex, 0, nbTiers-1);
 
     // Create new tiers array
     JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
@@ -2290,7 +2290,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   ) public {
     // Include adding X new tiers when 0 preexisting ones
     initialNumberOfTiers = bound(initialNumberOfTiers, 3, 14);
-    
+
     vm.assume(floorTiersToAdd.length > 1 && floorTiersToAdd.length < 15);
 
     // Floor are sorted in ascending orderen
