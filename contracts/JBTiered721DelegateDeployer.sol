@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import '@jbx-protocol/juice-delegates-registry/src/interfaces/IJBDelegatesRegistry.sol';
 import '@openzeppelin/contracts/proxy/Clones.sol';
 
 import './interfaces/IJBTiered721DelegateDeployer.sol';
@@ -41,6 +42,22 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   */
   JBTiered721Delegate public immutable noGovernance;
 
+  /** 
+    @notice 
+    The delegates registry. 
+  */
+  IJBDelegatesRegistry public immutable delegatesRegistry;
+
+  //*********************************************************************//
+  // ------------------------ private properties ----------------------- //
+  //*********************************************************************//
+
+  /** 
+    @notice 
+    This contract current nonce, used for the registry
+  */
+  uint256 private _nonce;
+
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
@@ -48,11 +65,13 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   constructor(
     JB721GlobalGovernance _globalGovernance,
     JB721TieredGovernance _tieredGovernance,
-    JBTiered721Delegate _noGovernance
+    JBTiered721Delegate _noGovernance,
+    IJBDelegatesRegistry _delegatesRegistry
   ) {
     globalGovernance = _globalGovernance;
     tieredGovernance = _tieredGovernance;
     noGovernance = _noGovernance;
+    delegatesRegistry = _delegatesRegistry;
   }
 
   //*********************************************************************//

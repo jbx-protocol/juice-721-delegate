@@ -1,5 +1,8 @@
 [profile.default]
-libs = ['lib']
+# grant access to the deployment addresses for the registry test:
+fs_permissions = [{ access = "read", path = "./node_modules/@jbx-protocol/juice-delegates-registry/broadcast/Deploy.s.sol"}]
+
+libs = ['lib', 'node_modules']
 out = 'out'
 src = 'contracts'
 test = 'forge-test'
@@ -20,10 +23,6 @@ gas_reports_ignore = [
     "JBTiered721DelegateStore",
 ]
 remappings = [
-    "@jbx-protocol=node_modules/@jbx-protocol/",
-    "@openzeppelin=node_modules/@openzeppelin/",
-    "@paulrberg=node_modules/@paulrberg/",
-    "prb-math=node_modules/prb-math/",
     "ds-test/=lib/forge-std/lib/ds-test/src/",
     "forge-std/=lib/forge-std/src/",
 ]

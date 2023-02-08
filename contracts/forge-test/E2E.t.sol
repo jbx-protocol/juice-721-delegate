@@ -1,6 +1,7 @@
 pragma solidity ^0.8.16;
 
 import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
+import '@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol';
 
 import '../JBTiered721Delegate.sol';
 import '../JBTiered721DelegateProjectDeployer.sol';
@@ -43,6 +44,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
   ];
   JBTiered721DelegateProjectDeployer deployer;
+  JBDelegatesRegistry delegatesRegistry;
 
   function setUp() public override {
     super.setUp();
@@ -50,11 +52,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     JBTiered721Delegate noGovernance = new JBTiered721Delegate();
     JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
     JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+    delegatesRegistry = new JBDelegatesRegistry();
 
     JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer(
       globalGovernance,
       tieredGovernance,
-      noGovernance
+      noGovernance,
+      delegatesRegistry
     );
 
     deployer = new JBTiered721DelegateProjectDeployer(
@@ -64,7 +68,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
   }
 
-  function testDeployAndLaunchProject() external {
+  function testDeployLaunchProjectAndAddToRegistry() external {
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
@@ -79,6 +83,10 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     // Check: first project has the id 1?
     assertEq(projectId, 1);
+
+    // Check: delegate added to registry?
+    address _delegate = _jbFundingCycleStore.currentOf(projectId).dataSource();
+    assertEq(delegatesRegistry.deployerOf(_delegate), address(deployer.delegateDeployer()));
   }
 
   function testMintOnPayIfOneTierIsPassed(uint256 valueSent) external {
