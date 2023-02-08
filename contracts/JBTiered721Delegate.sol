@@ -596,11 +596,11 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     returns (uint256[] memory tokenIds)
   {
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (tokenIds, , ) = store.recordMint(
-      type(uint256).max, // force the mint.
-      _tierIds,
-      true // manual mint
-    );
+    // (tokenIds, , ) = store.recordMint(
+    //   type(uint256).max, // force the mint.
+    //   _tierIds,
+    //   true // manual mint
+    // );
 
     // Keep a reference to the number of tokens being minted.
     uint256 _numberOfTokens = _tierIds.length;
@@ -793,11 +793,11 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     uint256[] memory _tokenIds;
 
     // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (_tokenIds, leftoverAmount, splitOrders) = store.recordMint(
-      _amount,
-      _mintTierIds,
-      false // Not a manual mint
-    );
+    // (_tokenIds, leftoverAmount, splitOrders) = store.recordMint(
+    //   _amount,
+    //   _mintTierIds,
+    //   false // Not a manual mint
+    // );
 
     // Get a reference to the number of mints.
     uint256 _mintsLength = _tokenIds.length;
