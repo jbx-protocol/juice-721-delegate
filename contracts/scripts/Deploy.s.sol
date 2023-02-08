@@ -6,7 +6,7 @@ import '../JBTiered721DelegateStore.sol';
 import 'forge-std/Script.sol';
 
 contract DeployMainnet is Script {
-  IJBController jbController = IJBController(0xFFdD70C318915879d5192e8a0dcbFcB0285b3C98);
+  IJBDirectory jbDirectory = IJBDirectory(0x65572FB928b46f9aDB7cfe5A4c41226F636161ea);
   IJBOperatorStore jbOperatorStore = IJBOperatorStore(0x6F3C5afCa0c9eDf3926eF2dDF17c8ae6391afEfb);
 
   JBTiered721DelegateDeployer delegateDeployer;
@@ -28,7 +28,7 @@ contract DeployMainnet is Script {
 
     store = new JBTiered721DelegateStore();
 
-    projectDeployer = new JBTiered721DelegateProjectDeployer(jbController, delegateDeployer, jbOperatorStore);
+    projectDeployer = new JBTiered721DelegateProjectDeployer(jbDirectory, delegateDeployer, jbOperatorStore);
 
     console.log(address(projectDeployer));
     console.log(address(store));
@@ -36,7 +36,7 @@ contract DeployMainnet is Script {
 }
 
 contract DeployGoerli is Script {
-  IJBController jbController = IJBController(0x7Cb86D43B665196BC719b6974D320bf674AFb395);
+  IJBDirectory jbDirectory = IJBDirectory(0x8E05bcD2812E1449f0EC3aE24E2C395F533d9A99);
   IJBOperatorStore jbOperatorStore = IJBOperatorStore(0x99dB6b517683237dE9C494bbd17861f3608F3585);
 
   JBTiered721DelegateDeployer delegateDeployer;
@@ -58,7 +58,7 @@ contract DeployGoerli is Script {
 
     store = new JBTiered721DelegateStore();
 
-    projectDeployer = new JBTiered721DelegateProjectDeployer(jbController, delegateDeployer, jbOperatorStore);
+    projectDeployer = new JBTiered721DelegateProjectDeployer(jbDirectory, delegateDeployer, jbOperatorStore);
 
     console.log(address(projectDeployer));
     console.log(address(store));

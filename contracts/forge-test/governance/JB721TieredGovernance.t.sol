@@ -23,7 +23,8 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Get the dataSource
@@ -112,7 +113,8 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Get the dataSource
