@@ -58,7 +58,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     deployer = new JBTiered721DelegateProjectDeployer(
-      IJBController(_jbController),
+      IJBDirectory(_jbDirectory),
       delegateDeployer,
       IJBOperatorStore(_jbOperatorStore)
     );
@@ -73,7 +73,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Check: first project has the id 1?
@@ -93,7 +94,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Craft the metadata: claim from the highest tier
@@ -172,7 +174,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // 5 first tier floors
@@ -244,7 +247,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
@@ -294,7 +298,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
@@ -405,7 +410,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Craft the metadata: claim from the highest tier
@@ -512,7 +518,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Craft the metadata: claim 5 from the tier
@@ -662,7 +669,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
 
     NFTRewardDeployerData = JBDeployTiered721DelegateData({
-      directory: _jbDirectory,
       name: name,
       symbol: symbol,
       fundingCycleStore: _jbFundingCycleStore,
