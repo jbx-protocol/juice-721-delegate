@@ -213,8 +213,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     )));
   }
 
-  function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint16 numberOfTiers) public {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+  function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint256 numberOfTiers) public {
+    numberOfTiers = bound(numberOfTiers, 0, 30);
 
     JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](numberOfTiers);
@@ -286,13 +286,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_tiers_returnsAllTiersExcludingRemovedOnes(
-    uint16 numberOfTiers,
-    uint8 firstRemovedTier,
-    uint8 secondRemovedTier
+    uint256 numberOfTiers,
+    uint256 firstRemovedTier,
+    uint256 secondRemovedTier
   ) public {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
-    vm.assume(firstRemovedTier <= numberOfTiers && secondRemovedTier <= numberOfTiers);
-    vm.assume(firstRemovedTier != 0 && secondRemovedTier != 0);
+    numberOfTiers = bound(numberOfTiers, 0, 30);
+    firstRemovedTier = bound(firstRemovedTier, 1, numberOfTiers);
+    secondRemovedTier = bound(secondRemovedTier, 1, numberOfTiers);
     vm.assume(firstRemovedTier != secondRemovedTier);
 
     JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
@@ -386,10 +386,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_tier_returnsTheGivenTier(
-    uint16 numberOfTiers,
+    uint256 numberOfTiers,
     uint16 givenTier
   ) public {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    numberOfTiers = bound(numberOfTiers, 0, 30);
 
     JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
     JB721Tier[] memory _tiers = new JB721Tier[](numberOfTiers);
@@ -497,10 +497,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
   }
 
-  function testJBTieredNFTRewardDelegate_totalSupply_returnsTotalSupply(uint16 numberOfTiers)
+  function testJBTieredNFTRewardDelegate_totalSupply_returnsTotalSupply(uint256 numberOfTiers)
     public
   {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    numberOfTiers = bound(numberOfTiers, 0, 30);
 
     JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
 
@@ -571,10 +571,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_balanceOf_returnsCompleteBalance(
-    uint16 numberOfTiers,
+    uint256 numberOfTiers,
     address holder
   ) public {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    numberOfTiers = bound(numberOfTiers, 0, 30);
+
 
     JB721TierParams[] memory _tiers = new JB721TierParams[](numberOfTiers);
 
@@ -713,10 +714,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_getvotingUnits_returnsTheTotalVotingUnits(
-    uint16 numberOfTiers,
+    uint256 numberOfTiers,
     address holder
   ) public {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    numberOfTiers = bound(numberOfTiers, 0, 30);
+
 
     JB721TierParams[] memory _tiers = new JB721TierParams[](numberOfTiers);
 
@@ -946,11 +948,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_redemptionWeightOf_returnsCorrectWeightAsFloorsCumSum(
-    uint16 numberOfTiers,
+    uint256 numberOfTiers,
     uint16 firstTier,
     uint16 lastTier
   ) public {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    numberOfTiers = bound(numberOfTiers, 0, 30);
+
     vm.assume(firstTier <= lastTier);
     vm.assume(lastTier <= numberOfTiers);
 
@@ -1017,9 +1020,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_totalRedemptionWeight_returnsCorrectTotalWeightAsFloorsCumSum(
-    uint16 numberOfTiers
+    uint256 numberOfTiers
   ) public {
-    vm.assume(numberOfTiers > 0 && numberOfTiers < 30);
+    numberOfTiers = bound(numberOfTiers, 0, 30);
 
     JB721TierParams[] memory _tiers = new JB721TierParams[](numberOfTiers);
 
@@ -1185,10 +1188,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(_delegate.firstOwnerOf(tokenId), address(0));
   }
 
-  function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity(uint16 nbTiers)
+  function testJBTieredNFTRewardDelegate_constructor_deployIfNoEmptyInitialQuantity(uint256 nbTiers)
     public
   {
-    vm.assume(nbTiers < 10);
+    nbTiers = bound(nbTiers, 0, 10);
 
     // Create new tiers array
     JB721TierParams[] memory _tierParams = new JB721TierParams[](nbTiers);
@@ -1274,11 +1277,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_constructor_revertDeploymentIfOneEmptyInitialQuantity(
-    uint16 nbTiers,
-    uint16 errorIndex
+    uint256 nbTiers,
+    uint256 errorIndex
   ) public {
-    vm.assume(nbTiers < 20);
-    vm.assume(errorIndex < nbTiers);
+    nbTiers = bound(nbTiers, 1, 20);
+    errorIndex = bound(errorIndex, 1, nbTiers - 1);
 
     // Create new tiers array
     JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
@@ -2282,11 +2285,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_tiers_added_recently_fetched_first_sorted_category_wise_after_tiers_have_been_cleaned(
-    uint16 initialNumberOfTiers,
+    uint256 initialNumberOfTiers,
     uint16[] memory floorTiersToAdd
   ) public {
     // Include adding X new tiers when 0 preexisting ones
-    vm.assume(initialNumberOfTiers < 15 && initialNumberOfTiers > 2);
+    initialNumberOfTiers = bound(initialNumberOfTiers, 3, 14);
+    
     vm.assume(floorTiersToAdd.length > 1 && floorTiersToAdd.length < 15);
 
     // Floor are sorted in ascending orderen

@@ -81,8 +81,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(projectId, 1);
   }
 
-  function testMintOnPayIfOneTierIsPassed(uint16 valueSent) external {
-    vm.assume(valueSent >= 10 && valueSent < 2000);
+  function testMintOnPayIfOneTierIsPassed(uint256 valueSent) external {
+    valueSent = bound(valueSent, 10, 2000);
 
     // Highest possible tier is 10
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
@@ -237,8 +237,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
   }
 
-  function testNoMintOnPayWhenNotIncludingTierIds(uint16 valueSent) external {
-    vm.assume(valueSent >= 10 && valueSent < 2000);
+  function testNoMintOnPayWhenNotIncludingTierIds(uint256 valueSent) external {
+    valueSent = bound(valueSent, 10, 2000);
+
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
@@ -288,7 +289,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   // TODO This needs care (fuzz fails with insuf reserve for val=10)
   function testMintReservedToken() external {
     uint16 valueSent = 1500;
-    vm.assume(valueSent >= 10 && valueSent < 2000);
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
@@ -396,8 +396,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   // - check the remaining reserved supply within the corresponding tier
   // - burn from that tier
   // - recheck the remaining reserved supply (which should be back to the initial one)
-  function testRedeemToken(uint16 valueSent) external {
-    vm.assume(valueSent >= 10 && valueSent < 2000);
+  function testRedeemToken(uint256 valueSent) external {
+    valueSent = bound(valueSent, 10, 2000);
 
     // Highest possible tier is 10
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
