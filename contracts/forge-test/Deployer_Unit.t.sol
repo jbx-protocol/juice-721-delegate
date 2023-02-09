@@ -78,7 +78,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     );
 
     deployer = new JBTiered721DelegateProjectDeployer(
-      IJBController(mockJBController),
+      IJBDirectory(mockJBDirectory),
       delegateDeployer,
       IJBOperatorStore(mockJBOperatorStore)
     );
@@ -90,8 +90,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
-      mockJBController,
-      abi.encodeWithSelector(IJBController.projects.selector),
+      mockJBDirectory,
+      abi.encodeWithSelector(IJBDirectory.projects.selector),
       abi.encode(mockJBProjects)
     );
     vm.mockCall(
@@ -104,7 +104,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       abi.encodeWithSelector(IJBController.launchProjectFor.selector),
       abi.encode(true)
     );
-    uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData);
+    uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData, IJBController3_1(mockJBController));
     assertEq(previousProjectId, _projectId - 1);
   }
 
@@ -114,8 +114,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
-      mockJBController,
-      abi.encodeWithSelector(IJBController.projects.selector),
+      mockJBDirectory,
+      abi.encodeWithSelector(IJBDirectory.projects.selector),
       abi.encode(mockJBProjects)
     );
     vm.mockCall(mockJBProjects, abi.encodeWithSelector(IJBProjects.count.selector), abi.encode(5));
@@ -124,7 +124,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       abi.encodeWithSelector(IJBController.launchProjectFor.selector),
       abi.encode(true)
     );
-    uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData);
+    uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData, IJBController3_1(mockJBController));
     assertEq(_projectId, 6);
   }
 
@@ -165,7 +165,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     }
 
     NFTRewardDeployerData = JBDeployTiered721DelegateData({
-      directory: IJBDirectory(mockJBDirectory),
       name: name,
       symbol: symbol,
       fundingCycleStore: IJBFundingCycleStore(mockJBFundingCycleStore),
