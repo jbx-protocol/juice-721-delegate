@@ -10,7 +10,6 @@ import './JB721PricingParams.sol';
 import './JBTiered721Flags.sol';
 
 /**
-  @member directory The directory of terminals and controllers for projects.
   @member name The name of the token.
   @member symbol The symbol that the token should be represented by.
   @member fundingCycleStore A contract storing all funding cycle configurations.
@@ -25,7 +24,6 @@ import './JBTiered721Flags.sol';
   @member governanceType The type of governance to allow the NFTs to be used for.
 */
 struct JBDeployTiered721DelegateData {
-  IJBDirectory directory;
   string name;
   string symbol;
   IJBFundingCycleStore fundingCycleStore;

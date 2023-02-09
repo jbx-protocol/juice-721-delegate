@@ -2,7 +2,6 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
 import './interfaces/IJBTiered721DelegateProjectDeployer.sol';
@@ -24,11 +23,11 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
 
-  /** 
+  /**
     @notice
-    The controller with which new projects should be deployed. 
+    The directory of terminals and controllers for projects.
   */
-  IJBController public immutable override controller;
+  IJBDirectory public immutable override directory;
 
   /** 
     @notice
@@ -41,16 +40,16 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
   //*********************************************************************//
 
   /**
-    @param _controller The controller with which new projects should be deployed. 
+    @param _directory The directory of terminals and controllers for projects.
     @param _delegateDeployer The deployer of delegates.
     @param _operatorStore A contract storing operator assignments.
   */
   constructor(
-    IJBController _controller,
+    IJBDirectory _directory,
     IJBTiered721DelegateDeployer _delegateDeployer,
     IJBOperatorStore _operatorStore
   ) JBOperatable(_operatorStore) {
-    controller = _controller;
+    directory = _directory;
     delegateDeployer = _delegateDeployer;
   }
 
@@ -65,25 +64,28 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     @param _owner The address to set as the owner of the project. The project ERC-721 will be owned by this address.
     @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
     @param _launchProjectData Data necessary to fulfill the transaction to launch a project.
+    @param _controller The controller with which the funding cycles should be configured.
 
     @return projectId The ID of the newly configured project.
   */
   function launchProjectFor(
     address _owner,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
-    JBLaunchProjectData memory _launchProjectData
+    JBLaunchProjectData memory _launchProjectData,
+    IJBController3_1 _controller
   ) external override returns (uint256 projectId) {
     // Get the project ID, optimistically knowing it will be one greater than the current count.
-    projectId = controller.projects().count() + 1;
+    projectId = directory.projects().count() + 1;
 
     // Deploy the delegate contract.
     IJBTiered721Delegate _delegate = delegateDeployer.deployDelegateFor(
       projectId,
-      _deployTiered721DelegateData
+      _deployTiered721DelegateData,
+      directory
     );
 
     // Launch the project.
-    _launchProjectFor(_owner, _launchProjectData, _delegate);
+    _launchProjectFor(_owner, _launchProjectData, _delegate, _controller);
   }
 
   /**
@@ -96,18 +98,20 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     @param _projectId The ID of the project having funding cycles launched.
     @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
     @param _launchFundingCyclesData Data necessary to fulfill the transaction to launch funding cycles for the project.
+    @param _controller The controller with which the funding cycles should be configured.
 
     @return configuration The configuration of the funding cycle that was successfully created.
   */
   function launchFundingCyclesFor(
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
-    JBLaunchFundingCyclesData memory _launchFundingCyclesData
+    JBLaunchFundingCyclesData memory _launchFundingCyclesData,
+    IJBController3_1 _controller
   )
     external
     override
     requirePermission(
-      controller.projects().ownerOf(_projectId),
+      directory.projects().ownerOf(_projectId),
       _projectId,
       JBOperations.RECONFIGURE
     )
@@ -116,11 +120,12 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     // Deploy the delegate contract.
     IJBTiered721Delegate _delegate = delegateDeployer.deployDelegateFor(
       _projectId,
-      _deployTiered721DelegateData
+      _deployTiered721DelegateData,
+      directory
     );
 
     // Launch the funding cycles.
-    return _launchFundingCyclesFor(_projectId, _launchFundingCyclesData, _delegate);
+    return _launchFundingCyclesFor(_projectId, _launchFundingCyclesData, _delegate, _controller);
   }
 
   /**
@@ -133,18 +138,20 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     @param _projectId The ID of the project having funding cycles reconfigured.
     @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
     @param _reconfigureFundingCyclesData Data necessary to fulfill the transaction to reconfigure funding cycles for the project.
+    @param _controller The controller with which the funding cycles should be configured.
 
     @return configuration The configuration of the funding cycle that was successfully reconfigured.
   */
   function reconfigureFundingCyclesOf(
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
-    JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData
+    JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData,
+    IJBController3_1 _controller
   )
     external
     override
     requirePermission(
-      controller.projects().ownerOf(_projectId),
+      directory.projects().ownerOf(_projectId),
       _projectId,
       JBOperations.RECONFIGURE
     )
@@ -153,11 +160,12 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     // Deploy the delegate contract.
     IJBTiered721Delegate _delegate = delegateDeployer.deployDelegateFor(
       _projectId,
-      _deployTiered721DelegateData
+      _deployTiered721DelegateData,
+      directory
     );
 
     // Reconfigure the funding cycles.
-    return _reconfigureFundingCyclesOf(_projectId, _reconfigureFundingCyclesData, _delegate);
+    return _reconfigureFundingCyclesOf(_projectId, _reconfigureFundingCyclesData, _delegate, _controller);
   }
 
   //*********************************************************************//
@@ -171,13 +179,15 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     @param _owner The address to set as the owner of the project. 
     @param _launchProjectData Data necessary to fulfill the transaction to launch the project.
     @param _dataSource The data source to set.
+    @param _controller The controller with which the funding cycles should be configured.
   */
   function _launchProjectFor(
     address _owner,
     JBLaunchProjectData memory _launchProjectData,
-    IJBTiered721Delegate _dataSource
+    IJBTiered721Delegate _dataSource,
+    IJBController3_1 _controller
   ) internal {
-    controller.launchProjectFor(
+    _controller.launchProjectFor(
       _owner,
       _launchProjectData.projectMetadata,
       _launchProjectData.data,
@@ -218,16 +228,18 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     @param _projectId The ID of the project having funding cycles launched.
     @param _launchFundingCyclesData Data necessary to fulfill the transaction to launch funding cycles for the project.
     @param _dataSource The data source to set.
+    @param _controller The controller with which the funding cycles should be configured.
 
     @return configuration The configuration of the funding cycle that was successfully created.
   */
   function _launchFundingCyclesFor(
     uint256 _projectId,
     JBLaunchFundingCyclesData memory _launchFundingCyclesData,
-    IJBTiered721Delegate _dataSource
+    IJBTiered721Delegate _dataSource,
+    IJBController3_1 _controller
   ) internal returns (uint256) {
     return
-      controller.launchFundingCyclesFor(
+      _controller.launchFundingCyclesFor(
         _projectId,
         _launchFundingCyclesData.data,
         JBFundingCycleMetadata({
@@ -267,16 +279,18 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     @param _projectId The ID of the project having funding cycles launched.
     @param _reconfigureFundingCyclesData Data necessary to fulfill the transaction to launch funding cycles for the project.
     @param _dataSource The data source to set.
+    @param _controller The controller with which the funding cycles should be configured.
 
     @return The configuration of the funding cycle that was successfully reconfigured.
   */
   function _reconfigureFundingCyclesOf(
     uint256 _projectId,
     JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData,
-    IJBTiered721Delegate _dataSource
+    IJBTiered721Delegate _dataSource,
+    IJBController3_1 _controller
   ) internal returns (uint256) {
     return
-      controller.reconfigureFundingCyclesOf(
+      _controller.reconfigureFundingCyclesOf(
         _projectId,
         _reconfigureFundingCyclesData.data,
         JBFundingCycleMetadata({

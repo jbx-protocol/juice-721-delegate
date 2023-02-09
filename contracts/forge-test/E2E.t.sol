@@ -62,7 +62,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     );
 
     deployer = new JBTiered721DelegateProjectDeployer(
-      IJBController(_jbController),
+      IJBDirectory(_jbDirectory),
       delegateDeployer,
       IJBOperatorStore(_jbOperatorStore)
     );
@@ -77,7 +77,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Check: first project has the id 1?
@@ -88,8 +89,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(delegatesRegistry.deployerOf(_delegate), address(deployer.delegateDeployer()));
   }
 
-  function testMintOnPayIfOneTierIsPassed(uint16 valueSent) external {
-    vm.assume(valueSent >= 10 && valueSent < 2000);
+  function testMintOnPayIfOneTierIsPassed(uint256 valueSent) external {
+    valueSent = bound(valueSent, 10, 2000);
 
     // Highest possible tier is 10
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
@@ -101,7 +102,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Craft the metadata: claim from the highest tier
@@ -180,7 +182,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // 5 first tier floors
@@ -242,8 +245,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
   }
 
-  function testNoMintOnPayWhenNotIncludingTierIds(uint16 valueSent) external {
-    vm.assume(valueSent >= 10 && valueSent < 2000);
+  function testNoMintOnPayWhenNotIncludingTierIds(uint256 valueSent) external {
+    valueSent = bound(valueSent, 10, 2000);
+
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
@@ -252,7 +256,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
@@ -292,7 +297,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   // TODO This needs care (fuzz fails with insuf reserve for val=10)
   function testMintReservedToken() external {
     uint16 valueSent = 1500;
-    vm.assume(valueSent >= 10 && valueSent < 2000);
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
@@ -302,7 +306,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
@@ -399,8 +404,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   // - check the remaining reserved supply within the corresponding tier
   // - burn from that tier
   // - recheck the remaining reserved supply (which should be back to the initial one)
-  function testRedeemToken(uint16 valueSent) external {
-    vm.assume(valueSent >= 10 && valueSent < 2000);
+  function testRedeemToken(uint256 valueSent) external {
+    valueSent = bound(valueSent, 10, 2000);
 
     // Highest possible tier is 10
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
@@ -413,7 +418,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Craft the metadata: claim from the highest tier
@@ -520,7 +526,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Craft the metadata: claim 5 from the tier
@@ -670,7 +677,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     }
 
     NFTRewardDeployerData = JBDeployTiered721DelegateData({
-      directory: _jbDirectory,
       name: name,
       symbol: symbol,
       fundingCycleStore: _jbFundingCycleStore,

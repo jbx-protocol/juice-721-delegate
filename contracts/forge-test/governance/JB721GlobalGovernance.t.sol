@@ -7,13 +7,16 @@ import '../../JB721GlobalGovernance.sol';
 contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
   using JBFundingCycleMetadataResolver for JBFundingCycle;
 
-  function testMintAndTransferGlobalVotingUnits(uint8 _tier, bool _recipientDelegated) public {
+  function testMintAndTransferGlobalVotingUnits(uint256 _tier, bool _recipientDelegated) public {
     address _user = address(bytes20(keccak256('user')));
     address _userFren = address(bytes20(keccak256('user_fren')));
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
+
+    // _tier has to be a valid tier (0-indexed)
+    _tier = bound(_tier, 0, NFTRewardDeployerData.pricing.tiers.length - 1);
 
     // Set the governance type to tiered
     NFTRewardDeployerData.governanceType = JB721GovernanceType.GLOBAL;
@@ -23,7 +26,8 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Get the dataSource
@@ -31,8 +35,6 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
 
-    // _tier has to be a valid tier
-    vm.assume(_tier < NFTRewardDeployerData.pricing.tiers.length);
     uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
 
     assertEq(_delegate.delegates(_user), address(0));
@@ -93,7 +95,7 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
     assertEq(_delegate.getVotes(_userFren), _frenExpectedVotes);
   }
 
-  function testMintAndDelegateVotingUnits(uint8 _tier, bool _selfDelegateBeforeReceive) public {
+  function testMintAndDelegateVotingUnits(uint256 _tier, bool _selfDelegateBeforeReceive) public {
     address _user = address(bytes20(keccak256('user')));
     address _userFren = address(bytes20(keccak256('user_fren')));
     (
@@ -101,13 +103,17 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       JBLaunchProjectData memory launchProjectData
     ) = createData();
 
+    // _tier has to be a valid tier (0-indexed)
+    _tier = bound(_tier, 0, NFTRewardDeployerData.pricing.tiers.length - 1);
+
     // Set the governance type to tiered
     NFTRewardDeployerData.governanceType = JB721GovernanceType.GLOBAL;
 
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
       NFTRewardDeployerData,
-      launchProjectData
+      launchProjectData,
+      _jbController
     );
 
     // Get the dataSource
@@ -115,8 +121,6 @@ contract TestJBGlobalGovernance is TestJBTieredNFTRewardDelegateE2E {
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
 
-    // _tier has to be a valid tier
-    vm.assume(_tier < NFTRewardDeployerData.pricing.tiers.length);
     uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
 
     // Delegate NFT to fren
