@@ -653,8 +653,6 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
         // Emit the change in credits.
         if (_newCredits > _credits)
           emit AddCredits(_newCredits - _credits, _newCredits, _data.beneficiary, msg.sender);
-        else if (_credits > _newCredits)
-          emit UseCredits(_credits - _newCredits, _newCredits, _data.beneficiary, msg.sender);
 
         // Store the new credits.
         creditsOf[_data.beneficiary] = _newCredits;
@@ -662,9 +660,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
       // Else reset the credits.
     } else if (_credits != _stashedCredits) {
       // Emit the change in credits.
-      if (_stashedCredits > _credits)
-        emit AddCredits(_stashedCredits - _credits, _stashedCredits, _data.beneficiary, msg.sender);
-      else if (_credits > _stashedCredits)
+      if (_credits > _stashedCredits)
         emit UseCredits(_credits - _stashedCredits, _stashedCredits, _data.beneficiary, msg.sender);
 
       // Store the new credits.
