@@ -93,6 +93,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   event CleanTiers(address indexed nft, address caller);
 
+  event AddCredits(
+    uint256 indexed changeAmount,
+    uint256 indexed newTotalCredits,
+    address indexed account,
+    address caller
+  );
+
+  event UseCredits(
+    uint256 indexed changeAmount,
+    uint256 indexed newTotalCredits,
+    address indexed account,
+    address caller
+  );
+
   function setUp() public {
     _accessJBLib = new AccessJBLib();
     vm.label(beneficiary, 'beneficiary');
@@ -3581,6 +3595,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _allowOverspending,
       _tierIdsToMint
     );
+    
+    // calculating new credits
+    uint256 _newCredits = _leftover + delegate.creditsOf(beneficiary);
+
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit AddCredits(
+          _newCredits,
+          _newCredits,
+          beneficiary,
+          mockTerminalAddress
+    );
 
     vm.prank(mockTerminalAddress);
     delegate.didPay(
@@ -3628,6 +3653,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tierIdsToMint
     );
 
+    uint256 _credits = delegate.creditsOf(beneficiary);
+    _leftover = _leftover / 2 + _credits; //left over amount
+
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit AddCredits(
+          _leftover - _credits,
+          _leftover,
+          beneficiary,
+          mockTerminalAddress
+    );
+
     // First call will mint the 3 tiers requested + accumulate half of first floor in credit
     vm.prank(mockTerminalAddress);
     delegate.didPay(
@@ -3663,6 +3699,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _moreTierIdsToMint
       );
     }
+
+   // fetch existing credits
+    _credits = delegate.creditsOf(beneficiary);
+
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit UseCredits(
+          _credits,
+          0, // no stashed credits
+          beneficiary,
+          mockTerminalAddress
+    );
 
     // Second call will mint another 3 tiers requested + mint from the first tier with the credit
     vm.prank(mockTerminalAddress);
@@ -4226,6 +4273,19 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // If prevent is enabled the call should revert, otherwise we should receive credits
     if(_prevent){
       vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
+    } else {
+      uint256 _credits = delegate.creditsOf(beneficiary);
+      uint256 _stashedCredits = _credits;
+      // calculating new credits since _leftover is non zero
+      uint256 _newCredits = tiers[0].contributionFloor + _leftover + _stashedCredits;
+
+      vm.expectEmit(true, true, true, true, address(delegate));
+      emit AddCredits(
+          _newCredits - _credits,
+          _newCredits,
+          beneficiary,
+          mockTerminalAddress
+      );
     }
 
     vm.prank(mockTerminalAddress);
