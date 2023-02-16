@@ -654,6 +654,8 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
         // when _leftoverAmount != 0 there won't be a scenario where _credits < _newCredits
         if (_newCredits > _credits)
           emit AddCredits(_newCredits - _credits, _newCredits, _data.beneficiary, msg.sender);
+        else if (_credits > _newCredits)
+          emit UseCredits(_credits - _newCredits, _newCredits, _data.beneficiary, msg.sender);
 
         // Store the new credits.
         creditsOf[_data.beneficiary] = _newCredits;
