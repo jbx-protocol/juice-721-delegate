@@ -4197,6 +4197,108 @@ contract TestJBTieredNFTRewardDelegate is Test {
     assertEq(delegate.store().totalSupply(address(delegate)), 0);
   }
 
+
+  function testJBTieredNFTRewardDelegate_didPay_mintTiersWhenUsingExistingCredits_when_existing_credits_more_than_new_credits() public {
+    uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
+    uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
+
+    // Mock the directory call
+    vm.mockCall(
+      address(mockJBDirectory),
+      abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+      abi.encode(true)
+    );
+
+    bool _allowOverspending = true;
+    uint16[] memory _tierIdsToMint = new uint16[](3);
+    _tierIdsToMint[0] = 1;
+    _tierIdsToMint[1] = 1;
+    _tierIdsToMint[2] = 2;
+
+    bytes memory _metadata = abi.encode(
+      bytes32(0),
+      bytes32(0),
+      type(IJB721Delegate).interfaceId,
+      _allowOverspending,
+      _tierIdsToMint
+    );
+
+    uint256 _credits = delegate.creditsOf(beneficiary);
+    _leftover = _leftover / 2 + _credits; //left over amount
+
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit AddCredits(
+          _leftover - _credits,
+          _leftover,
+          beneficiary,
+          mockTerminalAddress
+    );
+
+    // First call will mint the 3 tiers requested + accumulate half of first floor in credit
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        beneficiary,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, _amount, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+
+    uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+
+    {
+      // We now attempt an additional tier 1 by using the credit we collected from last pay
+      uint16[] memory _moreTierIdsToMint = new uint16[](1);
+      _moreTierIdsToMint[0] = 1;
+
+      _metadata = abi.encode(
+        bytes32(0),
+        bytes32(0),
+        type(IJB721Delegate).interfaceId,
+        _allowOverspending,
+        _moreTierIdsToMint
+      );
+    }
+    
+    // fetch existing credits
+    _credits = delegate.creditsOf(beneficiary);
+
+    // using existing credits to mint
+    _leftover = tiers[0].contributionFloor - 1 - _credits;
+
+    vm.expectEmit(true, true, true, true, address(delegate));
+    emit UseCredits(
+          _credits - _leftover,
+          _leftover,
+          beneficiary,
+          mockTerminalAddress
+    );
+    
+    // minting not possible due to insufficient amount so we have left over amount
+    vm.prank(mockTerminalAddress);
+    delegate.didPay(
+      JBDidPayData(
+        beneficiary,
+        projectId,
+        0,
+        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+        0,
+        beneficiary,
+        false,
+        '',
+        _metadata
+      )
+    );
+  }
+
   function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftover() public {
     uint256 _leftover = tiers[1].contributionFloor - 1;
     uint256 _amount = tiers[0].contributionFloor + _leftover;
