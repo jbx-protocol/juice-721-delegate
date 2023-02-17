@@ -20,6 +20,7 @@ import './structs/JBTiered721Flags.sol';
   @dev
   Adheres to -
   IJBTiered721Delegate: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
+  IERC2981: Royalty standard.
 
   @dev
   Inherits from -
@@ -162,7 +163,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @return The contract's metadata URI.
   */
-  function contractURI() external view override returns (string memory) {
+  function contractURI() external view virtual override returns (string memory) {
     return store.contractUriOf(address(this));
   }
 
@@ -640,7 +641,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
 
-    // If there are funds leftover, add to credits.
+    // If there are allowed funds leftover, add to credits.
     if (_leftoverAmount != 0) {
       // Make sure there are no leftover funds after minting if not expected.
       if (!_allowOverspending) revert OVERSPENDING();
