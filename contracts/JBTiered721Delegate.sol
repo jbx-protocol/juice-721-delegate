@@ -651,7 +651,6 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
         uint256 _newCredits = _leftoverAmount + _stashedCredits;
 
         // Emit the change in credits.
-        // when _leftoverAmount != 0 there won't be a scenario where _credits < _newCredits
         if (_newCredits > _credits)
           emit AddCredits(_newCredits - _credits, _newCredits, _data.beneficiary, msg.sender);
         else if (_credits > _newCredits)
@@ -663,9 +662,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
       // Else reset the credits.
     } else if (_credits != _stashedCredits) {
       // Emit the change in credits.
-      // when _leftoverAmount = 0 there won't be a scenario where _credits < _stashedCredits
-      if (_credits > _stashedCredits)
-        emit UseCredits(_credits - _stashedCredits, _stashedCredits, _data.beneficiary, msg.sender);
+      emit UseCredits(_credits - _stashedCredits, _stashedCredits, _data.beneficiary, msg.sender);
 
       // Store the new credits.
       creditsOf[_data.beneficiary] = _stashedCredits;
