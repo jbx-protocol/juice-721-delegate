@@ -35,6 +35,20 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   event SetEncodedIPFSUri(uint256 indexed tierId, bytes32 encodedIPFSUri, address caller);
 
+  event AddCredits(
+    uint256 indexed changeAmount,
+    uint256 indexed newTotalCredits,
+    address indexed account,
+    address caller
+  );
+
+  event UseCredits(
+    uint256 indexed changeAmount,
+    uint256 indexed newTotalCredits,
+    address indexed account,
+    address caller
+  );
+
   function codeOrigin() external view returns (address);
 
   function store() external view returns (IJBTiered721DelegateStore);

@@ -20,6 +20,7 @@ import './structs/JBTiered721Flags.sol';
   @dev
   Adheres to -
   IJBTiered721Delegate: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
+  IERC2981: Royalty standard.
 
   @dev
   Inherits from -
@@ -176,7 +177,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @return The contract's metadata URI.
   */
-  function contractURI() external view override returns (string memory) {
+  function contractURI() external view virtual override returns (string memory) {
     return store.contractUriOf(address(this));
   }
 
@@ -654,17 +655,33 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
     }
 
-    // If there are funds leftover, add to credits.
+    // If there are allowed funds leftover, add to credits.
     if (_leftoverAmount != 0) {
       // Make sure there are no leftover funds after minting if not expected.
       if (!_allowOverspending) revert OVERSPENDING();
 
       // Increment the leftover amount.
       unchecked {
-        creditsOf[_data.beneficiary] = _leftoverAmount + _stashedCredits;
+        // Keep a reference to the amount of new credits.
+        uint256 _newCredits = _leftoverAmount + _stashedCredits;
+
+        // Emit the change in credits.
+        if (_newCredits > _credits)
+          emit AddCredits(_newCredits - _credits, _newCredits, _data.beneficiary, msg.sender);
+        else if (_credits > _newCredits)
+          emit UseCredits(_credits - _newCredits, _newCredits, _data.beneficiary, msg.sender);
+
+        // Store the new credits.
+        creditsOf[_data.beneficiary] = _newCredits;
       }
       // Else reset the credits.
-    } else if (_credits != _stashedCredits) creditsOf[_data.beneficiary] = _stashedCredits;
+    } else if (_credits != _stashedCredits) {
+      // Emit the change in credits.
+      emit UseCredits(_credits - _stashedCredits, _stashedCredits, _data.beneficiary, msg.sender);
+
+      // Store the new credits.
+      creditsOf[_data.beneficiary] = _stashedCredits;
+    }
   }
 
   /** 
