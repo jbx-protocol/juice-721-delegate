@@ -23,7 +23,7 @@ contract DeployMainnet is Script {
         vm.readFile(
           'node_modules/@jbx-protocol/juice-delegates-registry/broadcast/Deploy.s.sol/1/run-latest.json'
         ),
-        'transactions[0].contractAddress'
+        '.transactions[0].contractAddress'
       )
     );
 
@@ -71,7 +71,7 @@ contract DeployGoerli is Script {
         vm.readFile(
           'node_modules/@jbx-protocol/juice-delegates-registry/broadcast/Deploy.s.sol/5/run-latest.json'
         ),
-        'transactions[0].contractAddress'
+        '.transactions[0].contractAddress'
       )
     );
 
