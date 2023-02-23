@@ -784,11 +784,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Make sure the max is enforced.
       if (_tierToAdd.initialQuantity > _ONE_BILLION - 1) revert INVALID_QUANTITY();
+       
+      // Keep a reference to the previous tier.
+      JB721TierParams memory _previousTier;
 
       // Make sure the tier's category is greater than or equal to the previous tier's category.
       if (_i != 0) {
-        // Get a reference to the previous tier.
-        JB721TierParams memory _previousTier = _tiersToAdd[_i - 1];
+        // Set the reference to the previous tier.
+        _previousTier = _tiersToAdd[_i - 1];
 
         // Check category sort order.
         if (_tierToAdd.category == 0 || _tierToAdd.category < _previousTier.category)
@@ -840,7 +843,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       });
 
       // If this is the first tier in a new category, store its ID as such.
-      if (_startingTierIdOfCategory[msg.sender][_tierToAdd.category] == 0)
+      if (_previousTier.category != _tierToAdd.category) 
         _startingTierIdOfCategory[msg.sender][_tierToAdd.category] = _tierId;
 
       // Set the reserved token beneficiary if needed.
@@ -881,15 +884,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Set the next tier ID.
           _next = _nextSortedTierIdOf(msg.sender, _currentSortedTierId, _currentLastSortedTierId);
 
-          // If the category is less than or equal to the tier being iterated on, store the order.
-          if (_tierToAdd.category <= _storedTierOf[msg.sender][_currentSortedTierId].category) {
+          // If the category is less than or equal to the tier being iterated on and the tier being iterated isn't among those being added, store the order.
+          if (_tierToAdd.category <= _storedTierOf[msg.sender][_currentSortedTierId].category && _currentSortedTierId <= _currentMaxTierIdOf) {
             // If the tier ID being iterated on isn't the next tier ID, set the after.
             if (_currentSortedTierId != _tierId + 1)
               _tierIdAfter[msg.sender][_tierId] = _currentSortedTierId;
 
             // If this is the first tier being added, track the current last sorted tier ID if it's not already tracked.
             if (
-              _i == 0 &&
+              // _i == 0 &&
               _trackedLastSortTierIdOf[msg.sender] != _currentLastSortedTierId
             ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortedTierId;
 
@@ -898,7 +901,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
               // Set the tier after the previous one being iterated on as the tier being added, or 0 if the tier ID is incremented.
               _tierIdAfter[msg.sender][_previous] = _previous == _tierId - 1 ? 0 : _tierId;
 
-            // For the next tier being added, start at this current tier ID.
+            // For the next tier being added, start at the tier just placed.
             _startSortedTierId = _currentSortedTierId;
 
             // The tier just added is the previous for the next tier being added.
@@ -1385,9 +1388,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   ) internal view returns (uint256) {
     // If this is the last tier, set current to zero to break out of the loop.
     if (_id == _max) return 0;
+
     // Update the current tier ID to be the one saved to be after, if it exists.
     uint256 _storedNext = _tierIdAfter[_nft][_id];
+
     if (_storedNext != 0) return _storedNext;
+
     // Otherwise increment the current.
     return _id + 1;
   }
