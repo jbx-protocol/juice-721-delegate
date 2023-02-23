@@ -777,6 +777,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure the max is enforced.
       if (_tierToAdd.initialQuantity > _ONE_BILLION - 1) revert INVALID_QUANTITY();
 
+      // Category can't be 0.
+      if (_tierToAdd.category == 0) revert INVALID_CATEGORY();
+
       // Make sure the tier's category is greater than or equal to the previous tier's category.
       if (_i != 0) {
         // Get a reference to the previous tier.
