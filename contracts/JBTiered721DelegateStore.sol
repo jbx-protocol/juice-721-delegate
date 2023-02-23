@@ -1386,7 +1386,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _id,
     uint256 _max
   ) internal view returns (uint256) {
-    // If this is the last tier, set current to zero to break out of the loop.
+    // If this is the last tier, return zero.
     if (_id == _max) return 0;
 
     // Update the current tier ID to be the one saved to be after, if it exists.
