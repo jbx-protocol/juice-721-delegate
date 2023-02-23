@@ -3081,11 +3081,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     assertEq(_storedTiers.length, initialNumberOfTiers + floorTiersToAdd.length * 2);
 
-    // Check: Are all the tiers sorted?
-    for (uint256 i = 0; i < _storedTiers.length; i++) {
-      assertLe(_storedTiers[i].category, uint8(101));
-    }
-
     JB721Tier[] memory _stored101Tiers = _delegate.store().tiers(
       address(_delegate),
       101,
@@ -3094,6 +3089,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     assertEq(_stored101Tiers.length, floorTiersToAdd.length * 2);
+
+    // Ensure order
+    for (uint256 i; i < floorTiersToAdd.length; i++) {
+      assertGt(_stored101Tiers[i].id, _stored101Tiers[i + floorTiersToAdd.length].id);
+    }
   }
 
   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers_fetch_specifc_tier(
