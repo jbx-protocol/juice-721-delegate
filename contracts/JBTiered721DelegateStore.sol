@@ -892,7 +892,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // If this is the first tier being added, track the current last sorted tier ID if it's not already tracked.
             if (
-              // _i == 0 &&
               _trackedLastSortTierIdOf[msg.sender] != _currentLastSortedTierId
             ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortedTierId;
 
