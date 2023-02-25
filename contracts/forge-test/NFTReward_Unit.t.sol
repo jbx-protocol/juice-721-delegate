@@ -3228,6 +3228,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
       0,
       initialNumberOfTiers + floorTiersToAdd.length
     );
+
+    // check no of tiers
+    assertEq(_storedTiers.length, floorTiersToAdd.length);
+
     // Check: Are all the tiers sorted?
     for (uint256 i = 0; i < _storedTiers.length; i++) {
       assertEq(_storedTiers[i].category, uint8(101));
@@ -4192,6 +4196,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     vm.stopPrank();
 
     _tiersListDump = _delegate.test_store().ForTest_dumpTiersList(address(_delegate));
+
+    // check no of tiers
+    assertEq(_tiersListDump.length, initialNumberOfTiers - numberOfTiersToRemove);
 
     // Check: the activer tiers are in the likned list
     assertTrue(_isIn(tiersRemaining, _tiersListDump));
