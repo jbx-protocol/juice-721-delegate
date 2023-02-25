@@ -2313,9 +2313,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     // Floor are sorted in ascending orderen
     floorTiersToAdd = _sortArray(floorTiersToAdd);
-
+    JBTiered721Delegate _delegate;
+    JB721Tier[] memory _tiers;
+    {
     JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
-    JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
+    _tiers = new JB721Tier[](initialNumberOfTiers);
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
@@ -2355,7 +2357,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
     vm.etch(delegate_i, address(delegate).code);
-    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate = JBTiered721Delegate(delegate_i);
     _delegate.initialize(
       projectId,
       IJBDirectory(mockJBDirectory),
@@ -2380,7 +2382,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
       })
     );
 
+    }
     _delegate.transferOwnership(owner);
+    {
     JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
     JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
 
@@ -2420,8 +2424,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
     }
-
-
 
     vm.startPrank(owner);
     _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
@@ -2476,8 +2478,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
       address(_delegate),
       0,
       0,
-      initialNumberOfTiers + floorTiersToAdd.length
+      initialNumberOfTiers + floorTiersToAdd.length * 2 - 2
     );
+
+    assertEq(_storedTiers.length, initialNumberOfTiers + floorTiersToAdd.length * 2 - 2);
 
     // if the tiers have same category then the the tiers added last will have a lower index in the array
     // else the tiers would be sorted by categories
@@ -2485,6 +2489,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       if (_storedTiers[i - 1].category == _storedTiers[i].category)
         assertGt(_storedTiers[i - 1].id, _storedTiers[i].id);
       else assertLt(_storedTiers[i - 1].category, _storedTiers[i].category);
+    }
     }
   }
 
