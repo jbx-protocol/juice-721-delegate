@@ -2302,6 +2302,181 @@ contract TestJBTieredNFTRewardDelegate is Test {
     delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
   }
 
+
+  function testJBTieredNFTRewardDelegate_tiers_adjustTier_remove_tiers_multiple_times(
+    uint256 initialNumberOfTiers,
+    uint16[] memory floorTiersToAdd
+  ) public {
+    // Include adding X new tiers when 0 preexisting ones
+    initialNumberOfTiers = bound(initialNumberOfTiers, 3, 14);
+
+    vm.assume(floorTiersToAdd.length > 2 && floorTiersToAdd.length < 15);
+
+    // Floor are sorted in ascending orderen
+    floorTiersToAdd = _sortArray(floorTiersToAdd);
+    JBTiered721Delegate _delegate;
+    JB721Tier[] memory _tiers;
+    {
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+    _tiers = new JB721Tier[](initialNumberOfTiers);
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        contributionFloor: uint80((i + 1) * 10),
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(i * 2 + 1),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+
+      _tiers[i] = JB721Tier({
+        id: i + 1,
+        contributionFloor: _tierParams[i].contributionFloor,
+        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
+        remainingQuantity: _tierParams[i].initialQuantity,
+        initialQuantity: _tierParams[i].initialQuantity,
+        votingUnits: _tierParams[i].votingUnits,
+        reservedRate: _tierParams[i].reservedRate,
+        reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
+        allowManualMint: _tierParams[i].allowManualMint,
+        transfersPausable: false
+      });
+    }
+
+    JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+    vm.etch(delegate_i, address(delegate).code);
+    _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
+      IJBTiered721DelegateStore(address(_store)),
+      JBTiered721Flags({
+        preventOverspending: false,
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true
+      })
+    );
+
+    }
+    _delegate.transferOwnership(owner);
+    {
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
+    JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
+
+    for (uint256 i; i < floorTiersToAdd.length; i++) {
+      _tierParamsToAdd[i] = JB721TierParams({
+        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        lockedUntil: uint48(0),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(i * 2 + 1),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false
+      });
+      _tiersAdded[i] = JB721Tier({
+        id: _tiers.length + (i + 1),
+        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
+        remainingQuantity: _tierParamsToAdd[i].initialQuantity,
+        initialQuantity: _tierParamsToAdd[i].initialQuantity,
+        votingUnits: _tierParamsToAdd[i].votingUnits,
+        reservedRate: _tierParamsToAdd[i].reservedRate,
+        reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
+      });
+      vm.expectEmit(true, true, true, true, address(_delegate));
+      emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
+    }
+
+    // removing some tiers
+    uint256[] memory tiersToRemove = new uint256[](2);
+    tiersToRemove[0] = initialNumberOfTiers - 1;
+    tiersToRemove[1] = initialNumberOfTiers - 2;
+
+    vm.startPrank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, tiersToRemove);
+
+    // clean tiers
+    _delegate.store().cleanTiers(address(_delegate));
+    vm.stopPrank();
+
+    JB721Tier[] memory _storedTiers = _delegate.store().tiers(
+      address(_delegate),
+      0,
+      0,
+      initialNumberOfTiers + floorTiersToAdd.length
+    );
+
+    assertEq(_storedTiers.length, initialNumberOfTiers + floorTiersToAdd.length - 2);
+
+    tiersToRemove = new uint256[](2);
+    tiersToRemove[0] = floorTiersToAdd.length - 1;
+    tiersToRemove[1] = floorTiersToAdd.length - 2;
+
+    vm.startPrank(owner);
+    _delegate.adjustTiers(new JB721TierParams[](0), tiersToRemove);
+
+    // clean tiers again
+    _delegate.store().cleanTiers(address(_delegate));
+    vm.stopPrank();
+
+    _storedTiers = _delegate.store().tiers(
+      address(_delegate),
+      0,
+      0,
+      initialNumberOfTiers + floorTiersToAdd.length - 4
+    );
+
+    assertEq(_storedTiers.length, initialNumberOfTiers + floorTiersToAdd.length - 4);
+
+    // if the tiers have same category then the the tiers added last will have a lower index in the array
+    // else the tiers would be sorted by categories
+    for (uint256 i = 1; i < _storedTiers.length; i++) {
+      if (_storedTiers[i - 1].category == _storedTiers[i].category)
+        assertGt(_storedTiers[i - 1].id, _storedTiers[i].id);
+      else assertLt(_storedTiers[i - 1].category, _storedTiers[i].category);
+    }
+    }
+  }
+
   function testJBTieredNFTRewardDelegate_tiers_added_recently_fetched_first_sorted_category_wise_after_tiers_have_been_cleaned(
     uint256 initialNumberOfTiers,
     uint16[] memory floorTiersToAdd
