@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import { JBOwnable, JBOwnableOverrides } from '@jbx-protocol/juice-ownable/src/JBOwnable.sol';
+import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
+
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
@@ -30,11 +33,12 @@ import './ERC721.sol';
   ERC721: A standard definition for non-fungible tokens (NFTs).
 */
 abstract contract JB721Delegate is
+  ERC721,
+  JBOwnable,
   IJB721Delegate,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
-  IJBRedemptionDelegate,
-  ERC721
+  IJBRedemptionDelegate
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -42,7 +46,6 @@ abstract contract JB721Delegate is
 
   error INVALID_PAYMENT_EVENT();
   error INVALID_REDEMPTION_EVENT();
-  error UNAUTHORIZED();
   error UNEXPECTED_TOKEN_REDEEMED();
   error INVALID_REDEMPTION_METADATA();
 
