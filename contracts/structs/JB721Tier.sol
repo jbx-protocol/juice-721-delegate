@@ -3,7 +3,7 @@ pragma solidity ^0.8.16;
 
 /**
   @member id The tier's ID.
-  @member contributionFloor The minimum contribution to qualify for this tier.
+  @member price The price that must be paid to qualify for this tier.
   @member lockedUntil The time up to which this tier cannot be removed or paused.
   @member remainingQuantity Remaining number of tokens in this tier. Together with idCeiling this enables for consecutive, increasing token ids to be issued to contributors.
   @member initialQuantity The initial `remainingAllowance` value when the tier was set.
@@ -16,10 +16,11 @@ pragma solidity ^0.8.16;
   @member category A category to group NFT tiers by.
   @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
+  @member usePriceAsVotingUnits A flag indicating if the price should be used as the voting units.
 */
 struct JB721Tier {
   uint256 id;
-  uint256 contributionFloor;
+  uint256 price;
   uint256 lockedUntil;
   uint256 remainingQuantity;
   uint256 initialQuantity;
@@ -32,4 +33,5 @@ struct JB721Tier {
   uint256 category;
   bool allowManualMint;
   bool transfersPausable;
+  bool usePriceAsVotingUnits;
 }

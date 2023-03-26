@@ -56,6 +56,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   uint256 private constant _ONE_BILLION = 1_000_000_000;
 
+  uint256 private constant _ONE_DAY = 86_400;
+
   /** 
     @notice 
     The timestamp to add on to tier lock timestamps. 
@@ -306,7 +308,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           // Add the tier to the array being returned.
           _tiers[_numberOfIncludedTiers++] = JB721Tier({
             id: _currentSortedTierId,
-            contributionFloor: _storedTier.contributionFloor,
+            price: _storedTier.price,
             lockedUntil: _storedTier.lockedUntil == 0
               ? 0
               : _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
@@ -321,7 +323,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortedTierId],
             category: _storedTier.category,
             allowManualMint: _storedTier.allowManualMint,
-            transfersPausable: _storedTier.transfersPausable
+            transfersPausable: _storedTier.transfersPausable,
+            usePriceAsVotingUnits: _storedTier.usePriceAsVotingUnits
           });
           // If the tier's category is greater than the category sought after, break.
         else if (_category > 0 && _storedTier.category > _category) _currentSortedTierId = 0;
@@ -357,10 +360,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return
       JB721Tier({
         id: _id,
-        contributionFloor: _storedTier.contributionFloor,
+        price: _storedTier.price,
         lockedUntil: _storedTier.lockedUntil == 0
           ? 0
-          : _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
+          : _BASE_LOCK_TIMESTAMP + (_storedTier.lockedUntil * 3600),
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
@@ -372,7 +375,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
-        transfersPausable: _storedTier.transfersPausable
+        transfersPausable: _storedTier.transfersPausable,
+        usePriceAsVotingUnits: _storedTier.usePriceAsVotingUnits
       });
   }
 
@@ -401,7 +405,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     return
       JB721Tier({
         id: _tierId,
-        contributionFloor: _storedTier.contributionFloor,
+        price: _storedTier.price,
         lockedUntil: _storedTier.lockedUntil == 0
           ? 0
           : _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
@@ -416,7 +420,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
-        transfersPausable: _storedTier.transfersPausable
+        transfersPausable: _storedTier.transfersPausable,
+        usePriceAsVotingUnits: _storedTier.usePriceAsVotingUnits
       });
   }
 
@@ -483,12 +488,20 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the balance being iterated on.
     uint256 _balance;
 
+    // Keep a reference to the stored tier.        
+    JBStored721Tier memory _storedTier;
+
     // Loop through all tiers.
     for (uint256 _i = _maxTierId; _i != 0; ) {
       // Get a reference to the account's balance in this tier.
       _balance = tierBalanceOf[_nft][_account][_i];
 
       if (_balance != 0)
+        _storedTier = _storedTierOf[_nft][_i];
+
+        // Use either the tier's price or custom set voting units. 
+        uint256 _units = _storedTier.usePriceAsVotingUnits ? _storedTier.price : _storedTier.votingUnits;
+
         // Add the tier's voting units.
         units += _balance * _storedTierOf[_nft][_i].votingUnits;
 
@@ -646,7 +659,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     // Add each token's tier's contribution floor to the weight.
     for (uint256 _i; _i < _numberOfTokenIds; ) {
-      weight += _storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].contributionFloor;
+      weight += _storedTierOf[_nft][tierIdOfToken(_tokenIds[_i])].price;
 
       unchecked {
         ++_i;
@@ -678,7 +691,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Add the tier's contribution floor multiplied by the quantity minted.
       weight +=
-        _storedTier.contributionFloor *
+        _storedTier.price *
         ((_storedTier.initialQuantity - _storedTier.remainingQuantity) +
           _numberOfReservedTokensOutstandingFor(_nft, _i + 1, _storedTier));
 
@@ -821,18 +834,19 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Add the tier with the iterative ID.
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
-        contributionFloor: uint80(_tierToAdd.contributionFloor),
-        lockedUntil: _tierToAdd.lockedUntil == 0
-          ? uint40(0)
-          : uint40(_tierToAdd.lockedUntil - _BASE_LOCK_TIMESTAMP),
+        price: uint88(_tierToAdd.price),
         remainingQuantity: uint40(_tierToAdd.initialQuantity),
         initialQuantity: uint40(_tierToAdd.initialQuantity),
-        votingUnits: uint16(_tierToAdd.votingUnits),
+        votingUnits: uint32(_tierToAdd.votingUnits),
+        lockedUntil: _tierToAdd.lockedUntil == 0
+          ? uint16(0)
+          : uint16(_tierToAdd.lockedUntil * _ONE_DAY - _BASE_LOCK_TIMESTAMP),
         reservedRate: uint16(_tierToAdd.reservedRate),
+        category: uint16(_tierToAdd.category),
         royaltyRate: uint8(_tierToAdd.royaltyRate),
-        category: uint8(_tierToAdd.category),
         allowManualMint: _tierToAdd.allowManualMint,
-        transfersPausable: _tierToAdd.transfersPausable
+        transfersPausable: _tierToAdd.transfersPausable,
+        usePriceAsVotingUnits: _tierToAdd.usePriceAsVotingUnits
       });
 
       // If this is the first tier in a new category, store its ID as such.
@@ -1041,7 +1055,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       _tierId = _tierIds[_i];
 
       // If the tier is locked throw an error.
-      if (_storedTierOf[msg.sender][_tierId].lockedUntil + _BASE_LOCK_TIMESTAMP >= block.timestamp)
+      if (_storedTierOf[msg.sender][_tierId].lockedUntil * _ONE_DAY + _BASE_LOCK_TIMESTAMP >= block.timestamp)
         revert TIER_LOCKED();
 
       // Set the tier as removed.
@@ -1108,7 +1122,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
 
       // Make sure the amount meets the tier's contribution floor.
-      if (_storedTier.contributionFloor > leftoverAmount) revert INSUFFICIENT_AMOUNT();
+      if (_storedTier.price > leftoverAmount) revert INSUFFICIENT_AMOUNT();
 
       // Make sure there are enough units available.
       if (
@@ -1129,7 +1143,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Update the leftover amount;
-      leftoverAmount = leftoverAmount - _storedTier.contributionFloor;
+      leftoverAmount = leftoverAmount - _storedTier.price;
 
       unchecked {
         ++_i;

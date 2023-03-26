@@ -130,7 +130,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       tiers.push(
         JB721TierParams({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint48(0),
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
@@ -239,7 +239,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -257,7 +257,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -321,7 +321,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 j;
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -339,7 +339,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -414,7 +414,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -432,7 +432,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -476,7 +476,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80(_tierParams[i].contributionFloor),
+          price: uint80(_tierParams[i].price),
           lockedUntil: uint40(_tierParams[i].lockedUntil),
           remainingQuantity: uint40(_tierParams[i].initialQuantity),
           initialQuantity: uint40(_tierParams[i].initialQuantity),
@@ -498,7 +498,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _delegate.test_store().tier(address(_delegate), givenTier),
         JB721Tier({
           id: givenTier,
-          contributionFloor: 0,
+          price: 0,
           lockedUntil: 0,
           remainingQuantity: 0,
           initialQuantity: 0,
@@ -524,7 +524,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -568,7 +568,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(100 - (i + 1)),
           initialQuantity: uint40(100),
@@ -599,7 +599,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -661,7 +661,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -705,7 +705,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
@@ -742,7 +742,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i), // Include a 0 voting unit tier
@@ -855,7 +855,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < _tiers.length; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -914,7 +914,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < _tiers.length; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -984,7 +984,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     uint256 _theoreticalWeight;
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -1049,7 +1049,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp value for the constructor
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -1093,7 +1093,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i,
         JBStored721Tier({
-          contributionFloor: uint80(i * 10),
+          price: uint80(i * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
@@ -1217,7 +1217,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < nbTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80(i * 10),
+        price: uint80(i * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1235,7 +1235,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -1305,7 +1305,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80(i * 10),
+        price: uint80(i * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1370,7 +1370,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later (pass the constructor check)
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1414,7 +1414,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
@@ -1478,7 +1478,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later (pass the constructor check)
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1522,7 +1522,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
@@ -1644,7 +1644,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later (pass the constructor check)
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1688,7 +1688,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
@@ -1730,7 +1730,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1774,7 +1774,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
@@ -1821,7 +1821,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1865,7 +1865,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
@@ -1893,7 +1893,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -1937,7 +1937,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i + 1,
         JBStored721Tier({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
@@ -1993,7 +1993,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later (pass the constructor check)
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2067,7 +2067,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later (pass the constructor check)
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2151,7 +2151,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp tiers, will get overwritten later (pass the constructor check)
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2226,7 +2226,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   {
     JB721TierParams[] memory _tierParams = new JB721TierParams[](1);
     _tierParams[0] = JB721TierParams({
-        contributionFloor: uint80(10),
+        price: uint80(10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2258,7 +2258,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     JB721TierParams[] memory _tierParams = new JB721TierParams[](1);
     _tierParams[0] = JB721TierParams({
-        contributionFloor: uint80(10),
+        price: uint80(10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2322,7 +2322,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2340,7 +2340,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -2391,7 +2391,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2408,7 +2408,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -2496,7 +2496,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2514,7 +2514,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -2565,7 +2565,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2582,7 +2582,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -2609,7 +2609,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // add again
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2626,7 +2626,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -2684,7 +2684,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2702,7 +2702,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -2751,7 +2751,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2768,7 +2768,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -2821,7 +2821,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2839,7 +2839,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -2888,7 +2888,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2905,7 +2905,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -2962,7 +2962,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -2980,7 +2980,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -3029,7 +3029,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3046,7 +3046,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -3103,7 +3103,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3121,7 +3121,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -3170,7 +3170,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3187,7 +3187,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -3214,7 +3214,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // add again with category 101
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(11),
+        price: uint80(11),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3231,7 +3231,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + floorTiersToAdd.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -3301,7 +3301,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3319,7 +3319,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -3368,7 +3368,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3385,7 +3385,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -3412,7 +3412,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // add a new category
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(11),
+        price: uint80(11),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3429,7 +3429,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + floorTiersToAdd.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -3488,7 +3488,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3506,7 +3506,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -3555,7 +3555,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 10,
+        price: uint80(floorTiersToAdd[i]) * 10,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3572,7 +3572,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       });
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -3654,7 +3654,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3672,7 +3672,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -3793,7 +3793,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3811,7 +3811,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -3867,7 +3867,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       // Tiers which will remain
       if (i + 1 != 1 && i + 1 != 3 && i + 1 != 4) {
         _tierDataRemaining[_arrayIndex] = JB721TierParams({
-          contributionFloor: uint80((i + 1) * 10),
+          price: uint80((i + 1) * 10),
           lockedUntil: uint48(0),
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
@@ -3885,7 +3885,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
         _tiersRemaining[_arrayIndex] = JB721Tier({
           id: i + 1,
-          contributionFloor: _tierDataRemaining[_arrayIndex].contributionFloor,
+          price: _tierDataRemaining[_arrayIndex].price,
           lockedUntil: 0,
           remainingQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
           initialQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
@@ -3913,7 +3913,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721Tier[] memory _tiersAdded = new JB721Tier[](numberOfTiersToAdd);
     for (uint256 i; i < numberOfTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80(floorTiersToAdd[i]) * 11,
+        price: uint80(floorTiersToAdd[i]) * 11,
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -3931,7 +3931,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: 0,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -3988,7 +3988,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -4006,7 +4006,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -4049,7 +4049,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 100),
+        price: uint80((i + 1) * 100),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -4067,7 +4067,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -4103,7 +4103,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParam[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -4121,7 +4121,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParam[i].contributionFloor,
+        price: _tierParam[i].price,
         lockedUntil: _tierParam[i].lockedUntil,
         remainingQuantity: _tierParam[i].initialQuantity,
         initialQuantity: _tierParam[i].initialQuantity,
@@ -4164,7 +4164,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 100),
+        price: uint80((i + 1) * 100),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -4182,7 +4182,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -4218,7 +4218,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -4236,7 +4236,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -4279,7 +4279,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 100),
+        price: uint80((i + 1) * 100),
         lockedUntil: uint48(0),
         initialQuantity: uint40(0),
         votingUnits: uint16(0),
@@ -4297,7 +4297,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
-        contributionFloor: _tierParamsToAdd[i].contributionFloor,
+        price: _tierParamsToAdd[i].price,
         lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
@@ -4330,7 +4330,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(block.timestamp + 10),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -4348,7 +4348,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -4458,7 +4458,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -4476,7 +4476,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
       _tiers[i] = JB721Tier({
         id: i + 1,
-        contributionFloor: _tierParams[i].contributionFloor,
+        price: _tierParams[i].price,
         lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
@@ -4582,8 +4582,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   //        Pay
   // ----------------
 
-  // If the amount payed is below the contributionFloor to receive an NFT the pay should not revert if no metadata passed
-  function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowContributionFloorIfNoMetadata()
+  // If the amount payed is below the price to receive an NFT the pay should not revert if no metadata passed
+  function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowpriceIfNoMetadata()
     public
   {
     // Mock the directory call
@@ -4602,7 +4602,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         msg.sender,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 18, JBCurrencies.ETH), // 1 wei below the minimum amount
+        JBTokenAmount(JBTokens.ETH, tiers[0].price - 1, 18, JBCurrencies.ETH), // 1 wei below the minimum amount
         JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         msg.sender,
@@ -4646,7 +4646,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         0,
         JBTokenAmount(
           JBTokens.ETH,
-          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
+          tiers[0].price * 2 + tiers[1].price,
           18,
           JBCurrencies.ETH
         ),
@@ -4710,8 +4710,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_didPay_mintTierAndTrackLeftover() public {
-    uint256 _leftover = tiers[0].contributionFloor - 1;
-    uint256 _amount = tiers[0].contributionFloor + _leftover;
+    uint256 _leftover = tiers[0].price - 1;
+    uint256 _amount = tiers[0].price + _leftover;
 
     // Mock the directory call
     vm.mockCall(
@@ -4765,8 +4765,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
   // Mint a given tier with a leftover, mint another given tier then, if the accumulated credit is enough, mint an extra tier
   function testJBTieredNFTRewardDelegate_didPay_mintCorrectTiersWhenUsingPartialCredits() public {
-    uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
-    uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
+    uint256 _leftover = tiers[0].price + 1; // + 1 to avoid rounding error
+    uint256 _amount = tiers[0].price * 2 + tiers[1].price + _leftover / 2;
 
     // Mock the directory call
     vm.mockCall(
@@ -4884,8 +4884,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_didPay_doNotMintWithSomeoneElseCredit() public {
-    uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
-    uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
+    uint256 _leftover = tiers[0].price + 1; // + 1 to avoid rounding error
+    uint256 _amount = tiers[0].price * 2 + tiers[1].price + _leftover / 2;
 
     // Mock the directory call
     vm.mockCall(
@@ -5001,7 +5001,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     );
 
     // Mock the price oracle call
-    uint256 _amountInEth = (tiers[0].contributionFloor * 2 + tiers[1].contributionFloor) * 2;
+    uint256 _amountInEth = (tiers[0].price * 2 + tiers[1].price) * 2;
 
     vm.mockCall(_jbPrice, abi.encodeCall(IJBPrices.priceFor, (1, 2, 18)), abi.encode(2 * 10**9));
 
@@ -5085,7 +5085,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         0,
         JBTokenAmount(
           JBTokens.ETH,
-          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
+          tiers[0].price * 2 + tiers[1].price,
           18,
           JBCurrencies.ETH
         ),
@@ -5143,7 +5143,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         0,
         JBTokenAmount(
           JBTokens.ETH,
-          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
+          tiers[0].price * 2 + tiers[1].price,
           18,
           JBCurrencies.ETH
         ),
@@ -5194,7 +5194,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         0,
         JBTokenAmount(
           JBTokens.ETH,
-          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor - 1,
+          tiers[0].price * 2 + tiers[1].price - 1,
           18,
           JBCurrencies.ETH
         ),
@@ -5247,7 +5247,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           msg.sender,
           projectId,
           0,
-          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 18, JBCurrencies.ETH),
+          JBTokenAmount(JBTokens.ETH, tiers[0].price, 18, JBCurrencies.ETH),
           JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
           0,
           msg.sender,
@@ -5335,8 +5335,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
 
   function testJBTieredNFTRewardDelegate_didPay_mintTiersWhenUsingExistingCredits_when_existing_credits_more_than_new_credits() public {
-    uint256 _leftover = tiers[0].contributionFloor + 1; // + 1 to avoid rounding error
-    uint256 _amount = tiers[0].contributionFloor * 2 + tiers[1].contributionFloor + _leftover / 2;
+    uint256 _leftover = tiers[0].price + 1; // + 1 to avoid rounding error
+    uint256 _amount = tiers[0].price * 2 + tiers[1].price + _leftover / 2;
 
     // Mock the directory call
     vm.mockCall(
@@ -5407,7 +5407,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     _credits = delegate.creditsOf(beneficiary);
 
     // using existing credits to mint
-    _leftover = tiers[0].contributionFloor - 1 - _credits;
+    _leftover = tiers[0].price - 1 - _credits;
 
     vm.expectEmit(true, true, true, true, address(delegate));
     emit UseCredits(
@@ -5424,7 +5424,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         beneficiary,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor - 1, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, tiers[0].price - 1, 18, JBCurrencies.ETH),
         JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         beneficiary,
@@ -5436,8 +5436,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
   function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftover() public {
-    uint256 _leftover = tiers[1].contributionFloor - 1;
-    uint256 _amount = tiers[0].contributionFloor + _leftover;
+    uint256 _leftover = tiers[1].price - 1;
+    uint256 _amount = tiers[0].price + _leftover;
 
     // Mock the directory call
     vm.mockCall(
@@ -5476,8 +5476,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
   }
 
    function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftoverAndPrevented(bool _prevent) public {
-    uint256 _leftover = tiers[1].contributionFloor - 1;
-    uint256 _amount = tiers[0].contributionFloor + _leftover;
+    uint256 _leftover = tiers[1].price - 1;
+    uint256 _amount = tiers[0].price + _leftover;
 
     // Mock the directory call
     vm.mockCall(
@@ -5515,7 +5515,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       uint256 _credits = delegate.creditsOf(beneficiary);
       uint256 _stashedCredits = _credits;
       // calculating new credits since _leftover is non zero
-      uint256 _newCredits = tiers[0].contributionFloor + _leftover + _stashedCredits;
+      uint256 _newCredits = tiers[0].price + _leftover + _stashedCredits;
 
       vm.expectEmit(true, true, true, true, address(delegate));
       emit AddCredits(
@@ -5553,7 +5553,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // 5 tiers, floors from 10 to 50
     for (uint256 i; i < 5; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -5662,7 +5662,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         0,
         JBTokenAmount(
           JBTokens.ETH,
-          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
+          tiers[0].price * 2 + tiers[1].price,
           18,
           JBCurrencies.ETH
         ),
@@ -5777,7 +5777,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         0,
         JBTokenAmount(
           JBTokens.ETH,
-          tiers[0].contributionFloor * 2 + tiers[1].contributionFloor,
+          tiers[0].price * 2 + tiers[1].price,
           18,
           JBCurrencies.ETH
         ),
@@ -5898,7 +5898,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _holder,
         projectId,
         0,
-        JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 18, JBCurrencies.ETH),
+        JBTokenAmount(JBTokens.ETH, tiers[0].price, 18, JBCurrencies.ETH),
         JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
         0,
         _holder,
@@ -5956,7 +5956,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp for constructor
     for (uint256 i; i < 10; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -6001,7 +6001,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i,
         JBStored721Tier({
-          contributionFloor: uint80(i * 10),
+          price: uint80(i * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
@@ -6082,7 +6082,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp for constructor
     for (uint256 i; i < 10; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -6127,7 +6127,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i,
         JBStored721Tier({
-          contributionFloor: uint80(i * 10),
+          price: uint80(i * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
@@ -6197,7 +6197,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Temp for constructor
     for (uint256 i; i < 10; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
@@ -6243,7 +6243,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         address(_delegate),
         i,
         JBStored721Tier({
-          contributionFloor: uint80(i * 10),
+          price: uint80(i * 10),
           lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
@@ -6393,7 +6393,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           _holder,
           projectId,
           0,
-          JBTokenAmount(JBTokens.ETH, tiers[0].contributionFloor, 18, JBCurrencies.ETH),
+          JBTokenAmount(JBTokens.ETH, tiers[0].price, 18, JBCurrencies.ETH),
           JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
           0,
           _holder,
@@ -6454,7 +6454,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -6497,7 +6497,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 100),
+        price: uint80((i + 1) * 100),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
@@ -6683,7 +6683,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   // JB721Tier comparison
   function assertEq(JB721Tier memory first, JB721Tier memory second) private {
     assertEq(first.id, second.id);
-    assertEq(first.contributionFloor, second.contributionFloor);
+    assertEq(first.price, second.price);
     assertEq(first.lockedUntil, second.lockedUntil);
     assertEq(first.remainingQuantity, second.remainingQuantity);
     assertEq(first.initialQuantity, second.initialQuantity);
@@ -6699,7 +6699,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     for (uint256 i; i < first.length; i++) {
       assertEq(first[i].id, second[i].id);
-      assertEq(first[i].contributionFloor, second[i].contributionFloor);
+      assertEq(first[i].price, second[i].price);
       assertEq(first[i].lockedUntil, second[i].lockedUntil);
       assertEq(first[i].remainingQuantity, second[i].remainingQuantity);
       assertEq(first[i].initialQuantity, second[i].initialQuantity);
@@ -6757,7 +6757,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     returns (bool)
   {
     return (first.id == second.id &&
-      first.contributionFloor == second.contributionFloor &&
+      first.price == second.price &&
       first.lockedUntil == second.lockedUntil &&
       first.remainingQuantity == second.remainingQuantity &&
       first.initialQuantity == second.initialQuantity &&
@@ -6931,7 +6931,7 @@ contract ForTest_JBTiered721DelegateStore is
       // Add the tier to the array being returned.
       _tiers[_numberOfIncludedTiers++] = JB721Tier({
         id: _currentSortIndex,
-        contributionFloor: _storedTier.contributionFloor,
+        price: _storedTier.price,
         lockedUntil: _storedTier.lockedUntil,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,

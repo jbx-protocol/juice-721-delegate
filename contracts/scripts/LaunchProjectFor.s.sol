@@ -137,7 +137,7 @@ DEPRECATED - Use jbm for now
 
 //     for (uint256 i; i < 3; i++) {
 //       tiers[i] = JB721TierParams({
-//         contributionFloor: uint80(i * 0.001 ether),
+//         price: uint80(i * 0.001 ether),
 //         lockedUntil: uint48(0),
 //         initialQuantity: 100,
 //         votingUnits: uint16(10 * i),

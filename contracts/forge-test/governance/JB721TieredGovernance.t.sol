@@ -23,53 +23,51 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
     JB721TieredGovernance _delegate;
     // to handle stack too deep
     {
-    uint256 projectId = deployer.launchProjectFor(
-      _projectOwner,
-      NFTRewardDeployerData,
-      launchProjectData,
-      _jbController
-    );
-
-    // Get the dataSource
-    _delegate = JB721TieredGovernance(
-      _jbFundingCycleStore.currentOf(projectId).dataSource()
-    );
-
-    uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
-
-    assertEq(_delegate.getTierDelegate(_user, _tier), address(0));
-
-    vm.prank(_user);
-    _delegate.setTierDelegate(_user, _tier + 1);
-
-     bytes memory metadata;
-    {
-      // Craft the metadata: mint the specified tier
-      uint16[] memory rawMetadata = new uint16[](1);
-      rawMetadata[0] = uint16(_tier + 1); // 1 indexed
-      metadata = abi.encode(
-        bytes32(0),
-        bytes32(0),
-        type(IJB721Delegate).interfaceId,
-        true,
-        rawMetadata
+      uint256 projectId = deployer.launchProjectFor(
+        _projectOwner,
+        NFTRewardDeployerData,
+        launchProjectData,
+        _jbController
       );
-    }
 
-    // Pay and mint an NFT
-    vm.deal(_user, _payAmount);
-    vm.prank(_user);
+      // Get the dataSource
+      _delegate = JB721TieredGovernance(_jbFundingCycleStore.currentOf(projectId).dataSource());
 
-    _jbETHPaymentTerminal.pay{value: _payAmount}(
-      projectId,
-      100,
-      address(0),
-      _user,
-      0,
-      false,
-      'Take my money!',
-      metadata
-    );
+      uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].price;
+
+      assertEq(_delegate.getTierDelegate(_user, _tier), address(0));
+
+      vm.prank(_user);
+      _delegate.setTierDelegate(_user, _tier + 1);
+
+      bytes memory metadata;
+      {
+        // Craft the metadata: mint the specified tier
+        uint16[] memory rawMetadata = new uint16[](1);
+        rawMetadata[0] = uint16(_tier + 1); // 1 indexed
+        metadata = abi.encode(
+          bytes32(0),
+          bytes32(0),
+          type(IJB721Delegate).interfaceId,
+          true,
+          rawMetadata
+        );
+      }
+
+      // Pay and mint an NFT
+      vm.deal(_user, _payAmount);
+      vm.prank(_user);
+
+      _jbETHPaymentTerminal.pay{value: _payAmount}(
+        projectId,
+        100,
+        address(0),
+        _user,
+        0,
+        false,
+        'Take my money!',
+        metadata
+      );
     }
 
     // Assert that the user received the votingUnits
@@ -126,7 +124,7 @@ contract TestJBTieredGovernance is TestJBTieredNFTRewardDelegateE2E {
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
 
-    uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].contributionFloor;
+    uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].price;
 
     // Delegate NFT to fren
     vm.prank(_user);

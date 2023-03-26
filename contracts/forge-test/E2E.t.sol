@@ -521,7 +521,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     ) = createData();
 
     uint256 tier = 10;
-    uint256 floor = NFTRewardDeployerData.pricing.tiers[tier - 1].contributionFloor;
+    uint256 floor = NFTRewardDeployerData.pricing.tiers[tier - 1].price;
 
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
@@ -659,7 +659,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(10),
         votingUnits: uint16((i + 1) * 10),

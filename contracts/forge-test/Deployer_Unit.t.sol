@@ -1,6 +1,5 @@
 pragma solidity ^0.8.16;
 
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
 import '@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol';
 
 import '../JBTiered721DelegateProjectDeployer.sol';
@@ -104,7 +103,12 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       abi.encodeWithSelector(IJBController.launchProjectFor.selector),
       abi.encode(true)
     );
-    uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData, IJBController3_1(mockJBController));
+    uint256 _projectId = deployer.launchProjectFor(
+      owner,
+      NFTRewardDeployerData,
+      launchProjectData,
+      IJBController3_1(mockJBController)
+    );
     assertEq(previousProjectId, _projectId - 1);
   }
 
@@ -124,7 +128,12 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       abi.encodeWithSelector(IJBController.launchProjectFor.selector),
       abi.encode(true)
     );
-    uint256 _projectId = deployer.launchProjectFor(owner, NFTRewardDeployerData, launchProjectData, IJBController3_1(mockJBController));
+    uint256 _projectId = deployer.launchProjectFor(
+      owner,
+      NFTRewardDeployerData,
+      launchProjectData,
+      IJBController3_1(mockJBController)
+    );
     assertEq(_projectId, 6);
   }
 
@@ -147,7 +156,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
 
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
-        contributionFloor: uint80((i + 1) * 10),
+        price: uint80((i + 1) * 10),
         lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
