@@ -503,7 +503,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         uint256 _units = _storedTier.usePriceAsVotingUnits ? _storedTier.price : _storedTier.votingUnits;
 
         // Add the tier's voting units.
-        units += _balance * _storedTierOf[_nft][_i].votingUnits;
+        units += _balance * _units;
 
       unchecked {
         --_i;
