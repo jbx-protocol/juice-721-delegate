@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
   @member price The minimum contribution to qualify for this tier.
   @member initialQuantity The initial `remainingAllowance` value when the tier was set.
   @member votingUnits The amount of voting significance to give this tier compared to others.
-  @member lockedUntil The time up to which this tier cannot be removed. The application interprets this value as days added to the timestamp for 1672531200 (Jan 1, 2023 00:00 UTC), allowing for storage in 24 bits. 
   @memver reservedRate The number of minted tokens needed in the tier to allow for minting another reserved token.
   @member reservedRateBeneficiary The beneificary of the reserved tokens for this tier.
   @member royaltyRate The percentage of each of the NFT sales that should be routed to the royalty beneficiary. Out of MAX_ROYALTY_RATE.
@@ -22,7 +21,6 @@ struct JB721TierParams {
   uint88 price;
   uint40 initialQuantity;
   uint32 votingUnits;
-  uint16 lockedUntil;
   uint16 reservedRate;
   address reservedTokenBeneficiary;
   uint8 royaltyRate;

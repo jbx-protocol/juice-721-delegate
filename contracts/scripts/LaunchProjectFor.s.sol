@@ -112,7 +112,6 @@ DEPRECATED - Use jbm for now
 //       percent: 1000000000,
 //       projectId: 0,
 //       beneficiary: payable(_projectOwner),
-//       lockedUntil: 0,
 //       allocator: IJBSplitAllocator(address(0))
 //     });
 
@@ -138,7 +137,6 @@ DEPRECATED - Use jbm for now
 //     for (uint256 i; i < 3; i++) {
 //       tiers[i] = JB721TierParams({
 //         price: uint80(i * 0.001 ether),
-//         lockedUntil: uint48(0),
 //         initialQuantity: 100,
 //         votingUnits: uint16(10 * i),
 //         reservedRate: 1,

@@ -660,7 +660,6 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(10),
         votingUnits: uint16((i + 1) * 10),
         reservedRate: 10,

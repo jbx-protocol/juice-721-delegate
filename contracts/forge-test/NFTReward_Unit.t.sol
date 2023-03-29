@@ -16,8 +16,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
   AccessJBLib internal _accessJBLib;
 
-  uint256 private constant _BASE_LOCK_TIMESTAMP = 1672531200;
-
   address beneficiary = address(bytes20(keccak256('beneficiary')));
   address owner = address(bytes20(keccak256('owner')));
   address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
@@ -131,7 +129,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       tiers.push(
         JB721TierParams({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(0),
@@ -240,7 +237,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -258,7 +254,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -322,7 +317,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -340,7 +334,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -415,7 +408,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -433,7 +425,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -477,7 +468,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80(_tierParams[i].price),
-          lockedUntil: uint40(_tierParams[i].lockedUntil),
           remainingQuantity: uint40(_tierParams[i].initialQuantity),
           initialQuantity: uint40(_tierParams[i].initialQuantity),
           votingUnits: uint16(_tierParams[i].votingUnits),
@@ -499,7 +489,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JB721Tier({
           id: givenTier,
           price: 0,
-          lockedUntil: 0,
           remainingQuantity: 0,
           initialQuantity: 0,
           votingUnits: 0,
@@ -525,7 +514,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -569,7 +557,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(100 - (i + 1)),
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
@@ -600,7 +587,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -662,7 +648,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -706,7 +691,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
@@ -743,7 +727,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i), // Include a 0 voting unit tier
         reservedRate: uint16(0),
@@ -856,7 +839,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < _tiers.length; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
@@ -915,7 +897,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < _tiers.length; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
@@ -985,7 +966,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
@@ -1050,7 +1030,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
@@ -1094,7 +1073,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           price: uint80(i * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
@@ -1218,7 +1196,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80(i * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -1236,7 +1213,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -1306,7 +1282,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80(i * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -1371,7 +1346,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -1415,7 +1389,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
@@ -1479,7 +1452,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -1523,7 +1495,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
@@ -1645,7 +1616,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -1689,7 +1659,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
@@ -1731,7 +1700,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -1775,7 +1743,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
@@ -1822,7 +1789,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(1),
@@ -1866,7 +1832,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
@@ -1894,7 +1859,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(1),
@@ -1938,7 +1902,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i + 1,
         JBStored721Tier({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(initialQuantity - totalMinted),
           initialQuantity: uint40(initialQuantity),
           votingUnits: uint16(0),
@@ -1994,7 +1957,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2068,7 +2030,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2152,7 +2113,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < nbTiers; i++) {
       _tiers[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2227,7 +2187,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721TierParams[] memory _tierParams = new JB721TierParams[](1);
     _tierParams[0] = JB721TierParams({
         price: uint80(10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2259,7 +2218,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JB721TierParams[] memory _tierParams = new JB721TierParams[](1);
     _tierParams[0] = JB721TierParams({
         price: uint80(10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2323,7 +2281,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -2341,7 +2298,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2392,7 +2348,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2409,7 +2364,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -2497,7 +2451,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -2515,7 +2468,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2566,7 +2518,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2583,7 +2534,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -2610,7 +2560,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2627,7 +2576,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -2685,7 +2633,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -2703,7 +2650,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2752,7 +2698,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2769,7 +2714,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil + _BASE_LOCK_TIMESTAMP,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -2822,7 +2766,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -2840,7 +2783,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -2889,7 +2831,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -2906,7 +2847,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -2963,7 +2903,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -2981,7 +2920,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -3030,7 +2968,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -3047,7 +2984,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -3104,7 +3040,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -3122,7 +3057,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -3171,7 +3105,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -3188,7 +3121,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -3215,7 +3147,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(11),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -3232,7 +3163,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + floorTiersToAdd.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -3302,7 +3232,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -3320,7 +3249,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -3369,7 +3297,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -3386,7 +3313,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -3413,7 +3339,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(11),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -3430,7 +3355,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + floorTiersToAdd.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -3489,7 +3413,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -3507,7 +3430,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -3556,7 +3478,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < floorTiersToAdd.length; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 10,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -3573,7 +3494,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -3655,7 +3575,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -3673,7 +3592,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -3794,7 +3712,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         royaltyRate: uint8(1),
@@ -3812,7 +3729,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -3868,7 +3784,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       if (i + 1 != 1 && i + 1 != 3 && i + 1 != 4) {
         _tierDataRemaining[_arrayIndex] = JB721TierParams({
           price: uint80((i + 1) * 10),
-          lockedUntil: uint48(0),
           initialQuantity: uint40(100),
           votingUnits: uint16(0),
           reservedRate: uint16(i),
@@ -3886,7 +3801,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tiersRemaining[_arrayIndex] = JB721Tier({
           id: i + 1,
           price: _tierDataRemaining[_arrayIndex].price,
-          lockedUntil: 0,
           remainingQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
           initialQuantity: _tierDataRemaining[_arrayIndex].initialQuantity,
           votingUnits: _tierDataRemaining[_arrayIndex].votingUnits,
@@ -3914,7 +3828,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberOfTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80(floorTiersToAdd[i]) * 11,
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -3932,7 +3845,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: 0,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -3989,7 +3901,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -4007,7 +3918,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -4050,7 +3960,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80((i + 1) * 100),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(i),
@@ -4068,7 +3977,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -4104,7 +4012,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParam[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -4122,7 +4029,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParam[i].price,
-        lockedUntil: _tierParam[i].lockedUntil,
         remainingQuantity: _tierParam[i].initialQuantity,
         initialQuantity: _tierParam[i].initialQuantity,
         votingUnits: _tierParam[i].votingUnits,
@@ -4165,7 +4071,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80((i + 1) * 100),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i + 1),
@@ -4183,7 +4088,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -4219,7 +4123,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -4237,7 +4140,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -4280,7 +4182,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80((i + 1) * 100),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(0),
         votingUnits: uint16(0),
         reservedRate: uint16(0),
@@ -4298,7 +4199,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiersAdded[i] = JB721Tier({
         id: _tiers.length + (i + 1),
         price: _tierParamsToAdd[i].price,
-        lockedUntil: _tierParamsToAdd[i].lockedUntil,
         remainingQuantity: _tierParamsToAdd[i].initialQuantity,
         initialQuantity: _tierParamsToAdd[i].initialQuantity,
         votingUnits: _tierParamsToAdd[i].votingUnits,
@@ -4331,7 +4231,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(block.timestamp + 10),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -4349,7 +4248,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -4459,7 +4357,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -4477,7 +4374,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _tiers[i] = JB721Tier({
         id: i + 1,
         price: _tierParams[i].price,
-        lockedUntil: _tierParams[i].lockedUntil,
         remainingQuantity: _tierParams[i].initialQuantity,
         initialQuantity: _tierParams[i].initialQuantity,
         votingUnits: _tierParams[i].votingUnits,
@@ -5554,7 +5450,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 5; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
@@ -5957,7 +5852,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
@@ -6002,7 +5896,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           price: uint80(i * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
@@ -6083,7 +5976,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
@@ -6128,7 +6020,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           price: uint80(i * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
@@ -6198,7 +6089,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < 10; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(i + 1),
         reservedRate: uint16(0),
@@ -6244,7 +6134,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         i,
         JBStored721Tier({
           price: uint80(i * 10),
-          lockedUntil: uint40(0),
           remainingQuantity: uint40(10 * i - 5 * i),
           initialQuantity: uint40(10 * i),
           votingUnits: uint16(0),
@@ -6455,7 +6344,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < initialNumberOfTiers; i++) {
       _tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -6498,7 +6386,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < numberTiersToAdd; i++) {
       _tierParamsToAdd[i] = JB721TierParams({
         price: uint80((i + 1) * 100),
-        lockedUntil: uint48(0),
         initialQuantity: uint40(100),
         votingUnits: uint16(0),
         reservedRate: uint16(i),
@@ -6684,7 +6571,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
   function assertEq(JB721Tier memory first, JB721Tier memory second) private {
     assertEq(first.id, second.id);
     assertEq(first.price, second.price);
-    assertEq(first.lockedUntil, second.lockedUntil);
     assertEq(first.remainingQuantity, second.remainingQuantity);
     assertEq(first.initialQuantity, second.initialQuantity);
     assertEq(first.votingUnits, second.votingUnits);
@@ -6700,7 +6586,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     for (uint256 i; i < first.length; i++) {
       assertEq(first[i].id, second[i].id);
       assertEq(first[i].price, second[i].price);
-      assertEq(first[i].lockedUntil, second[i].lockedUntil);
       assertEq(first[i].remainingQuantity, second[i].remainingQuantity);
       assertEq(first[i].initialQuantity, second[i].initialQuantity);
       assertEq(first[i].votingUnits, second[i].votingUnits);
@@ -6758,7 +6643,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
   {
     return (first.id == second.id &&
       first.price == second.price &&
-      first.lockedUntil == second.lockedUntil &&
       first.remainingQuantity == second.remainingQuantity &&
       first.initialQuantity == second.initialQuantity &&
       first.votingUnits == second.votingUnits &&
@@ -6932,7 +6816,6 @@ contract ForTest_JBTiered721DelegateStore is
       _tiers[_numberOfIncludedTiers++] = JB721Tier({
         id: _currentSortIndex,
         price: _storedTier.price,
-        lockedUntil: _storedTier.lockedUntil,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,

@@ -31,7 +31,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error INSUFFICIENT_RESERVES();
   error INVALID_CATEGORY_SORT_ORDER();
   error INVALID_CATEGORY();
-  error INVALID_LOCKED_UNTIL();
   error INVALID_ROYALTY_RATE();
   error INVALID_QUANTITY();
   error INVALID_TIER();
@@ -41,7 +40,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error RESERVED_RATE_NOT_ALLOWED();
   error MANUAL_MINTING_NOT_ALLOWED();
   error PRICING_RESOLVER_CHANGES_LOCKED();
-  error TIER_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
 
@@ -57,16 +55,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   uint256 private constant _ONE_BILLION = 1_000_000_000;
 
   uint256 private constant _ONE_DAY = 86_400;
-
-  /** 
-    @notice 
-    The timestamp to add on to tier lock timestamps. 
-
-    @dev
-    Useful so the stored lock timestamp per-tier can fit in a smaller storage slot.
-    
-  */
-  uint256 private constant _BASE_LOCK_TIMESTAMP = 1672531200;
 
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
@@ -309,9 +297,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           _tiers[_numberOfIncludedTiers++] = JB721Tier({
             id: _currentSortedTierId,
             price: _storedTier.price,
-            lockedUntil: _storedTier.lockedUntil == 0
-              ? 0
-              : _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
             remainingQuantity: _storedTier.remainingQuantity,
             initialQuantity: _storedTier.initialQuantity,
             votingUnits: _storedTier.votingUnits,
@@ -361,9 +346,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       JB721Tier({
         id: _id,
         price: _storedTier.price,
-        lockedUntil: _storedTier.lockedUntil == 0
-          ? 0
-          : _BASE_LOCK_TIMESTAMP + (_storedTier.lockedUntil * 3600),
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
@@ -406,9 +388,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       JB721Tier({
         id: _tierId,
         price: _storedTier.price,
-        lockedUntil: _storedTier.lockedUntil == 0
-          ? 0
-          : _BASE_LOCK_TIMESTAMP + _storedTier.lockedUntil,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
         votingUnits: _storedTier.votingUnits,
@@ -822,10 +801,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make sure there is some quantity.
       if (_tierToAdd.initialQuantity == 0) revert NO_QUANTITY();
 
-      // Make sure the locked until is in the future if provided.
-      if (_tierToAdd.lockedUntil != 0 && _tierToAdd.lockedUntil < block.timestamp)
-        revert INVALID_LOCKED_UNTIL();
-
       // Make sure the royalty rate is within the bounds.
       if (_tierToAdd.royaltyRate > MAX_ROYALTY_RATE) revert INVALID_ROYALTY_RATE();
 
@@ -838,9 +813,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         remainingQuantity: uint40(_tierToAdd.initialQuantity),
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint32(_tierToAdd.votingUnits),
-        lockedUntil: _tierToAdd.lockedUntil == 0
-          ? uint16(0)
-          : uint16(_tierToAdd.lockedUntil * _ONE_DAY - _BASE_LOCK_TIMESTAMP),
         reservedRate: uint16(_tierToAdd.reservedRate),
         category: uint16(_tierToAdd.category),
         royaltyRate: uint8(_tierToAdd.royaltyRate),
@@ -1053,10 +1025,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     for (uint256 _i; _i < _numTiers; ) {
       // Set the tier being iterated on, 0-indexed
       _tierId = _tierIds[_i];
-
-      // If the tier is locked throw an error.
-      if (_storedTierOf[msg.sender][_tierId].lockedUntil * _ONE_DAY + _BASE_LOCK_TIMESTAMP >= block.timestamp)
-        revert TIER_LOCKED();
 
       // Set the tier as removed.
       _isTierRemovedBitmapWord[msg.sender].removeTier(_tierId);
