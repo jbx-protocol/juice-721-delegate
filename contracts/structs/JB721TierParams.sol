@@ -15,12 +15,12 @@ pragma solidity ^0.8.0;
   @member shouldUseReservedRateBeneficiaryAsDefault A flag indicating if the `reservedTokenBeneficiary` should be stored as the default beneficiary for all tiers.
   @member shouldUseRoyaltyBeneficiaryAsDefault A flag indicating if the `royaltyBeneficiary` should be stored as the default beneficiary for all tiers.
   @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
-  @member usePriceAsVotingUnits A flag indicating if the price should be used as the voting units.
+  @member useVotingUnits A flag indicating if the voting units override should be used over the price as the tier's voting units.
 */
 struct JB721TierParams {
   uint88 price;
   uint40 initialQuantity;
-  uint32 votingUnits;
+  uint40 votingUnits;
   uint16 reservedRate;
   address reservedTokenBeneficiary;
   uint8 royaltyRate;
@@ -31,5 +31,5 @@ struct JB721TierParams {
   bool shouldUseReservedTokenBeneficiaryAsDefault;
   bool shouldUseRoyaltyBeneficiaryAsDefault;
   bool transfersPausable;
-  bool usePriceAsVotingUnits;
+  bool useVotingUnits;
 }

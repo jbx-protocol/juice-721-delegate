@@ -309,7 +309,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             category: _storedTier.category,
             allowManualMint: _storedTier.allowManualMint,
             transfersPausable: _storedTier.transfersPausable,
-            usePriceAsVotingUnits: _storedTier.usePriceAsVotingUnits
+            useVotingUnits: _storedTier.useVotingUnits
           });
           // If the tier's category is greater than the category sought after, break.
         else if (_category > 0 && _storedTier.category > _category) _currentSortedTierId = 0;
@@ -358,7 +358,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable,
-        usePriceAsVotingUnits: _storedTier.usePriceAsVotingUnits
+        useVotingUnits: _storedTier.useVotingUnits
       });
   }
 
@@ -400,7 +400,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable,
-        usePriceAsVotingUnits: _storedTier.usePriceAsVotingUnits
+        useVotingUnits: _storedTier.useVotingUnits
       });
   }
 
@@ -478,11 +478,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       if (_balance != 0)
         _storedTier = _storedTierOf[_nft][_i];
 
-        // Use either the tier's price or custom set voting units. 
-        uint256 _units = _storedTier.usePriceAsVotingUnits ? _storedTier.price : _storedTier.votingUnits;
-
         // Add the tier's voting units.
-        units += _balance * _units;
+        // Use either the tier's price or custom set voting units. 
+        units += _balance * (_storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price);
 
       unchecked {
         --_i;
@@ -812,13 +810,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         price: uint88(_tierToAdd.price),
         remainingQuantity: uint40(_tierToAdd.initialQuantity),
         initialQuantity: uint40(_tierToAdd.initialQuantity),
-        votingUnits: uint32(_tierToAdd.votingUnits),
+        votingUnits: uint40(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
         category: uint16(_tierToAdd.category),
         royaltyRate: uint8(_tierToAdd.royaltyRate),
         allowManualMint: _tierToAdd.allowManualMint,
         transfersPausable: _tierToAdd.transfersPausable,
-        usePriceAsVotingUnits: _tierToAdd.usePriceAsVotingUnits
+        useVotingUnits: _tierToAdd.useVotingUnits
       });
 
       // If this is the first tier in a new category, store its ID as such.
