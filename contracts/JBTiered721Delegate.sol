@@ -599,7 +599,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _data The Juicebox standard project contribution data.
   */
-  function _processPayment(JBDidPayData calldata _data) internal override {
+  function _processPayment(JBDidPayData calldata _data) internal virtual override {
     // Normalize the currency.
     uint256 _value;
     if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
@@ -629,7 +629,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     // Keep a reference to the flag indicating if the transaction should not revert if all provided funds aren't spent. Defaults to false, meaning only a minimum payment is enforced.
     bool _allowOverspending;
 
-    // Skip the first 32 bytes which are used by the JB protocol to pass the paying project's ID when paying from a JBSplit.
+    // Skip the first 32 bytes which are used by the JB protocol to pass the referring project's ID.
     // Skip another 32 bytes reserved for generic extension parameters.
     // Check the 4 bytes interfaceId to verify the metadata is intended for this contract.
     if (

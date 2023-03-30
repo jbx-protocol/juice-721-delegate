@@ -55,8 +55,12 @@ contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
     JB721Tier memory _tier
   ) internal virtual override {
     _tokenId; // Prevents unused var compiler and natspec complaints.
-    if (_tier.votingUnits != 0)
+
+    // Determine whether to use the voting units or the price.
+    uint256 _units = _tier.useVotingUnits ? _tier.votingUnits : _tier.price;
+
+    if (_units != 0)
       // Transfer the voting units.
-      _transferVotingUnits(_from, _to, _tier.votingUnits);
+      _transferVotingUnits(_from, _to, _units);
   }
 }
