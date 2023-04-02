@@ -299,7 +299,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
             price: _storedTier.price,
             remainingQuantity: _storedTier.remainingQuantity,
             initialQuantity: _storedTier.initialQuantity,
-            votingUnits: _storedTier.votingUnits,
+            votingUnits: _storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
             // No reserved rate if no beneficiary set.
             reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
             reservedTokenBeneficiary: _reservedTokenBeneficiary,
@@ -348,7 +348,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         price: _storedTier.price,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
-        votingUnits: _storedTier.votingUnits,
+        votingUnits: _storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
         // No reserved rate if no beneficiary set.
         reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
         reservedTokenBeneficiary: _reservedTokenBeneficiary,
@@ -390,7 +390,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         price: _storedTier.price,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
-        votingUnits: _storedTier.votingUnits,
+        votingUnits: _storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
         // No reserved rate if beneficiary is not set.
         reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
         reservedTokenBeneficiary: _reservedTokenBeneficiary,
@@ -467,7 +467,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the balance being iterated on.
     uint256 _balance;
 
-    // Keep a reference to the stored tier.        
+    // Keep a reference to the stored tier.
     JBStored721Tier memory _storedTier;
 
     // Loop through all tiers.
@@ -475,12 +475,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Get a reference to the account's balance in this tier.
       _balance = tierBalanceOf[_nft][_account][_i];
 
-      if (_balance != 0)
-        _storedTier = _storedTierOf[_nft][_i];
+      if (_balance != 0) _storedTier = _storedTierOf[_nft][_i];
 
-        // Add the tier's voting units.
-        // Use either the tier's price or custom set voting units. 
-        units += _balance * (_storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price);
+      // Add the tier's voting units.
+      // Use either the tier's price or custom set voting units.
+      units +=
+        _balance *
+        (_storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price);
 
       unchecked {
         --_i;
@@ -766,7 +767,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Make sure the max is enforced.
       if (_tierToAdd.initialQuantity > _ONE_BILLION - 1) revert INVALID_QUANTITY();
-       
+
       // Keep a reference to the previous tier.
       JB721TierParams memory _previousTier;
 
@@ -820,7 +821,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       });
 
       // If this is the first tier in a new category, store its ID as such.
-      if (_previousTier.category != _tierToAdd.category) 
+      if (_previousTier.category != _tierToAdd.category)
         _startingTierIdOfCategory[msg.sender][_tierToAdd.category] = _tierId;
 
       // Set the reserved token beneficiary if needed.
@@ -863,15 +864,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           _next = _nextSortedTierIdOf(msg.sender, _currentSortedTierId, _currentLastSortedTierId);
 
           // If the category is less than or equal to the tier being iterated on and the tier being iterated isn't among those being added, store the order.
-          if (_tierToAdd.category <= _storedTierOf[msg.sender][_currentSortedTierId].category && _currentSortedTierId <= _currentMaxTierIdOf) {
+          if (
+            _tierToAdd.category <= _storedTierOf[msg.sender][_currentSortedTierId].category &&
+            _currentSortedTierId <= _currentMaxTierIdOf
+          ) {
             // If the tier ID being iterated on isn't the next tier ID, set the after.
             if (_currentSortedTierId != _tierId + 1)
               _tierIdAfter[msg.sender][_tierId] = _currentSortedTierId;
 
             // If this is the first tier being added, track the current last sorted tier ID if it's not already tracked.
-            if (
-              _trackedLastSortTierIdOf[msg.sender] != _currentLastSortedTierId
-            ) _trackedLastSortTierIdOf[msg.sender] = _currentLastSortedTierId;
+            if (_trackedLastSortTierIdOf[msg.sender] != _currentLastSortedTierId)
+              _trackedLastSortTierIdOf[msg.sender] = _currentLastSortedTierId;
 
             // If the previous after tier ID was set to something else, set the previous after.
             if (_previous != _tierId - 1 || _tierIdAfter[msg.sender][_previous] != 0)
