@@ -120,12 +120,10 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     @return The address of the royalty's receiver.
     @return The amount of the royalty.
   */
-  function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
-    external
-    view
-    override
-    returns (address, uint256)
-  {
+  function royaltyInfo(
+    uint256 _tokenId,
+    uint256 _salePrice
+  ) external view override returns (address, uint256) {
     return store.royaltyInfo(address(this), _tokenId, _salePrice);
   }
 
@@ -189,13 +187,10 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @return The weight.
   */
-  function redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata)
-    public
-    view
-    virtual
-    override
-    returns (uint256)
-  {
+  function redemptionWeightOf(
+    uint256[] memory _tokenIds,
+    JBRedeemParamsData calldata
+  ) public view virtual override returns (uint256) {
     return store.redemptionWeightOf(address(this), _tokenIds);
   }
 
@@ -205,13 +200,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @return The total weight.
   */
-  function totalRedemptionWeight(JBRedeemParamsData calldata)
-    public
-    view
-    virtual
-    override
-    returns (uint256)
-  {
+  function totalRedemptionWeight(
+    JBRedeemParamsData calldata
+  ) public view virtual override returns (uint256) {
     return store.totalRedemptionWeight(address(this));
   }
 
@@ -224,12 +215,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _interfaceId The ID of the interface to check for adherence to.
   */
-  function supportsInterface(bytes4 _interfaceId)
-    public
-    view
-    override(JB721Delegate, IERC165)
-    returns (bool)
-  {
+  function supportsInterface(
+    bytes4 _interfaceId
+  ) public view override(JB721Delegate, IERC165) returns (bool) {
     return
       _interfaceId == type(IJBTiered721Delegate).interfaceId ||
       super.supportsInterface(_interfaceId);
@@ -319,10 +307,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _mintReservesForTiersData Contains information about how many reserved tokens to mint for each tier.
   */
-  function mintReservesFor(JBTiered721MintReservesForTiersData[] calldata _mintReservesForTiersData)
-    external
-    override
-  {
+  function mintReservesFor(
+    JBTiered721MintReservesForTiersData[] calldata _mintReservesForTiersData
+  ) external override {
     // Keep a reference to the number of tiers there are to mint reserves for.
     uint256 _numberOfTiers = _mintReservesForTiersData.length;
 
@@ -345,11 +332,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _mintForTiersData Contains information about how who to mint tokens for from each tier.
   */
-  function mintFor(JBTiered721MintForTiersData[] calldata _mintForTiersData)
-    external
-    override
-    onlyOwner
-  {
+  function mintFor(
+    JBTiered721MintForTiersData[] calldata _mintForTiersData
+  ) external override onlyOwner {
     // Keep a reference to the number of beneficiaries there are to mint for.
     uint256 _numberOfBeneficiaries = _mintForTiersData.length;
 
@@ -376,11 +361,10 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     @param _tiersToAdd An array of tier data to add.
     @param _tierIdsToRemove An array of tier IDs to remove.
   */
-  function adjustTiers(JB721TierParams[] calldata _tiersToAdd, uint256[] calldata _tierIdsToRemove)
-    external
-    override
-    onlyOwner
-  {
+  function adjustTiers(
+    JB721TierParams[] calldata _tiersToAdd,
+    uint256[] calldata _tierIdsToRemove
+  ) external override onlyOwner {
     // Get a reference to the number of tiers being added.
     uint256 _numberOfTiersToAdd = _tiersToAdd.length;
 
@@ -490,11 +474,10 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
     @param _tierId The ID of the tier to set the encoded IPFS uri of.
     @param _encodedIPFSUri The encoded IPFS uri to set.
   */
-  function setEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri)
-    external
-    override
-    onlyOwner
-  {
+  function setEncodedIPFSUriOf(
+    uint256 _tierId,
+    bytes32 _encodedIPFSUri
+  ) external override onlyOwner {
     // Store the new value.
     store.recordSetEncodedIPFSUriOf(_tierId, _encodedIPFSUri);
 
@@ -556,12 +539,10 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @return tokenIds The IDs of the newly minted tokens.
   */
-  function mintFor(uint16[] calldata _tierIds, address _beneficiary)
-    public
-    override
-    onlyOwner
-    returns (uint256[] memory tokenIds)
-  {
+  function mintFor(
+    uint16[] calldata _tierIds,
+    address _beneficiary
+  ) public override onlyOwner returns (uint256[] memory tokenIds) {
     // Record the mint. The returned token IDs correspond to the tiers passed in.
     (tokenIds, ) = store.recordMint(
       type(uint256).max, // force the mint.
@@ -600,14 +581,14 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _data The Juicebox standard project contribution data.
   */
-  function _processPayment(JBDidPayData calldata _data) internal override {
+  function _processPayment(JBDidPayData calldata _data) internal virtual override {
     // Normalize the currency.
     uint256 _value;
     if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
     else if (prices != IJBPrices(address(0)))
       _value = PRBMath.mulDiv(
         _data.amount.value,
-        10**pricingDecimals,
+        10 ** pricingDecimals,
         prices.priceFor(_data.amount.currency, pricingCurrency, _data.amount.decimals)
       );
     else return;
