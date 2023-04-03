@@ -29,13 +29,9 @@ contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
 
     @return units The voting units for the account.
   */
-  function _getVotingUnits(address _account)
-    internal
-    view
-    virtual
-    override
-    returns (uint256 units)
-  {
+  function _getVotingUnits(
+    address _account
+  ) internal view virtual override returns (uint256 units) {
     return store.votingUnitsOf(address(this), _account);
   }
 
@@ -56,11 +52,8 @@ contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
   ) internal virtual override {
     _tokenId; // Prevents unused var compiler and natspec complaints.
 
-    // Determine whether to use the voting units or the price.
-    uint256 _units = _tier.useVotingUnits ? _tier.votingUnits : _tier.price;
-
-    if (_units != 0)
+    if (_tier.votingUnits != 0)
       // Transfer the voting units.
-      _transferVotingUnits(_from, _to, _units);
+      _transferVotingUnits(_from, _to, _tier.votingUnits);
   }
 }

@@ -72,12 +72,10 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     @param _account The account to check for a delegate of.
     @param _tier the tier to check within.
   */
-  function getTierDelegate(address _account, uint256 _tier)
-    external
-    view
-    override
-    returns (address)
-  {
+  function getTierDelegate(
+    address _account,
+    uint256 _tier
+  ) external view override returns (address) {
     return _tierDelegation[_account][_tier];
   }
 
@@ -125,12 +123,10 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     @param _tier The tier to check.
     @param _blockNumber The blocknumber to check the total voting power at.
   */
-  function getPastTierTotalVotes(uint256 _tier, uint256 _blockNumber)
-    external
-    view
-    override
-    returns (uint256)
-  {
+  function getPastTierTotalVotes(
+    uint256 _tier,
+    uint256 _blockNumber
+  ) external view override returns (uint256) {
     return _totalTierCheckpoints[_tier].getAtBlock(_blockNumber);
   }
 
@@ -144,11 +140,9 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @param _setTierDelegatesData An array of tiers to set delegates for.
    */
-  function setTierDelegates(JBTiered721SetTierDelegatesData[] memory _setTierDelegatesData)
-    external
-    virtual
-    override
-  {
+  function setTierDelegates(
+    JBTiered721SetTierDelegatesData[] memory _setTierDelegatesData
+  ) external virtual override {
     // Keep a reference to the number of tier delegates.
     uint256 _numberOfTierDelegates = _setTierDelegatesData.length;
 
@@ -194,12 +188,10 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
 
     @return The voting units.
   */
-  function _getTierVotingUnits(address _account, uint256 _tierId)
-    internal
-    view
-    virtual
-    returns (uint256)
-  {
+  function _getTierVotingUnits(
+    address _account,
+    uint256 _tierId
+  ) internal view virtual returns (uint256) {
     return store.tierVotingUnitsOf(address(this), _account, _tierId);
   }
 
@@ -211,11 +203,7 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
     @param _delegatee The account to delegate tier voting units to.
     @param _tierId The ID of the tier for which voting units are being transferred.
   */
-  function _delegateTier(
-    address _account,
-    address _delegatee,
-    uint256 _tierId
-  ) internal virtual {
+  function _delegateTier(address _account, address _delegatee, uint256 _tierId) internal virtual {
     // Get the current delegatee
     address _oldDelegate = _tierDelegation[_account][_tierId];
 
@@ -317,12 +305,9 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
   ) internal virtual override {
     _tokenId; // Prevents unused var compiler and natspec complaints.
 
-    // Determine whether to use the voting units or the price.
-    uint256 _units = _tier.useVotingUnits ? _tier.votingUnits : _tier.price;
-
-    if (_units != 0)
+    if (_tier.votingUnits != 0)
       // Transfer the voting units.
-      _transferTierVotingUnits(_from, _to, _tier.id, _units);
+      _transferTierVotingUnits(_from, _to, _tier.id, _tier.votingUnits);
   }
 
   // Utils from the Votes extension that is being reused for tier delegation.
