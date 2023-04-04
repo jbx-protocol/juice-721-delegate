@@ -671,7 +671,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         allowManualMint: false,
         shouldUseRoyaltyBeneficiaryAsDefault: true,
         shouldUseReservedTokenBeneficiaryAsDefault: false,
-        transfersPausable: false
+        transfersPausable: false,
+        useVotingUnits: false
       });
     }
 

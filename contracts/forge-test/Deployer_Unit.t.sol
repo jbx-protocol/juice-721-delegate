@@ -168,7 +168,8 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         allowManualMint: false,
         shouldUseRoyaltyBeneficiaryAsDefault: true,
         shouldUseReservedTokenBeneficiaryAsDefault: false,
-        transfersPausable: false
+        transfersPausable: false,
+        useVotingUnits: true
       });
     }
 
