@@ -61,25 +61,27 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   function pricingDecimals() external view returns (uint256);
 
-  function contractURI() external view returns (string memory);
-
   function creditsOf(address _address) external view returns (uint256);
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
-  function adjustTiers(JB721TierParams[] memory _tierDataToAdd, uint256[] memory _tierIdsToRemove)
-    external;
+  function adjustTiers(
+    JB721TierParams[] memory _tierDataToAdd,
+    uint256[] memory _tierIdsToRemove
+  ) external;
 
-  function mintReservesFor(JBTiered721MintReservesForTiersData[] memory _mintReservesForTiersData)
-    external;
+  function mintReservesFor(
+    JBTiered721MintReservesForTiersData[] memory _mintReservesForTiersData
+  ) external;
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
   function mintFor(JBTiered721MintForTiersData[] memory _mintForTiersData) external;
 
-  function mintFor(uint16[] calldata _tierIds, address _beneficiary)
-    external
-    returns (uint256[] memory tokenIds);
+  function mintFor(
+    uint16[] calldata _tierIds,
+    address _beneficiary
+  ) external returns (uint256[] memory tokenIds);
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
 

@@ -15,6 +15,8 @@ interface IJB721Delegate {
 
   function directory() external view returns (IJBDirectory);
 
+  function contractURI() external view returns (string memory);
+
   function setBaseUri(string memory _baseUri) external;
 
   function setContractUri(string calldata _contractMetadataUri) external;
