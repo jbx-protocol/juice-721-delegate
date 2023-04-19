@@ -14,12 +14,4 @@ interface IJB721Delegate {
   function projectId() external view returns (uint256);
 
   function directory() external view returns (IJBDirectory);
-
-  function contractURI() external view returns (string memory);
-
-  function setBaseUri(string memory _baseUri) external;
-
-  function setContractUri(string calldata _contractMetadataUri) external;
-
-  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external;
 }

@@ -65,6 +65,8 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
+  function contractURI() external view returns (string memory);
+
   function adjustTiers(
     JB721TierParams[] memory _tierDataToAdd,
     uint256[] memory _tierIdsToRemove
@@ -82,6 +84,12 @@ interface IJBTiered721Delegate is IJB721Delegate {
     uint16[] calldata _tierIds,
     address _beneficiary
   ) external returns (uint256[] memory tokenIds);
+
+  function setBaseUri(string memory _baseUri) external;
+
+  function setContractUri(string calldata _contractMetadataUri) external;
+
+  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external;
 
   function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
 
