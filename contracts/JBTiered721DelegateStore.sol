@@ -326,10 +326,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
                 useVotingUnits: _storedTier.useVotingUnits
               });
           }
-
-          // Set the next sorted tier ID.
-          _currentSortedTierId = _nextSortedTierIdOf(_nft, _currentSortedTierId, _lastTierId);
         }
+        // Set the next sorted tier ID.
+        _currentSortedTierId = _nextSortedTierIdOf(_nft, _currentSortedTierId, _lastTierId);
       }
 
       unchecked {
