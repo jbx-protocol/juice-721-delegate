@@ -286,15 +286,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Make the sorted array.
       while (_currentSortedTierId != 0 && _numberOfIncludedTiers < _size) {
         // If the tier's category is greater than the category sought after, break.
-        if (_categories.length > 0 && _storedTier.category > _categories[_i]) break;
-        else {
-          // Reset the bitmap if the current tier ID is outside the currently stored word.
-          if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
-            _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
+        // Reset the bitmap if the current tier ID is outside the currently stored word.
+        if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
+          _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
 
-          if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
-            _storedTier = _storedTierOf[_nft][_currentSortedTierId];
+        if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
+          _storedTier = _storedTierOf[_nft][_currentSortedTierId];
 
+          if (_categories.length > 0 && _storedTier.category > _categories[_i]) break;
+          else {
             // Get a reference to the reserved token beneficiary.
             address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(
               _nft,
@@ -835,7 +835,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         useVotingUnits: _tierToAdd.useVotingUnits
       });
 
-      // If this is the first tier in a new category, store its ID as such.
+      // If this is the first tier in a new category, store its ID as such. The `_startingTierIdOfCategory` of the 0 category will always be the same as the `_tierIdAfter` the 0th tier.
       if (_previousTier.category != _tierToAdd.category && _tierToAdd.category != 0)
         _startingTierIdOfCategory[msg.sender][_tierToAdd.category] = _tierId;
 
@@ -1390,7 +1390,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     The first sorted tier ID of an NFT.
 
     @param _nft The NFT to get the first sorted tier ID of.
-    @param _category The category to get the first sorted tier ID of. Send 0 for the first overall sorted ID.
+    @param _category The category to get the first sorted tier ID of. Send 0 for the first overall sorted ID, which might not be of the 0 category if there isn't a tier of the 0 category.
 
     @return id The first sorted tier ID.
   */
