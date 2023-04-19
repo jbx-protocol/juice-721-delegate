@@ -35,6 +35,12 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   event SetEncodedIPFSUri(uint256 indexed tierId, bytes32 encodedIPFSUri, address caller);
 
+  event SetBaseUri(string indexed baseUri, address caller);
+
+  event SetContractUri(string indexed contractUri, address caller);
+
+  event SetTokenUriResolver(IJBTokenUriResolver indexed newResolver, address caller);
+
   event AddCredits(
     uint256 indexed changeAmount,
     uint256 indexed newTotalCredits,
