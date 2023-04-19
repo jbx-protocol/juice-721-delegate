@@ -17,14 +17,14 @@ interface IJBTiered721DelegateStore {
 
   function maxTierIdOf(address _nft) external view returns (uint256);
 
-  function tiers(
+  function tiersOf(
     address _nft,
-    uint256 _category,
+    uint256[] memory _categories,
     uint256 _startingSortIndex,
     uint256 _size
   ) external view returns (JB721Tier[] memory tiers);
 
-  function tier(address _nft, uint256 _id) external view returns (JB721Tier memory tier);
+  function tierOf(address _nft, uint256 _id) external view returns (JB721Tier memory tier);
 
   function tierBalanceOf(
     address _nft,
@@ -32,10 +32,10 @@ interface IJBTiered721DelegateStore {
     uint256 _tier
   ) external view returns (uint256);
 
-  function tierOfTokenId(address _nft, uint256 _tokenId)
-    external
-    view
-    returns (JB721Tier memory tier);
+  function tierOfTokenId(
+    address _nft,
+    uint256 _tokenId
+  ) external view returns (JB721Tier memory tier);
 
   function tierIdOfToken(uint256 _tokenId) external pure returns (uint256);
 
@@ -43,17 +43,17 @@ interface IJBTiered721DelegateStore {
 
   function firstOwnerOf(address _nft, uint256 _tokenId) external view returns (address);
 
-  function redemptionWeightOf(address _nft, uint256[] memory _tokenIds)
-    external
-    view
-    returns (uint256 weight);
+  function redemptionWeightOf(
+    address _nft,
+    uint256[] memory _tokenIds
+  ) external view returns (uint256 weight);
 
   function totalRedemptionWeight(address _nft) external view returns (uint256 weight);
 
-  function numberOfReservedTokensOutstandingFor(address _nft, uint256 _tierId)
-    external
-    view
-    returns (uint256);
+  function numberOfReservedTokensOutstandingFor(
+    address _nft,
+    uint256 _tierId
+  ) external view returns (uint256);
 
   function numberOfReservesMintedFor(address _nft, uint256 _tierId) external view returns (uint256);
 
@@ -75,10 +75,10 @@ interface IJBTiered721DelegateStore {
 
   function defaultRoyaltyBeneficiaryOf(address _nft) external view returns (address);
 
-  function reservedTokenBeneficiaryOf(address _nft, uint256 _tierId)
-    external
-    view
-    returns (address);
+  function reservedTokenBeneficiaryOf(
+    address _nft,
+    uint256 _tierId
+  ) external view returns (address);
 
   function baseUriOf(address _nft) external view returns (string memory);
 
@@ -94,13 +94,14 @@ interface IJBTiered721DelegateStore {
     uint256 _salePrice
   ) external view returns (address receiver, uint256 royaltyAmount);
 
-  function recordAddTiers(JB721TierParams[] memory _tierData)
-    external
-    returns (uint256[] memory tierIds);
+  function recordAddTiers(
+    JB721TierParams[] memory _tierData
+  ) external returns (uint256[] memory tierIds);
 
-  function recordMintReservesFor(uint256 _tierId, uint256 _count)
-    external
-    returns (uint256[] memory tokenIds);
+  function recordMintReservesFor(
+    uint256 _tierId,
+    uint256 _count
+  ) external returns (uint256[] memory tokenIds);
 
   function recordBurn(uint256[] memory _tokenIds) external;
 
@@ -112,11 +113,7 @@ interface IJBTiered721DelegateStore {
     bool _isManualMint
   ) external returns (uint256[] memory tokenIds, uint256 leftoverAmount);
 
-  function recordTransferForTier(
-    uint256 _tierId,
-    address _from,
-    address _to
-  ) external;
+  function recordTransferForTier(uint256 _tierId, address _from, address _to) external;
 
   function recordRemoveTierIds(uint256[] memory _tierIds) external;
 

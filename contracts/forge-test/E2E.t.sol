@@ -490,7 +490,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Calculate if we are rounding up or not. Used to verify 'numberOfReservedTokensOutstandingFor'
     uint256 _rounding;
     {
-      JB721Tier memory _tier = IJBTiered721Delegate(NFTRewardDataSource).store().tier(
+      JB721Tier memory _tier = IJBTiered721Delegate(NFTRewardDataSource).store().tierOf(
         NFTRewardDataSource,
         highestTier
       );
