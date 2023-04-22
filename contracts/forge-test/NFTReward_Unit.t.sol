@@ -3473,6 +3473,24 @@ contract TestJBTieredNFTRewardDelegate is Test {
 
     assertEq(_stored102Tiers.length, floorTiersToAdd.length);
 
+    for (uint256 i = 0; i < _stored102Tiers.length; i++) {
+      assertEq(_stored102Tiers[i].category, uint8(102));
+    }
+
+    _categories[0] = 101;
+    JB721Tier[] memory _stored101Tiers = _delegate.store().tiersOf(
+      address(_delegate),
+      _categories,
+      0,
+      floorTiersToAdd.length
+    );
+
+    assertEq(_stored101Tiers.length, floorTiersToAdd.length);
+
+    for (uint256 i = 0; i < _stored101Tiers.length; i++) {
+      assertEq(_stored101Tiers[i].category, uint8(101));
+    }
+
     for (uint256 i = 1; i < initialNumberOfTiers + floorTiersToAdd.length * 2; i++) {
       assertGt(_allStoredTiers[i].id, _allStoredTiers[i - 1].id);
       assertLe(_allStoredTiers[i - 1].category, _allStoredTiers[i].category);
@@ -5421,8 +5439,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           beneficiary,
           mockTerminalAddress
     );
-    
-    // minting not possible due to insufficient amount so we have left over amount
+     // minting with left over credits
     vm.prank(mockTerminalAddress);
     delegate.didPay(
       JBDidPayData(
@@ -5438,6 +5455,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _metadata
       )
     );
+
+    // total supply increases
+    assertEq(_totalSupplyBefore + 1, delegate.store().totalSupply(address(delegate)));
   }
 
   function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftover() public {
