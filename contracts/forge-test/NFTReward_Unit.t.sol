@@ -3497,6 +3497,200 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
   }
 
+  function testJBTieredNFTRewardDelegate_adjustTiers_with_different_categories_and_fetched_together(
+    uint16 initialNumberOfTiers,
+    uint16[] memory floorTiersToAdd
+  ) public {
+    // Include adding X new tiers when 0 preexisting ones
+    vm.assume(initialNumberOfTiers < 15);
+    vm.assume(floorTiersToAdd.length > 0 && floorTiersToAdd.length < 15);
+
+    // Floor are sorted in ascending order
+    floorTiersToAdd = _sortArray(floorTiersToAdd);
+
+    JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+    JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
+
+    for (uint256 i; i < initialNumberOfTiers; i++) {
+      _tierParams[i] = JB721TierParams({
+        price: uint80((i + 1) * 10),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(i),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false,
+        useVotingUnits: true
+      });
+
+      _tiers[i] = JB721Tier({
+        id: i + 1,
+        price: _tierParams[i].price,
+        remainingQuantity: _tierParams[i].initialQuantity,
+        initialQuantity: _tierParams[i].initialQuantity,
+        votingUnits: _tierParams[i].votingUnits,
+        reservedRate: _tierParams[i].reservedRate,
+        reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParams[i].royaltyRate,
+        royaltyBeneficiary: _tierParams[i].royaltyBeneficiary,
+        encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+        category: _tierParams[i].category,
+        allowManualMint: _tierParams[i].allowManualMint,
+        transfersPausable: false,
+        useVotingUnits: true
+      });
+    }
+
+    JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+    vm.etch(delegate_i, address(delegate).code);
+    JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+    _delegate.initialize(
+      projectId,
+      IJBDirectory(mockJBDirectory),
+      name,
+      symbol,
+      IJBFundingCycleStore(mockJBFundingCycleStore),
+      baseUri,
+      IJBTokenUriResolver(mockTokenUriResolver),
+      contractUri,
+      JB721PricingParams({
+        tiers: _tierParams,
+        currency: 1,
+        decimals: 18,
+        prices: IJBPrices(address(0))
+      }),
+      IJBTiered721DelegateStore(address(_store)),
+      JBTiered721Flags({
+        preventOverspending: false,
+        lockReservedTokenChanges: false,
+        lockVotingUnitChanges: false,
+        lockManualMintingChanges: true
+      })
+    );
+
+    _delegate.transferOwnership(owner);
+    JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
+    JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
+
+    for (uint256 i; i < floorTiersToAdd.length; i++) {
+      _tierParamsToAdd[i] = JB721TierParams({
+        price: uint80(floorTiersToAdd[i]) * 10,
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(101),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false,
+        useVotingUnits: true
+      });
+      _tiersAdded[i] = JB721Tier({
+        id: _tiers.length + (i + 1),
+        price: _tierParamsToAdd[i].price,
+        remainingQuantity: _tierParamsToAdd[i].initialQuantity,
+        initialQuantity: _tierParamsToAdd[i].initialQuantity,
+        votingUnits: _tierParamsToAdd[i].votingUnits,
+        reservedRate: _tierParamsToAdd[i].reservedRate,
+        reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable,
+        useVotingUnits: true
+      });
+      vm.expectEmit(true, true, true, true, address(_delegate));
+      emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
+    }
+
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
+
+    _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
+    _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
+
+    // add a new category
+    for (uint256 i; i < floorTiersToAdd.length; i++) {
+      _tierParamsToAdd[i] = JB721TierParams({
+        price: uint80(11),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        royaltyRate: uint8(0),
+        royaltyBeneficiary: address(0),
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(102),
+        allowManualMint: false,
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        shouldUseRoyaltyBeneficiaryAsDefault: false,
+        transfersPausable: false,
+        useVotingUnits: true
+      });
+      _tiersAdded[i] = JB721Tier({
+        id: _tiers.length + floorTiersToAdd.length + (i + 1),
+        price: _tierParamsToAdd[i].price,
+        remainingQuantity: _tierParamsToAdd[i].initialQuantity,
+        initialQuantity: _tierParamsToAdd[i].initialQuantity,
+        votingUnits: _tierParamsToAdd[i].votingUnits,
+        reservedRate: _tierParamsToAdd[i].reservedRate,
+        reservedTokenBeneficiary: _tierParamsToAdd[i].reservedTokenBeneficiary,
+        royaltyRate: _tierParamsToAdd[i].royaltyRate,
+        royaltyBeneficiary: _tierParamsToAdd[i].royaltyBeneficiary,
+        encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
+        category: _tierParamsToAdd[i].category,
+        allowManualMint: _tierParamsToAdd[i].allowManualMint,
+        transfersPausable: _tierParamsToAdd[i].transfersPausable,
+        useVotingUnits: true
+      });
+      vm.expectEmit(true, true, true, true, address(_delegate));
+      emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
+    }
+
+    vm.prank(owner);
+    _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
+
+    uint256[] memory _categories =  new uint256[](3);
+    _categories[0] = 102;
+    _categories[1] = 100;
+    _categories[2] = 101;
+
+    JB721Tier[] memory _allStoredTiers = _delegate.store().tiersOf(
+      address(_delegate),
+      _categories,
+      0,
+      initialNumberOfTiers + floorTiersToAdd.length * 2
+    );
+
+    assertEq(_allStoredTiers.length,  initialNumberOfTiers + floorTiersToAdd.length * 2);
+
+    uint tier_100_max_index = _allStoredTiers.length - floorTiersToAdd.length;
+
+    for (uint256 i = 0; i <  floorTiersToAdd.length; i++) {
+      assertEq(_allStoredTiers[i].category, uint8(102));
+    }
+
+    for (uint256 i = floorTiersToAdd.length; i < tier_100_max_index; i++) {
+      assertEq(_allStoredTiers[i].category, uint8(100));
+    }
+
+    for (uint256 i = tier_100_max_index; i < _allStoredTiers.length; i++) {
+      assertEq(_allStoredTiers[i].category, uint8(101));
+    }
+  }
+
   function testJBTieredNFTRewardDelegate_adjustTiers_addNewTiers_fetch_specifc_tier(
     uint16 initialNumberOfTiers,
     uint16[] memory floorTiersToAdd
