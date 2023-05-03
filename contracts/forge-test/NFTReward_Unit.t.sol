@@ -266,8 +266,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: false
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -347,8 +346,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
 
       if (i != firstRemovedTier - 1 && i != secondRemovedTier - 1) {
@@ -440,8 +438,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -506,8 +503,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           encodedIPFSUri: bytes32(0),
           category: uint8(100), 
           allowManualMint: false,
-          transfersPausable: false,
-          useVotingUnits: true
+          transfersPausable: false
         })
       );
   }
@@ -1243,8 +1239,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -2348,8 +2343,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: true
+        transfersPausable: false
       });
     }
 
@@ -2416,8 +2410,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: false
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -2522,8 +2515,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: false
+        transfersPausable: false
       });
     }
 
@@ -2590,8 +2582,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: false
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -2634,8 +2625,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: false
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -2710,8 +2700,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: false
+        transfersPausable: false
       });
     }
 
@@ -2776,8 +2765,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: false
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -2847,8 +2835,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: true
+        transfersPausable: false
       });
     }
 
@@ -2913,8 +2900,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -2988,8 +2974,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: true
+        transfersPausable: false
       });
     }
 
@@ -3054,8 +3039,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3129,8 +3113,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: false
+        transfersPausable: false
       });
     }
 
@@ -3195,8 +3178,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: false
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3239,8 +3221,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3334,8 +3315,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: true
+        transfersPausable: false
       });
     }
 
@@ -3400,8 +3380,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3444,8 +3423,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3538,8 +3516,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: true
+        transfersPausable: false
       });
     }
 
@@ -3605,8 +3582,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3677,8 +3653,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: true
+        transfersPausable: false
       });
     }
 
@@ -3743,8 +3718,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3787,8 +3761,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -3871,8 +3844,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: false,
-        useVotingUnits: true
+        transfersPausable: false
       });
     }
 
@@ -3937,8 +3909,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
       vm.expectEmit(true, true, true, true, address(_delegate));
       emit AddTier(_tiersAdded[i].id, _tierParamsToAdd[i], owner);
@@ -4040,8 +4011,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -4179,8 +4149,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -4253,8 +4222,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           encodedIPFSUri: _tierDataRemaining[_arrayIndex].encodedIPFSUri,
           category: _tierDataRemaining[_arrayIndex].category,
           allowManualMint: _tierDataRemaining[_arrayIndex].allowManualMint,
-          transfersPausable: _tierDataRemaining[_arrayIndex].transfersPausable,
-          useVotingUnits: true
+          transfersPausable: _tierDataRemaining[_arrayIndex].transfersPausable
         });
         _arrayIndex++;
       } else {
@@ -4299,8 +4267,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
 
       vm.expectEmit(true, true, true, true, address(_delegate));
@@ -4374,8 +4341,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -4435,8 +4401,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -4489,8 +4454,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParam[i].encodedIPFSUri,
         category: _tierParam[i].category,
         allowManualMint: _tierParam[i].allowManualMint,
-        transfersPausable: _tierParam[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParam[i].transfersPausable
       });
     }
 
@@ -4550,8 +4514,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -4604,8 +4567,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -4665,8 +4627,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParamsToAdd[i].encodedIPFSUri,
         category: _tierParamsToAdd[i].category,
         allowManualMint: _tierParamsToAdd[i].allowManualMint,
-        transfersPausable: _tierParamsToAdd[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParamsToAdd[i].transfersPausable
       });
     }
 
@@ -4716,8 +4677,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -4839,8 +4799,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         encodedIPFSUri: _tierParams[i].encodedIPFSUri,
         category: _tierParams[i].category,
         allowManualMint: _tierParams[i].allowManualMint,
-        transfersPausable: _tierParams[i].transfersPausable,
-        useVotingUnits: true
+        transfersPausable: _tierParams[i].transfersPausable
       });
     }
 
@@ -7293,8 +7252,7 @@ contract ForTest_JBTiered721DelegateStore is
         encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
-        transfersPausable: _storedTier.transfersPausable,
-        useVotingUnits: false
+        transfersPausable: _storedTier.transfersPausable
       });
 
       // Set the next sort index.

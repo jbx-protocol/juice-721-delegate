@@ -15,7 +15,6 @@ pragma solidity ^0.8.16;
   @member category A category to group NFT tiers by.
   @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
-  @member useVotingUnits A flag indicating if the voting units override should be used over the price as the tier's voting units.
 */
 struct JB721Tier {
   uint256 id;
@@ -31,5 +30,4 @@ struct JB721Tier {
   uint256 category;
   bool allowManualMint;
   bool transfersPausable;
-  bool useVotingUnits;
 }
