@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
+import { JBOwnable, JBOwnableOverrides } from '@jbx-protocol/juice-ownable/src/JBOwnable.sol';
+
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
@@ -26,9 +29,9 @@ import './structs/JBTiered721Flags.sol';
   Inherits from -
   JB721Delegate: A generic NFT delegate.
   Votes: A helper for voting balance snapshots.
-  Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
+  JBOwnable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is JB721Delegate, IJBTiered721Delegate, IERC2981 {
+contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, IERC2981 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//

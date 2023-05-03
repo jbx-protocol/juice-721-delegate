@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import { JBOwnable, JBOwnableOverrides } from '@jbx-protocol/juice-ownable/src/JBOwnable.sol';
-import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
-
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol';
@@ -34,7 +31,6 @@ import './ERC721.sol';
 */
 abstract contract JB721Delegate is
   ERC721,
-  JBOwnable,
   IJB721Delegate,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
@@ -46,6 +42,7 @@ abstract contract JB721Delegate is
 
   error INVALID_PAYMENT_EVENT();
   error INVALID_REDEMPTION_EVENT();
+  error UNAUTHORIZED_TOKEN(uint256 _tokenId);
   error UNEXPECTED_TOKEN_REDEEMED();
   error INVALID_REDEMPTION_METADATA();
 
@@ -328,7 +325,7 @@ abstract contract JB721Delegate is
       _tokenId = _decodedTokenIds[_i];
 
       // Make sure the token's owner is correct.
-      if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED();
+      if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED_TOKEN(_tokenId);
 
       // Burn the token.
       _burn(_tokenId);
