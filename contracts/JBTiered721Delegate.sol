@@ -3,6 +3,7 @@ pragma solidity ^0.8.16;
 
 import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
 import { JBOwnable, JBOwnableOverrides } from '@jbx-protocol/juice-ownable/src/JBOwnable.sol';
+import { JB721Operations } from "./libraries/JB721Operations.sol";
 
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController.sol';
@@ -370,7 +371,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
   function adjustTiers(
     JB721TierParams[] calldata _tiersToAdd,
     uint256[] calldata _tierIdsToRemove
-  ) external override onlyOwner {
+  ) external override requirePermissionFromOwner(JB721Operations.ADJUST_TIERS) {
     // Get a reference to the number of tiers being added.
     uint256 _numberOfTiersToAdd = _tiersToAdd.length;
 

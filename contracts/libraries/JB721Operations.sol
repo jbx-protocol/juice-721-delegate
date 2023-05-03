@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+library JB721Operations {
+  // 0...18 - JBOperations
+  // 19 - JBOperations2 (ENS/Handle)
+  // 20 - JBUriOperations (Set token URI)
+  uint256 public constant ADJUST_TIERS = 21;
+}
