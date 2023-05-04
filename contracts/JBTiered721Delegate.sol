@@ -560,7 +560,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
   )
     public
     override
-    requirePermissionFromOwner(JB721Operations.SET_RESERVED_BENEFICIARY)
+    requirePermissionFromOwner(JB721Operations.MINT)
     returns (uint256[] memory tokenIds)
   {
     // Record the mint. The returned token IDs correspond to the tiers passed in.

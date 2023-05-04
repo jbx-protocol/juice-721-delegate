@@ -8,4 +8,5 @@ library JB721Operations {
   uint256 public constant ADJUST_TIERS = 21;
   uint256 public constant UPDATE_METADATA = 22;
   uint256 public constant SET_RESERVED_BENEFICIARY = 23;
+  uint256 public constant MINT = 24;
 }
