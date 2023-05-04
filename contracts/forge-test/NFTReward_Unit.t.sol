@@ -2303,7 +2303,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // Make sure the sender is not the owner
     vm.assume(_sender != owner);
     // Mock the sender not having permission to act as the owner (aka the default state)
-    vm.mockCall(mockJBOperatorStore, abi.encodeWithSelector(IJBOperatorStore.hasPermission.selector, _sender, owner, 0, 0), abi.encode(false));
+    vm.mockCall(mockJBOperatorStore, abi.encodeWithSelector(IJBOperatorStore.hasPermission.selector, _sender, owner, 0, JB721Operations.SET_RESERVED_BENEFICIARY), abi.encode(false));
     vm.expectRevert(
         abi.encodeWithSelector(JBOwnableOverrides.UNAUTHORIZED.selector)
     );
