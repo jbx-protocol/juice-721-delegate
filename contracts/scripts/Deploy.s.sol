@@ -26,15 +26,16 @@ contract DeployMainnet is Script {
         '.transactions[0].contractAddress'
       )
     );
+    IJBProjects _projects = jbDirectory.projects();
 
     // Make a static call for sanity check
     assert(registry.deployerOf(address(0)) == address(0));
 
     vm.startBroadcast();
 
-    JBTiered721Delegate noGovernance = new JBTiered721Delegate();
-    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
-    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+    JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore);
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance(_projects, jbOperatorStore);
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance(_projects, jbOperatorStore);
 
     delegateDeployer = new JBTiered721DelegateDeployer(
       globalGovernance,
@@ -74,15 +75,16 @@ contract DeployGoerli is Script {
         '.transactions[0].contractAddress'
       )
     );
+    IJBProjects _projects = jbDirectory.projects();
 
     // Make a static call for sanity check
     assert(registry.deployerOf(address(0)) == address(0));
 
     vm.startBroadcast();
 
-    JBTiered721Delegate noGovernance = new JBTiered721Delegate();
-    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
-    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+    JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore);
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance(_projects, jbOperatorStore);
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance(_projects, jbOperatorStore);
 
     delegateDeployer = new JBTiered721DelegateDeployer(
       globalGovernance,
