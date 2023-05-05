@@ -30,11 +30,11 @@ import './ERC721.sol';
   ERC721: A standard definition for non-fungible tokens (NFTs).
 */
 abstract contract JB721Delegate is
+  ERC721,
   IJB721Delegate,
   IJBFundingCycleDataSource,
   IJBPayDelegate,
-  IJBRedemptionDelegate,
-  ERC721
+  IJBRedemptionDelegate
 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -42,7 +42,7 @@ abstract contract JB721Delegate is
 
   error INVALID_PAYMENT_EVENT();
   error INVALID_REDEMPTION_EVENT();
-  error UNAUTHORIZED();
+  error UNAUTHORIZED_TOKEN(uint256 _tokenId);
   error UNEXPECTED_TOKEN_REDEEMED();
   error INVALID_REDEMPTION_METADATA();
 
@@ -320,7 +320,7 @@ abstract contract JB721Delegate is
       _tokenId = _decodedTokenIds[_i];
 
       // Make sure the token's owner is correct.
-      if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED();
+      if (_owners[_tokenId] != _data.holder) revert UNAUTHORIZED_TOKEN(_tokenId);
 
       // Burn the token.
       _burn(_tokenId);

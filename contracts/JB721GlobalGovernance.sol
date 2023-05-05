@@ -17,6 +17,20 @@ import './JBTiered721Delegate.sol';
   Votes: A helper for voting balance snapshots.
 */
 contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
+
+  //*********************************************************************//
+  // -------------------------- constructor ---------------------------- //
+  //*********************************************************************//
+
+  /**
+   * @param _projects the IJBProjects that will be used to check ownership of a project
+   * @param _operatorStore the operatorStore to be used to check permissions
+   */
+  constructor(
+    IJBProjects _projects,
+    IJBOperatorStore _operatorStore
+  ) JBTiered721Delegate(_projects, _operatorStore) {}
+
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//

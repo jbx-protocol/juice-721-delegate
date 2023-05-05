@@ -12,6 +12,8 @@ import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetad
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
 import '@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol';
 
+import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatable.sol";
+
 contract TestJBTieredNFTRewardDelegate is Test {
   using stdStorage for StdStorage;
   AccessJBLib internal _accessJBLib;
@@ -24,6 +26,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
   address mockTokenUriResolver = address(bytes20(keccak256('mockTokenUriResolver')));
   address mockTerminalAddress = address(bytes20(keccak256('mockTerminalAddress')));
   address mockJBProjects = address(bytes20(keccak256('mockJBProjects')));
+  address mockJBOperatorStore = address(bytes20(keccak256('mockJBOperatorStore')));
 
   uint256 projectId = 69;
 
@@ -188,10 +191,14 @@ contract TestJBTieredNFTRewardDelegate is Test {
         })
       )
     );
+    
 
-    noGovernanceOrigin = new JBTiered721Delegate();
-    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance();
-    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance();
+    vm.mockCall(mockJBDirectory, abi.encodeWithSelector(IJBDirectory.projects.selector), abi.encode(mockJBProjects));
+    vm.mockCall(mockJBDirectory, abi.encodeWithSelector(IJBOperatable.operatorStore.selector), abi.encode(mockJBProjects));
+
+    noGovernanceOrigin = new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
     delegatesRegistry = new JBDelegatesRegistry();
 
     JBTiered721DelegateDeployer jbDelegateDeployer = new JBTiered721DelegateDeployer(
@@ -2287,8 +2294,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
   ) public {
     // Make sure the sender is not the owner
     vm.assume(_sender != owner);
-
-    vm.expectRevert('Ownable: caller is not the owner');
+    // Mock the sender not having permission to act as the owner (aka the default state)
+    vm.mockCall(mockJBOperatorStore, abi.encodeWithSelector(IJBOperatorStore.hasPermission.selector, _sender, owner, 0, JB721Operations.SET_RESERVED_BENEFICIARY), abi.encode(false));
+    vm.expectRevert(
+        abi.encodeWithSelector(JBOwnableOverrides.UNAUTHORIZED.selector)
+    );
 
     vm.prank(_sender);
     delegate.setDefaultReservedTokenBeneficiary(_newBeneficiary);
@@ -6962,7 +6972,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       abi.encode(true)
     );
 
-    vm.expectRevert(abi.encodeWithSelector(JB721Delegate.UNAUTHORIZED.selector));
+    vm.expectRevert(abi.encodeWithSelector(JB721Delegate.UNAUTHORIZED_TOKEN.selector, tokenId));
     vm.prank(mockTerminalAddress);
     _delegate.didRedeem(
       JBDidRedeemData({
@@ -7181,6 +7191,8 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
     IJBTiered721DelegateStore _test_store,
     JBTiered721Flags memory _flags
   )
+    // The directory is also an IJBOperatable
+    JBTiered721Delegate(_directory.projects(), IJBOperatable(address(_directory)).operatorStore())
   {
     // Disable the safety check to not allow initializing the original contract
      codeOrigin = address(0);

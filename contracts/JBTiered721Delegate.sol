@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import {IJBOperatorStore} from '@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol';
+import {JBOwnable, JBOwnableOverrides} from '@jbx-protocol/juice-ownable/src/JBOwnable.sol';
+import {JB721Operations} from './libraries/JB721Operations.sol';
+
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import './abstract/JB721Delegate.sol';
@@ -25,9 +29,9 @@ import './structs/JBTiered721Flags.sol';
   Inherits from -
   JB721Delegate: A generic NFT delegate.
   Votes: A helper for voting balance snapshots.
-  Ownable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
+  JBOwnable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IERC2981 {
+contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, IERC2981 {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
@@ -226,7 +230,10 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
-  constructor() {
+  constructor(
+    IJBProjects _projects,
+    IJBOperatorStore _operatorStore
+  ) JBOwnable(_projects, _operatorStore) {
     codeOrigin = address(this);
   }
 
@@ -363,7 +370,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   function adjustTiers(
     JB721TierParams[] calldata _tiersToAdd,
     uint256[] calldata _tierIdsToRemove
-  ) external override onlyOwner {
+  ) external override requirePermissionFromOwner(JB721Operations.ADJUST_TIERS) {
     // Get a reference to the number of tiers being added.
     uint256 _numberOfTiersToAdd = _tiersToAdd.length;
 
@@ -408,7 +415,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _beneficiary The default beneficiary of the reserved tokens.
   */
-  function setDefaultReservedTokenBeneficiary(address _beneficiary) external override onlyOwner {
+  function setDefaultReservedTokenBeneficiary(
+    address _beneficiary
+  ) external override requirePermissionFromOwner(JB721Operations.SET_RESERVED_BENEFICIARY) {
     // Set the beneficiary.
     store.recordSetDefaultReservedTokenBeneficiary(_beneficiary);
 
@@ -424,7 +433,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _baseUri The new base URI.
   */
-  function setBaseUri(string calldata _baseUri) external override onlyOwner {
+  function setBaseUri(
+    string calldata _baseUri
+  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
     // Store the new value.
     store.recordSetBaseUri(_baseUri);
 
@@ -440,7 +451,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _contractUri The new contract URI.
   */
-  function setContractUri(string calldata _contractUri) external override onlyOwner {
+  function setContractUri(
+    string calldata _contractUri
+  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
     // Store the new value.
     store.recordSetContractUri(_contractUri);
 
@@ -456,7 +469,9 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
 
     @param _tokenUriResolver The new URI resolver.
   */
-  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external override onlyOwner {
+  function setTokenUriResolver(
+    IJBTokenUriResolver _tokenUriResolver
+  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
     // Store the new value.
     store.recordSetTokenUriResolver(_tokenUriResolver);
 
@@ -476,7 +491,7 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   function setEncodedIPFSUriOf(
     uint256 _tierId,
     bytes32 _encodedIPFSUri
-  ) external override onlyOwner {
+  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
     // Store the new value.
     store.recordSetEncodedIPFSUriOf(_tierId, _encodedIPFSUri);
 
@@ -541,7 +556,12 @@ contract JBTiered721Delegate is JB721Delegate, Ownable, IJBTiered721Delegate, IE
   function mintFor(
     uint16[] calldata _tierIds,
     address _beneficiary
-  ) public override onlyOwner returns (uint256[] memory tokenIds) {
+  )
+    public
+    override
+    requirePermissionFromOwner(JB721Operations.MINT)
+    returns (uint256[] memory tokenIds)
+  {
     // Record the mint. The returned token IDs correspond to the tiers passed in.
     (tokenIds, ) = store.recordMint(
       type(uint256).max, // force the mint.

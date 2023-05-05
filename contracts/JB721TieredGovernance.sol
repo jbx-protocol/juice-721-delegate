@@ -131,6 +131,19 @@ contract JB721TieredGovernance is JBTiered721Delegate, IJB721TieredGovernance {
   }
 
   //*********************************************************************//
+  // -------------------------- constructor ---------------------------- //
+  //*********************************************************************//
+
+  /**
+   * @param _projects the IJBProjects that will be used to check ownership of a project
+   * @param _operatorStore the operatorStore to be used to check permissions
+   */
+  constructor(
+    IJBProjects _projects,
+    IJBOperatorStore _operatorStore
+  ) JBTiered721Delegate(_projects, _operatorStore) {}
+
+  //*********************************************************************//
   // ----------------------- public transactions ----------------------- //
   //*********************************************************************//
 
