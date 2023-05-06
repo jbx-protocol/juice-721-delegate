@@ -15,6 +15,7 @@ pragma solidity ^0.8.16;
   @member category A category to group NFT tiers by.
   @member allowManualMint A flag indicating if the contract's owner can mint from this tier on demand.
   @member transfersPausable A flag indicating if transfers from this tier can be pausable. 
+  @member resolvedTokenUri A resolved token URI if a resolver is included for the NFT to which this tier belongs.
 */
 struct JB721Tier {
   uint256 id;
@@ -30,4 +31,5 @@ struct JB721Tier {
   uint256 category;
   bool allowManualMint;
   bool transfersPausable;
+  string resolvedUri;
 }
