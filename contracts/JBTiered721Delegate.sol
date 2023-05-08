@@ -573,6 +573,8 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
       // Mint tiers if they were specified.
       if (_tierIdsToMint.length != 0)
         _leftoverAmount = _mintAll(_leftoverAmount, _tierIdsToMint, _data.beneficiary);
+    } else if (!store.flagsOf(address(this)).preventOverspending) {
+      _allowOverspending = true;
     }
 
     // If there are allowed funds leftover, add to credits.

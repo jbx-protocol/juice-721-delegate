@@ -22,7 +22,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     address reserveBeneficiary = address(bytes20(keccak256('reserveBeneficiary')));
     address mockJBDirectory = address(bytes20(keccak256('mockJBDirectory')));
     address mockJBFundingCycleStore = address(bytes20(keccak256('mockJBFundingCycleStore')));
-    address mockTokenUriResolver = address(bytes20(keccak256('mockTokenUriResolver')));
+    address mockTokenUriResolver = address(0); //bytes20(keccak256('mockTokenUriResolver')));
     address mockTerminalAddress = address(bytes20(keccak256('mockTerminalAddress')));
     address mockJBProjects = address(bytes20(keccak256('mockJBProjects')));
     address mockJBOperatorStore = address(bytes20(keccak256('mockJBOperatorStore')));
@@ -3977,7 +3977,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     //        Pay
     // ----------------
     // If the amount payed is below the price to receive an NFT the pay should not revert if no metadata passed
-    function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowpriceIfNoMetadata()
+    function testJBTieredNFTRewardDelegate_didPay_doesNotOnAmountBelowPriceIfNoMetadata()
       public
     {
       // Mock the directory call
@@ -3986,8 +3986,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
         abi.encode(true)
       );
-      // Make sure the call reverts
-      vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
       vm.prank(mockTerminalAddress);
       delegate.didPay(
         JBDidPayData(
@@ -4003,6 +4001,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           new bytes(0)
         )
       );
+      assertTrue(delegate.creditsOf[msg.sender], tiers[0].price - 1);
     }
     // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
     function testJBTieredNFTRewardDelegate_didPay_mintCorrectTier() public {
