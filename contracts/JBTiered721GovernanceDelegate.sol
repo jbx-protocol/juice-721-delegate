@@ -6,7 +6,7 @@ import './JBTiered721Delegate.sol';
 
 /**
   @title
-  JB721GlobalGovernance
+  JBTiered721GovernanceDelegate
 
   @notice
   A tiered 721 delegate where each NFT can be used for on chain governance, with votes delegatable globally across all tiers.
@@ -16,8 +16,7 @@ import './JBTiered721Delegate.sol';
   JBTiered721Delegate: The tiered 721 delegate.
   Votes: A helper for voting balance snapshots.
 */
-contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
-
+contract JBTiered721GovernanceDelegate is Votes, JBTiered721Delegate {
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//

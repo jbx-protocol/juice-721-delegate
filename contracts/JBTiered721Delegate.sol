@@ -23,7 +23,6 @@ import './structs/JBTiered721Flags.sol';
   @dev
   Adheres to -
   IJBTiered721Delegate: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
-  IERC2981: Royalty standard.
 
   @dev
   Inherits from -
@@ -31,16 +30,27 @@ import './structs/JBTiered721Flags.sol';
   Votes: A helper for voting balance snapshots.
   JBOwnable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
 */
-contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, IERC2981 {
+contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
   //*********************************************************************//
 
-  error NOT_AVAILABLE();
   error OVERSPENDING();
-  error PRICING_RESOLVER_CHANGES_PAUSED();
   error RESERVED_TOKEN_MINTING_PAUSED();
   error TRANSFERS_PAUSED();
+
+  //*********************************************************************//
+  // --------------------- internal stored properties ------------------ //
+  //*********************************************************************//
+
+  /**
+    @notice
+    The first owner of each token ID, stored on first transfer out.
+
+    _nft The NFT contract to which the token belongs.
+    _tokenId The ID of the token to get the stored first owner of.
+  */
+  mapping(uint256 => address) internal _firstOwnerOf;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -90,6 +100,22 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
   */
   mapping(address => uint256) public override creditsOf;
 
+  /**
+    @notice
+    The common base for the tokenUri's
+
+    _nft The NFT for which the base URI applies.
+  */
+  string public override baseURI;
+
+  /**
+    @notice
+    Contract metadata uri.
+
+    _nft The NFT for which the contract URI resolver applies.
+  */
+  string public override contractURI;
+
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
@@ -104,30 +130,13 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
   */
   function firstOwnerOf(uint256 _tokenId) external view override returns (address) {
     // Get a reference to the first owner.
-    address _storedFirstOwner = store.firstOwnerOf(address(this), _tokenId);
+    address _storedFirstOwner = _firstOwnerOf[_tokenId];
 
     // If the stored first owner is set, return it.
     if (_storedFirstOwner != address(0)) return _storedFirstOwner;
 
     // Otherwise, the first owner must be the current owner.
     return _owners[_tokenId];
-  }
-
-  /**
-    @notice 
-    Royalty info conforming to EIP-2981.
-
-    @param _tokenId The ID of the token that the royalty is for.
-    @param _salePrice The price being paid for the token.
-
-    @return The address of the royalty's receiver.
-    @return The amount of the royalty.
-  */
-  function royaltyInfo(
-    uint256 _tokenId,
-    uint256 _salePrice
-  ) external view override returns (address, uint256) {
-    return store.royaltyInfo(address(this), _tokenId, _salePrice);
   }
 
   //*********************************************************************//
@@ -165,21 +174,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
     if (address(_resolver) != address(0)) return _resolver.getUri(_tokenId);
 
     // Return the token URI for the token's tier.
-    return
-      JBIpfsDecoder.decode(
-        store.baseUriOf(address(this)),
-        store.encodedTierIPFSUriOf(address(this), _tokenId)
-      );
-  }
-
-  /** 
-    @notice
-    Returns the URI where contract metadata can be found. 
-
-    @return The contract's metadata URI.
-  */
-  function contractURI() external view virtual override returns (string memory) {
-    return store.contractUriOf(address(this));
+    return JBIpfsDecoder.decode(baseURI, store.encodedTierIPFSUriOf(address(this), _tokenId));
   }
 
   /** 
@@ -218,9 +213,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
 
     @param _interfaceId The ID of the interface to check for adherence to.
   */
-  function supportsInterface(
-    bytes4 _interfaceId
-  ) public view override(JB721Delegate, IERC165) returns (bool) {
+  function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
     return
       _interfaceId == type(IJBTiered721Delegate).interfaceId ||
       super.supportsInterface(_interfaceId);
@@ -279,10 +272,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
     prices = _pricing.prices;
 
     // Store the base URI if provided.
-    if (bytes(_baseUri).length != 0) _store.recordSetBaseUri(_baseUri);
+    if (bytes(_baseUri).length != 0) baseURI = _baseUri;
 
     // Set the contract URI if provided.
-    if (bytes(_contractUri).length != 0) _store.recordSetContractUri(_contractUri);
+    if (bytes(_contractUri).length != 0) contractURI = _contractUri;
 
     // Set the token URI resolver if provided.
     if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
@@ -309,6 +302,52 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
 
   /** 
     @notice
+    Manually mint NFTs from tiers.
+
+    @param _tierIds The IDs of the tiers to mint from.
+    @param _beneficiary The address to mint to. 
+
+    @return tokenIds The IDs of the newly minted tokens.
+  */
+  function mintFor(
+    uint16[] calldata _tierIds,
+    address _beneficiary
+  )
+    external
+    override
+    requirePermissionFromOwner(JB721Operations.MINT)
+    returns (uint256[] memory tokenIds)
+  {
+    // Record the mint. The returned token IDs correspond to the tiers passed in.
+    (tokenIds, ) = store.recordMint(
+      type(uint256).max, // force the mint.
+      _tierIds,
+      true // manual mint
+    );
+
+    // Keep a reference to the number of tokens being minted.
+    uint256 _numberOfTokens = _tierIds.length;
+
+    // Keep a reference to the token ID being iterated on.
+    uint256 _tokenId;
+
+    for (uint256 _i; _i < _numberOfTokens; ) {
+      // Set the token ID.
+      _tokenId = tokenIds[_i];
+
+      // Mint the token.
+      _mint(_beneficiary, _tokenId);
+
+      emit Mint(_tokenId, _tierIds[_i], _beneficiary, 0, msg.sender);
+
+      unchecked {
+        ++_i;
+      }
+    }
+  }
+
+  /** 
+    @notice
     Mint reserved tokens within the tier for the provided value.
 
     @param _mintReservesForTiersData Contains information about how many reserved tokens to mint for each tier.
@@ -325,31 +364,6 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
 
       // Mint for the tier.
       mintReservesFor(_data.tierId, _data.count);
-
-      unchecked {
-        ++_i;
-      }
-    }
-  }
-
-  /** 
-    @notice
-    Mint tokens within the tier for the provided beneficiaries.
-
-    @param _mintForTiersData Contains information about how who to mint tokens for from each tier.
-  */
-  function mintFor(
-    JBTiered721MintForTiersData[] calldata _mintForTiersData
-  ) external override onlyOwner {
-    // Keep a reference to the number of beneficiaries there are to mint for.
-    uint256 _numberOfBeneficiaries = _mintForTiersData.length;
-
-    for (uint256 _i; _i < _numberOfBeneficiaries; ) {
-      // Get a reference to the data being iterated on.
-      JBTiered721MintForTiersData calldata _data = _mintForTiersData[_i];
-
-      // Mint for the tier.
-      mintFor(_data.tierIds, _data.beneficiary);
 
       unchecked {
         ++_i;
@@ -406,96 +420,48 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
     }
   }
 
-  /** 
-    @notice
-    Sets the beneficiary of the reserved tokens for tiers where a specific beneficiary isn't set. 
-
-    @dev
-    Only the contract's owner can set the default reserved token beneficiary.
-
-    @param _beneficiary The default beneficiary of the reserved tokens.
-  */
-  function setDefaultReservedTokenBeneficiary(
-    address _beneficiary
-  ) external override requirePermissionFromOwner(JB721Operations.SET_RESERVED_BENEFICIARY) {
-    // Set the beneficiary.
-    store.recordSetDefaultReservedTokenBeneficiary(_beneficiary);
-
-    emit SetDefaultReservedTokenBeneficiary(_beneficiary, msg.sender);
-  }
-
   /**
     @notice
-    Set a base token URI.
+    Set a contract's URI metadata properties.
 
     @dev
-    Only the contract's owner can set the base URI.
+    Only the contract's owner can set the URI metadata.
 
     @param _baseUri The new base URI.
-  */
-  function setBaseUri(
-    string calldata _baseUri
-  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
-    // Store the new value.
-    store.recordSetBaseUri(_baseUri);
-
-    emit SetBaseUri(_baseUri, msg.sender);
-  }
-
-  /**
-    @notice
-    Set a contract metadata URI to contain opensea-style metadata.
-
-    @dev
-    Only the contract's owner can set the contract URI.
-
     @param _contractUri The new contract URI.
-  */
-  function setContractUri(
-    string calldata _contractUri
-  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
-    // Store the new value.
-    store.recordSetContractUri(_contractUri);
-
-    emit SetContractUri(_contractUri, msg.sender);
-  }
-
-  /**
-    @notice
-    Set a token URI resolver.
-
-    @dev
-    Only the contract's owner can set the token URI resolver.
-
     @param _tokenUriResolver The new URI resolver.
-  */
-  function setTokenUriResolver(
-    IJBTokenUriResolver _tokenUriResolver
-  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
-    // Store the new value.
-    store.recordSetTokenUriResolver(_tokenUriResolver);
-
-    emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
-  }
-
-  /**
-    @notice
-    Set an encoded IPFS uri of a tier.
-
-    @dev
-    Only the contract's owner can set the encoded IPFS uri.
-
-    @param _tierId The ID of the tier to set the encoded IPFS uri of.
+    @param _encodedIPFSUriTierId The ID of the tier to set the encoded IPFS uri of.
     @param _encodedIPFSUri The encoded IPFS uri to set.
   */
-  function setEncodedIPFSUriOf(
-    uint256 _tierId,
+  function setMetadata(
+    string calldata _baseUri,
+    string calldata _contractUri,
+    IJBTokenUriResolver _tokenUriResolver,
+    uint256 _encodedIPFSUriTierId,
     bytes32 _encodedIPFSUri
   ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
-    // Store the new value.
-    store.recordSetEncodedIPFSUriOf(_tierId, _encodedIPFSUri);
+    if (bytes(_baseUri).length != 0) {
+      // Store the new value.
+      baseURI = _baseUri;
+      emit SetBaseUri(_baseUri, msg.sender);
+    }
+    if (bytes(_contractUri).length != 0) {
+      // Store the new value.
+      contractURI = _contractUri;
+      emit SetContractUri(_contractUri, msg.sender);
+    }
+    if (_tokenUriResolver != IJBTokenUriResolver(address(this))) {
+      // Store the new value.
+      store.recordSetTokenUriResolver(_tokenUriResolver);
 
-    emit SetEncodedIPFSUri(_tierId, _encodedIPFSUri, msg.sender);
+      emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
+    }
+    if (_encodedIPFSUriTierId > 0 && _encodedIPFSUri != bytes32(0)) {
+      // Store the new value.
+      store.recordSetEncodedIPFSUriOf(_encodedIPFSUriTierId, _encodedIPFSUri);
+
+      emit SetEncodedIPFSUri(_encodedIPFSUriTierId, _encodedIPFSUri, msg.sender);
+    }
   }
 
   //*********************************************************************//
@@ -537,52 +503,6 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
       _mint(_reservedTokenBeneficiary, _tokenId);
 
       emit MintReservedToken(_tokenId, _tierId, _reservedTokenBeneficiary, msg.sender);
-
-      unchecked {
-        ++_i;
-      }
-    }
-  }
-
-  /** 
-    @notice
-    Manually mint NFTs from tiers.
-
-    @param _tierIds The IDs of the tiers to mint from.
-    @param _beneficiary The address to mint to. 
-
-    @return tokenIds The IDs of the newly minted tokens.
-  */
-  function mintFor(
-    uint16[] calldata _tierIds,
-    address _beneficiary
-  )
-    public
-    override
-    requirePermissionFromOwner(JB721Operations.MINT)
-    returns (uint256[] memory tokenIds)
-  {
-    // Record the mint. The returned token IDs correspond to the tiers passed in.
-    (tokenIds, ) = store.recordMint(
-      type(uint256).max, // force the mint.
-      _tierIds,
-      true // manual mint
-    );
-
-    // Keep a reference to the number of tokens being minted.
-    uint256 _numberOfTokens = _tierIds.length;
-
-    // Keep a reference to the token ID being iterated on.
-    uint256 _tokenId;
-
-    for (uint256 _i; _i < _numberOfTokens; ) {
-      // Set the token ID.
-      _tokenId = tokenIds[_i];
-
-      // Mint the token.
-      _mint(_beneficiary, _tokenId);
-
-      emit Mint(_tokenId, _tierIds[_i], _beneficiary, 0, msg.sender);
 
       unchecked {
         ++_i;
@@ -773,9 +693,8 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate, 
         ) revert TRANSFERS_PAUSED();
       }
 
-      // If there's no stored first owner, and the transfer isn't originating from the zero address as expected for mints, store the first owner.
-      if (store.firstOwnerOf(address(this), _tokenId) == address(0))
-        store.recordSetFirstOwnerOf(_tokenId, _from);
+      // If there's no stored first owner, store the first owner.
+      if (_firstOwnerOf[_tokenId] == address(0)) _firstOwnerOf[_tokenId] = _from;
     }
 
     super._beforeTokenTransfer(_from, _to, _tokenId);

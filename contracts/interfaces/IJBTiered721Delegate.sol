@@ -71,6 +71,8 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
+  function baseURI() external view returns (string memory);
+
   function contractURI() external view returns (string memory);
 
   function adjustTiers(
@@ -84,22 +86,18 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
-  function mintFor(JBTiered721MintForTiersData[] memory _mintForTiersData) external;
-
   function mintFor(
     uint16[] calldata _tierIds,
     address _beneficiary
   ) external returns (uint256[] memory tokenIds);
 
-  function setBaseUri(string memory _baseUri) external;
-
-  function setContractUri(string calldata _contractMetadataUri) external;
-
-  function setTokenUriResolver(IJBTokenUriResolver _tokenUriResolver) external;
-
-  function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
-
-  function setEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri) external;
+  function setMetadata(
+    string memory _baseUri,
+    string calldata _contractMetadataUri,
+    IJBTokenUriResolver _tokenUriResolver,
+    uint256 _encodedIPFSUriTierId,
+    bytes32 _encodedIPFSUri
+  ) external;
 
   function initialize(
     uint256 _projectId,

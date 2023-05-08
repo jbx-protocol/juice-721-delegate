@@ -34,15 +34,12 @@ contract DeployMainnet is Script {
     vm.startBroadcast();
 
     JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore);
-    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance(_projects, jbOperatorStore);
-    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance(_projects, jbOperatorStore);
-
-    delegateDeployer = new JBTiered721DelegateDeployer(
-      globalGovernance,
-      tieredGovernance,
-      noGovernance,
-      registry
+    JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
+      _projects,
+      jbOperatorStore
     );
+
+    delegateDeployer = new JBTiered721DelegateDeployer(onchainGovernance, noGovernance, registry);
 
     store = new JBTiered721DelegateStore();
 
@@ -83,15 +80,12 @@ contract DeployGoerli is Script {
     vm.startBroadcast();
 
     JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore);
-    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance(_projects, jbOperatorStore);
-    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance(_projects, jbOperatorStore);
-
-    delegateDeployer = new JBTiered721DelegateDeployer(
-      globalGovernance,
-      tieredGovernance,
-      noGovernance,
-      registry
+    JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
+      _projects,
+      jbOperatorStore
     );
+
+    delegateDeployer = new JBTiered721DelegateDeployer(onchainGovernance, noGovernance, registry);
 
     store = new JBTiered721DelegateStore();
 
