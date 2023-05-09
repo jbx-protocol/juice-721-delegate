@@ -46,8 +46,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   uint256 private constant _ONE_BILLION = 1_000_000_000;
 
-  uint256 private constant _ONE_DAY = 86_400;
-
   //*********************************************************************//
   // --------------------- internal stored properties ------------------ //
   //*********************************************************************//
@@ -736,9 +734,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       // Add the tier with the iterative ID.
       _storedTierOf[msg.sender][_tierId] = JBStored721Tier({
-        price: uint88(_tierToAdd.price),
-        remainingQuantity: uint40(_tierToAdd.initialQuantity),
-        initialQuantity: uint40(_tierToAdd.initialQuantity),
+        price: uint104(_tierToAdd.price),
+        remainingQuantity: uint32(_tierToAdd.initialQuantity),
+        initialQuantity: uint32(_tierToAdd.initialQuantity),
         votingUnits: uint40(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
         category: uint24(_tierToAdd.category),

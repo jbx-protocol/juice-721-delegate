@@ -13,9 +13,9 @@ pragma solidity ^0.8.0;
   @member useVotingUnits A flag indicating if the voting units override should be used over the price as the tier's voting units.
 */
 struct JBStored721Tier {
-  uint88 price;
-  uint40 remainingQuantity;
-  uint40 initialQuantity;
+  uint104 price;
+  uint32 remainingQuantity;
+  uint32 initialQuantity;
   uint40 votingUnits;
   uint24 category;
   uint16 reservedRate;
