@@ -258,6 +258,41 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(IJBTiered721Delegate(NFTRewardDataSource).creditsOf(_beneficiary), valueSent);
   }
 
+  function testNoMintOnPayWhenNotIncludingMetadata(uint256 valueSent) external {
+    valueSent = bound(valueSent, 10, 2000);
+    (
+      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBLaunchProjectData memory launchProjectData
+    ) = createData();
+    uint256 projectId = deployer.launchProjectFor(
+      _projectOwner,
+      NFTRewardDeployerData,
+      launchProjectData,
+      _jbController
+    );
+    address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+
+    vm.prank(_caller);
+    _jbETHPaymentTerminal.pay{value: valueSent}(
+      projectId,
+      100,
+      address(0),
+      _beneficiary,
+      /* _minReturnedTokens */
+      0,
+      /* _preferClaimedTokens */
+      false,
+      /* _memo */
+      'Take my money!',
+      /* _delegateMetadata */
+      new bytes(0)
+    );
+    // Check: No NFT was minted
+    assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 0);
+    // Check: User Received the credits
+    assertEq(IJBTiered721Delegate(NFTRewardDataSource).creditsOf(_beneficiary), valueSent);
+  }
+
   // TODO This needs care (fuzz fails with insuf reserve for val=10)
   function testMintReservedToken() external {
     uint16 valueSent = 1500;
