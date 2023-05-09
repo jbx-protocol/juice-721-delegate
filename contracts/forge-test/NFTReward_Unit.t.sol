@@ -968,12 +968,35 @@ contract TestJBTieredNFTRewardDelegate is Test {
       assertEq(_delegate.firstOwnerOf(tokenId), _owner);
     }
     function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnFirstOwnerIfOwnerChanged(
-      uint256 tokenId,
       address _owner,
       address _previousOwner
     ) public {
       vm.assume(_owner != _previousOwner);
+      vm.assume(_owner != address(0));
       vm.assume(_previousOwner != address(0));
+      vm.mockCall(
+        mockJBProjects,
+        abi.encodeWithSelector(IERC721.ownerOf.selector, projectId),
+        abi.encode(owner)
+      );
+      JB721TierParams[] memory _tiers = new JB721TierParams[](1);
+      uint16[] memory _tiersToMint = new uint16[](1);
+
+      _tiers[0] = JB721TierParams({
+        price: uint80(10),
+        initialQuantity: uint40(100),
+        votingUnits: uint16(0),
+        reservedRate: uint16(0),
+        reservedTokenBeneficiary: reserveBeneficiary,
+        encodedIPFSUri: tokenUris[0],
+        category: uint8(100),
+        allowManualMint: true, // Allow this type of mint
+        shouldUseReservedTokenBeneficiaryAsDefault: false,
+        transfersPausable: false,
+        useVotingUnits: true
+      });
+      _tiersToMint[0] = 1;
+      
       ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
       ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
         projectId,
@@ -984,7 +1007,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         baseUri,
         IJBTokenUriResolver(mockTokenUriResolver),
         contractUri,
-        tiers,
+        _tiers,
         IJBTiered721DelegateStore(address(_ForTest_store)),
         JBTiered721Flags({
           preventOverspending: false,
@@ -994,8 +1017,13 @@ contract TestJBTieredNFTRewardDelegate is Test {
         })
       );
       _delegate.transferOwnership(owner);
-      _delegate.ForTest_setOwnerOf(tokenId, _owner);
-      assertEq(_delegate.firstOwnerOf(tokenId), _previousOwner);
+      vm.prank(owner);
+      uint256 _tokenId = _generateTokenId(_tiersToMint[0], 1);
+      _delegate.mintFor(_tiersToMint, _previousOwner);
+      assertEq(_delegate.firstOwnerOf(_tokenId), _previousOwner);
+      vm.prank(_previousOwner);
+      IERC721(_delegate).transferFrom(_previousOwner, _owner, _tokenId);
+      assertEq(_delegate.firstOwnerOf(_tokenId), _previousOwner);
     }
     function testJBTieredNFTRewardDelegate_firstOwnerOf_shouldReturnAddressZeroIfNotMinted(
       uint256 tokenId
@@ -4001,7 +4029,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           new bytes(0)
         )
       );
-      assertTrue(delegate.creditsOf[msg.sender], tiers[0].price - 1);
+      assertEq(delegate.creditsOf(msg.sender), tiers[0].price - 1);
     }
     // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
     function testJBTieredNFTRewardDelegate_didPay_mintCorrectTier() public {
