@@ -4071,7 +4071,53 @@ contract TestJBTieredNFTRewardDelegate is Test {
     //        Pay
     // ----------------
     // If the amount payed is below the price to receive an NFT the pay should not revert if no metadata passed
-    function testJBTieredNFTRewardDelegate_didPay_doesNotOnAmountBelowPriceIfNoMetadata()
+    function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowPriceIfNoMetadataIfPreventOverspending()
+      public
+    {
+      ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+      ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBFundingCycleStore(mockJBFundingCycleStore),
+        baseUri,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        tiers,
+        IJBTiered721DelegateStore(address(_ForTest_store)),
+        JBTiered721Flags({
+          preventOverspending: true,
+          lockReservedTokenChanges: true,
+          lockVotingUnitChanges: false,
+          lockManualMintingChanges: true
+        })
+      );
+      // Mock the directory call
+      vm.mockCall(
+        address(mockJBDirectory),
+        abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+        abi.encode(true)
+      );
+      vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
+      vm.prank(mockTerminalAddress);
+      _delegate.didPay(
+        JBDidPayData(
+          msg.sender,
+          projectId,
+          0,
+          JBTokenAmount(JBTokens.ETH, tiers[0].price - 1, 18, JBCurrencies.ETH), // 1 wei below the minimum amount
+          JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+          0,
+          msg.sender,
+          false,
+          '',
+          new bytes(0)
+        )
+      );
+    }
+    // If the amount payed is below the price to receive an NFT the pay should revert if no metadata passed and the allow overspending flag is false.
+    function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowPriceIfNoMetadata()
       public
     {
       // Mock the directory call
