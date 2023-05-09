@@ -456,7 +456,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
 
       emit SetTokenUriResolver(_tokenUriResolver, msg.sender);
     }
-    if (_encodedIPFSUriTierId > 0 && _encodedIPFSUri != bytes32(0)) {
+    if (_encodedIPFSUriTierId != 0 && _encodedIPFSUri != bytes32(0)) {
       // Store the new value.
       store.recordSetEncodedIPFSUriOf(_encodedIPFSUriTierId, _encodedIPFSUri);
 
