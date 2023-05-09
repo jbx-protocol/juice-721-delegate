@@ -21,7 +21,7 @@ struct JB721TierParams {
   uint16 reservedRate;
   address reservedTokenBeneficiary;
   bytes32 encodedIPFSUri;
-  uint16 category;
+  uint24 category;
   bool allowManualMint;
   bool shouldUseReservedTokenBeneficiaryAsDefault;
   bool transfersPausable;

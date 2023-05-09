@@ -37,7 +37,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   error OUT();
   error RESERVED_RATE_NOT_ALLOWED();
   error MANUAL_MINTING_NOT_ALLOWED();
-  error PRICING_RESOLVER_CHANGES_LOCKED();
   error TIER_REMOVED();
   error VOTING_UNITS_NOT_ALLOWED();
 
@@ -742,7 +741,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         initialQuantity: uint40(_tierToAdd.initialQuantity),
         votingUnits: uint40(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
-        category: uint16(_tierToAdd.category),
+        category: uint24(_tierToAdd.category),
         allowManualMint: _tierToAdd.allowManualMint,
         transfersPausable: _tierToAdd.transfersPausable,
         useVotingUnits: _tierToAdd.useVotingUnits
