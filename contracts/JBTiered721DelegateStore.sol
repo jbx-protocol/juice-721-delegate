@@ -210,9 +210,6 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _startingId,
     uint256 _size
   ) external view override returns (JB721Tier[] memory _tiers) {
-    // Keep a reference to the last tier ID.
-    // uint256 _lastTierId = _lastSortedTierIdOf(_nft);
-
     // Initialize an array with the appropriate length.
     _tiers = new JB721Tier[](_size);
 
