@@ -45,7 +45,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
   IJBTiered721DelegateProjectDeployer deployer;
   IJBTiered721DelegateDeployer delegateDeployer;
   JBDelegatesRegistry delegatesRegistry;
-
   function setUp() public {
     vm.label(owner, 'owner');
     vm.label(mockJBDirectory, 'mockJBDirectory');
@@ -55,7 +54,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     vm.label(mockJBDirectory, 'mockJBDirectory');
     vm.label(mockJBFundingCycleStore, 'mockJBFundingCycleStore');
     vm.label(mockJBProjects, 'mockJBProjects');
-
     vm.etch(mockJBController, new bytes(0x69));
     vm.etch(mockJBDirectory, new bytes(0x69));
     vm.etch(mockJBFundingCycleStore, new bytes(0x69));
@@ -63,26 +61,20 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     vm.etch(mockTerminalAddress, new bytes(0x69));
     vm.etch(mockJBProjects, new bytes(0x69));
     store = new JBTiered721DelegateStore();
-
     JBTiered721Delegate noGovernance = new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
-    JB721GlobalGovernance globalGovernance = new JB721GlobalGovernance(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
-    JB721TieredGovernance tieredGovernance = new JB721TieredGovernance(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+    JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
     delegatesRegistry = new JBDelegatesRegistry();
-
     delegateDeployer = new JBTiered721DelegateDeployer(
-      globalGovernance,
-      tieredGovernance,
+      onchainGovernance,
       noGovernance,
       delegatesRegistry
     );
-
     deployer = new JBTiered721DelegateProjectDeployer(
       IJBDirectory(mockJBDirectory),
       delegateDeployer,
       IJBOperatorStore(mockJBOperatorStore)
     );
   }
-
   function testLaunchProjectFor_shouldLaunchProject(uint128 previousProjectId) external {
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
@@ -111,7 +103,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     );
     assertEq(previousProjectId, _projectId - 1);
   }
-
   function testLaunchProjectFor_shouldLaunchProject_nonFuzzed() external {
     (
       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
@@ -136,7 +127,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     );
     assertEq(_projectId, 6);
   }
-
   // -- internal helpers --
   function createData()
     internal
@@ -153,7 +143,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     JBFundAccessConstraints[] memory fundAccessConstraints;
     IJBPaymentTerminal[] memory terminals;
     JB721TierParams[] memory tierParams = new JB721TierParams[](10);
-
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
         price: uint80((i + 1) * 10),
@@ -161,18 +150,14 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         votingUnits: uint16(0),
         reservedRate: uint16(0),
         reservedTokenBeneficiary: reserveBeneficiary,
-        royaltyRate: uint8(1),
-        royaltyBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
         category: uint8(100),
         allowManualMint: false,
-        shouldUseRoyaltyBeneficiaryAsDefault: true,
         shouldUseReservedTokenBeneficiaryAsDefault: false,
         transfersPausable: false,
         useVotingUnits: true
       });
     }
-
     NFTRewardDeployerData = JBDeployTiered721DelegateData({
       name: name,
       symbol: symbol,
@@ -197,16 +182,13 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       }),
       governanceType: JB721GovernanceType.NONE
     });
-
     projectMetadata = JBProjectMetadata({content: 'myIPFSHash', domain: 1});
-
     data = JBFundingCycleData({
       duration: 14,
       weight: 10**18,
       discountRate: 450000000,
       ballot: IJBFundingCycleBallot(address(0))
     });
-
     metadata = JBPayDataSourceFundingCycleMetadata({
       global: JBGlobalFundingCycleMetadata({
         allowSetTerminals: false,
@@ -229,7 +211,6 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       useDataSourceForRedeem: false,
       metadata: 0x00
     });
-
     launchProjectData = JBLaunchProjectData({
       projectMetadata: projectMetadata,
       data: data,

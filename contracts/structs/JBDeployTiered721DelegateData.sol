@@ -12,7 +12,6 @@ import './JBTiered721Flags.sol';
 /**
   @member name The name of the token.
   @member symbol The symbol that the token should be represented by.
-  @member fundingCycleStore A contract storing all funding cycle configurations.
   @member baseUri A URI to use as a base for full token URIs.
   @member tokenUriResolver A contract responsible for resolving the token URI for each token ID.
   @member contractUri A URI where contract metadata can be found. 

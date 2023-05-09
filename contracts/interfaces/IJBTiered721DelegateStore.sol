@@ -9,8 +9,6 @@ import './../structs/JBTiered721Flags.sol';
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
 
-  function MAX_ROYALTY_RATE() external view returns (uint256);
-
   function totalSupply(address _nft) external view returns (uint256);
 
   function balanceOf(address _nft, address _owner) external view returns (uint256);
@@ -41,7 +39,7 @@ interface IJBTiered721DelegateStore {
 
   function encodedIPFSUriOf(address _nft, uint256 _tierId) external view returns (bytes32);
 
-  function firstOwnerOf(address _nft, uint256 _tokenId) external view returns (address);
+  // function firstOwnerOf(address _nft, uint256 _tokenId) external view returns (address);
 
   function redemptionWeightOf(
     address _nft,
@@ -73,26 +71,14 @@ interface IJBTiered721DelegateStore {
 
   function defaultReservedTokenBeneficiaryOf(address _nft) external view returns (address);
 
-  function defaultRoyaltyBeneficiaryOf(address _nft) external view returns (address);
-
   function reservedTokenBeneficiaryOf(
     address _nft,
     uint256 _tierId
   ) external view returns (address);
 
-  function baseUriOf(address _nft) external view returns (string memory);
-
-  function contractUriOf(address _nft) external view returns (string memory);
-
   function tokenUriResolverOf(address _nft) external view returns (IJBTokenUriResolver);
 
   function encodedTierIPFSUriOf(address _nft, uint256 _tokenId) external view returns (bytes32);
-
-  function royaltyInfo(
-    address _nft,
-    uint256 _tokenId,
-    uint256 _salePrice
-  ) external view returns (address receiver, uint256 royaltyAmount);
 
   function recordAddTiers(
     JB721TierParams[] memory _tierData
@@ -105,8 +91,6 @@ interface IJBTiered721DelegateStore {
 
   function recordBurn(uint256[] memory _tokenIds) external;
 
-  function recordSetDefaultReservedTokenBeneficiary(address _beneficiary) external;
-
   function recordMint(
     uint256 _amount,
     uint16[] calldata _tierIds,
@@ -116,12 +100,6 @@ interface IJBTiered721DelegateStore {
   function recordTransferForTier(uint256 _tierId, address _from, address _to) external;
 
   function recordRemoveTierIds(uint256[] memory _tierIds) external;
-
-  function recordSetFirstOwnerOf(uint256 _tokenId, address _owner) external;
-
-  function recordSetBaseUri(string memory _uri) external;
-
-  function recordSetContractUri(string memory _uri) external;
 
   function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external;
 
