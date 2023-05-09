@@ -239,7 +239,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
           _storedTier = _storedTierOf[_nft][_currentSortedTierId];
 
-          if (_categories.length > 0 && _storedTier.category > _categories[_i]) break;
+          if (_categories.length != 0 && _storedTier.category > _categories[_i]) break;
           else {
             // Get a reference to the reserved token beneficiary.
             address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(
