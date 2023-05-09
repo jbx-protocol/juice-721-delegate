@@ -257,6 +257,71 @@ contract TestJBTieredNFTRewardDelegate is Test {
       assertTrue(_isIn(_delegate.test_store().tiersOf(address(_delegate), new uint256[](0), 0, numberOfTiers), _tiers));
       assertTrue(_isIn(_tiers, _delegate.test_store().tiersOf(address(_delegate), new uint256[](0), 0, numberOfTiers)));
     }
+    function testJBTieredNFTRewardDelegate_tiers_returnsAllTiersWithResolver(uint256 numberOfTiers) public {
+      numberOfTiers = bound(numberOfTiers, 0, 30);
+      JB721TierParams[] memory _tierParams = new JB721TierParams[](numberOfTiers);
+      JB721Tier[] memory _tiers = new JB721Tier[](numberOfTiers);
+      address _mockTokenUriResolver = address(bytes20(keccak256('mockTokenUriResolver')));
+      for (uint256 i; i < numberOfTiers; i++) {
+        uint256 _zeroToken = _generateTokenId(i + 1, 0);
+        string memory uri = string(abi.encodePacked('resolverURI', _zeroToken));
+        // Mock the URI resolver call
+        vm.mockCall(
+          _mockTokenUriResolver,
+          abi.encodeWithSelector(IJBTokenUriResolver.getUri.selector, _zeroToken),
+          abi.encode(uri) 
+        );
+        _tierParams[i] = JB721TierParams({
+          price: uint80((i + 1) * 10),
+          initialQuantity: uint40(100),
+          votingUnits: uint16((i + 1) * 10),
+          reservedRate: uint16(0),
+          reservedTokenBeneficiary: reserveBeneficiary,
+          encodedIPFSUri: tokenUris[0],
+          category: uint8(100),
+          allowManualMint: false,
+          shouldUseReservedTokenBeneficiaryAsDefault: false,
+          transfersPausable: false,
+          useVotingUnits: false
+        });
+        _tiers[i] = JB721Tier({
+          id: i + 1,
+          price: _tierParams[i].price,
+          remainingQuantity: _tierParams[i].initialQuantity,
+          initialQuantity: _tierParams[i].initialQuantity,
+          votingUnits: _tierParams[i].votingUnits,
+          reservedRate: _tierParams[i].reservedRate,
+          reservedTokenBeneficiary: _tierParams[i].reservedTokenBeneficiary,
+          encodedIPFSUri: _tierParams[i].encodedIPFSUri,
+          category: _tierParams[i].category,
+          allowManualMint: _tierParams[i].allowManualMint,
+          transfersPausable: _tierParams[i].transfersPausable,
+          resolvedUri: uri
+        });
+      }
+      ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+      ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBFundingCycleStore(mockJBFundingCycleStore),
+        baseUri,
+        IJBTokenUriResolver(_mockTokenUriResolver),
+        contractUri,
+        _tierParams,
+        IJBTiered721DelegateStore(address(_ForTest_store)),
+        JBTiered721Flags({
+          preventOverspending: false,
+          lockReservedTokenChanges: true,
+          lockVotingUnitChanges: true,
+          lockManualMintingChanges: true
+        })
+      );
+      _delegate.transferOwnership(owner);
+      assertTrue(_isIn(_delegate.test_store().tiersOf(address(_delegate), new uint256[](0), 0, numberOfTiers), _tiers));
+      assertTrue(_isIn(_tiers, _delegate.test_store().tiersOf(address(_delegate), new uint256[](0), 0, numberOfTiers)));
+    }
     function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers_coverage() public {
       testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(5);
     }
@@ -691,6 +756,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     ) public {
       vm.assume(holder != address(0));
       ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+      address _mockTokenUriResolver = address(bytes20(keccak256('mockTokenUriResolver')));
       ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -698,7 +764,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         symbol,
         IJBFundingCycleStore(mockJBFundingCycleStore),
         baseUri,
-        IJBTokenUriResolver(mockTokenUriResolver),
+        IJBTokenUriResolver(_mockTokenUriResolver),
         contractUri,
         tiers,
         IJBTiered721DelegateStore(address(_ForTest_store)),
@@ -712,7 +778,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _delegate.transferOwnership(owner);
       // Mock the URI resolver call
       vm.mockCall(
-        mockTokenUriResolver,
+        _mockTokenUriResolver,
         abi.encodeWithSelector(IJBTokenUriResolver.getUri.selector, tokenId),
         abi.encode('resolverURI')
       );
@@ -5914,7 +5980,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
         first.votingUnits == second.votingUnits &&
         first.reservedRate == second.reservedRate &&
         first.reservedTokenBeneficiary == second.reservedTokenBeneficiary &&
-        first.encodedIPFSUri == second.encodedIPFSUri);
+        first.encodedIPFSUri == second.encodedIPFSUri &&
+        keccak256(abi.encodePacked(first.resolvedUri)) == keccak256(abi.encodePacked(second.resolvedUri)));
     }
     function _sortArray(uint256[] memory _in) internal pure returns (uint256[] memory) {
       for (uint256 i; i < _in.length; i++) {

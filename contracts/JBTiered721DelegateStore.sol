@@ -275,7 +275,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
                 transfersPausable: _storedTier.transfersPausable,
                 resolvedUri: tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
                   ? ''
-                  : tokenUriResolverOf[_nft].getUri(0)
+                  : tokenUriResolverOf[_nft].getUri(_generateTokenId(_currentSortedTierId, 0))
               });
           }
         }
@@ -331,7 +331,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         transfersPausable: _storedTier.transfersPausable,
         resolvedUri: tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
           ? ''
-          : tokenUriResolverOf[_nft].getUri(0)
+          : tokenUriResolverOf[_nft].getUri(_generateTokenId(_id, 0))
       });
   }
 
@@ -373,7 +373,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         transfersPausable: _storedTier.transfersPausable,
         resolvedUri: tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
           ? ''
-          : tokenUriResolverOf[_nft].getUri(0)
+          : tokenUriResolverOf[_nft].getUri(_generateTokenId(_tierId, 0))
       });
   }
 
