@@ -465,7 +465,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     {
       JB721Tier memory _tier = IJBTiered721Delegate(NFTRewardDataSource).store().tierOf(
         NFTRewardDataSource,
-        highestTier
+        highestTier,
+        false
       );
       // '_reserveTokensMinted' is always 0 here
       uint256 _numberOfNonReservesMinted = _tier.initialQuantity - _tier.remainingQuantity;

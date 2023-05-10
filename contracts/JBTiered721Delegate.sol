@@ -680,7 +680,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     // Transferred must not be paused when not minting or burning.
     if (_from != address(0)) {
       // Get a reference to the tier.
-      JB721Tier memory _tier = store.tierOfTokenId(address(this), _tokenId);
+      JB721Tier memory _tier = store.tierOfTokenId(address(this), _tokenId, false);
 
       // Transfers from the tier must be pausable.
       if (_tier.transfersPausable) {
@@ -716,7 +716,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     uint256 _tokenId
   ) internal virtual override {
     // Get a reference to the tier.
-    JB721Tier memory _tier = store.tierOfTokenId(address(this), _tokenId);
+    JB721Tier memory _tier = store.tierOfTokenId(address(this), _tokenId, false);
 
     // Record the transfer.
     store.recordTransferForTier(_tier.id, _from, _to);

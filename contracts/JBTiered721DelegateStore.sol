@@ -196,6 +196,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _nft The NFT contract to get tiers for.
     @param _categories The categories of the tiers to get. Send empty for any category.
+    @param _includeResolvedUri If there's a token URI resolver, the content will be resolved and included.
     @param _startingId The starting tier ID of the array of tiers sorted by contribution floor. Send 0 to start at the beginning.
     @param _size The number of tiers to include.
 
@@ -203,10 +204,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function tiersOf(
     address _nft,
-    uint256[] memory _categories,
+    uint256[] calldata _categories,
+    bool _includeResolvedUri,
     uint256 _startingId,
     uint256 _size
   ) external view override returns (JB721Tier[] memory _tiers) {
+    // Keep a reference to the last tier ID.
+    uint256 _lastTierId = _lastSortedTierIdOf(_nft);
+
     // Initialize an array with the appropriate length.
     _tiers = new JB721Tier[](_size);
 
@@ -216,8 +221,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
+    uint256 _i;
     // Iterate at least once.
-    for (uint256 _i; _i < (_categories.length == 0 ? 1 : _categories.length); ) {
+    do {
       // Break if already reached the size limit.
       if (_numberOfIncludedTiers == _size) break;
 
@@ -267,7 +273,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
                 category: _storedTier.category,
                 allowManualMint: _storedTier.allowManualMint,
                 transfersPausable: _storedTier.transfersPausable,
-                resolvedUri: tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+                resolvedUri: !_includeResolvedUri || tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
                   ? ''
                   : tokenUriResolverOf[_nft].getUri(_generateTokenId(_currentSortedTierId, 0))
               });
@@ -277,14 +283,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         _currentSortedTierId = _nextSortedTierIdOf(
           _nft,
           _currentSortedTierId,
-          _lastSortedTierIdOf(_nft)
+          _lastTierId
         );
       }
 
       unchecked {
         ++_i;
       }
-    }
+    } while (_i < _categories.length);
 
     // Resize the array if there are removed tiers
     if (_numberOfIncludedTiers != _size)
@@ -299,10 +305,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _nft The NFT to get a tier within.
     @param _id The ID of the tier to get. 
+    @param _includeResolvedUri If there's a token URI resolver, the content will be resolved and included.
 
     @return The tier.
   */
-  function tierOf(address _nft, uint256 _id) external view override returns (JB721Tier memory) {
+  function tierOf(address _nft, uint256 _id, bool _includeResolvedUri) external view override returns (JB721Tier memory) {
     // Get the stored tier.
     JBStored721Tier memory _storedTier = _storedTierOf[_nft][_id];
 
@@ -323,7 +330,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable,
-        resolvedUri: tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+        resolvedUri: !_includeResolvedUri || tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
           ? ''
           : tokenUriResolverOf[_nft].getUri(_generateTokenId(_id, 0))
       });
@@ -335,12 +342,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @param _nft The NFT to get a tier within.
     @param _tokenId The ID of token to return the tier of. 
+    @param _includeResolvedUri If there's a token URI resolver, the content will be resolved and included.
 
     @return The tier.
   */
   function tierOfTokenId(
     address _nft,
-    uint256 _tokenId
+    uint256 _tokenId,
+    bool _includeResolvedUri
   ) external view override returns (JB721Tier memory) {
     // Get a reference to the tier's ID.
     uint256 _tierId = tierIdOfToken(_tokenId);
@@ -365,7 +374,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         category: _storedTier.category,
         allowManualMint: _storedTier.allowManualMint,
         transfersPausable: _storedTier.transfersPausable,
-        resolvedUri: tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+        resolvedUri: !_includeResolvedUri || tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
           ? ''
           : tokenUriResolverOf[_nft].getUri(_generateTokenId(_tierId, 0))
       });
