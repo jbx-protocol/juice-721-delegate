@@ -626,13 +626,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     JB721TierParams[] memory tierParams = new JB721TierParams[](10);
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
-        price: uint96((i + 1) * 10),
+        price: uint104((i + 1) * 10),
         initialQuantity: uint32(10),
         votingUnits: uint32((i + 1) * 10),
         reservedRate: 10,
         reservedTokenBeneficiary: reserveBeneficiary,
         encodedIPFSUri: tokenUris[i],
-        category: uint8(100),
+        category: uint24(100),
         allowManualMint: false,
         shouldUseReservedTokenBeneficiaryAsDefault: false,
         transfersPausable: false,

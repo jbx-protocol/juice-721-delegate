@@ -12,7 +12,7 @@ import './JB721TierParams.sol';
 */
 struct JB721PricingParams {
   JB721TierParams[] tiers;
-  uint256 currency;
-  uint256 decimals;
+  uint48 currency;
+  uint48 decimals;
   IJBPrices prices;
 }

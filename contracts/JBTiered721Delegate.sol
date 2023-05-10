@@ -52,6 +52,12 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   */
   mapping(uint256 => address) internal _firstOwnerOf;
 
+  /** 
+    @notice
+    Info that contextualized the pricing of tiers. 
+  */ 
+  JB721PricingContext internal _pricingContext;
+
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
@@ -73,24 +79,6 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     The contract storing all funding cycle configurations.
   */
   IJBFundingCycleStore public override fundingCycleStore;
-
-  /**
-    @notice
-    The contract that exposes price feeds.
-  */
-  IJBPrices public override prices;
-
-  /** 
-    @notice
-    The currency that is accepted when minting tier NFTs. 
-  */
-  uint256 public override pricingCurrency;
-
-  /** 
-    @notice
-    The currency that is accepted when minting tier NFTs. 
-  */
-  uint256 public override pricingDecimals;
 
   /** 
     @notice
@@ -137,6 +125,14 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
 
     // Otherwise, the first owner must be the current owner.
     return _owners[_tokenId];
+  }
+  
+  /** 
+    @notice
+    Info that contextualized the pricing of tiers. 
+  */
+  function pricingContext() external view override returns (JB721PricingContext memory) {
+    return _pricingContext;
   }
 
   //*********************************************************************//
@@ -267,9 +263,11 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
 
     fundingCycleStore = _fundingCycleStore;
     store = _store;
-    pricingCurrency = _pricing.currency;
-    pricingDecimals = _pricing.decimals;
-    prices = _pricing.prices;
+    _pricingContext = JB721PricingContext({
+      currency: _pricing.currency,
+      decimals: _pricing.decimals,
+      prices: _pricing.prices
+    });
 
     // Store the base URI if provided.
     if (bytes(_baseUri).length != 0) baseURI = _baseUri;
@@ -523,12 +521,12 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   function _processPayment(JBDidPayData calldata _data) internal virtual override {
     // Normalize the currency.
     uint256 _value;
-    if (_data.amount.currency == pricingCurrency) _value = _data.amount.value;
-    else if (prices != IJBPrices(address(0)))
+    if (_data.amount.currency == _pricingContext.currency) _value = _data.amount.value;
+    else if (_pricingContext.prices != IJBPrices(address(0)))
       _value = PRBMath.mulDiv(
         _data.amount.value,
-        10 ** pricingDecimals,
-        prices.priceFor(_data.amount.currency, pricingCurrency, _data.amount.decimals)
+        10 ** _pricingContext.decimals,
+        _pricingContext.prices.priceFor(_data.amount.currency, _pricingContext.currency, _data.amount.decimals)
       );
     else return;
 
