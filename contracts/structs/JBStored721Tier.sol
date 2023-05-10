@@ -19,7 +19,5 @@ struct JBStored721Tier {
   uint40 votingUnits;
   uint16 category;
   uint16 reservedRate;
-  bool allowManualMint;
-  bool transfersPausable;
-  bool useVotingUnits;
+  uint8 packedBools;
 }

@@ -480,9 +480,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(_tierParams[i].votingUnits),
             reservedRate: uint16(_tierParams[i].reservedRate),
             category: uint16(_tierParams[i].category),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: true
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,true)
           })
         );
       }
@@ -559,9 +557,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(0),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: false
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,false)
           })
         );
       }
@@ -673,9 +669,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(reservedRate),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: false
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,false)
           })
         );
         _delegate.test_store().ForTest_setReservesMintedFor(
@@ -997,9 +991,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(0),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: false
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,false)
           })
         );
         _theoreticalWeight += (10 * i - 5 * i) * i * 10;
@@ -1301,9 +1293,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(reservedRate),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: true
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,true)
           })
         );
         _delegate.test_store().ForTest_setReservesMintedFor(
@@ -1393,9 +1383,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(reservedRate),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: true
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,true)
           })
         );
         _delegate.test_store().ForTest_setReservesMintedFor(
@@ -1538,9 +1526,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(reservedRate),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: true
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,true)
           })
         );
         _delegate.test_store().ForTest_setReservesMintedFor(
@@ -1611,9 +1597,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(reservedRate),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: true
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,true)
           })
         );
         _delegate.test_store().ForTest_setReservesMintedFor(
@@ -1689,9 +1673,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(reservedRate),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: true
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,true)
           })
         );
       }
@@ -1749,9 +1731,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(reservedRate),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: true
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,true)
           })
         );
         _delegate.test_store().ForTest_setReservesMintedFor(
@@ -5389,9 +5369,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(0),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: false
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,false)
           })
         );
         _totalWeight += (10 * i - 5 * i) * i * 10;
@@ -5497,9 +5475,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(0),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: false
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,false)
           })
         );
         _totalWeight += (10 * i - 5 * i) * i * 10;
@@ -5596,9 +5572,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             votingUnits: uint16(0),
             reservedRate: uint16(0),
             category: uint16(100),
-            allowManualMint: false,
-            transfersPausable: false,
-            useVotingUnits: false
+            packedBools: _delegate.test_store().ForTest_packBools(false,false,false)
           })
         );
         _totalWeight += (10 * i - 5 * i) * i * 10;
@@ -6110,6 +6084,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
       uint256 amount
     ) external;
     function ForTest_setIsTierRemoved(address _delegate, uint256 _tokenId) external;
+    function ForTest_packBools(
+      bool _allowManualMint,
+      bool _transfersPausable,
+      bool _useVotingUnits
+  ) external returns(uint8);
   }
   contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
     IJBTiered721DelegateStore_ForTest public test_store;
@@ -6175,6 +6154,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
       // Make the sorted array.
       while (_currentSortIndex != 0 && _numberOfIncludedTiers < _maxTierId) {
         _storedTier = _storedTierOf[_nft][_currentSortIndex];
+
+        // Unpack stored tier
+        (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
+          _storedTier.packedBools
+        );
+
         // Add the tier to the array being returned.
         _tiers[_numberOfIncludedTiers++] = JB721Tier({
           id: _currentSortIndex,
@@ -6186,8 +6171,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
           reservedTokenBeneficiary: reservedTokenBeneficiaryOf(_nft, _currentSortIndex),
           encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortIndex],
           category: _storedTier.category,
-          allowManualMint: _storedTier.allowManualMint,
-          transfersPausable: _storedTier.transfersPausable,
+          allowManualMint: _allowManualMint,
+          transfersPausable: _transfersPausable,
           resolvedUri: ""
         });
         // Set the next sort index.
@@ -6227,4 +6212,22 @@ contract TestJBTieredNFTRewardDelegate is Test {
     function ForTest_setIsTierRemoved(address _delegate, uint256 _tokenId) public override {
       _isTierRemovedBitmapWord[_delegate].removeTier(_tokenId);
     }
+    function ForTest_packBools(
+      bool _allowManualMint,
+      bool _transfersPausable,
+      bool _useVotingUnits
+    ) public returns(uint8) {
+      return _packBools(
+        _allowManualMint,
+        _transfersPausable,
+        _useVotingUnits
+      );
+    }
+    // function ForTest_unpackBools(
+    //   uint8 _packed
+    // ) public returns(bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) {
+    //   return _unpackBools(
+    //     _packed
+    //   );
+    // }
 }

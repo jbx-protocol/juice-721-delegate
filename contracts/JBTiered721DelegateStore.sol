@@ -253,6 +253,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
               _currentSortedTierId
             );
 
+            (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
+              _storedTier.packedBools
+            );
+
             // If a category is specified and matches, add the the returned values.
             if (_categories.length == 0 || _storedTier.category == _categories[_i])
               // Add the tier to the array being returned.
@@ -261,9 +265,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
                 price: _storedTier.price,
                 remainingQuantity: _storedTier.remainingQuantity,
                 initialQuantity: _storedTier.initialQuantity,
-                votingUnits: _storedTier.useVotingUnits
-                  ? _storedTier.votingUnits
-                  : _storedTier.price,
+                votingUnits: _useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
                 // No reserved rate if no beneficiary set.
                 reservedRate: _reservedTokenBeneficiary == address(0)
                   ? 0
@@ -271,20 +273,17 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
                 reservedTokenBeneficiary: _reservedTokenBeneficiary,
                 encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortedTierId],
                 category: _storedTier.category,
-                allowManualMint: _storedTier.allowManualMint,
-                transfersPausable: _storedTier.transfersPausable,
-                resolvedUri: !_includeResolvedUri || tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+                allowManualMint: _allowManualMint,
+                transfersPausable: _transfersPausable,
+                resolvedUri: !_includeResolvedUri ||
+                  tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
                   ? ''
                   : tokenUriResolverOf[_nft].getUri(_generateTokenId(_currentSortedTierId, 0))
               });
           }
         }
         // Set the next sorted tier ID.
-        _currentSortedTierId = _nextSortedTierIdOf(
-          _nft,
-          _currentSortedTierId,
-          _lastTierId
-        );
+        _currentSortedTierId = _nextSortedTierIdOf(_nft, _currentSortedTierId, _lastTierId);
       }
 
       unchecked {
@@ -309,12 +308,20 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return The tier.
   */
-  function tierOf(address _nft, uint256 _id, bool _includeResolvedUri) external view override returns (JB721Tier memory) {
+  function tierOf(
+    address _nft,
+    uint256 _id,
+    bool _includeResolvedUri
+  ) external view override returns (JB721Tier memory) {
     // Get the stored tier.
     JBStored721Tier memory _storedTier = _storedTierOf[_nft][_id];
 
     // Get a reference to the reserved token beneficiary.
     address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _id);
+
+    (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
+      _storedTier.packedBools
+    );
 
     return
       JB721Tier({
@@ -322,15 +329,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         price: _storedTier.price,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
-        votingUnits: _storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
+        votingUnits: _useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
         // No reserved rate if no beneficiary set.
         reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
         reservedTokenBeneficiary: _reservedTokenBeneficiary,
         encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
         category: _storedTier.category,
-        allowManualMint: _storedTier.allowManualMint,
-        transfersPausable: _storedTier.transfersPausable,
-        resolvedUri: !_includeResolvedUri || tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+        allowManualMint: _allowManualMint,
+        transfersPausable: _transfersPausable,
+        resolvedUri: !_includeResolvedUri ||
+          tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
           ? ''
           : tokenUriResolverOf[_nft].getUri(_generateTokenId(_id, 0))
       });
@@ -360,21 +368,26 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Get a reference to the reserved token beneficiary.
     address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _tierId);
 
+    (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
+      _storedTier.packedBools
+    );
+
     return
       JB721Tier({
         id: _tierId,
         price: _storedTier.price,
         remainingQuantity: _storedTier.remainingQuantity,
         initialQuantity: _storedTier.initialQuantity,
-        votingUnits: _storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
+        votingUnits: _useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
         // No reserved rate if beneficiary is not set.
         reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
         reservedTokenBeneficiary: _reservedTokenBeneficiary,
         encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
         category: _storedTier.category,
-        allowManualMint: _storedTier.allowManualMint,
-        transfersPausable: _storedTier.transfersPausable,
-        resolvedUri: !_includeResolvedUri || tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+        allowManualMint: _allowManualMint,
+        transfersPausable: _transfersPausable,
+        resolvedUri: !_includeResolvedUri ||
+          tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
           ? ''
           : tokenUriResolverOf[_nft].getUri(_generateTokenId(_tierId, 0))
       });
@@ -453,11 +466,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
       if (_balance != 0) _storedTier = _storedTierOf[_nft][_i];
 
+      (, , bool _useVotingUnits) = _unpackBools(_storedTier.packedBools);
+
       // Add the tier's voting units.
       // Use either the tier's price or custom set voting units.
-      units +=
-        _balance *
-        (_storedTier.useVotingUnits ? _storedTier.votingUnits : _storedTier.price);
+      units += _balance * (_useVotingUnits ? _storedTier.votingUnits : _storedTier.price);
 
       unchecked {
         --_i;
@@ -749,9 +762,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         votingUnits: uint40(_tierToAdd.votingUnits),
         reservedRate: uint16(_tierToAdd.reservedRate),
         category: uint16(_tierToAdd.category),
-        allowManualMint: _tierToAdd.allowManualMint,
-        transfersPausable: _tierToAdd.transfersPausable,
-        useVotingUnits: _tierToAdd.useVotingUnits
+        packedBools: _packBools(
+          _tierToAdd.allowManualMint,
+          _tierToAdd.transfersPausable,
+          _tierToAdd.useVotingUnits
+        )
       });
 
       // If this is the first tier in a new category, store its ID as such. The `_startingTierIdOfCategory` of the 0 category will always be the same as the `_tierIdAfter` the 0th tier.
@@ -1001,8 +1016,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the tier being iterated on.
       _storedTier = _storedTierOf[msg.sender][_tierId];
 
+      (bool _allowManualMint,,) = _unpackBools(
+        _storedTier.packedBools
+      );
+
       // If this is a manual mint, make sure manual minting is allowed.
-      if (_isManualMint && !_storedTier.allowManualMint) revert CANT_MINT_MANUALLY();
+      if (_isManualMint && !_allowManualMint) revert CANT_MINT_MANUALLY();
 
       // Make sure the provided tier exists.
       if (_storedTier.initialQuantity == 0) revert INVALID_TIER();
@@ -1263,5 +1282,27 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     id = _trackedLastSortTierIdOf[_nft];
     // Start at the first ID if nothing is specified.
     if (id == 0) id = maxTierIdOf[_nft];
+  }
+
+  function _packBools(
+    bool _allowManualMint,
+    bool _transfersPausable,
+    bool _useVotingUnits
+  ) internal pure returns (uint8 _packed) {
+    assembly {
+      _packed := or(_allowManualMint, _packed)
+      _packed := or(shl(0x1, _transfersPausable), _packed)
+      _packed := or(shl(0x2, _useVotingUnits), _packed)
+    }
+  }
+
+  function _unpackBools(
+    uint8 _packed
+  ) internal pure returns (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) {
+    assembly {
+      _allowManualMint := iszero(iszero(and(0x1, _packed)))
+      _transfersPausable := iszero(iszero(and(0x2, _packed)))
+      _useVotingUnits := iszero(iszero(and(0x4, _packed)))
+    }
   }
 }
