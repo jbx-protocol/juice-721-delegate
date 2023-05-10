@@ -54,9 +54,9 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
 
   /** 
     @notice
-    Info that contextualized the pricing of tiers. 
+    Info that contextualized the pricing of tiers, packed into a uint256. 
   */ 
-  JB721PricingContext internal _pricingContext;
+  uint256 internal _packedPricingContext;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
@@ -130,9 +130,20 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   /** 
     @notice
     Info that contextualized the pricing of tiers. 
+
+    @return currency The currency being used.
+    @return decimals The amount of decimals being used.
+    @return prices The prices contract being used to resolve currency discrepancies.
   */
-  function pricingContext() external view override returns (JB721PricingContext memory) {
-    return _pricingContext;
+  function pricingContext() external view override returns (uint256 currency, uint256 decimals, IJBPrices prices) {
+    // Get a reference to the packed pricing context.
+    uint256 _packed = _packedPricingContext;
+    // currency in bits 0-47 (48 bits).
+    currency =  uint256(uint48(_packed));
+    // pricing decimals in bits 48-95 (48 bits).
+    decimals = uint256(uint48(_packed >> 48));
+    // prices in bits 96-255 (160 bits).
+    prices = IJBPrices(address(uint160(_packed >> 96)));
   }
 
   //*********************************************************************//
@@ -263,11 +274,16 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
 
     fundingCycleStore = _fundingCycleStore;
     store = _store;
-    _pricingContext = JB721PricingContext({
-      currency: _pricing.currency,
-      decimals: _pricing.decimals,
-      prices: _pricing.prices
-    });
+
+    uint256 _packed;
+    // currency in bits 0-47 (48 bits).
+    _packed |= uint256(_pricing.currency);
+    // decimals in bits 48-95 (48 bits).
+    _packed |= uint256(_pricing.decimals) << 48;
+    // prices in bits 96-255 (160 bits).
+    _packed |= uint256(uint160(address(_pricing.prices))) << 96;
+    // Store the packed value.
+    _packedPricingContext = _packed;
 
     // Store the base URI if provided.
     if (bytes(_baseUri).length != 0) baseURI = _baseUri;
@@ -280,7 +296,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
     // Record adding the provided tiers.
-    if (_pricing.tiers.length > 0) _store.recordAddTiers(_pricing.tiers);
+    if (_pricing.tiers.length != 0) _store.recordAddTiers(_pricing.tiers);
 
     // Set the flags if needed.
     if (
@@ -521,14 +537,26 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   function _processPayment(JBDidPayData calldata _data) internal virtual override {
     // Normalize the currency.
     uint256 _value;
-    if (_data.amount.currency == _pricingContext.currency) _value = _data.amount.value;
-    else if (_pricingContext.prices != IJBPrices(address(0)))
-      _value = PRBMath.mulDiv(
-        _data.amount.value,
-        10 ** _pricingContext.decimals,
-        _pricingContext.prices.priceFor(_data.amount.currency, _pricingContext.currency, _data.amount.decimals)
-      );
-    else return;
+
+    {
+      uint256 _packed = _packedPricingContext;
+      // pricing currency in bits 0-47 (48 bits).
+      uint256 _pricingCurrency = uint256(uint48(_packed));
+      if (_data.amount.currency == _pricingCurrency) _value = _data.amount.value;
+      else {
+        // prices in bits 96-255 (160 bits).
+        IJBPrices _prices = IJBPrices(address(uint160(_packed >> 96)));
+        if (_prices != IJBPrices(address(0))) {
+          // pricing decimals in bits 48-95 (48 bits).
+          uint256 _pricingDecimals = uint256(uint48(_packed >> 48));
+          _value = PRBMath.mulDiv(
+            _data.amount.value,
+            10 ** _pricingDecimals,
+            _prices.priceFor(_data.amount.currency, _pricingCurrency, _data.amount.decimals)
+          );
+         } else return;
+      }
+    }
 
     // Keep a reference to the amount of credits the beneficiary already has.
     uint256 _credits = creditsOf[_data.beneficiary];

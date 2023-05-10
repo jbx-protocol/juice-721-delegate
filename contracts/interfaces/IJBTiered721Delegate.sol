@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
-import './../structs/JB721PricingContext.sol';
 import './../structs/JB721PricingParams.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
@@ -62,7 +61,7 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   function fundingCycleStore() external view returns (IJBFundingCycleStore);
   
-  function pricingContext() external view returns (JB721PricingContext memory);
+  function pricingContext() external view returns (uint256, uint256, IJBPrices);
 
   function creditsOf(address _address) external view returns (uint256);
 

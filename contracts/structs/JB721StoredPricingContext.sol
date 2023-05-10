@@ -9,7 +9,7 @@ import './JB721TierParams.sol';
   @member decimals The number of decimals included in the tier contribution floor fixed point numbers.
   @member prices A contract that exposes price feeds that can be used to resolved the value of a contributions that are sent in different currencies. Set to the zero address if payments must be made in `currency`.
 */
-struct JB721PricingContext {
+struct JB721StoredPricingContext {
   uint48 currency;
   uint48 decimals;
   IJBPrices prices;
