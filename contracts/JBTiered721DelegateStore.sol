@@ -403,7 +403,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   */
   function totalSupply(address _nft) external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
-    JBStored721Tier storage _storedTier;
+    JBStored721Tier memory _storedTier;
 
     // Keep a reference to the greatest tier ID.
     uint256 _maxTierId = maxTierIdOf[_nft];
