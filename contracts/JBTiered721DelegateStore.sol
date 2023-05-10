@@ -698,19 +698,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep track of the sorted tier ID.
         uint256 _currentSortedTierId = _startSortedTierId;
 
-        // Initialize a BitmapWord for isRemoved
-        JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(
-          _currentSortedTierId
-        );
-
         // Keep a reference to the tier ID to iterate on next.
         uint256 _next;
 
         while (_currentSortedTierId != 0) {
-          // Reset the bitmap word if the current tier ID is outside the currently stored word.
-          if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
-            _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_currentSortedTierId);
-
           // Set the next tier ID.
           _next = _nextSortedTierIdOf(msg.sender, _currentSortedTierId, _currentLastSortedTierId);
 
@@ -909,18 +900,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     tokenIds = new uint256[](_numberOfTiers);
 
     // Initialize a BitmapWord for isRemoved.
-    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierIds[0]);
+    JBBitmapWord memory _bitmapWord;
 
     for (uint256 _i; _i < _numberOfTiers; ) {
       // Set the tier ID being iterated on.
       _tierId = _tierIds[_i];
 
-      // Reset the bitmap if the current tier ID is outside the currently stored word.
-      if (_bitmapWord.refreshBitmapNeeded(_tierId))
-        _bitmapWord = _isTierRemovedBitmapWord[msg.sender].readId(_tierId);
-
       // Make sure the tier hasn't been removed.
-      if (_bitmapWord.isTierIdRemoved(_tierId)) revert TIER_REMOVED();
+      if (_isTierRemovedWithRefresh(msg.sender, _tierId, _bitmapWord)) revert TIER_REMOVED();
 
       // Keep a reference to the tier being iterated on.
       _storedTier = _storedTierOf[msg.sender][_tierId];
@@ -1044,15 +1031,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _previous;
 
     // Initialize a BitmapWord for isRemoved.
-    JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
+    JBBitmapWord memory _bitmapWord;
 
     // Make the sorted array.
     while (_currentSortedTierId != 0) {
-      // Reset the bitmap if the current tier ID is outside the currently stored word.
-      if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
-        _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
-
-      if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
+      if (!_isTierRemovedWithRefresh(_nft, _currentSortedTierId, _bitmapWord)) {
         // If the current tier ID being iterated on isn't an increment of the previous, set the correct tier after if needed.
         if (_currentSortedTierId != _previous + 1) {
           if (_tierIdAfter[_nft][_previous] != _currentSortedTierId)
