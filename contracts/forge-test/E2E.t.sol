@@ -363,11 +363,19 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       ),
       1
     );
+
+    JB721Tier memory _tierBeforeMintingReserves = JBTiered721Delegate(NFTRewardDataSource).store().tierOf(NFTRewardDataSource, highestTier, false);
+
     // Mint the reserved token
     vm.prank(_projectOwner);
     IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
     // Check: NFT received?
     assertEq(IERC721(NFTRewardDataSource).balanceOf(reserveBeneficiary), 1);
+
+    JB721Tier memory _tierAfterMintingReserves = JBTiered721Delegate(NFTRewardDataSource).store().tierOf(NFTRewardDataSource, highestTier, false);
+    // the remaining tiers should reduce
+    assertLt(_tierAfterMintingReserves.remainingQuantity, _tierBeforeMintingReserves.remainingQuantity);
+
     // Check: no more reserved token to mint?
     assertEq(
       IJBTiered721Delegate(NFTRewardDataSource).store().numberOfReservedTokensOutstandingFor(

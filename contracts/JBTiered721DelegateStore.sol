@@ -885,7 +885,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     uint256 _count
   ) external override returns (uint256[] memory tokenIds) {
     // Get a reference to the tier.
-    JBStored721Tier memory _storedTier = _storedTierOf[msg.sender][_tierId];
+    JBStored721Tier storage _storedTier = _storedTierOf[msg.sender][_tierId];
 
     // Get a reference to the number of reserved tokens mintable for the tier.
     uint256 _numberOfReservedTokensOutstanding = _numberOfReservedTokensOutstandingFor(
