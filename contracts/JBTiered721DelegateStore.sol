@@ -221,7 +221,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
+    // Initialize a BitmapWord to track if a tier has been removed.
+    JBBitmapWord memory _bitmapWord;
+
+    // Keep a reference to the iteratable variable. 
     uint256 _i;
+
     // Iterate at least once.
     do {
       // Break if already reached the size limit.
@@ -232,55 +237,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         ? _startingId
         : _firstSortedTierIdOf(_nft, _categories.length == 0 ? 0 : _categories[_i]);
 
-      // Initialize a BitmapWord for isRemoved
-      JBBitmapWord memory _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
-
       // Make the sorted array.
       while (_currentSortedTierId != 0 && _numberOfIncludedTiers < _size) {
-        // If the tier's category is greater than the category sought after, break.
-        // Reset the bitmap if the current tier ID is outside the currently stored word.
-        if (_bitmapWord.refreshBitmapNeeded(_currentSortedTierId))
-          _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_currentSortedTierId);
-
-        if (!_bitmapWord.isTierIdRemoved(_currentSortedTierId)) {
+        if (!_isTierRemovedWithRefresh(_nft, _currentSortedTierId, _bitmapWord)) {
           _storedTier = _storedTierOf[_nft][_currentSortedTierId];
 
           if (_categories.length != 0 && _storedTier.category > _categories[_i]) break;
-          else {
-            // Get a reference to the reserved token beneficiary.
-            address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(
-              _nft,
-              _currentSortedTierId
-            );
-
-            (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
-              _storedTier.packedBools
-            );
-
             // If a category is specified and matches, add the the returned values.
-            if (_categories.length == 0 || _storedTier.category == _categories[_i])
-              // Add the tier to the array being returned.
-              _tiers[_numberOfIncludedTiers++] = JB721Tier({
-                id: _currentSortedTierId,
-                price: _storedTier.price,
-                remainingQuantity: _storedTier.remainingQuantity,
-                initialQuantity: _storedTier.initialQuantity,
-                votingUnits: _useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
-                // No reserved rate if no beneficiary set.
-                reservedRate: _reservedTokenBeneficiary == address(0)
-                  ? 0
-                  : _storedTier.reservedRate,
-                reservedTokenBeneficiary: _reservedTokenBeneficiary,
-                encodedIPFSUri: encodedIPFSUriOf[_nft][_currentSortedTierId],
-                category: _storedTier.category,
-                allowManualMint: _allowManualMint,
-                transfersPausable: _transfersPausable,
-                resolvedUri: !_includeResolvedUri ||
-                  tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
-                  ? ''
-                  : tokenUriResolverOf[_nft].getUri(_generateTokenId(_currentSortedTierId, 0))
-              });
-          }
+          else if (_categories.length == 0 || _storedTier.category == _categories[_i]) 
+            // Add the tier to the array being returned.
+            _tiers[_numberOfIncludedTiers++] = _getTierFrom(_nft, _currentSortedTierId, _storedTier, _includeResolvedUri);
         }
         // Set the next sorted tier ID.
         _currentSortedTierId = _nextSortedTierIdOf(_nft, _currentSortedTierId, _lastTierId);
@@ -312,36 +278,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     address _nft,
     uint256 _id,
     bool _includeResolvedUri
-  ) external view override returns (JB721Tier memory) {
-    // Get the stored tier.
-    JBStored721Tier memory _storedTier = _storedTierOf[_nft][_id];
-
-    // Get a reference to the reserved token beneficiary.
-    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _id);
-
-    (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
-      _storedTier.packedBools
-    );
-
-    return
-      JB721Tier({
-        id: _id,
-        price: _storedTier.price,
-        remainingQuantity: _storedTier.remainingQuantity,
-        initialQuantity: _storedTier.initialQuantity,
-        votingUnits: _useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
-        // No reserved rate if no beneficiary set.
-        reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
-        reservedTokenBeneficiary: _reservedTokenBeneficiary,
-        encodedIPFSUri: encodedIPFSUriOf[_nft][_id],
-        category: _storedTier.category,
-        allowManualMint: _allowManualMint,
-        transfersPausable: _transfersPausable,
-        resolvedUri: !_includeResolvedUri ||
-          tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
-          ? ''
-          : tokenUriResolverOf[_nft].getUri(_generateTokenId(_id, 0))
-      });
+  ) public view override returns (JB721Tier memory) {
+    return _getTierFrom(_nft, _id, _storedTierOf[_nft][_id], _includeResolvedUri);
   }
 
   /**  
@@ -361,36 +299,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   ) external view override returns (JB721Tier memory) {
     // Get a reference to the tier's ID.
     uint256 _tierId = tierIdOfToken(_tokenId);
-
-    // Get the stored tier.
-    JBStored721Tier memory _storedTier = _storedTierOf[_nft][_tierId];
-
-    // Get a reference to the reserved token beneficiary.
-    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _tierId);
-
-    (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
-      _storedTier.packedBools
-    );
-
-    return
-      JB721Tier({
-        id: _tierId,
-        price: _storedTier.price,
-        remainingQuantity: _storedTier.remainingQuantity,
-        initialQuantity: _storedTier.initialQuantity,
-        votingUnits: _useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
-        // No reserved rate if beneficiary is not set.
-        reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
-        reservedTokenBeneficiary: _reservedTokenBeneficiary,
-        encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
-        category: _storedTier.category,
-        allowManualMint: _allowManualMint,
-        transfersPausable: _transfersPausable,
-        resolvedUri: !_includeResolvedUri ||
-          tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
-          ? ''
-          : tokenUriResolverOf[_nft].getUri(_generateTokenId(_tierId, 0))
-      });
+    return _getTierFrom(_nft, _tierId, _storedTierOf[_nft][_tierId], _includeResolvedUri);
   }
 
   /** 
@@ -532,7 +441,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /** 
     @notice
-    Tier removed from the current tiering
+    Check if the tier removed from the current set of tiers.
 
     @param _nft The NFT for which the removed tier is being queried.
     @param _tierId The tier ID to check if removed.
@@ -1164,6 +1073,67 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
+  
+  /** 
+    @notice
+    Returns a tier from a stored tier.
+
+    @param _nft The NFT to get the tier from.
+    @param _tierId The ID of the tier to get.
+    @param _storedTier The stored tier to base the tier on.
+    @param _includeResolvedUri If there's a token URI resolver, the content will be resolved and included.
+
+    @return tier The tier object.
+  */
+  function _getTierFrom(address _nft, uint256 _tierId, JBStored721Tier memory _storedTier, bool _includeResolvedUri) internal view returns (JB721Tier memory){
+    // Get a reference to the reserved token beneficiary.
+    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(
+      _nft,
+      _tierId
+    );
+
+    (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
+      _storedTier.packedBools
+    );
+
+    return
+      JB721Tier({
+        id: _tierId,
+        price: _storedTier.price,
+        remainingQuantity: _storedTier.remainingQuantity,
+        initialQuantity: _storedTier.initialQuantity,
+        votingUnits: _useVotingUnits ? _storedTier.votingUnits : _storedTier.price,
+        // No reserved rate if no beneficiary set.
+        reservedRate: _reservedTokenBeneficiary == address(0) ? 0 : _storedTier.reservedRate,
+        reservedTokenBeneficiary: _reservedTokenBeneficiary,
+        encodedIPFSUri: encodedIPFSUriOf[_nft][_tierId],
+        category: _storedTier.category,
+        allowManualMint: _allowManualMint,
+        transfersPausable: _transfersPausable,
+        resolvedUri: !_includeResolvedUri ||
+          tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+          ? ''
+          : tokenUriResolverOf[_nft].getUri(_generateTokenId(_tierId, 0))
+      });
+  }
+
+  /** 
+    @notice
+    Check if a tier is removed from the current set of tiers, while reusing a bitmap word.
+
+    @param _nft The NFT for which the removed tier is being queried.
+    @param _tierId The tier ID to check if removed.
+    @param _bitmapWord The bitmap word to reuse.
+
+    @return True if the tier has been removed
+  */
+  function _isTierRemovedWithRefresh(address _nft, uint256 _tierId, JBBitmapWord memory _bitmapWord) internal view returns (bool) {
+    // Reset the bitmap if the current tier ID is outside the currently stored word.
+    if (_bitmapWord.refreshBitmapNeeded(_tierId) || (_bitmapWord.currentWord == 0 && _bitmapWord.currentDepth == 0))
+      _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_tierId);
+
+    return _bitmapWord.isTierIdRemoved(_tierId);
+  }
 
   /** 
     @notice

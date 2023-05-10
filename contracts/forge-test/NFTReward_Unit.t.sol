@@ -375,9 +375,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
       }
       }
       // to avoid stack too deep
+      ForTest_JBTiered721Delegate _delegate;
       {
       ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-      ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+      _delegate = new ForTest_JBTiered721Delegate(
         projectId,
         IJBDirectory(mockJBDirectory),
         name,
@@ -395,6 +396,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           lockManualMintingChanges: true
         })
       );
+      }
       _delegate.transferOwnership(owner);
       _delegate.test_store().ForTest_setIsTierRemoved(address(_delegate), firstRemovedTier);
       _delegate.test_store().ForTest_setIsTierRemoved(address(_delegate), secondRemovedTier);
@@ -410,7 +412,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       assertTrue(
         _isIn(_nonRemovedTiers, _delegate.test_store().tiersOf(address(_delegate), new uint256[](0), false, 0, numberOfTiers))
       );
-      }
     }
     function testJBTieredNFTRewardDelegate_tier_returnsTheGivenTier(
       uint256 numberOfTiers,
@@ -2573,9 +2574,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
           resolvedUri: ""
         });
       }
+      JBTiered721Delegate _delegate;
+      {
       JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
       vm.etch(delegate_i, address(delegate).code);
-      JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+      _delegate = JBTiered721Delegate(delegate_i);
       _delegate.initialize(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -2599,6 +2602,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           lockManualMintingChanges: true
         })
       );
+      }
       _delegate.transferOwnership(owner);
       JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
       JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
@@ -2745,9 +2749,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
           resolvedUri: ""
         });
       }
+      JBTiered721Delegate _delegate;
+      {
       JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
       vm.etch(delegate_i, address(delegate).code);
-      JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+      _delegate = JBTiered721Delegate(delegate_i);
       _delegate.initialize(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -2771,6 +2777,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           lockManualMintingChanges: true
         })
       );
+      }
       _delegate.transferOwnership(owner);
       JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
       JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
@@ -3033,9 +3040,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
           resolvedUri: ""
         });
       }
+
+      JBTiered721Delegate _delegate;
+      {
       JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
       vm.etch(delegate_i, address(delegate).code);
-      JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+      _delegate = JBTiered721Delegate(delegate_i);
       _delegate.initialize(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -3059,6 +3069,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           lockManualMintingChanges: true
         })
       );
+      }
       _delegate.transferOwnership(owner);
       JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
       JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
@@ -3194,9 +3205,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
           resolvedUri: ""
         });
       }
+      JBTiered721Delegate _delegate;
+      {
       JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
       vm.etch(delegate_i, address(delegate).code);
-      JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
+      _delegate = JBTiered721Delegate(delegate_i);
       _delegate.initialize(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -3220,6 +3233,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           lockManualMintingChanges: true
         })
       );
+      }
       _delegate.transferOwnership(owner);
       JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](floorTiersToAdd.length);
       JB721Tier[] memory _tiersAdded = new JB721Tier[](floorTiersToAdd.length);
@@ -6216,7 +6230,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       bool _allowManualMint,
       bool _transfersPausable,
       bool _useVotingUnits
-    ) public returns(uint8) {
+    ) public pure returns(uint8) {
       return _packBools(
         _allowManualMint,
         _transfersPausable,
