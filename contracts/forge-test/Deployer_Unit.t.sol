@@ -145,7 +145,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     JB721TierParams[] memory tierParams = new JB721TierParams[](10);
     for (uint256 i; i < 10; i++) {
       tierParams[i] = JB721TierParams({
-        price: uint104((i + 1) * 10),
+        price: uint96((i + 1) * 10),
         initialQuantity: uint32(100),
         votingUnits: uint16(0),
         reservedRate: uint16(0),

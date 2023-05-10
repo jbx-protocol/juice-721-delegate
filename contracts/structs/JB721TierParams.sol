@@ -15,13 +15,13 @@ pragma solidity ^0.8.0;
   @member useVotingUnits A flag indicating if the voting units override should be used over the price as the tier's voting units.
 */
 struct JB721TierParams {
-  uint104 price;
+  uint96 price;
   uint32 initialQuantity;
   uint32 votingUnits;
   uint16 reservedRate;
   address reservedTokenBeneficiary;
   bytes32 encodedIPFSUri;
-  uint24 category;
+  uint16 category;
   bool allowManualMint;
   bool shouldUseReservedTokenBeneficiaryAsDefault;
   bool transfersPausable;
