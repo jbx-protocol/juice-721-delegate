@@ -224,7 +224,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     // Initialize a BitmapWord to track if a tier has been removed.
     JBBitmapWord memory _bitmapWord;
 
-    // Keep a reference to the iteratable variable. 
+    // Keep a reference to the iteratable variable.
     uint256 _i;
 
     // Iterate at least once.
@@ -243,10 +243,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
           _storedTier = _storedTierOf[_nft][_currentSortedTierId];
 
           if (_categories.length != 0 && _storedTier.category > _categories[_i]) break;
-            // If a category is specified and matches, add the the returned values.
-          else if (_categories.length == 0 || _storedTier.category == _categories[_i]) 
+          // If a category is specified and matches, add the the returned values.
+          else if (_categories.length == 0 || _storedTier.category == _categories[_i])
             // Add the tier to the array being returned.
-            _tiers[_numberOfIncludedTiers++] = _getTierFrom(_nft, _currentSortedTierId, _storedTier, _includeResolvedUri);
+            _tiers[_numberOfIncludedTiers++] = _getTierFrom(
+              _nft,
+              _currentSortedTierId,
+              _storedTier,
+              _includeResolvedUri
+            );
         }
         // Set the next sorted tier ID.
         _currentSortedTierId = _nextSortedTierIdOf(_nft, _currentSortedTierId, _lastTierId);
@@ -912,9 +917,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       // Keep a reference to the tier being iterated on.
       _storedTier = _storedTierOf[msg.sender][_tierId];
 
-      (bool _allowManualMint,,) = _unpackBools(
-        _storedTier.packedBools
-      );
+      (bool _allowManualMint, , ) = _unpackBools(_storedTier.packedBools);
 
       // If this is a manual mint, make sure manual minting is allowed.
       if (_isManualMint && !_allowManualMint) revert CANT_MINT_MANUALLY();
@@ -1056,7 +1059,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   //*********************************************************************//
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
-  
+
   /** 
     @notice
     Returns a tier from a stored tier.
@@ -1068,12 +1071,14 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return tier The tier object.
   */
-  function _getTierFrom(address _nft, uint256 _tierId, JBStored721Tier memory _storedTier, bool _includeResolvedUri) internal view returns (JB721Tier memory){
+  function _getTierFrom(
+    address _nft,
+    uint256 _tierId,
+    JBStored721Tier memory _storedTier,
+    bool _includeResolvedUri
+  ) internal view returns (JB721Tier memory) {
     // Get a reference to the reserved token beneficiary.
-    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(
-      _nft,
-      _tierId
-    );
+    address _reservedTokenBeneficiary = reservedTokenBeneficiaryOf(_nft, _tierId);
 
     (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) = _unpackBools(
       _storedTier.packedBools
@@ -1110,10 +1115,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return True if the tier has been removed
   */
-  function _isTierRemovedWithRefresh(address _nft, uint256 _tierId, JBBitmapWord memory _bitmapWord) internal view returns (bool) {
+  function _isTierRemovedWithRefresh(
+    address _nft,
+    uint256 _tierId,
+    JBBitmapWord memory _bitmapWord
+  ) internal view returns (bool) {
     // Reset the bitmap if the current tier ID is outside the currently stored word.
-    if (_bitmapWord.refreshBitmapNeeded(_tierId) || (_bitmapWord.currentWord == 0 && _bitmapWord.currentDepth == 0))
-      _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_tierId);
+    if (
+      _bitmapWord.refreshBitmapNeeded(_tierId) ||
+      (_bitmapWord.currentWord == 0 && _bitmapWord.currentDepth == 0)
+    ) _bitmapWord = _isTierRemovedBitmapWord[_nft].readId(_tierId);
 
     return _bitmapWord.isTierIdRemoved(_tierId);
   }
@@ -1238,15 +1249,15 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
   }
 
   /**
-   * @notice 
-   * Pack three bools into a single uint8.
-   * 
-   * @param _allowManualMint Whether or not manual mints are allowed.
-   * @param _transfersPausable Whether or not transfers are pausable.
-   * @param _useVotingUnits A flag indicating if the voting units override should be used.
-   * 
-   * @return _packed The packed bools.
-   */
+    @notice
+    Pack three bools into a single uint8.
+   
+    @param _allowManualMint Whether or not manual mints are allowed.
+    @param _transfersPausable Whether or not transfers are pausable.
+    @param _useVotingUnits A flag indicating if the voting units override should be used.
+   
+    @return _packed The packed bools.
+  */
   function _packBools(
     bool _allowManualMint,
     bool _transfersPausable,
@@ -1259,16 +1270,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     }
   }
 
-/**
- * @notice
- * Unpack three bools from a single uint8.
- * 
- * @param _packed The packed bools.
- * 
- * @return _allowManualMint Whether or not manual mints are allowed.
- * @return _transfersPausable Whether or not transfers are pausable.
- * @return _useVotingUnits A flag indicating if the voting units override should be used.
- */
+  /**
+    @notice
+    Unpack three bools from a single uint8.
+   
+    @param _packed The packed bools.
+   
+    @return _allowManualMint Whether or not manual mints are allowed.
+    @return _transfersPausable Whether or not transfers are pausable.
+    @return _useVotingUnits A flag indicating if the voting units override should be used.
+  */
   function _unpackBools(
     uint8 _packed
   ) internal pure returns (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) {

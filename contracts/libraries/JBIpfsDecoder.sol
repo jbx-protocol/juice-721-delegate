@@ -26,11 +26,10 @@ library JBIpfsDecoder {
   */
   bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
-  function decode(string memory _baseUri, bytes32 _hexString)
-    internal
-    pure
-    returns (string memory)
-  {
+  function decode(
+    string memory _baseUri,
+    bytes32 _hexString
+  ) internal pure returns (string memory) {
     // Concatenate the hex string with the fixed IPFS hash part (0x12 and 0x20)
     bytes memory completeHexString = abi.encodePacked(bytes2(0x1220), _hexString);
 
