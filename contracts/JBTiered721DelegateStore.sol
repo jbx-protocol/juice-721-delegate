@@ -1284,6 +1284,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     if (id == 0) id = maxTierIdOf[_nft];
   }
 
+  /**
+   * @notice 
+   * Pack three bools into a single uint8.
+   * 
+   * @param _allowManualMint Whether or not manual mints are allowed.
+   * @param _transfersPausable Whether or not transfers are pausable.
+   * @param _useVotingUnits A flag indicating if the voting units override should be used.
+   * 
+   * @return _packed The packed bools.
+   */
   function _packBools(
     bool _allowManualMint,
     bool _transfersPausable,
@@ -1296,6 +1306,16 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     }
   }
 
+/**
+ * @notice
+ * Unpack three bools from a single uint8.
+ * 
+ * @param _packed The packed bools.
+ * 
+ * @return _allowManualMint Whether or not manual mints are allowed.
+ * @return _transfersPausable Whether or not transfers are pausable.
+ * @return _useVotingUnits A flag indicating if the voting units override should be used.
+ */
   function _unpackBools(
     uint8 _packed
   ) internal pure returns (bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) {

@@ -6223,11 +6223,4 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _useVotingUnits
       );
     }
-    // function ForTest_unpackBools(
-    //   uint8 _packed
-    // ) public returns(bool _allowManualMint, bool _transfersPausable, bool _useVotingUnits) {
-    //   return _unpackBools(
-    //     _packed
-    //   );
-    // }
 }
