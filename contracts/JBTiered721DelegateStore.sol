@@ -947,9 +947,8 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Update the leftover amount;
-      leftoverAmount = leftoverAmount - _storedTier.price;
-
       unchecked {
+        leftoverAmount = leftoverAmount - _storedTier.price;
         ++_i;
       }
     }
@@ -1159,9 +1158,12 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       return 0;
 
     // Get a reference to the number of tokens already minted in the tier, not counting reserves or burned tokens.
-    uint256 _numberOfNonReservesMinted = _storedTier.initialQuantity -
+    uint256 _numberOfNonReservesMinted;
+    unchecked {
+    _numberOfNonReservesMinted= _storedTier.initialQuantity -
       _storedTier.remainingQuantity -
       _reserveTokensMinted;
+    }
 
     // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
     uint256 _numberReservedTokensMintable = _numberOfNonReservesMinted / _storedTier.reservedRate;
@@ -1173,7 +1175,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
     if (_reserveTokensMinted > _numberReservedTokensMintable) return 0;
 
     // Return the difference between the amount mintable and the amount already minted.
+    unchecked {
     return _numberReservedTokensMintable - _reserveTokensMinted;
+    }
   }
 
   /** 
