@@ -58,13 +58,9 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   /**
    * @dev See {IERC165-supportsInterface}.
    */
-  function supportsInterface(bytes4 interfaceId)
-    public
-    view
-    virtual
-    override(ERC165, IERC165)
-    returns (bool)
-  {
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(ERC165, IERC165) returns (bool) {
     return
       interfaceId == type(IERC721).interfaceId ||
       interfaceId == type(IERC721Metadata).interfaceId ||
@@ -154,24 +150,17 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   /**
    * @dev See {IERC721-isApprovedForAll}.
    */
-  function isApprovedForAll(address owner, address operator)
-    public
-    view
-    virtual
-    override
-    returns (bool)
-  {
+  function isApprovedForAll(
+    address owner,
+    address operator
+  ) public view virtual override returns (bool) {
     return _operatorApprovals[owner][operator];
   }
 
   /**
    * @dev See {IERC721-transferFrom}.
    */
-  function transferFrom(
-    address from,
-    address to,
-    uint256 tokenId
-  ) public virtual override {
+  function transferFrom(address from, address to, uint256 tokenId) public virtual override {
     //solhint-disable-next-line max-line-length
     if (!_isApprovedOrOwner(_msgSender(), tokenId)) revert CALLER_NOT_OWNER_OR_APPROVED();
 
@@ -181,11 +170,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
   /**
    * @dev See {IERC721-safeTransferFrom}.
    */
-  function safeTransferFrom(
-    address from,
-    address to,
-    uint256 tokenId
-  ) public virtual override {
+  function safeTransferFrom(address from, address to, uint256 tokenId) public virtual override {
     safeTransferFrom(from, to, tokenId, '');
   }
 
@@ -249,12 +234,10 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
    *
    * - `tokenId` must exist.
    */
-  function _isApprovedOrOwner(address spender, uint256 tokenId)
-    internal
-    view
-    virtual
-    returns (bool)
-  {
+  function _isApprovedOrOwner(
+    address spender,
+    uint256 tokenId
+  ) internal view virtual returns (bool) {
     address owner = ERC721.ownerOf(tokenId);
     return (spender == owner ||
       isApprovedForAll(owner, spender) ||
@@ -320,11 +303,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
    *
    * Emits a {Transfer} event.
    */
-  function _transfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal virtual {
+  function _transfer(address from, address to, uint256 tokenId) internal virtual {
     if (ERC721.ownerOf(tokenId) != from) revert INCORRECT_OWNER();
     if (to == address(0)) revert TRANSFER_TO_ZERO_ADDRESS();
 
@@ -355,11 +334,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
    *
    * Emits an {ApprovalForAll} event.
    */
-  function _setApprovalForAll(
-    address owner,
-    address operator,
-    bool approved
-  ) internal virtual {
+  function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
     if (owner == operator) revert APPROVE_TO_CALLER();
     _operatorApprovals[owner][operator] = approved;
     emit ApprovalForAll(owner, operator, approved);
@@ -422,11 +397,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
    *
    * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
    */
-  function _beforeTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal virtual {}
+  function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual {}
 
   /**
    * @dev Hook that is called after any transfer of tokens. This includes
@@ -439,9 +410,5 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
    *
    * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
    */
-  function _afterTokenTransfer(
-    address from,
-    address to,
-    uint256 tokenId
-  ) internal virtual {}
+  function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual {}
 }

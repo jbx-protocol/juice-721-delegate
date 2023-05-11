@@ -6,7 +6,7 @@ import './JBTiered721Delegate.sol';
 
 /**
   @title
-  JB721GlobalGovernance
+  JBTiered721GovernanceDelegate
 
   @notice
   A tiered 721 delegate where each NFT can be used for on chain governance, with votes delegatable globally across all tiers.
@@ -16,8 +16,7 @@ import './JBTiered721Delegate.sol';
   JBTiered721Delegate: The tiered 721 delegate.
   Votes: A helper for voting balance snapshots.
 */
-contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
-
+contract JBTiered721GovernanceDelegate is Votes, JBTiered721Delegate {
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
@@ -43,13 +42,9 @@ contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
 
     @return units The voting units for the account.
   */
-  function _getVotingUnits(address _account)
-    internal
-    view
-    virtual
-    override
-    returns (uint256 units)
-  {
+  function _getVotingUnits(
+    address _account
+  ) internal view virtual override returns (uint256 units) {
     return store.votingUnitsOf(address(this), _account);
   }
 
@@ -69,6 +64,7 @@ contract JB721GlobalGovernance is Votes, JBTiered721Delegate {
     JB721Tier memory _tier
   ) internal virtual override {
     _tokenId; // Prevents unused var compiler and natspec complaints.
+
     if (_tier.votingUnits != 0)
       // Transfer the voting units.
       _transferVotingUnits(_from, _to, _tier.votingUnits);

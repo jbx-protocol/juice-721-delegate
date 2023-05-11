@@ -12,11 +12,10 @@ library JBBitmap {
     @notice
     Initialize a BitmapWord struct, based on the mapping storage pointer and a given index.
   */
-  function readId(mapping(uint256 => uint256) storage self, uint256 _index)
-    internal
-    view
-    returns (JBBitmapWord memory)
-  {
+  function readId(
+    mapping(uint256 => uint256) storage self,
+    uint256 _index
+  ) internal view returns (JBBitmapWord memory) {
     uint256 _depth = _retrieveDepth(_index);
 
     return JBBitmapWord({currentWord: self[_depth], currentDepth: _depth});
@@ -34,11 +33,10 @@ library JBBitmap {
     @notice
     Returns the status of a bit in a given bitmap (index is the index in the reshaped bitmap matrix 1*n).
   */
-  function isTierIdRemoved(mapping(uint256 => uint256) storage self, uint256 _index)
-    internal
-    view
-    returns (bool)
-  {
+  function isTierIdRemoved(
+    mapping(uint256 => uint256) storage self,
+    uint256 _index
+  ) internal view returns (bool) {
     uint256 _depth = _retrieveDepth(_index);
     return isTierIdRemoved(JBBitmapWord({currentWord: self[_depth], currentDepth: _depth}), _index);
   }
@@ -56,11 +54,10 @@ library JBBitmap {
     @notice
     Return true if the index is in an another word than the one stored in the BitmapWord struct.
   */
-  function refreshBitmapNeeded(JBBitmapWord memory self, uint256 _index)
-    internal
-    pure
-    returns (bool)
-  {
+  function refreshBitmapNeeded(
+    JBBitmapWord memory self,
+    uint256 _index
+  ) internal pure returns (bool) {
     return _retrieveDepth(_index) != self.currentDepth;
   }
 

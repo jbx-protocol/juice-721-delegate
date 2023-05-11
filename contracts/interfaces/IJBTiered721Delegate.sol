@@ -35,6 +35,12 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   event SetEncodedIPFSUri(uint256 indexed tierId, bytes32 encodedIPFSUri, address caller);
 
+  event SetBaseUri(string indexed baseUri, address caller);
+
+  event SetContractUri(string indexed contractUri, address caller);
+
+  event SetTokenUriResolver(IJBTokenUriResolver indexed newResolver, address caller);
+
   event AddCredits(
     uint256 indexed changeAmount,
     uint256 indexed newTotalCredits,
@@ -54,36 +60,40 @@ interface IJBTiered721Delegate is IJB721Delegate {
   function store() external view returns (IJBTiered721DelegateStore);
 
   function fundingCycleStore() external view returns (IJBFundingCycleStore);
-
-  function prices() external view returns (IJBPrices);
-
-  function pricingCurrency() external view returns (uint256);
-
-  function pricingDecimals() external view returns (uint256);
-
-  function contractURI() external view returns (string memory);
+  
+  function pricingContext() external view returns (uint256, uint256, IJBPrices);
 
   function creditsOf(address _address) external view returns (uint256);
 
   function firstOwnerOf(uint256 _tokenId) external view returns (address);
 
-  function adjustTiers(JB721TierParams[] memory _tierDataToAdd, uint256[] memory _tierIdsToRemove)
-    external;
+  function baseURI() external view returns (string memory);
 
-  function mintReservesFor(JBTiered721MintReservesForTiersData[] memory _mintReservesForTiersData)
-    external;
+  function contractURI() external view returns (string memory);
+
+  function adjustTiers(
+    JB721TierParams[] memory _tierDataToAdd,
+    uint256[] memory _tierIdsToRemove
+  ) external;
+
+  function mintReservesFor(
+    JBTiered721MintReservesForTiersData[] memory _mintReservesForTiersData
+  ) external;
 
   function mintReservesFor(uint256 _tierId, uint256 _count) external;
 
-  function mintFor(JBTiered721MintForTiersData[] memory _mintForTiersData) external;
+  function mintFor(
+    uint16[] calldata _tierIds,
+    address _beneficiary
+  ) external returns (uint256[] memory tokenIds);
 
-  function mintFor(uint16[] calldata _tierIds, address _beneficiary)
-    external
-    returns (uint256[] memory tokenIds);
-
-  function setDefaultReservedTokenBeneficiary(address _beneficiary) external;
-
-  function setEncodedIPFSUriOf(uint256 _tierId, bytes32 _encodedIPFSUri) external;
+  function setMetadata(
+    string memory _baseUri,
+    string calldata _contractMetadataUri,
+    IJBTokenUriResolver _tokenUriResolver,
+    uint256 _encodedIPFSUriTierId,
+    bytes32 _encodedIPFSUri
+  ) external;
 
   function initialize(
     uint256 _projectId,

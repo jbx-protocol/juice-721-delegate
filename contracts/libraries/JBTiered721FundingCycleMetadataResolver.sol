@@ -20,11 +20,9 @@ library JBTiered721FundingCycleMetadataResolver {
 
     @return packed The packed uint256 of all tiered 721 metadata params.
   */
-  function packFundingCycleGlobalMetadata(JBTiered721FundingCycleMetadata memory _metadata)
-    internal
-    pure
-    returns (uint256 packed)
-  {
+  function packFundingCycleGlobalMetadata(
+    JBTiered721FundingCycleMetadata memory _metadata
+  ) internal pure returns (uint256 packed) {
     // pause transfers in bit 0.
     if (_metadata.pauseTransfers) packed |= 1;
     // pause mint reserves in bit 2.
@@ -39,11 +37,9 @@ library JBTiered721FundingCycleMetadataResolver {
 
     @return metadata The tiered 721 metadata object.
   */
-  function expandMetadata(uint8 _packedMetadata)
-    internal
-    pure
-    returns (JBTiered721FundingCycleMetadata memory metadata)
-  {
+  function expandMetadata(
+    uint8 _packedMetadata
+  ) internal pure returns (JBTiered721FundingCycleMetadata memory metadata) {
     return
       JBTiered721FundingCycleMetadata(
         transfersPaused(_packedMetadata),

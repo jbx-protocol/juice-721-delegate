@@ -63,12 +63,10 @@ abstract contract Votes {
    *
    * - `blockNumber` must have been already mined
    */
-  function getPastVotes(address account, uint256 blockNumber)
-    public
-    view
-    virtual
-    returns (uint256)
-  {
+  function getPastVotes(
+    address account,
+    uint256 blockNumber
+  ) public view virtual returns (uint256) {
     return _delegateCheckpoints[account].getAtBlock(blockNumber);
   }
 
@@ -126,11 +124,7 @@ abstract contract Votes {
    * @dev Transfers, mints, or burns voting units. To register a mint, `from` should be zero. To register a burn, `to`
    * should be zero. Total supply of voting units will be adjusted with mints and burns.
    */
-  function _transferVotingUnits(
-    address from,
-    address to,
-    uint256 amount
-  ) internal virtual {
+  function _transferVotingUnits(address from, address to, uint256 amount) internal virtual {
     if (from == address(0)) {
       _totalCheckpoints.push(_add, amount);
     }
@@ -143,11 +137,7 @@ abstract contract Votes {
   /**
    * @dev Moves delegated votes from one delegate to another.
    */
-  function _moveDelegateVotes(
-    address from,
-    address to,
-    uint256 amount
-  ) private {
+  function _moveDelegateVotes(address from, address to, uint256 amount) private {
     if (from != to && amount > 0) {
       if (from != address(0)) {
         (uint256 oldValue, uint256 newValue) = _delegateCheckpoints[from].push(_subtract, amount);

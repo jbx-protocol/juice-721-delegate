@@ -76,7 +76,9 @@ abstract contract JB721Delegate is
     @return memo The memo that should be forwarded to the event.
     @return delegateAllocations The amount to send to delegates instead of adding to the local balance.
   */
-  function payParams(JBPayParamsData calldata _data)
+  function payParams(
+    JBPayParamsData calldata _data
+  )
     public
     view
     virtual
@@ -104,7 +106,9 @@ abstract contract JB721Delegate is
     @return memo The memo that should be forwarded to the event.
     @return delegateAllocations The amount to send to delegates instead of adding to the beneficiary.
   */
-  function redeemParams(JBRedeemParamsData calldata _data)
+  function redeemParams(
+    JBRedeemParamsData calldata _data
+  )
     public
     view
     virtual
@@ -180,12 +184,10 @@ abstract contract JB721Delegate is
 
     @return The weight.
   */
-  function redemptionWeightOf(uint256[] memory _tokenIds, JBRedeemParamsData calldata _data)
-    public
-    view
-    virtual
-    returns (uint256)
-  {
+  function redemptionWeightOf(
+    uint256[] memory _tokenIds,
+    JBRedeemParamsData calldata _data
+  ) public view virtual returns (uint256) {
     _tokenIds; // Prevents unused var compiler and natspec complaints.
     _data; // Prevents unused var compiler and natspec complaints.
     return 0;
@@ -199,12 +201,9 @@ abstract contract JB721Delegate is
 
     @return The total weight.
   */
-  function totalRedemptionWeight(JBRedeemParamsData calldata _data)
-    public
-    view
-    virtual
-    returns (uint256)
-  {
+  function totalRedemptionWeight(
+    JBRedeemParamsData calldata _data
+  ) public view virtual returns (uint256) {
     _data; // Prevents unused var compiler and natspec complaints.
     return 0;
   }
@@ -218,13 +217,9 @@ abstract contract JB721Delegate is
 
     @param _interfaceId The ID of the interface to check for adherence to.
   */
-  function supportsInterface(bytes4 _interfaceId)
-    public
-    view
-    virtual
-    override(ERC721, IERC165)
-    returns (bool)
-  {
+  function supportsInterface(
+    bytes4 _interfaceId
+  ) public view virtual override(ERC721, IERC165) returns (bool) {
     return
       _interfaceId == type(IJB721Delegate).interfaceId ||
       _interfaceId == type(IJBFundingCycleDataSource).interfaceId ||
