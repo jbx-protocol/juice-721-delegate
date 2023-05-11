@@ -61,6 +61,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JBTiered721Delegate delegate;
     JBTiered721Delegate noGovernanceOrigin; // noGovernanceOrigin
     JBDelegatesRegistry delegatesRegistry;
+    JBTiered721DelegateDeployer jbDelegateDeployer;
     address delegate_i = address(bytes20(keccak256('delegate_implementation')));
     event Mint(
       uint256 indexed tokenId,
@@ -171,7 +172,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       noGovernanceOrigin = new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
       JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
       delegatesRegistry = new JBDelegatesRegistry();
-      JBTiered721DelegateDeployer jbDelegateDeployer = new JBTiered721DelegateDeployer(
+      jbDelegateDeployer = new JBTiered721DelegateDeployer(
         onchainGovernance,
         noGovernanceOrigin,
         delegatesRegistry
@@ -256,6 +257,46 @@ contract TestJBTieredNFTRewardDelegate is Test {
       _delegate.transferOwnership(owner);
       assertTrue(_isIn(_delegate.test_store().tiersOf(address(_delegate), new uint256[](0), false, 0, numberOfTiers), _tiers));
       assertTrue(_isIn(_tiers, _delegate.test_store().tiersOf(address(_delegate), new uint256[](0), false, 0, numberOfTiers)));
+    }
+    function testJBTieredNFTRewardDelegate_pricing_packingFunctionsAsExpected(uint48 _currency, uint48 _decimals, address _prices) public {
+      JBDeployTiered721DelegateData memory delegateData = JBDeployTiered721DelegateData(
+        name,
+        symbol,
+        IJBFundingCycleStore(mockJBFundingCycleStore),
+        baseUri,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        owner,
+        JB721PricingParams({tiers: tiers, currency: _currency, decimals: _decimals, prices: IJBPrices(_prices)}),
+        address(0),
+        new JBTiered721DelegateStore(),
+        JBTiered721Flags({
+          preventOverspending: false,
+          lockReservedTokenChanges: true,
+          lockVotingUnitChanges: true,
+          lockManualMintingChanges: true
+        }),
+        JB721GovernanceType.NONE
+      );
+
+      JBTiered721Delegate _delegate = JBTiered721Delegate(address(jbDelegateDeployer.deployDelegateFor(
+        projectId,
+        delegateData,
+        IJBDirectory(mockJBDirectory)
+      )));
+      
+      (uint256 __currency, uint256 __decimals, IJBPrices __prices) = _delegate.pricingContext();
+      assertEq(__currency,uint256(_currency));
+      assertEq(__decimals,uint256(_decimals));
+      assertEq(address(__prices),_prices);
+    }
+    function testJBTieredNFTRewardDelegate_bools_packingFunctionsAsExpected(bool _a, bool _b, bool _c) public {
+      ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+      uint8 _packed = _ForTest_store.ForTest_packBools(_a, _b, _c);
+      (bool __a, bool __b, bool __c) = _ForTest_store.ForTest_unpackBools(_packed);
+      assertEq(_a,__a);
+      assertEq(_b,__b);
+      assertEq(_c,__c);
     }
     function testJBTieredNFTRewardDelegate_tiers_returnsAllTiersWithResolver(uint256 numberOfTiers) public {
       numberOfTiers = bound(numberOfTiers, 0, 30);
@@ -6235,6 +6276,15 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _allowManualMint,
         _transfersPausable,
         _useVotingUnits
+      );
+    }
+    function ForTest_unpackBools(
+      uint8 _packed
+    ) public pure returns(bool,
+      bool,
+      bool) {
+      return _unpackBools(
+        _packed
       );
     }
 }
