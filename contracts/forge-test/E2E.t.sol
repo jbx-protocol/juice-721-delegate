@@ -100,7 +100,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     bytes memory metadata = abi.encode(
       bytes32(0),
       bytes32(0),
-      type(IJB721Delegate).interfaceId,
+      type(IJBTiered721Delegate).interfaceId,
       true,
       rawMetadata
     );
@@ -182,7 +182,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     bytes memory metadata = abi.encode(
       bytes32(0),
       bytes32(0),
-      type(IJB721Delegate).interfaceId,
+      type(IJBTiered721Delegate).interfaceId,
       true,
       rawMetadata
     );
@@ -233,7 +233,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     bytes memory metadata = abi.encode(
       bytes32(0),
       bytes32(0),
-      type(IJB721Delegate).interfaceId,
+      type(IJBTiered721Delegate).interfaceId,
       _allowOverspending,
       rawMetadata
     );
@@ -327,7 +327,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     bytes memory metadata = abi.encode(
       bytes32(0),
       bytes32(0),
-      type(IJB721Delegate).interfaceId,
+      type(IJBTiered721Delegate).interfaceId,
       true,
       rawMetadata
     );
@@ -398,7 +398,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     vm.prank(_projectOwner);
     IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
   }
-
+  
   // Will:
   // - Mint token
   // - check the remaining reserved supply within the corresponding tier
@@ -426,7 +426,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       metadata = abi.encode(
         bytes32(0),
         bytes32(0),
-        type(IJB721Delegate).interfaceId,
+        type(IJBTiered721Delegate).interfaceId,
         true,
         rawMetadata
       );
@@ -520,7 +520,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     bytes memory metadata = abi.encode(
       bytes32(0),
       bytes32(0),
-      type(IJB721Delegate).interfaceId,
+      type(IJBTiered721Delegate).interfaceId,
       true,
       rawMetadata
     );
