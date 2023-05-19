@@ -581,7 +581,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     // Check the 4 bytes interfaceId to verify the metadata is intended for this contract.
     if (
       _data.metadata.length > 68 &&
-      bytes4(_data.metadata[64:68]) == type(IJB721Delegate).interfaceId
+      bytes4(_data.metadata[64:68]) == type(IJBTiered721Delegate).interfaceId
     ) {
       // Keep a reference to the the specific tier IDs to mint.
       uint16[] memory _tierIdsToMint;

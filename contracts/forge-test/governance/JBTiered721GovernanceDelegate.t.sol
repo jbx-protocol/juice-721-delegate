@@ -46,7 +46,7 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
         metadata = abi.encode(
           bytes32(0),
           bytes32(0),
-          type(IJB721Delegate).interfaceId,
+          type(IJBTiered721Delegate).interfaceId,
           true,
           rawMetadata
         );
@@ -116,7 +116,7 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
     bytes memory metadata = abi.encode(
       bytes32(0),
       bytes32(0),
-      type(IJB721Delegate).interfaceId,
+      type(IJBTiered721Delegate).interfaceId,
       true,
       rawMetadata
     );
