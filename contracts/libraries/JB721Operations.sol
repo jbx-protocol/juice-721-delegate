@@ -7,6 +7,6 @@ library JB721Operations {
   // 20 - JBUriOperations (Set token URI)
   uint256 public constant ADJUST_TIERS = 21;
   uint256 public constant UPDATE_METADATA = 22;
-  uint256 public constant SET_RESERVED_BENEFICIARY = 23;
+  // uint256 public constant SET_RESERVED_BENEFICIARY = 23; Unused
   uint256 public constant MINT = 24;
 }
