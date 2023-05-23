@@ -329,7 +329,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   )
     external
     override
-    requirePermissionFromOwner(JB721Operations.MINT)
+    requirePermission(owner(), projectId, JB721Operations.MINT)
     returns (uint256[] memory tokenIds)
   {
     // Record the mint. The returned token IDs correspond to the tiers passed in.
@@ -398,7 +398,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   function adjustTiers(
     JB721TierParams[] calldata _tiersToAdd,
     uint256[] calldata _tierIdsToRemove
-  ) external override requirePermissionFromOwner(JB721Operations.ADJUST_TIERS) {
+  ) external override requirePermission(owner(), projectId, JB721Operations.ADJUST_TIERS) {
     // Get a reference to the number of tiers being added.
     uint256 _numberOfTiersToAdd = _tiersToAdd.length;
 
@@ -453,7 +453,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     IJBTokenUriResolver _tokenUriResolver,
     uint256 _encodedIPFSUriTierId,
     bytes32 _encodedIPFSUri
-  ) external override requirePermissionFromOwner(JB721Operations.UPDATE_METADATA) {
+  ) external override requirePermission(owner(), projectId, JB721Operations.UPDATE_METADATA) {
     if (bytes(_baseUri).length != 0) {
       // Store the new value.
       baseURI = _baseUri;
