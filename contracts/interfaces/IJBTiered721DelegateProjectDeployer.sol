@@ -18,21 +18,21 @@ interface IJBTiered721DelegateProjectDeployer {
 
   function launchProjectFor(
     address _owner,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDelegateData,
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
     JBLaunchProjectData memory _launchProjectData,
     IJBController3_1 _controller
   ) external returns (uint256 projectId);
 
   function launchFundingCyclesFor(
     uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDelegateData,
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
     JBLaunchFundingCyclesData memory _launchFundingCyclesData,
     IJBController3_1 _controller
   ) external returns (uint256 configuration);
 
   function reconfigureFundingCyclesOf(
     uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDelegateData,
+    JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
     JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData,
     IJBController3_1 _controller
   ) external returns (uint256 configuration);
