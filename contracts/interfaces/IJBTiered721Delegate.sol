@@ -7,7 +7,6 @@ import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
 import './../structs/JB721PricingParams.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
-import './../structs/JBTiered721MintForTiersData.sol';
 import './IJB721Delegate.sol';
 import './IJBTiered721DelegateStore.sol';
 
