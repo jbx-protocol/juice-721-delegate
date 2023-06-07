@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 import './../enums/JB721GovernanceType.sol';
+import './../interfaces/IJB721TokenUriResolver.sol';
 import './../interfaces/IJBTiered721DelegateStore.sol';
 import './JB721PricingParams.sol';
 import './JBTiered721Flags.sol';
@@ -28,7 +28,7 @@ struct JBDeployTiered721DelegateData {
   string symbol;
   IJBFundingCycleStore fundingCycleStore;
   string baseUri;
-  IJBTokenUriResolver tokenUriResolver;
+  IJB721TokenUriResolver tokenUriResolver;
   string contractUri;
   address owner;
   JB721PricingParams pricing;

@@ -163,7 +163,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
       symbol: symbol,
       fundingCycleStore: IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri: baseUri,
-      tokenUriResolver: IJBTokenUriResolver(mockTokenUriResolver),
+      tokenUriResolver: IJB721TokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
       owner: owner,
       pricing: JB721PricingParams({

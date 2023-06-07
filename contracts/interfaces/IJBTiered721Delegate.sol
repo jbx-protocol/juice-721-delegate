@@ -4,12 +4,12 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 import './../structs/JB721PricingParams.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
 import './../structs/JBTiered721MintForTiersData.sol';
 import './IJB721Delegate.sol';
+import './IJB721TokenUriResolver.sol';
 import './IJBTiered721DelegateStore.sol';
 
 interface IJBTiered721Delegate is IJB721Delegate {
@@ -38,7 +38,7 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
   event SetContractUri(string indexed contractUri, address caller);
 
-  event SetTokenUriResolver(IJBTokenUriResolver indexed newResolver, address caller);
+  event SetTokenUriResolver(IJB721TokenUriResolver indexed newResolver, address caller);
 
   event AddCredits(
     uint256 indexed changeAmount,
@@ -89,7 +89,7 @@ interface IJBTiered721Delegate is IJB721Delegate {
   function setMetadata(
     string memory baseUri,
     string calldata contractMetadataUri,
-    IJBTokenUriResolver tokenUriResolver,
+    IJB721TokenUriResolver tokenUriResolver,
     uint256 encodedIPFSUriTierId,
     bytes32 encodedIPFSUri
   ) external;
@@ -101,7 +101,7 @@ interface IJBTiered721Delegate is IJB721Delegate {
     string memory symbol,
     IJBFundingCycleStore fundingCycleStore,
     string memory baseUri,
-    IJBTokenUriResolver tokenUriResolver,
+    IJB721TokenUriResolver tokenUriResolver,
     string memory contractUri,
     JB721PricingParams memory pricing,
     IJBTiered721DelegateStore store,

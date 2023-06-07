@@ -111,10 +111,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   /// @return The token URI corresponding with the tier or the tokenUriResolver URI.
   function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
     // Get a reference to the URI resolver.
-    IJBTokenUriResolver _resolver = store.tokenUriResolverOf(address(this));
+    IJB721TokenUriResolver _resolver = store.tokenUriResolverOf(address(this));
 
     // If a token URI resolver is provided, use it to resolve the token URI.
-    if (address(_resolver) != address(0)) return _resolver.getUri(_tokenId);
+    if (address(_resolver) != address(0)) return _resolver.tokenUriOf(address(this), _tokenId);
 
     // Return the token URI for the token's tier.
     return JBIpfsDecoder.decode(baseURI, store.encodedTierIPFSUriOf(address(this), _tokenId));
@@ -179,7 +179,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     string memory _symbol,
     IJBFundingCycleStore _fundingCycleStore,
     string memory _baseUri,
-    IJBTokenUriResolver _tokenUriResolver,
+    IJB721TokenUriResolver _tokenUriResolver,
     string memory _contractUri,
     JB721PricingParams memory _pricing,
     IJBTiered721DelegateStore _store,
@@ -214,7 +214,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     if (bytes(_contractUri).length != 0) contractURI = _contractUri;
 
     // Set the token URI resolver if provided.
-    if (_tokenUriResolver != IJBTokenUriResolver(address(0)))
+    if (_tokenUriResolver != IJB721TokenUriResolver(address(0)))
       _store.recordSetTokenUriResolver(_tokenUriResolver);
 
     // Record adding the provided tiers.
@@ -351,7 +351,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   function setMetadata(
     string calldata _baseUri,
     string calldata _contractUri,
-    IJBTokenUriResolver _tokenUriResolver,
+    IJB721TokenUriResolver _tokenUriResolver,
     uint256 _encodedIPFSUriTierId,
     bytes32 _encodedIPFSUri
   ) external override requirePermission(owner(), projectId, JB721Operations.UPDATE_METADATA) {
@@ -365,7 +365,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
       contractURI = _contractUri;
       emit SetContractUri(_contractUri, msg.sender);
     }
-    if (_tokenUriResolver != IJBTokenUriResolver(address(this))) {
+    if (_tokenUriResolver != IJB721TokenUriResolver(address(this))) {
       // Store the new value.
       store.recordSetTokenUriResolver(_tokenUriResolver);
 

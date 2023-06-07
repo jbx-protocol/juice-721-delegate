@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
+import './IJB721TokenUriResolver.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JB721Tier.sol';
 import './../structs/JBTiered721Flags.sol';
@@ -80,7 +80,7 @@ interface IJBTiered721DelegateStore {
     uint256 tierId
   ) external view returns (address);
 
-  function tokenUriResolverOf(address nft) external view returns (IJBTokenUriResolver);
+  function tokenUriResolverOf(address nft) external view returns (IJB721TokenUriResolver);
 
   function encodedTierIPFSUriOf(address nft, uint256 tokenId) external view returns (bytes32);
 
@@ -105,7 +105,7 @@ interface IJBTiered721DelegateStore {
 
   function recordRemoveTierIds(uint256[] memory tierIds) external;
 
-  function recordSetTokenUriResolver(IJBTokenUriResolver resolver) external;
+  function recordSetTokenUriResolver(IJB721TokenUriResolver resolver) external;
 
   function recordSetEncodedIPFSUriOf(uint256 tierId, bytes32 encodedIPFSUri) external;
 

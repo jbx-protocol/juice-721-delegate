@@ -110,7 +110,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /// @notice Custom token URI resolver, supersedes base URI.
   /// @custom:param _nft The NFT for which the token URI resolver applies.
-  mapping(address => IJBTokenUriResolver) public override tokenUriResolverOf;
+  mapping(address => IJB721TokenUriResolver) public override tokenUriResolverOf;
 
   /// @notice When using this contract to manage token uri's, those are stored as 32bytes, based on IPFS hashes stripped down.
   /// @custom:param _nft The NFT contract to which the encoded upfs uri belongs.
@@ -812,7 +812,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
   /// @notice Sets the token URI resolver. 
   /// @param _resolver The resolver to set.
-  function recordSetTokenUriResolver(IJBTokenUriResolver _resolver) external override {
+  function recordSetTokenUriResolver(IJB721TokenUriResolver _resolver) external override {
     tokenUriResolverOf[msg.sender] = _resolver;
   }
 
@@ -902,9 +902,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         allowManualMint: _allowManualMint,
         transfersPausable: _transfersPausable,
         resolvedUri: !_includeResolvedUri ||
-          tokenUriResolverOf[_nft] == IJBTokenUriResolver(address(0))
+          tokenUriResolverOf[_nft] == IJB721TokenUriResolver(address(0))
           ? ''
-          : tokenUriResolverOf[_nft].getUri(_generateTokenId(_tierId, 0))
+          : tokenUriResolverOf[_nft].tokenUriOf(_nft, _generateTokenId(_tierId, 0))
       });
   }
 

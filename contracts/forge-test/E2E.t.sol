@@ -644,7 +644,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       symbol: symbol,
       fundingCycleStore: _jbFundingCycleStore,
       baseUri: baseUri,
-      tokenUriResolver: IJBTokenUriResolver(address(0)),
+      tokenUriResolver: IJB721TokenUriResolver(address(0)),
       contractUri: contractUri,
       owner: _projectOwner,
       pricing: JB721PricingParams({

@@ -47,7 +47,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   //*********************************************************************//
 
   /// @param _onchainGovernance A reference copy of delegate that works with onchain governance.
-  /// @param _delegateDeployer A reference copy of a simpler delegate that does not work with onchain governance.
+  /// @param _noGovernance A reference copy of a simpler delegate that does not work with onchain governance.
   /// @param _delegatesRegistry A contract that stores references to deployer contracts of delegates.
   constructor(
     JBTiered721GovernanceDelegate _onchainGovernance,
