@@ -17,23 +17,23 @@ interface IJBTiered721DelegateProjectDeployer {
   function delegateDeployer() external view returns (IJBTiered721DelegateDeployer);
 
   function launchProjectFor(
-    address _owner,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDelegateData,
-    JBLaunchProjectData memory _launchProjectData,
-    IJBController3_1 _controller
+    address owner,
+    JBDeployTiered721DelegateData memory deployTiered721DelegateData,
+    JBLaunchProjectData memory launchProjectData,
+    IJBController3_1 controller
   ) external returns (uint256 projectId);
 
   function launchFundingCyclesFor(
-    uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDelegateData,
-    JBLaunchFundingCyclesData memory _launchFundingCyclesData,
-    IJBController3_1 _controller
+    uint256 projectId,
+    JBDeployTiered721DelegateData memory deployTiered721DelegateData,
+    JBLaunchFundingCyclesData memory launchFundingCyclesData,
+    IJBController3_1 controller
   ) external returns (uint256 configuration);
 
   function reconfigureFundingCyclesOf(
-    uint256 _projectId,
-    JBDeployTiered721DelegateData memory _deployTieredNFTRewardDelegateData,
-    JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData,
-    IJBController3_1 _controller
+    uint256 projectId,
+    JBDeployTiered721DelegateData memory deployTiered721DelegateData,
+    JBReconfigureFundingCyclesData memory reconfigureFundingCyclesData,
+    IJBController3_1 controller
   ) external returns (uint256 configuration);
 }

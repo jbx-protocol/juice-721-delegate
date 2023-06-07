@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol';
+import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 import './../structs/JB721PricingParams.sol';
 import './../structs/JB721TierParams.sol';
 import './../structs/JBTiered721MintReservesForTiersData.sol';
@@ -30,8 +31,6 @@ interface IJBTiered721Delegate is IJB721Delegate {
   event AddTier(uint256 indexed tierId, JB721TierParams data, address caller);
 
   event RemoveTier(uint256 indexed tierId, address caller);
-
-  event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
 
   event SetEncodedIPFSUri(uint256 indexed tierId, bytes32 encodedIPFSUri, address caller);
 
@@ -72,40 +71,40 @@ interface IJBTiered721Delegate is IJB721Delegate {
   function contractURI() external view returns (string memory);
 
   function adjustTiers(
-    JB721TierParams[] memory _tierDataToAdd,
-    uint256[] memory _tierIdsToRemove
+    JB721TierParams[] memory tierDataToAdd,
+    uint256[] memory tierIdsToRemove
   ) external;
 
   function mintReservesFor(
-    JBTiered721MintReservesForTiersData[] memory _mintReservesForTiersData
+    JBTiered721MintReservesForTiersData[] memory mintReservesForTiersData
   ) external;
 
-  function mintReservesFor(uint256 _tierId, uint256 _count) external;
+  function mintReservesFor(uint256 tierId, uint256 count) external;
 
   function mintFor(
-    uint16[] calldata _tierIds,
-    address _beneficiary
+    uint16[] calldata tierIds,
+    address beneficiary
   ) external returns (uint256[] memory tokenIds);
 
   function setMetadata(
-    string memory _baseUri,
-    string calldata _contractMetadataUri,
-    IJBTokenUriResolver _tokenUriResolver,
-    uint256 _encodedIPFSUriTierId,
-    bytes32 _encodedIPFSUri
+    string memory baseUri,
+    string calldata contractMetadataUri,
+    IJBTokenUriResolver tokenUriResolver,
+    uint256 encodedIPFSUriTierId,
+    bytes32 encodedIPFSUri
   ) external;
 
   function initialize(
-    uint256 _projectId,
-    IJBDirectory _directory,
-    string memory _name,
-    string memory _symbol,
-    IJBFundingCycleStore _fundingCycleStore,
-    string memory _baseUri,
-    IJBTokenUriResolver _tokenUriResolver,
-    string memory _contractUri,
-    JB721PricingParams memory _pricing,
-    IJBTiered721DelegateStore _store,
-    JBTiered721Flags memory _flags
+    uint256 projectId,
+    IJBDirectory directory,
+    string memory name,
+    string memory symbol,
+    IJBFundingCycleStore fundingCycleStore,
+    string memory baseUri,
+    IJBTokenUriResolver tokenUriResolver,
+    string memory contractUri,
+    JB721PricingParams memory pricing,
+    IJBTiered721DelegateStore store,
+    JBTiered721Flags memory flags
   ) external;
 }

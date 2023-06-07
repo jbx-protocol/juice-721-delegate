@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol';
-import '@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBTokenUriResolver.sol';
 
 interface IJB721Delegate {
   function projectId() external view returns (uint256);

@@ -76,7 +76,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
       address indexed beneficiary,
       address caller
     );
-    event SetDefaultReservedTokenBeneficiary(address indexed beneficiary, address caller);
     event AddTier(uint256 indexed tierId, JB721TierParams tier, address caller);
     event RemoveTier(uint256 indexed tierId, address caller);
     event CleanTiers(address indexed nft, address caller);
