@@ -11,24 +11,8 @@ import '@paulrberg/contracts/math/PRBMath.sol';
 import '../interfaces/IJB721Delegate.sol';
 import './ERC721.sol';
 
-/**
-  @title 
-  JB721Delegate
-
-  @notice 
-  Delegate that offers project contributors NFTs upon payment and the ability to redeem NFTs for treasury assets.
-
-  @dev
-  Adheres to -
-  IJB721Delegate: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
-  IJBFundingCycleDataSource: Allows this contract to be attached to a funding cycle to have its methods called during regular protocol operations.
-  IJBPayDelegate: Allows this contract to receive callbacks when a project receives a payment.
-  IJBRedemptionDelegate: Allows this contract to receive callbacks when a token holder redeems.
-
-  @dev
-  Inherits from -
-  ERC721: A standard definition for non-fungible tokens (NFTs).
-*/
+/// @title JB721Delegate
+/// @notice  Delegate that offers project contributors NFTs upon payment and the ability to redeem NFTs for treasury assets.
 abstract contract JB721Delegate is
   ERC721,
   IJB721Delegate,
@@ -50,32 +34,21 @@ abstract contract JB721Delegate is
   // --------------- public immutable stored properties ---------------- //
   //*********************************************************************//
 
-  /**
-    @notice
-    The ID of the project this contract's functionality applies to.
-  */
+  /// @notice The ID of the project this contract's functionality applies to.
   uint256 public override projectId;
 
-  /**
-    @notice
-    The directory of terminals and controllers for projects.
-  */
+  /// @notice The directory of terminals and controllers for projects.
   IJBDirectory public override directory;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
 
-  /**
-    @notice 
-    Part of IJBFundingCycleDataSource, this function gets called when the project receives a payment. It will set itself as the delegate to get a callback from the terminal.
-
-    @param _data The Juicebox standard project payment data.
-
-    @return weight The weight that tokens should get minted in accordance with.
-    @return memo The memo that should be forwarded to the event.
-    @return delegateAllocations The amount to send to delegates instead of adding to the local balance.
-  */
+  /// @notice Part of IJBFundingCycleDataSource, this function gets called when the project receives a payment. It will set itself as the delegate to get a callback from the terminal.
+  /// @param _data The Juicebox standard project payment data.
+  /// @return weight The weight that tokens should get minted in accordance with.
+  /// @return memo The memo that should be forwarded to the event.
+  /// @return delegateAllocations The amount to send to delegates instead of adding to the local balance.
   function payParams(
     JBPayParamsData calldata _data
   )
@@ -96,16 +69,11 @@ abstract contract JB721Delegate is
     delegateAllocations[0] = JBPayDelegateAllocation(this, 0);
   }
 
-  /**
-    @notice 
-    Part of IJBFundingCycleDataSource, this function gets called when a project's token holders redeem.
-
-    @param _data The Juicebox standard project redemption data.
-
-    @return reclaimAmount The amount that should be reclaimed from the treasury.
-    @return memo The memo that should be forwarded to the event.
-    @return delegateAllocations The amount to send to delegates instead of adding to the beneficiary.
-  */
+  /// @notice Part of IJBFundingCycleDataSource, this function gets called when a project's token holders redeem.
+  /// @param _data The Juicebox standard project redemption data.
+  /// @return reclaimAmount The amount that should be reclaimed from the treasury.
+  /// @return memo The memo that should be forwarded to the event.
+  /// @return delegateAllocations The amount to send to delegates instead of adding to the beneficiary.
   function redeemParams(
     JBRedeemParamsData calldata _data
   )
@@ -175,15 +143,10 @@ abstract contract JB721Delegate is
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
 
-  /** 
-    @notice
-    The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
-
-    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
-    @param _data The Juicebox standard project redemption data.
-
-    @return The weight.
-  */
+  /// @notice The cumulative weight the given token IDs have in redemptions compared to the `totalRedemptionWeight`. 
+  /// @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+  /// @param _data The Juicebox standard project redemption data.
+  /// @return The weight.
   function redemptionWeightOf(
     uint256[] memory _tokenIds,
     JBRedeemParamsData calldata _data
@@ -193,14 +156,9 @@ abstract contract JB721Delegate is
     return 0;
   }
 
-  /** 
-    @notice
-    The cumulative weight that all token IDs have in redemptions. 
-
-    @param _data The Juicebox standard project redemption data.
-
-    @return The total weight.
-  */
+  /// @notice The cumulative weight that all token IDs have in redemptions. 
+  /// @param _data The Juicebox standard project redemption data.
+  /// @return The total weight.
   function totalRedemptionWeight(
     JBRedeemParamsData calldata _data
   ) public view virtual returns (uint256) {
@@ -208,15 +166,9 @@ abstract contract JB721Delegate is
     return 0;
   }
 
-  /**
-    @notice
-    Indicates if this contract adheres to the specified interface.
-
-    @dev
-    See {IERC165-supportsInterface}.
-
-    @param _interfaceId The ID of the interface to check for adherence to.
-  */
+  /// @notice Indicates if this contract adheres to the specified interface.
+  /// @dev See {IERC165-supportsInterface}.
+  /// @param _interfaceId The ID of the interface to check for adherence to.
   function supportsInterface(
     bytes4 _interfaceId
   ) public view virtual override(ERC721, IERC165) returns (bool) {
@@ -233,12 +185,10 @@ abstract contract JB721Delegate is
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
-  /**
-    @param _projectId The ID of the project this contract's functionality applies to.
-    @param _directory The directory of terminals and controllers for projects.
-    @param _name The name of the token.
-    @param _symbol The symbol that the token should be represented by.
-  */
+  /// @param _projectId The ID of the project this contract's functionality applies to.
+  /// @param _directory The directory of terminals and controllers for projects.
+  /// @param _name The name of the token.
+  /// @param _symbol The symbol that the token should be represented by.
   function _initialize(
     uint256 _projectId,
     IJBDirectory _directory,
@@ -255,15 +205,9 @@ abstract contract JB721Delegate is
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
 
-  /**
-    @notice 
-    Part of IJBPayDelegate, this function gets called when the project receives a payment. It will mint an NFT to the contributor (_data.beneficiary) if conditions are met.
-
-    @dev 
-    This function will revert if the contract calling is not one of the project's terminals. 
-
-    @param _data The Juicebox standard project payment data.
-  */
+  /// @notice Part of IJBPayDelegate, this function gets called when the project receives a payment. It will mint an NFT to the contributor (_data.beneficiary) if conditions are met.
+  /// @dev  This function will revert if the contract calling is not one of the project's terminals. 
+  /// @param _data The Juicebox standard project payment data.
   function didPay(JBDidPayData calldata _data) external payable virtual override {
     uint256 _projectId = projectId;
 
@@ -278,15 +222,9 @@ abstract contract JB721Delegate is
     _processPayment(_data);
   }
 
-  /**
-    @notice
-    Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
-
-    @dev
-    This function will revert if the contract calling is not one of the project's terminals.
-
-    @param _data The Juicebox standard project redemption data.
-  */
+  /// @notice Part of IJBRedeemDelegate, this function gets called when the token holder redeems. It will burn the specified NFTs to reclaim from the treasury to the _data.beneficiary.
+  /// @dev This function will revert if the contract calling is not one of the project's terminals.
+  /// @param _data The Juicebox standard project redemption data.
   function didRedeem(JBDidRedeemData calldata _data) external payable virtual override {
     // Make sure the caller is a terminal of the project, and the call is being made on behalf of an interaction with the correct project.
     if (
@@ -338,22 +276,14 @@ abstract contract JB721Delegate is
   // ---------------------- internal transactions ---------------------- //
   //*********************************************************************//
 
-  /** 
-    @notice
-    Process a received payment.
-
-    @param _data The Juicebox standard project payment data.
-  */
+  /// @notice Process a received payment.
+  /// @param _data The Juicebox standard project payment data.
   function _processPayment(JBDidPayData calldata _data) internal virtual {
     _data; // Prevents unused var compiler and natspec complaints.
   }
 
-  /** 
-    @notice
-    A function that will run when tokens are burned via redemption.
-
-    @param _tokenIds The IDs of the tokens that were burned.
-  */
+  /// @notice A function that will run when tokens are burned via redemption.
+  /// @param _tokenIds The IDs of the tokens that were burned.
   function _didBurn(uint256[] memory _tokenIds) internal virtual {
     _tokenIds;
   }

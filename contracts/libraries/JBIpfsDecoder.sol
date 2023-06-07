@@ -1,28 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-/**
-  
-  @notice
-  Utilities to decode an IPFS hash.
-
-  @dev
-  This is fairly gas intensive, due to multiple nested loops, onchain 
-  IPFS hash decoding is therefore not advised (storing them as a string,
-  in that use-case, *might* be more efficient).
-
-*/
+/// @title JBIpfsDecoder
+/// @notice Utilities to decode an IPFS hash.
+/// @dev This is fairly gas intensive, due to multiple nested loops, onchain  IPFS hash decoding is therefore not advised (storing them as a string, in that use-case, *might* be more efficient).
 library JBIpfsDecoder {
   //*********************************************************************//
   // ------------------- internal constant properties ------------------ //
   //*********************************************************************//
 
   /**
-    @notice
-    Just a kind reminder to our readers
-
-    @dev
-    Used in base58ToString
+    @notice Just a kind reminder to our readers.
+    @dev Used in base58ToString
   */
   bytes internal constant _ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 
@@ -40,13 +29,8 @@ library JBIpfsDecoder {
     return string(abi.encodePacked(_baseUri, ipfsHash));
   }
 
-  /**
-    @notice
-    Convert a hex string to base58
-
-    @notice 
-    Written by Martin Ludfall - Licence: MIT
-  */
+  /// @notice Convert a hex string to base58
+  /// @notice Written by Martin Ludfall - Licence: MIT
   function _toBase58(bytes memory _source) private pure returns (string memory) {
     if (_source.length == 0) return new string(0);
 

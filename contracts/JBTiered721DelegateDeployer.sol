@@ -8,53 +8,47 @@ import './interfaces/IJBTiered721DelegateDeployer.sol';
 import './JBTiered721Delegate.sol';
 import './JBTiered721GovernanceDelegate.sol';
 
-/**
-  @notice
-  Deploys a tier delegate.
-
-  @dev
-  Adheres to -
-  IJBTiered721DelegateDeployer: General interface for the generic controller methods in this contract that interacts with funding cycles and tokens according to the protocol's rules.
-*/
+/// @title JBTiered721DelegateDeployer
+/// @notice Deploys a tiered 721 delegate.
+/// @custom:version 3.3
 contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
+
+  //*********************************************************************//
+  // --------------------------- custom errors ------------------------- //
+  //*********************************************************************//
+
   error INVALID_GOVERNANCE_TYPE();
 
   //*********************************************************************//
-  // --------------- public immutable stored properties ---------------- //
-  //*********************************************************************//
-
-  /** 
-    @notice 
-    The contract that supports on-chain governance across all tiers. 
-  */
-  JBTiered721GovernanceDelegate public immutable onchainGovernance;
-
-  /** 
-    @notice 
-    The contract that has no on-chain governance. 
-  */
-  JBTiered721Delegate public immutable noGovernance;
-
-  /** 
-    @notice 
-    The delegates registry. 
-  */
-  IJBDelegatesRegistry public immutable delegatesRegistry;
-
-  //*********************************************************************//
-  // ------------------------ private properties ----------------------- //
+  // ----------------------- internal properties ----------------------- //
   //*********************************************************************//
 
   /** 
     @notice 
     This contract current nonce, used for the registry
   */
-  uint256 private _nonce;
+  uint256 internal _nonce;
+
+  //*********************************************************************//
+  // --------------- public immutable stored properties ---------------- //
+  //*********************************************************************//
+
+  /// @notice The contract that supports on-chain governance across all tiers. 
+  JBTiered721GovernanceDelegate public immutable onchainGovernance;
+
+  /// @notice The contract that has no on-chain governance. 
+  JBTiered721Delegate public immutable noGovernance;
+
+  /// @notice A contract that stores references to deployer contracts of delegates. 
+  IJBDelegatesRegistry public immutable delegatesRegistry;
 
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
 
+  /// @param _onchainGovernance A reference copy of delegate that works with onchain governance.
+  /// @param _delegateDeployer A reference copy of a simpler delegate that does not work with onchain governance.
+  /// @param _delegatesRegistry A contract that stores references to deployer contracts of delegates.
   constructor(
     JBTiered721GovernanceDelegate _onchainGovernance,
     JBTiered721Delegate _noGovernance,
@@ -69,16 +63,11 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
 
-  /** 
-    @notice
-    Deploys a delegate.
-
-    @param _projectId The ID of the project this contract's functionality applies to.
-    @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
-    @param _directory The directory of terminals and controllers for projects.
-
-    @return newDelegate The address of the newly deployed delegate.
-  */
+  /// @notice Deploys a delegate.
+  /// @param _projectId The ID of the project this contract's functionality applies to.
+  /// @param _deployTiered721DelegateData Data necessary to fulfill the transaction to deploy a delegate.
+  /// @param _directory The directory of terminals and controllers for projects.
+  /// @return newDelegate The address of the newly deployed delegate.
   function deployDelegateFor(
     uint256 _projectId,
     JBDeployTiered721DelegateData memory _deployTiered721DelegateData,

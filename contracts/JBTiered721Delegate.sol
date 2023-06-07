@@ -13,23 +13,9 @@ import './libraries/JBIpfsDecoder.sol';
 import './libraries/JBTiered721FundingCycleMetadataResolver.sol';
 import './structs/JBTiered721Flags.sol';
 
-/**
-  @title
-  JBTiered721Delegate
-
-  @notice
-  Delegate that offers project contributors NFTs with tiered price floors upon payment and the ability to redeem NFTs for treasury assets based based on price floor.
-
-  @dev
-  Adheres to -
-  IJBTiered721Delegate: General interface for the methods in this contract that interact with the blockchain's state according to the protocol's rules.
-
-  @dev
-  Inherits from -
-  JB721Delegate: A generic NFT delegate.
-  Votes: A helper for voting balance snapshots.
-  JBOwnable: Includes convenience functionality for checking a message sender's permissions before executing certain transactions.
-*/
+/// @title JBTiered721Delegate
+/// @notice Delegate that offers project contributors NFTs with tiered price floors upon payment and the ability to redeem NFTs for treasury assets based on price floor.
+/// @custom:version 3.3
 contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -43,79 +29,45 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   // --------------------- internal stored properties ------------------ //
   //*********************************************************************//
 
-  /**
-    @notice
-    The first owner of each token ID, stored on first transfer out.
-
-    _nft The NFT contract to which the token belongs.
-    _tokenId The ID of the token to get the stored first owner of.
-  */
+  /// @notice The first owner of each token ID, stored on first transfer out.
+  /// @custom:param _tokenId The ID of the token to get the stored first owner of.
   mapping(uint256 => address) internal _firstOwnerOf;
 
-  /** 
-    @notice
-    Info that contextualized the pricing of tiers, packed into a uint256. 
-  */ 
+  /// @notice Info that contextualized the pricing of tiers, packed into a uint256. 
   uint256 internal _packedPricingContext;
 
   //*********************************************************************//
   // --------------------- public stored properties -------------------- //
   //*********************************************************************//
 
-  /**
-    @notice
-    The address of the origin 'JBTiered721Delegate', used to check in the init if the contract is the original or not
-  */
+  /// @notice The address of the origin 'JBTiered721Delegate', used to check in the init if the contract is the original or not
   address public override codeOrigin;
 
-  /**
-    @notice
-    The contract that stores and manages the NFT's data.
-  */
+  /// @notice The contract that stores and manages the NFT's data.
   IJBTiered721DelegateStore public override store;
 
-  /**
-    @notice
-    The contract storing all funding cycle configurations.
-  */
+  /// @notice The contract storing all funding cycle configurations.
   IJBFundingCycleStore public override fundingCycleStore;
 
-  /** 
-    @notice
-    The amount that each address has paid that has not yet contribute to the minting of an NFT. 
-
-    _address The address to which the credits belong.
-  */
+  /// @notice The amount that each address has paid that has not yet contribute to the minting of an NFT. 
+  /// @custom:param _address The address to which the credits belong.
   mapping(address => uint256) public override creditsOf;
 
-  /**
-    @notice
-    The common base for the tokenUri's
-
-    _nft The NFT for which the base URI applies.
-  */
+  /// @notice The common base for the tokenUri's
+  /// @custom:param _nft The NFT for which the base URI applies.
   string public override baseURI;
 
-  /**
-    @notice
-    Contract metadata uri.
-
-    _nft The NFT for which the contract URI resolver applies.
-  */
+  /// @notice Contract metadata uri.
+  /// @custom:param _nft The NFT for which the contract URI resolver applies.
   string public override contractURI;
 
   //*********************************************************************//
   // ------------------------- external views -------------------------- //
   //*********************************************************************//
 
-  /**
-    @notice
-    The first owner of each token ID, which corresponds to the address that originally contributed to the project to receive the NFT.
-
-    @param _tokenId The ID of the token to get the first owner of.
-
-    @return The first owner of the token.
-  */
+  /// @notice The first owner of each token ID, which corresponds to the address that originally contributed to the project to receive the NFT.
+  /// @param _tokenId The ID of the token to get the first owner of.
+  /// @return The first owner of the token.
   function firstOwnerOf(uint256 _tokenId) external view override returns (address) {
     // Get a reference to the first owner.
     address _storedFirstOwner = _firstOwnerOf[_tokenId];
@@ -127,14 +79,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     return _owners[_tokenId];
   }
   
-  /** 
-    @notice
-    Info that contextualized the pricing of tiers. 
-
-    @return currency The currency being used.
-    @return decimals The amount of decimals being used.
-    @return prices The prices contract being used to resolve currency discrepancies.
-  */
+  /// @notice Info that contextualized the pricing of tiers. 
+  /// @return currency The currency being used.
+  /// @return decimals The amount of decimals being used.
+  /// @return prices The prices contract being used to resolve currency discrepancies.
   function pricingContext() external view override returns (uint256 currency, uint256 decimals, IJBPrices prices) {
     // Get a reference to the packed pricing context.
     uint256 _packed = _packedPricingContext;
@@ -150,29 +98,17 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   // -------------------------- public views --------------------------- //
   //*********************************************************************//
 
-  /** 
-    @notice 
-    The total number of tokens owned by the given owner across all tiers. 
-
-    @param _owner The address to check the balance of.
-
-    @return balance The number of tokens owners by the owner across all tiers.
-  */
+  /// @notice The total number of tokens owned by the given owner across all tiers. 
+  /// @param _owner The address to check the balance of.
+  /// @return balance The number of tokens owners by the owner across all tiers.
   function balanceOf(address _owner) public view override returns (uint256 balance) {
     return store.balanceOf(address(this), _owner);
   }
 
-  /** 
-    @notice
-    The metadata URI of the provided token ID.
-
-    @dev
-    Defer to the tokenUriResolver if set, otherwise, use the tokenUri set with the token's tier.
-
-    @param _tokenId The ID of the token to get the tier URI for. 
-
-    @return The token URI corresponding with the tier or the tokenUriResolver URI.
-  */
+  /// @notice The metadata URI of the provided token ID.
+  /// @dev Defer to the tokenUriResolver if set, otherwise, use the tokenUri set with the token's tier.
+  /// @param _tokenId The ID of the token to get the tier URI for. 
+  /// @return The token URI corresponding with the tier or the tokenUriResolver URI.
   function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
     // Get a reference to the URI resolver.
     IJBTokenUriResolver _resolver = store.tokenUriResolverOf(address(this));
@@ -184,14 +120,9 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     return JBIpfsDecoder.decode(baseURI, store.encodedTierIPFSUriOf(address(this), _tokenId));
   }
 
-  /** 
-    @notice
-    The cumulative weight the given token IDs have in redemptions compared to the `_totalRedemptionWeight`. 
-
-    @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
-
-    @return The weight.
-  */
+  /// @notice The cumulative weight the given token IDs have in redemptions compared to the `_totalRedemptionWeight`. 
+  /// @param _tokenIds The IDs of the tokens to get the cumulative redemption weight of.
+  /// @return The weight.
   function redemptionWeightOf(
     uint256[] memory _tokenIds,
     JBRedeemParamsData calldata
@@ -199,27 +130,17 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     return store.redemptionWeightOf(address(this), _tokenIds);
   }
 
-  /** 
-    @notice
-    The cumulative weight that all token IDs have in redemptions. 
-
-    @return The total weight.
-  */
+  /// @notice The cumulative weight that all token IDs have in redemptions. 
+  /// @return The total weight.
   function totalRedemptionWeight(
     JBRedeemParamsData calldata
   ) public view virtual override returns (uint256) {
     return store.totalRedemptionWeight(address(this));
   }
 
-  /**
-    @notice
-    Indicates if this contract adheres to the specified interface.
-
-    @dev
-    See {IERC165-supportsInterface}.
-
-    @param _interfaceId The ID of the interface to check for adherence to.
-  */
+  /// @notice Indicates if this contract adheres to the specified interface.
+  /// @dev See {IERC165-supportsInterface}.
+  /// @param _interfaceId The ID of the interface to check for adherence to.
   function supportsInterface(bytes4 _interfaceId) public view override returns (bool) {
     return
       _interfaceId == type(IJBTiered721Delegate).interfaceId ||
@@ -229,27 +150,28 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   //*********************************************************************//
   // -------------------------- constructor ---------------------------- //
   //*********************************************************************//
-
+  
+  /// @param _projects A contract which mints ERC-721's that represent project ownership and transfers.
+  /// @param _operatorStore A contract storing operator assignments.
   constructor(
     IJBProjects _projects,
     IJBOperatorStore _operatorStore
   ) JBOwnable(_projects, _operatorStore) {
     codeOrigin = address(this);
   }
-
-  /**
-    @param _projectId The ID of the project this contract's functionality applies to.
-    @param _directory The directory of terminals and controllers for projects.
-    @param _name The name of the token.
-    @param _symbol The symbol that the token should be represented by.
-    @param _fundingCycleStore A contract storing all funding cycle configurations.
-    @param _baseUri A URI to use as a base for full token URIs.
-    @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
-    @param _contractUri A URI where contract metadata can be found. 
-    @param _pricing The tier pricing according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
-    @param _store A contract that stores the NFT's data.
-    @param _flags A set of flags that help define how this contract works.
-  */
+  
+  /// @notice Initializes a cloned copy of this contract.
+  /// @param _projectId The ID of the project this contract's functionality applies to.
+  /// @param _directory The directory of terminals and controllers for projects.
+  /// @param _name The name of the collection distributed through this contract.
+  /// @param _symbol The symbol that the collection should be represented by.
+  /// @param _fundingCycleStore A contract storing all funding cycle configurations.
+  /// @param _baseUri A URI to use as a base for full token URIs.
+  /// @param _tokenUriResolver A contract responsible for resolving the token URI for each token ID.
+  /// @param _contractUri A URI where contract metadata can be found. 
+  /// @param _pricing The tier pricing according to which token distribution will be made. Must be passed in order of contribution floor, with implied increasing value.
+  /// @param _store A contract that stores the NFT's data.
+  /// @param _flags A set of flags that help define how this contract works.
   function initialize(
     uint256 _projectId,
     IJBDirectory _directory,
@@ -314,15 +236,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   // ---------------------- external transactions ---------------------- //
   //*********************************************************************//
 
-  /** 
-    @notice
-    Manually mint NFTs from tiers.
-
-    @param _tierIds The IDs of the tiers to mint from.
-    @param _beneficiary The address to mint to. 
-
-    @return tokenIds The IDs of the newly minted tokens.
-  */
+  /// @notice Manually mint NFTs from tiers.
+  /// @param _tierIds The IDs of the tiers to mint from.
+  /// @param _beneficiary The address to mint to. 
+  /// @return tokenIds The IDs of the newly minted tokens.
   function mintFor(
     uint16[] calldata _tierIds,
     address _beneficiary
@@ -360,12 +277,8 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     }
   }
 
-  /** 
-    @notice
-    Mint reserved tokens within the tier for the provided value.
-
-    @param _mintReservesForTiersData Contains information about how many reserved tokens to mint for each tier.
-  */
+  /// @notice Mint reserved tokens within the tier for the provided value.
+  /// @param _mintReservesForTiersData Contains information about how many reserved tokens to mint for each tier.
   function mintReservesFor(
     JBTiered721MintReservesForTiersData[] calldata _mintReservesForTiersData
   ) external override {
@@ -385,16 +298,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     }
   }
 
-  /** 
-    @notice
-    Adjust the tiers mintable through this contract, adhering to any locked tier constraints. 
-
-    @dev
-    Only the contract's owner can adjust the tiers.
-
-    @param _tiersToAdd An array of tier data to add.
-    @param _tierIdsToRemove An array of tier IDs to remove.
-  */
+  /// @notice Adjust the tiers mintable through this contract, adhering to any locked tier constraints. 
+  /// @dev Only the contract's owner can adjust the tiers.
+  /// @param _tiersToAdd An array of tier data to add.
+  /// @param _tierIdsToRemove An array of tier IDs to remove.
   function adjustTiers(
     JB721TierParams[] calldata _tiersToAdd,
     uint256[] calldata _tierIdsToRemove
@@ -434,19 +341,13 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     }
   }
 
-  /**
-    @notice
-    Set a contract's URI metadata properties.
-
-    @dev
-    Only the contract's owner can set the URI metadata.
-
-    @param _baseUri The new base URI.
-    @param _contractUri The new contract URI.
-    @param _tokenUriResolver The new URI resolver.
-    @param _encodedIPFSUriTierId The ID of the tier to set the encoded IPFS uri of.
-    @param _encodedIPFSUri The encoded IPFS uri to set.
-  */
+  /// @notice Set a contract's URI metadata properties.
+  /// @dev Only the contract's owner can set the URI metadata.
+  /// @param _baseUri The new base URI.
+  /// @param _contractUri The new contract URI.
+  /// @param _tokenUriResolver The new URI resolver.
+  /// @param _encodedIPFSUriTierId The ID of the tier to set the encoded IPFS uri of.
+  /// @param _encodedIPFSUri The encoded IPFS uri to set.
   function setMetadata(
     string calldata _baseUri,
     string calldata _contractUri,
@@ -482,13 +383,9 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   // ----------------------- public transactions ----------------------- //
   //*********************************************************************//
 
-  /** 
-    @notice
-    Mint reserved tokens within the tier for the provided value.
-
-    @param _tierId The ID of the tier to mint within.
-    @param _count The number of reserved tokens to mint. 
-  */
+  /// @notice Mint reserved tokens within the tier for the provided value.
+  /// @param _tierId The ID of the tier to mint within.
+  /// @param _count The number of reserved tokens to mint. 
   function mintReservesFor(uint256 _tierId, uint256 _count) public override {
     // Get a reference to the project's current funding cycle.
     JBFundingCycle memory _fundingCycle = fundingCycleStore.currentOf(projectId);
@@ -528,12 +425,8 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
   // ------------------------ internal functions ----------------------- //
   //*********************************************************************//
 
-  /**
-    @notice
-    Mints for a given contribution to the beneficiary.
-
-    @param _data The Juicebox standard project contribution data.
-  */
+  /// @notice Mints for a given contribution to the beneficiary.
+  /// @param _data The Juicebox standard project contribution data.
   function _processPayment(JBDidPayData calldata _data) internal virtual override {
     // Normalize the currency.
     uint256 _value;
@@ -632,27 +525,18 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     }
   }
 
-  /** 
-    @notice
-    A function that will run when tokens are burned via redemption.
-
-    @param _tokenIds The IDs of the tokens that were burned.
-  */
+  /// @notice A function that will run when tokens are burned via redemption.
+  /// @param _tokenIds The IDs of the tokens that were burned.
   function _didBurn(uint256[] memory _tokenIds) internal virtual override {
     // Add to burned counter.
     store.recordBurn(_tokenIds);
   }
 
-  /** 
-    @notice
-    Mints a token in all provided tiers.
-
-    @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
-    @param _mintTierIds An array of tier IDs that are intended to be minted.
-    @param _beneficiary The address to mint for.
-
-    @return leftoverAmount The amount leftover after the mint.
-  */
+  /// @notice Mints a token in all provided tiers.
+  /// @param _amount The amount to base the mints on. All mints' price floors must fit in this amount.
+  /// @param _mintTierIds An array of tier IDs that are intended to be minted.
+  /// @param _beneficiary The address to mint for.
+  /// @return leftoverAmount The amount leftover after the mint.
   function _mintAll(
     uint256 _amount,
     uint16[] memory _mintTierIds,
@@ -690,14 +574,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     }
   }
 
-  /**
-    @notice
-    User the hook to register the first owner if it's not yet registered.
-
-    @param _from The address where the transfer is originating.
-    @param _to The address to which the transfer is being made.
-    @param _tokenId The ID of the token being transferred.
-  */
+  /// @notice User the hook to register the first owner if it's not yet registered.
+  /// @param _from The address where the transfer is originating.
+  /// @param _to The address to which the transfer is being made.
+  /// @param _tokenId The ID of the token being transferred.
   function _beforeTokenTransfer(
     address _from,
     address _to,
@@ -728,14 +608,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     super._beforeTokenTransfer(_from, _to, _tokenId);
   }
 
-  /**
-    @notice
-    Transfer voting units after the transfer of a token.
-
-    @param _from The address where the transfer is originating.
-    @param _to The address to which the transfer is being made.
-    @param _tokenId The ID of the token being transferred.
-   */
+  /// @notice Transfer voting units after the transfer of a token.
+  /// @param _from The address where the transfer is originating.
+  /// @param _to The address to which the transfer is being made.
+  /// @param _tokenId The ID of the token being transferred.
   function _afterTokenTransfer(
     address _from,
     address _to,
@@ -753,15 +629,11 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     super._afterTokenTransfer(_from, _to, _tokenId);
   }
 
-  /**
-    @notice 
-    Custom hook to handle token/tier accounting, this way we can reuse the '_tier' instead of fetching it again.
-
-    @param _from The account to transfer voting units from.
-    @param _to The account to transfer voting units to.
-    @param _tokenId The ID of the token for which voting units are being transferred.
-    @param _tier The tier the token ID is part of.
-  */
+  /// @notice Custom hook to handle token/tier accounting, this way we can reuse the '_tier' instead of fetching it again.
+  /// @param _from The account to transfer voting units from.
+  /// @param _to The account to transfer voting units to.
+  /// @param _tokenId The ID of the token for which voting units are being transferred.
+  /// @param _tier The tier the token ID is part of.
   function _afterTokenTransferAccounting(
     address _from,
     address _to,
