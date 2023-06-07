@@ -1,7 +1,6 @@
 /**
-DEPRECATED - Use jbm for now
-*/
-
+ * DEPRECATED - Use jbm for now
+ */
 
 // pragma solidity ^0.8.16;
 
