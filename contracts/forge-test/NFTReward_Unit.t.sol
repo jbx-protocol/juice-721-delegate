@@ -604,7 +604,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
       }
       assertEq(
-        _delegate.test_store().totalSupply(address(_delegate)),
+        _delegate.test_store().totalSupplyOf(address(_delegate)),
         ((numberOfTiers * (numberOfTiers + 1)) / 2)
       );
     }
@@ -3692,7 +3692,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       JB721Tier[] memory _tiersAdded = new JB721Tier[](numberTiersToAdd);
       for (uint256 i; i < numberTiersToAdd; i++) {
         _tierParamsToAdd[i] = JB721TierParams({
-          price: uint104((i + 1) * 100),
+          price: uint104(0), 
           initialQuantity: uint32(100),
           votingUnits: uint16(i + 1),
           reservedRate: uint16(i),
@@ -4204,7 +4204,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
         abi.encode(true)
       );
-      uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
       bool _allowOverspending;
       uint16[] memory _tierIdsToMint = new uint16[](3);
       _tierIdsToMint[0] = 1;
@@ -4238,7 +4238,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Make sure a new NFT was minted
-      assertEq(_totalSupplyBeforePay + 3, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBeforePay + 3, delegate.store().totalSupplyOf(address(delegate)));
       // Correct tier has been minted?
       assertEq(delegate.ownerOf(_generateTokenId(1, 1)), msg.sender);
       assertEq(delegate.ownerOf(_generateTokenId(1, 2)), msg.sender);
@@ -4251,7 +4251,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
         abi.encode(true)
       );
-      uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
       bool _allowOverspending = true;
       uint16[] memory _tierIdsToMint = new uint16[](0);
       bytes memory _metadata = abi.encode(
@@ -4277,7 +4277,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Make sure no new NFT was minted if amount >= contribution floor
-      assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
     function testJBTieredNFTRewardDelegate_didPay_mintTierAndTrackLeftover() public {
       uint256 _leftover = tiers[0].price - 1;
@@ -4372,7 +4372,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           _metadata
         )
       );
-      uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
       {
         // We now attempt an additional tier 1 by using the credit we collected from last pay
         uint16[] memory _moreTierIdsToMint = new uint16[](4);
@@ -4414,7 +4414,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Check: total supply has increased?
-      assertEq(_totalSupplyBefore + 4, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBefore + 4, delegate.store().totalSupplyOf(address(delegate)));
       // Check: correct tiers have been minted
       // .. On first pay?
       assertEq(delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
@@ -4465,7 +4465,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           _metadata
         )
       );
-      uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
       uint256 _creditBefore = delegate.creditsOf(beneficiary);
       // Second call will mint another 3 tiers requested BUT not with the credit accumulated
       vm.prank(mockTerminalAddress);
@@ -4484,7 +4484,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Check: total supply has increased with the 3 token?
-      assertEq(_totalSupplyBefore + 3, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBefore + 3, delegate.store().totalSupplyOf(address(delegate)));
       // Check: correct tiers have been minted
       // .. On first pay?
       assertEq(delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
@@ -4532,7 +4532,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       // Mock the price oracle call
       uint256 _amountInEth = (tiers[0].price * 2 + tiers[1].price) * 2;
       vm.mockCall(_jbPrice, abi.encodeCall(IJBPrices.priceFor, (1, 2, 18)), abi.encode(2 * 10**9));
-      uint256 _totalSupplyBeforePay = _delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBeforePay = _delegate.store().totalSupplyOf(address(delegate));
       bool _allowOverspending = true;
       uint16[] memory _tierIdsToMint = new uint16[](3);
       _tierIdsToMint[0] = 1;
@@ -4561,7 +4561,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Make sure a new NFT was minted
-      assertEq(_totalSupplyBeforePay + 3, _delegate.store().totalSupply(address(_delegate)));
+      assertEq(_totalSupplyBeforePay + 3, _delegate.store().totalSupplyOf(address(_delegate)));
       // Correct tier has been minted?
       assertEq(_delegate.ownerOf(_generateTokenId(1, 1)), msg.sender);
       assertEq(_delegate.ownerOf(_generateTokenId(1, 2)), msg.sender);
@@ -4575,7 +4575,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
         abi.encode(true)
       );
-      uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
       bool _allowOverspending;
       uint16[] memory _tierIdsToMint = new uint16[](3);
       _tierIdsToMint[0] = 1;
@@ -4614,7 +4614,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Make sure no new NFT was minted
-      assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
     function testJBTieredNFTRewardDelegate_didPay_revertIfNonExistingTier(uint16 _invalidTier)
       public
@@ -4626,7 +4626,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
         abi.encode(true)
       );
-      uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
       bool _allowOverspending;
       uint16[] memory _tierIdsToMint = new uint16[](1);
       _tierIdsToMint[0] = _invalidTier;
@@ -4663,7 +4663,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Make sure no new NFT was minted
-      assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
     // If the amount is not enought to cover all the tiers requested, revert
     function testJBTieredNFTRewardDelegate_didPay_revertIfAmountTooLow() public {
@@ -4673,7 +4673,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
         abi.encode(true)
       );
-      uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
       bool _allowOverspending;
       uint16[] memory _tierIdsToMint = new uint16[](3);
       _tierIdsToMint[0] = 1;
@@ -4708,7 +4708,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Make sure no new NFT was minted
-      assertEq(_totalSupplyBeforePay, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
     function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOutInParticularTier() public {
       // Mock the directory call
@@ -4719,7 +4719,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
       );
       uint256 _supplyLeft = tiers[0].initialQuantity;
       while (true) {
-        uint256 _totalSupplyBeforePay = delegate.store().totalSupply(address(delegate));
+        uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
         // If there is no supply left this should revert
         if (_supplyLeft == 0) {
           vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.OUT.selector));
@@ -4752,10 +4752,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         // Make sure if there was no supply left there was no NFT minted
         if (_supplyLeft == 0) {
-          assertEq(delegate.store().totalSupply(address(delegate)), _totalSupplyBeforePay);
+          assertEq(delegate.store().totalSupplyOf(address(delegate)), _totalSupplyBeforePay);
           break;
         } else {
-          assertEq(delegate.store().totalSupply(address(delegate)), _totalSupplyBeforePay + 1);
+          assertEq(delegate.store().totalSupplyOf(address(delegate)), _totalSupplyBeforePay + 1);
         }
         --_supplyLeft;
       }
@@ -4815,7 +4815,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // Check: nothing has been minted
-      assertEq(delegate.store().totalSupply(address(delegate)), 0);
+      assertEq(delegate.store().totalSupplyOf(address(delegate)), 0);
     }
     function testJBTieredNFTRewardDelegate_didPay_mintTiersWhenUsingExistingCredits_when_existing_credits_more_than_new_credits() public {
       uint256 _leftover = tiers[0].price + 1; // + 1 to avoid rounding error
@@ -4863,7 +4863,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
           _metadata
         )
       );
-      uint256 _totalSupplyBefore = delegate.store().totalSupply(address(delegate));
+      uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
       {
         // We now attempt an additional tier 1 by using the credit we collected from last pay
         uint16[] memory _moreTierIdsToMint = new uint16[](1);
@@ -4904,7 +4904,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         )
       );
       // total supply increases
-      assertEq(_totalSupplyBefore + 1, delegate.store().totalSupply(address(delegate)));
+      assertEq(_totalSupplyBefore + 1, delegate.store().totalSupplyOf(address(delegate)));
     }
     function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftover() public {
       uint256 _leftover = tiers[1].price - 1;
@@ -5849,12 +5849,78 @@ contract TestJBTieredNFTRewardDelegate is Test {
           allowManualMint: false,
           shouldUseReservedTokenBeneficiaryAsDefault: false,
           transfersPausable: false,
-          useVotingUnits: false
+          useVotingUnits: true
         });
     }
       _tierParamsToAdd[numberTiersToAdd - 1].category = uint8(99);
       vm.expectRevert(
         abi.encodeWithSelector(JBTiered721DelegateStore.INVALID_CATEGORY_SORT_ORDER.selector)
+      );
+      vm.prank(owner);
+      _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
+    }
+    function testJBTieredNFTRewardDelegate_adjustTiers_revertIfMoreVotingUnitsNotAllowedWithPriceChange(
+      uint8 initialNumberOfTiers,
+      uint8 numberTiersToAdd
+    ) public {
+       // Include adding X new tiers when 0 preexisting ones
+      vm.assume(initialNumberOfTiers < 30);
+      vm.assume(numberTiersToAdd > 1);
+      JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
+      for (uint256 i; i < initialNumberOfTiers; i++) {
+        _tierParams[i] = JB721TierParams({
+          price: uint104((i + 1) * 10),
+          initialQuantity: uint32(100),
+          votingUnits: uint16(0),
+          reservedRate: uint16(i),
+          reservedTokenBeneficiary: reserveBeneficiary,
+          encodedIPFSUri: tokenUris[0],
+          category: uint24(100),
+          allowManualMint: false,
+          shouldUseReservedTokenBeneficiaryAsDefault: false,
+          transfersPausable: false,
+          useVotingUnits: false
+        });
+      }
+      ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+      ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+        projectId,
+        IJBDirectory(mockJBDirectory),
+        name,
+        symbol,
+        IJBFundingCycleStore(mockJBFundingCycleStore),
+        baseUri,
+        IJBTokenUriResolver(mockTokenUriResolver),
+        contractUri,
+        _tierParams,
+        IJBTiered721DelegateStore(address(_ForTest_store)),
+        JBTiered721Flags({
+          preventOverspending: false,
+          lockReservedTokenChanges: false,
+          lockVotingUnitChanges: true,
+          lockManualMintingChanges: true
+        })
+      );
+      _delegate.transferOwnership(owner);
+      JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](numberTiersToAdd);
+      for (uint256 i; i < numberTiersToAdd; i++) {
+        _tierParamsToAdd[i] = JB721TierParams({
+          price: uint104((i + 1) * 100),
+          initialQuantity: uint32(100),
+          votingUnits: uint16(0),
+          reservedRate: uint16(i),
+          reservedTokenBeneficiary: reserveBeneficiary,
+          encodedIPFSUri: tokenUris[0],
+          category: uint24(100),
+          allowManualMint: false,
+          shouldUseReservedTokenBeneficiaryAsDefault: false,
+          transfersPausable: false,
+          useVotingUnits: false
+        });
+    }
+      _tierParamsToAdd[numberTiersToAdd - 1].category = uint8(99);
+      vm.expectRevert(
+      abi.encodeWithSelector(JBTiered721DelegateStore.VOTING_UNITS_NOT_ALLOWED.selector)
       );
       vm.prank(owner);
       _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));

@@ -315,7 +315,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
     @return supply The total number of NFTs between all tiers.
   */
-  function totalSupply(address _nft) external view override returns (uint256 supply) {
+  function totalSupplyOf(address _nft) external view override returns (uint256 supply) {
     // Keep a reference to the tier being iterated on.
     JBStored721Tier memory _storedTier;
 
@@ -649,7 +649,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
       }
 
       // Make sure there are no voting units set if they're not allowed.
-      if (_flags.lockVotingUnitChanges && _tierToAdd.votingUnits != 0)
+      if (_flags.lockVotingUnitChanges && ((_tierToAdd.useVotingUnits && _tierToAdd.votingUnits != 0) || (!_tierToAdd.useVotingUnits && _tierToAdd.price != 0)))
         revert VOTING_UNITS_NOT_ALLOWED();
 
       // Make sure a reserved rate isn't set if changes should be locked, or if manual minting is allowed.

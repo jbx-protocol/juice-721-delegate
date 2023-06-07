@@ -9,7 +9,7 @@ import './../structs/JBTiered721Flags.sol';
 interface IJBTiered721DelegateStore {
   event CleanTiers(address indexed nft, address caller);
 
-  function totalSupply(address _nft) external view returns (uint256);
+  function totalSupplyOf(address _nft) external view returns (uint256);
 
   function balanceOf(address _nft, address _owner) external view returns (uint256);
 
