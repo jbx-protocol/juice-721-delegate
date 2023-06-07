@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import {JBOwnable} from '@jbx-protocol/juice-ownable/src/JBOwnable.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol';
 import '@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol';
@@ -64,6 +65,9 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
 
     // Launch the project.
     _launchProjectFor(_owner, _launchProjectData, _delegate, _controller);
+
+    // Transfer the ownership of the delegate to the project.
+    JBOwnable(address(_delegate)).transferOwnershipToProject(projectId);
   }
 
   /// @notice Launches funding cycle's for a project with a delegate attached.
@@ -94,6 +98,9 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
       _deployTiered721DelegateData,
       directory
     );
+
+    // Transfer the ownership of the delegate to the project.
+    JBOwnable(address(_delegate)).transferOwnershipToProject(_projectId);
 
     // Launch the funding cycles.
     return _launchFundingCyclesFor(_projectId, _launchFundingCyclesData, _delegate, _controller);
@@ -127,6 +134,9 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
       _deployTiered721DelegateData,
       directory
     );
+
+    // Transfer the ownership of the delegate to the project.
+    JBOwnable(address(_delegate)).transferOwnershipToProject(_projectId);
 
     // Reconfigure the funding cycles.
     return _reconfigureFundingCyclesOf(_projectId, _reconfigureFundingCyclesData, _delegate, _controller);

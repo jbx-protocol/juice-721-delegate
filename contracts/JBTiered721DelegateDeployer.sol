@@ -94,9 +94,8 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
       _deployTiered721DelegateData.flags
     );
 
-    // Transfer the ownership to the specified address.
-    if (_deployTiered721DelegateData.owner != address(0))
-      Ownable(address(newDelegate)).transferOwnership(_deployTiered721DelegateData.owner);
+    // Transfer the ownership to the address that made this deployment.
+    JBOwnable(address(newDelegate)).transferOwnership(msg.sender);
 
     // Add the delegate to the registry, contract nonce starts at 1
     delegatesRegistry.addDelegate(address(this), ++_nonce);

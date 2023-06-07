@@ -1,6 +1,7 @@
 pragma solidity ^0.8.16;
 
 import '@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol';
+import '@openzeppelin/contracts/token/ERC721/IERC721.sol';
 
 import '../JBTiered721DelegateProjectDeployer.sol';
 import '../JBTiered721DelegateDeployer.sol';
@@ -76,14 +77,21 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     );
   }
   function testLaunchProjectFor_shouldLaunchProject(uint128 previousProjectId) external {
+    vm.assume(previousProjectId < type(uint88).max);
+
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
       mockJBDirectory,
       abi.encodeWithSelector(IJBDirectory.projects.selector),
       abi.encode(mockJBProjects)
+    );
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector),
+      abi.encode(owner)
     );
     vm.mockCall(
       mockJBProjects,
@@ -97,7 +105,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     );
     uint256 _projectId = deployer.launchProjectFor(
       owner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       IJBController3_1(mockJBController)
     );
@@ -105,13 +113,18 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
   }
   function testLaunchProjectFor_shouldLaunchProject_nonFuzzed() external {
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     vm.mockCall(
       mockJBDirectory,
       abi.encodeWithSelector(IJBDirectory.projects.selector),
       abi.encode(mockJBProjects)
+    );
+    vm.mockCall(
+      mockJBProjects,
+      abi.encodeWithSelector(IERC721.ownerOf.selector),
+      abi.encode(owner)
     );
     vm.mockCall(mockJBProjects, abi.encodeWithSelector(IJBProjects.count.selector), abi.encode(5));
     vm.mockCall(
@@ -121,7 +134,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     );
     uint256 _projectId = deployer.launchProjectFor(
       owner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       IJBController3_1(mockJBController)
     );
@@ -132,7 +145,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
     internal
     view
     returns (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     )
   {
@@ -158,14 +171,13 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         useVotingUnits: true
       });
     }
-    NFTRewardDeployerData = JBDeployTiered721DelegateData({
+    tiered721DeployerData = JBDeployTiered721DelegateData({
       name: name,
       symbol: symbol,
       fundingCycleStore: IJBFundingCycleStore(mockJBFundingCycleStore),
       baseUri: baseUri,
       tokenUriResolver: IJB721TokenUriResolver(mockTokenUriResolver),
       contractUri: contractUri,
-      owner: owner,
       pricing: JB721PricingParams({
         tiers: tierParams,
         currency: 1,

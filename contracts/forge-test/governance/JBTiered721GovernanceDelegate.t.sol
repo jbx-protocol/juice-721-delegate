@@ -11,19 +11,19 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
     address _user = address(bytes20(keccak256('user')));
     address _userFren = address(bytes20(keccak256('user_fren')));
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     // _tier has to be a valid tier (0-indexed)
-    _tier = bound(_tier, 0, NFTRewardDeployerData.pricing.tiers.length - 1);
+    _tier = bound(_tier, 0, tiered721DeployerData.pricing.tiers.length - 1);
     // Set the governance type to tiered
-    NFTRewardDeployerData.governanceType = JB721GovernanceType.ONCHAIN;
+    tiered721DeployerData.governanceType = JB721GovernanceType.ONCHAIN;
     JBTiered721GovernanceDelegate _delegate;
     // to handle stack too deep
     {
       uint256 projectId = deployer.launchProjectFor(
         _projectOwner,
-        NFTRewardDeployerData,
+        tiered721DeployerData,
         launchProjectData,
         _jbController
       );
@@ -31,7 +31,7 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
       _delegate = JBTiered721GovernanceDelegate(
         _jbFundingCycleStore.currentOf(projectId).dataSource()
       );
-      uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].price;
+      uint256 _payAmount = tiered721DeployerData.pricing.tiers[_tier].price;
       assertEq(_delegate.delegates(_user), address(0));
       vm.prank(_user);
       _delegate.delegate(_user);
@@ -63,11 +63,11 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
       );
     }
     // Assert that the user received the votingUnits
-    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.pricing.tiers[_tier].votingUnits);
+    assertEq(_delegate.getVotes(_user), tiered721DeployerData.pricing.tiers[_tier].votingUnits);
     uint256 _frenExpectedVotes = 0;
     // Have the user delegate to themselves
     if (_recipientDelegated) {
-      _frenExpectedVotes = NFTRewardDeployerData.pricing.tiers[_tier].votingUnits;
+      _frenExpectedVotes = tiered721DeployerData.pricing.tiers[_tier].votingUnits;
       vm.prank(_userFren);
       _delegate.delegate(_userFren);
     }
@@ -84,16 +84,16 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
     address _user = address(bytes20(keccak256('user')));
     address _userFren = address(bytes20(keccak256('user_fren')));
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     // _tier has to be a valid tier (0-indexed)
-    _tier = bound(_tier, 0, NFTRewardDeployerData.pricing.tiers.length - 1);
+    _tier = bound(_tier, 0, tiered721DeployerData.pricing.tiers.length - 1);
     // Set the governance type to tiered
-    NFTRewardDeployerData.governanceType = JB721GovernanceType.ONCHAIN;
+    tiered721DeployerData.governanceType = JB721GovernanceType.ONCHAIN;
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -101,7 +101,7 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
     JBTiered721GovernanceDelegate _delegate = JBTiered721GovernanceDelegate(
       _jbFundingCycleStore.currentOf(projectId).dataSource()
     );
-    uint256 _payAmount = NFTRewardDeployerData.pricing.tiers[_tier].price;
+    uint256 _payAmount = tiered721DeployerData.pricing.tiers[_tier].price;
     // Delegate NFT to fren
     vm.prank(_user);
     _delegate.delegate(_userFren);
@@ -139,13 +139,13 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
       _delegate.delegate(_user);
     }
     // Assert that the user received the votingUnits
-    assertEq(_delegate.getVotes(_user), NFTRewardDeployerData.pricing.tiers[_tier].votingUnits);
+    assertEq(_delegate.getVotes(_user), tiered721DeployerData.pricing.tiers[_tier].votingUnits);
     // Delegate to the users fren
     vm.prank(_user);
     _delegate.delegate(_userFren);
     // Assert that the user lost their voting units
     assertEq(_delegate.getVotes(_user), 0);
     // Assert that fren received the voting units
-    assertEq(_delegate.getVotes(_userFren), NFTRewardDeployerData.pricing.tiers[_tier].votingUnits);
+    assertEq(_delegate.getVotes(_userFren), tiered721DeployerData.pricing.tiers[_tier].votingUnits);
   }
 }

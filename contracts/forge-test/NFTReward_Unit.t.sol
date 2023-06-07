@@ -183,7 +183,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         baseUri,
         IJB721TokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
         address(0),
         new JBTiered721DelegateStore(),
@@ -200,6 +199,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         delegateData,
         IJBDirectory(mockJBDirectory)
       )));
+      delegate.transferOwnership(owner);
     }
     function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint256 numberOfTiers) public {
       numberOfTiers = bound(numberOfTiers, 0, 30);
@@ -265,7 +265,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         baseUri,
         IJB721TokenUriResolver(mockTokenUriResolver),
         contractUri,
-        owner,
         JB721PricingParams({tiers: tiers, currency: _currency, decimals: _decimals, prices: IJBPrices(_prices)}),
         address(0),
         new JBTiered721DelegateStore(),

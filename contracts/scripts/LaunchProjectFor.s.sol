@@ -47,7 +47,7 @@ DEPRECATED - Use jbm for now
 
 //   function run() external {
 //     (
-//       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+//       JBDeployTiered721DelegateData memory tiered721DeployerData,
 //       JBLaunchProjectData memory launchProjectData
 //     ) = createData();
 
@@ -55,7 +55,7 @@ DEPRECATED - Use jbm for now
 
 //     uint256 projectId = deployer.launchProjectFor(
 //       _projectOwner,
-//       NFTRewardDeployerData,
+//       tiered721DeployerData,
 //       launchProjectData
 //     );
 
@@ -65,7 +65,7 @@ DEPRECATED - Use jbm for now
 //   function createData()
 //     internal
 //     returns (
-//       JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+//       JBDeployTiered721DelegateData memory tiered721DeployerData,
 //       JBLaunchProjectData memory launchProjectData
 //     )
 //   {
@@ -152,7 +152,7 @@ DEPRECATED - Use jbm for now
 //       });
 //     }
 
-//     NFTRewardDeployerData = JBDeployTiered721DelegateData({
+//     tiered721DeployerData = JBDeployTiered721DelegateData({
 //       directory: jbDirectory,
 //       name: name,
 //       symbol: symbol,
@@ -160,7 +160,6 @@ DEPRECATED - Use jbm for now
 //       baseUri: baseUri,
 //       tokenUriResolver: IJBTokenUriResolver(address(0)),
 //       contractUri: contractUri,
-//       owner: _projectOwner,
 //       pricing: JB721PricingParams({
 //         tiers: tiers,
 //         currency: 1,

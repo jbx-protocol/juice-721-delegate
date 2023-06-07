@@ -64,12 +64,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   function testDeployLaunchProjectAndAddToRegistry() external {
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -85,12 +85,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Highest possible tier is 10
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -153,12 +153,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
 
   function testMintOnPayIfMultipleTiersArePassed() external {
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -218,12 +218,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   function testNoMintOnPayWhenNotIncludingTierIds(uint256 valueSent) external {
     valueSent = bound(valueSent, 10, 2000);
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -261,12 +261,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   function testNoMintOnPayWhenNotIncludingMetadata(uint256 valueSent) external {
     valueSent = bound(valueSent, 10, 2000);
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -298,12 +298,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     uint16 valueSent = 1500;
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -409,12 +409,12 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     // Highest possible tier is 10
     uint256 highestTier = valueSent <= 100 ? (valueSent / 10) : 10;
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -493,7 +493,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         NFTRewardDataSource,
         highestTier
       ),
-      (tokenBalance / NFTRewardDeployerData.pricing.tiers[highestTier - 1].reservedRate + _rounding)
+      (tokenBalance / tiered721DeployerData.pricing.tiers[highestTier - 1].reservedRate + _rounding)
     );
   }
 
@@ -503,14 +503,14 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   // - burn all the corresponding token from that tier
   function testRedeemAll() external {
     (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     ) = createData();
     uint256 tier = 10;
-    uint256 floor = NFTRewardDeployerData.pricing.tiers[tier - 1].price;
+    uint256 floor = tiered721DeployerData.pricing.tiers[tier - 1].price;
     uint256 projectId = deployer.launchProjectFor(
       _projectOwner,
-      NFTRewardDeployerData,
+      tiered721DeployerData,
       launchProjectData,
       _jbController
     );
@@ -546,7 +546,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(rawMetadata.length, tokenBalance);
     assertEq(
       reservedOutstanding,
-      (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1
+      (tokenBalance / tiered721DeployerData.pricing.tiers[tier - 1].reservedRate) + 1
     );
     // Craft the metadata to redeem the tokenId's
     uint256[] memory redemptionId = new uint256[](5);
@@ -610,7 +610,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     assertEq(rawMetadata.length, tokenBalance);
     assertEq(
       reservedOutstanding,
-      (tokenBalance / NFTRewardDeployerData.pricing.tiers[tier - 1].reservedRate) + 1
+      (tokenBalance / tiered721DeployerData.pricing.tiers[tier - 1].reservedRate) + 1
     );
   }
 
@@ -619,7 +619,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
   function createData()
     internal
     returns (
-      JBDeployTiered721DelegateData memory NFTRewardDeployerData,
+      JBDeployTiered721DelegateData memory tiered721DeployerData,
       JBLaunchProjectData memory launchProjectData
     )
   {
@@ -639,14 +639,13 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         useVotingUnits: false
       });
     }
-    NFTRewardDeployerData = JBDeployTiered721DelegateData({
+    tiered721DeployerData = JBDeployTiered721DelegateData({
       name: name,
       symbol: symbol,
       fundingCycleStore: _jbFundingCycleStore,
       baseUri: baseUri,
       tokenUriResolver: IJB721TokenUriResolver(address(0)),
       contractUri: contractUri,
-      owner: _projectOwner,
       pricing: JB721PricingParams({
         tiers: tierParams,
         currency: 1,

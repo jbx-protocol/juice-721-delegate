@@ -16,7 +16,6 @@ import './JBTiered721Flags.sol';
   @custom:member baseUri A URI to use as a base for full token URIs.
   @custom:member tokenUriResolver A contract responsible for resolving the token URI for each token ID.
   @custom:member contractUri A URI where contract metadata can be found. 
-  @custom:member owner The address that should own this contract.
   @custom:member pricing The tier pricing according to which token distribution will be made. 
   @custom:member reservedTokenBeneficiary The address receiving the reserved token
   @custom:member store The store contract to use.
@@ -30,7 +29,6 @@ struct JBDeployTiered721DelegateData {
   string baseUri;
   IJB721TokenUriResolver tokenUriResolver;
   string contractUri;
-  address owner;
   JB721PricingParams pricing;
   address reservedTokenBeneficiary;
   IJBTiered721DelegateStore store;

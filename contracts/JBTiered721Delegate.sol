@@ -4,9 +4,7 @@ pragma solidity ^0.8.16;
 import {IJBOperatorStore} from '@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol';
 import {JBOwnable, JBOwnableOverrides} from '@jbx-protocol/juice-ownable/src/JBOwnable.sol';
 import {JB721Operations} from './libraries/JB721Operations.sol';
-
 import '@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
 import './abstract/JB721Delegate.sol';
 import './interfaces/IJBTiered721Delegate.sol';
 import './libraries/JBIpfsDecoder.sol';
