@@ -1,13 +1,19 @@
 pragma solidity ^0.8.16;
 
-import "@jbx-protocol/juice-delegates-registry/src/interfaces/IJBDelegatesRegistry.sol";
-
-import "../JBTiered721DelegateDeployer.sol";
-import "../JBTiered721DelegateProjectDeployer.sol";
-import "../JBTiered721DelegateStore.sol";
 import "forge-std/Script.sol";
 import "forge-std/StdJson.sol";
 import "forge-std/Test.sol";
+
+import { IJBDelegatesRegistry } from "@jbx-protocol/juice-delegates-registry/src/interfaces/IJBDelegatesRegistry.sol";
+import { IJBProjects } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol";
+
+import { JBTiered721DelegateDeployer } from "../JBTiered721DelegateDeployer.sol";
+import { JBTiered721DelegateProjectDeployer } from "../JBTiered721DelegateProjectDeployer.sol";
+import { JBTiered721DelegateStore } from "../JBTiered721DelegateStore.sol";
+import { JBTiered721Delegate } from "../JBTiered721Delegate.sol";
+import { JBTiered721GovernanceDelegate } from "../JBTiered721GovernanceDelegate.sol";
 
 contract DeployMainnet is Script {
     IJBDirectory jbDirectory = IJBDirectory(0x65572FB928b46f9aDB7cfe5A4c41226F636161ea);

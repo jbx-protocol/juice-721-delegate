@@ -1,8 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "./abstract/Votes.sol";
-import "./JBTiered721Delegate.sol";
+import { IJBProjects } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol";
+import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol";
+
+import { Votes } from "./abstract/Votes.sol";
+import { JB721Tier } from "./structs/JB721Tier.sol";
+import { JBTiered721Delegate } from "./JBTiered721Delegate.sol";
 
 /// @title JBTiered721GovernanceDelegate
 /// @notice A tiered 721 delegate where each NFT can be used for onchain governance.

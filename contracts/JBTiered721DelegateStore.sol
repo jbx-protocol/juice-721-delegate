@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "@paulrberg/contracts/math/PRBMath.sol";
-import "./interfaces/IJBTiered721DelegateStore.sol";
-import "./libraries/JBBitmap.sol";
-import "./structs/JBBitmapWord.sol";
-import "./structs/JBStored721Tier.sol";
+import { PRBMath } from "@paulrberg/contracts/math/PRBMath.sol";
+
+import { IJBTiered721DelegateStore } from "./interfaces/IJBTiered721DelegateStore.sol";
+import { IJB721TokenUriResolver } from "./interfaces/IJB721TokenUriResolver.sol";
+import { JBBitmap } from "./libraries/JBBitmap.sol";
+import { JBBitmapWord } from "./structs/JBBitmapWord.sol";
+import { JB721Tier } from "./structs/JB721Tier.sol";
+import { JB721TierParams } from "./structs/JB721TierParams.sol";
+import { JBStored721Tier } from "./structs/JBStored721Tier.sol";
+import { JBTiered721Flags } from "./structs/JBTiered721Flags.sol";
 
 /// @title JBTiered721DelegateStore
 /// @notice The contract that stores and manages the NFT's data.

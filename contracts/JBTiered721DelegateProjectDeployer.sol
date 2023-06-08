@@ -1,11 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import {JBOwnable} from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol";
-import "./interfaces/IJBTiered721DelegateProjectDeployer.sol";
+import { JBOwnable } from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
+import { JBOperatable } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+import { IJBController3_1 } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController3_1.sol";
+import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol";
+import { JBOperations } from "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol";
+import { JBFundingCycleMetadata } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol";
+
+import { IJBTiered721DelegateDeployer } from "./interfaces/IJBTiered721DelegateDeployer.sol";
+import { IJBTiered721DelegateProjectDeployer } from "./interfaces/IJBTiered721DelegateProjectDeployer.sol";
+import { IJBTiered721Delegate } from "./interfaces/IJBTiered721Delegate.sol";
+import { JBDeployTiered721DelegateData } from "./structs/JBDeployTiered721DelegateData.sol";
+import { JBLaunchFundingCyclesData } from "./structs/JBLaunchFundingCyclesData.sol";
+import { JBReconfigureFundingCyclesData } from "./structs/JBReconfigureFundingCyclesData.sol";
+import { JBLaunchProjectData } from "./structs/JBLaunchProjectData.sol";
 
 /// @title JBTiered721DelegateProjectDeployer
 /// @notice Deploys a project with a tiered 721 delegate.

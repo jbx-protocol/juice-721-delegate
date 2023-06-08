@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./IJB721TokenUriResolver.sol";
-import "./../structs/JB721TierParams.sol";
-import "./../structs/JB721Tier.sol";
-import "./../structs/JBTiered721Flags.sol";
+import { IJB721TokenUriResolver } from "./IJB721TokenUriResolver.sol";
+import { JB721TierParams } from "./../structs/JB721TierParams.sol";
+import { JB721Tier } from "./../structs/JB721Tier.sol";
+import { JBTiered721Flags } from "./../structs/JBTiered721Flags.sol";
 
 interface IJBTiered721DelegateStore {
     event CleanTiers(address indexed nft, address caller);

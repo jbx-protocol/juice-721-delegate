@@ -8,8 +8,13 @@ import "../structs/JBBitmapWord.sol";
 import "./utils/AccessJBLib.sol";
 import "forge-std/Test.sol";
 
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBTokenAmount.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol";
 import "@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol";
 
 import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatable.sol";

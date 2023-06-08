@@ -1,15 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol";
-import "@openzeppelin/contracts/interfaces/IERC2981.sol";
-import "@paulrberg/contracts/math/PRBMath.sol";
-import "../interfaces/IJB721Delegate.sol";
-import "./ERC721.sol";
+import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import { IJBFundingCycleDataSource } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+import { IJBPayDelegate } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol";
+import { IJBRedemptionDelegate } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBRedemptionDelegate.sol";
+import { IJBPaymentTerminal } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol";
+import { JBConstants } from "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol";
+import { JBPayParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol";
+import { JBDidPayData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol";
+import { JBDidRedeemData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol";
+import { JBRedeemParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol";
+import { JBPayDelegateAllocation } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol";
+import { JBRedemptionDelegateAllocation } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation.sol";
+import { IERC2981 } from "@openzeppelin/contracts/interfaces/IERC2981.sol";
+import { PRBMath } from "@paulrberg/contracts/math/PRBMath.sol";
+
+import { IJB721Delegate } from "../interfaces/IJB721Delegate.sol";
+import { ERC721 } from "./ERC721.sol";
 
 /// @title JB721Delegate
 /// @notice  Delegate that offers project contributors NFTs upon payment and the ability to redeem NFTs for treasury assets.

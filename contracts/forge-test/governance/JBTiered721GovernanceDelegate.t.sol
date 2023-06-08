@@ -3,6 +3,7 @@ pragma solidity ^0.8.16;
 import "../E2E.t.sol";
 
 import "../../JBTiered721GovernanceDelegate.sol";
+import "../../abstract/ERC721.sol";
 
 contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
     using JBFundingCycleMetadataResolver for JBFundingCycle;

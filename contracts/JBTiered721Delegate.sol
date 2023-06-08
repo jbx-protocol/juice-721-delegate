@@ -1,15 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import {IJBOperatorStore} from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
-import {JBOwnable, JBOwnableOverrides} from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
-import {JB721Operations} from "./libraries/JB721Operations.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
-import "./abstract/JB721Delegate.sol";
-import "./interfaces/IJBTiered721Delegate.sol";
-import "./libraries/JBIpfsDecoder.sol";
-import "./libraries/JBTiered721FundingCycleMetadataResolver.sol";
-import "./structs/JBTiered721Flags.sol";
+import { PRBMath } from "@paulrberg/contracts/math/PRBMath.sol";
+import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
+import { JBOwnable } from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
+import { JBFundingCycleMetadataResolver } from "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
+import { IJBFundingCycleStore } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol";
+import { IJBPrices } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol";
+import { IJBProjects } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+import { JBRedeemParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol";
+import { JBDidPayData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol";
+import { JBFundingCycle } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol";
+
+import { JB721Delegate } from "./abstract/JB721Delegate.sol";
+import { IJBTiered721Delegate } from "./interfaces/IJBTiered721Delegate.sol";
+import { IJB721TokenUriResolver } from "./interfaces/IJB721TokenUriResolver.sol";
+import { IJBTiered721DelegateStore } from "./interfaces/IJBTiered721DelegateStore.sol";
+import { JB721Operations } from "./libraries/JB721Operations.sol";
+import { JBIpfsDecoder} from "./libraries/JBIpfsDecoder.sol";
+import { JBTiered721FundingCycleMetadataResolver} from "./libraries/JBTiered721FundingCycleMetadataResolver.sol";
+import { JB721TierParams } from "./structs/JB721TierParams.sol";
+import { JB721Tier } from "./structs/JB721Tier.sol";
+import { JBTiered721Flags } from "./structs/JBTiered721Flags.sol";
+import { JB721PricingParams } from "./structs/JB721PricingParams.sol";
+import { JBTiered721MintReservesForTiersData } from "./structs/JBTiered721MintReservesForTiersData.sol";
 
 /// @title JBTiered721Delegate
 /// @notice Delegate that offers project contributors NFTs with tiered price floors upon payment and the ability to redeem NFTs for treasury assets based on price floor.
@@ -179,9 +194,6 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         IJBTiered721DelegateStore _store,
         JBTiered721Flags memory _flags
     ) public override {
-        // Make the original un-initializable.
-        if (address(this) == codeOrigin) revert();
-
         // Stop re-initialization.
         if (address(store) != address(0)) revert();
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "../structs/JBBitmapWord.sol";
+import { JBBitmapWord } from "../structs/JBBitmapWord.sol";
 
 /// @title JBBitmap
 /// @notice Utilities to manage bool bitmap storing the inactive tiers.
