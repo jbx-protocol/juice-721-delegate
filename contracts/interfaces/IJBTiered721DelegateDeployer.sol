@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../enums/JB721GovernanceType.sol";
-import "../structs/JBDeployTiered721DelegateData.sol";
-import "./IJBTiered721Delegate.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+
+import { JB721GovernanceType } from "../enums/JB721GovernanceType.sol";
+import { JBDeployTiered721DelegateData } from "../structs/JBDeployTiered721DelegateData.sol";
+import { IJBTiered721Delegate } from "./IJBTiered721Delegate.sol";
 
 interface IJBTiered721DelegateDeployer {
     event DelegateDeployed(

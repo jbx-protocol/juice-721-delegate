@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol";
-import "./../structs/JB721PricingParams.sol";
-import "./../structs/JB721TierParams.sol";
-import "./../structs/JBTiered721MintReservesForTiersData.sol";
-import "./../structs/JBTiered721MintForTiersData.sol";
-import "./IJB721Delegate.sol";
-import "./IJB721TokenUriResolver.sol";
-import "./IJBTiered721DelegateStore.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+import { IJBFundingCycleStore } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol";
+import { IJBPrices } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol";
+
+import { IJB721Delegate } from "./IJB721Delegate.sol";
+import { IJB721TokenUriResolver } from "./IJB721TokenUriResolver.sol";
+import { IJBTiered721DelegateStore } from "./IJBTiered721DelegateStore.sol";
+import { JB721PricingParams } from "./../structs/JB721PricingParams.sol";
+import { JB721TierParams } from "./../structs/JB721TierParams.sol";
+import { JBTiered721Flags } from "./../structs/JBTiered721Flags.sol";
+import { JBTiered721MintReservesForTiersData } from "./../structs/JBTiered721MintReservesForTiersData.sol";
+import { JBTiered721MintForTiersData } from "./../structs/JBTiered721MintForTiersData.sol";
 
 interface IJBTiered721Delegate is IJB721Delegate {
     event Mint(

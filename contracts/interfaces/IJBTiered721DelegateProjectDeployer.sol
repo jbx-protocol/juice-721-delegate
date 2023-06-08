@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController3_1.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol";
-import "../structs/JBDeployTiered721DelegateData.sol";
-import "../structs/JBLaunchProjectData.sol";
-import "../structs/JBLaunchFundingCyclesData.sol";
-import "../structs/JBReconfigureFundingCyclesData.sol";
-import "./IJBTiered721DelegateDeployer.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+import { IJBProjects } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol";
+import { IJBController3_1 } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController3_1.sol";
+import { JBProjectMetadata } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBProjectMetadata.sol";
+
+import { JBDeployTiered721DelegateData } from "../structs/JBDeployTiered721DelegateData.sol";
+import { JBLaunchProjectData } from "../structs/JBLaunchProjectData.sol";
+import { JBLaunchFundingCyclesData } from "../structs/JBLaunchFundingCyclesData.sol";
+import { JBReconfigureFundingCyclesData } from "../structs/JBReconfigureFundingCyclesData.sol";
+import { IJBTiered721DelegateDeployer } from "./IJBTiered721DelegateDeployer.sol";
 
 interface IJBTiered721DelegateProjectDeployer {
     function directory() external view returns (IJBDirectory);

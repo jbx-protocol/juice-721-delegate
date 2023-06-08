@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "@jbx-protocol/juice-delegates-registry/src/interfaces/IJBDelegatesRegistry.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
+import { Clones } from "@openzeppelin/contracts/proxy/Clones.sol";
+import { IJBDelegatesRegistry } from "@jbx-protocol/juice-delegates-registry/src/interfaces/IJBDelegatesRegistry.sol";
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
+import { JBOwnable } from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
 
-import "./interfaces/IJBTiered721DelegateDeployer.sol";
-import "./JBTiered721Delegate.sol";
-import "./JBTiered721GovernanceDelegate.sol";
+import { JB721GovernanceType } from "./enums/JB721GovernanceType.sol";
+import { IJBTiered721DelegateDeployer } from "./interfaces/IJBTiered721DelegateDeployer.sol";
+import { IJBTiered721Delegate } from "./interfaces/IJBTiered721Delegate.sol";
+import { JBDeployTiered721DelegateData } from "./structs/JBDeployTiered721DelegateData.sol";
+import { JBTiered721Delegate } from "./JBTiered721Delegate.sol";
+import { JBTiered721GovernanceDelegate } from "./JBTiered721GovernanceDelegate.sol";
 
 /// @title JBTiered721DelegateDeployer
 /// @notice Deploys a tiered 721 delegate.

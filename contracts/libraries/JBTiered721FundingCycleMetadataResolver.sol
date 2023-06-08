@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import "./../structs/JBTiered721FundingCycleMetadata.sol";
+import { JBTiered721FundingCycleMetadata } from "./../structs/JBTiered721FundingCycleMetadata.sol";
 
 /// @title JBTiered721FundingCycleMetadataResolver
 /// @notice Utility library to parse and store tiered 721 funding cycle metadata.

@@ -1,6 +1,9 @@
 pragma solidity ^0.8.16;
 
 import "@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBController3_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleStore.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 import "../JBTiered721DelegateProjectDeployer.sol";
@@ -9,6 +12,7 @@ import "../JBTiered721DelegateStore.sol";
 import "../enums/JB721GovernanceType.sol";
 import "../interfaces/IJBTiered721DelegateProjectDeployer.sol";
 import "../structs/JBLaunchProjectData.sol";
+import "../structs/JB721PricingParams.sol";
 
 import "forge-std/Test.sol";
 
@@ -89,7 +93,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         vm.mockCall(mockJBDirectory, abi.encodeWithSelector(IJBDirectory.projects.selector), abi.encode(mockJBProjects));
         vm.mockCall(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector), abi.encode(owner));
         vm.mockCall(mockJBProjects, abi.encodeWithSelector(IJBProjects.count.selector), abi.encode(previousProjectId));
-        vm.mockCall(mockJBController, abi.encodeWithSelector(IJBController.launchProjectFor.selector), abi.encode(true));
+        vm.mockCall(mockJBController, abi.encodeWithSelector(IJBController3_1.launchProjectFor.selector), abi.encode(true));
         uint256 _projectId = deployer.launchProjectFor(
             owner, tiered721DeployerData, launchProjectData, IJBController3_1(mockJBController)
         );
@@ -102,7 +106,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         vm.mockCall(mockJBDirectory, abi.encodeWithSelector(IJBDirectory.projects.selector), abi.encode(mockJBProjects));
         vm.mockCall(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector), abi.encode(owner));
         vm.mockCall(mockJBProjects, abi.encodeWithSelector(IJBProjects.count.selector), abi.encode(5));
-        vm.mockCall(mockJBController, abi.encodeWithSelector(IJBController.launchProjectFor.selector), abi.encode(true));
+        vm.mockCall(mockJBController, abi.encodeWithSelector(IJBController3_1.launchProjectFor.selector), abi.encode(true));
         uint256 _projectId = deployer.launchProjectFor(
             owner, tiered721DeployerData, launchProjectData, IJBController3_1(mockJBController)
         );
