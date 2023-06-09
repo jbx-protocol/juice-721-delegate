@@ -15,8 +15,8 @@ contract JBTiered721GovernanceDelegate is Votes, JBTiered721Delegate {
     // -------------------------- constructor ---------------------------- //
     //*********************************************************************//
 
-    /// @param _projects the IJBProjects that will be used to check ownership of a project
-    /// @param _operatorStore the operatorStore to be used to check permissions
+    /// @param _projects The IJBProjects that will be used to check project ownership.
+    /// @param _operatorStore The operatorStore that will be used to check operator permissions.
     constructor(IJBProjects _projects, IJBOperatorStore _operatorStore)
         JBTiered721Delegate(_projects, _operatorStore)
     {}
@@ -25,18 +25,18 @@ contract JBTiered721GovernanceDelegate is Votes, JBTiered721Delegate {
     // ------------------------ internal functions ----------------------- //
     //*********************************************************************//
 
-    /// @notice The voting units for an account from its NFTs across all tiers. NFTs have a tier-specific preset number of voting units.
+    /// @notice The total voting units the provided address has from its NFTs across all tiers. NFTs have a tier-specific number of voting units.
     /// @param _account The account to get voting units for.
     /// @return units The voting units for the account.
     function _getVotingUnits(address _account) internal view virtual override returns (uint256 units) {
         return store.votingUnitsOf(address(this), _account);
     }
 
-    /// @notice Handles the tier voting accounting
+    /// @notice Handles voting unit accounting within a tier.
     /// @param _from The account to transfer voting units from.
     /// @param _to The account to transfer voting units to.
-    /// @param _tokenId The id of the token for which voting units are being transferred.
-    /// @param _tier The tier the token id is part of
+    /// @param _tokenId The token ID for which voting units are being transferred.
+    /// @param _tier The tier that the token ID is part of.
     function _afterTokenTransferAccounting(address _from, address _to, uint256 _tokenId, JB721Tier memory _tier)
         internal
         virtual
