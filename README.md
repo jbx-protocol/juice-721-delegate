@@ -1,8 +1,8 @@
-# Juicebox 721 Distribution Mechanism
+# Juicebox Delegated 721 Distribution Mechanism
 
 ## Motivation
 
-If added to an existing project via a funding cycle, NFTs can provide utility or incentive for contributors to participate in funding of a project.
+If included in a project's funding cycle, a 721 Delegate can provide utility or incentive for contributors to participate.
 
 ## Mechanic
 
@@ -10,14 +10,15 @@ Within one collection, NFTs can be minted within any number of pre-programmed ti
 
 Each tier has the following optional properties:
 
-- a contribution floor amount.
+- a price.
 - a max quantity.
-- a number of voting units to associate with each unit within the tier.
-- a reserved rate, allowing a proprtion of units within the tier to be minted to a pre-programmed beneficiary.
-- URI, overridable by a URI resolver that can return dynamic values for each unit with the tier.
-- a lock date, before which the tier must remain accessible.
-- the ability for the contract's owner to mint tokens from the tier on demand.
+- optionally, a number of voting units to associate with each unit within the tier, with onchain historical records.
+- optionally, a reserved rate allowing a proportion of units within the tier to be minted to a pre-programmed beneficiary.
+- a token URI, overridable by a URI resolver that can return dynamic values for each unit with the tier.
+- a category, so tiers can be organized and accessed for different purposes.
+- optionally, the ability for the contract's owner to mint tokens from the tier on demand.
 - if the tokens within the tier can have transfers paused on a per-funding-cycle basis, or if they must always remain transferable.
+- a few additional flags that restrict future tier additions to the collection.
 
 New tiers can be added, so long as they respect the contract's `flags` that specify if new tiers can influence voting units, reserved quantities, or be manually minted.
 
@@ -25,15 +26,15 @@ Tiers can also be removed, so long as they are not locked.
 
 An incoming payment can specify any number of tiers to mint as part of the payment, so long as the sum of the tier's prices are contained within the paid amount. If specific tiers aren't specified, the best available tier will be minted based on the specified floor amount, unless a flag is specifically sent along with the payment telling the contract to not mint.
 
-If a tier's contribution floor is specified in a currency different to the incoming payment, a `JBPrices` contract will by used for trying to normalize the values.
+If a tier's price is specified in a currency different to the incoming payment, a `JBPrices` contract will by used for trying to normalize the values.
 
-If a payment received does not meet a minting threshold or is in excess of the minted tiers, the balance is stored as a credit which will be added to future payments and applied to mints at that time. A flag can also be passed to avoid accepting payments that aren't applied to mints in full.
+If a payment received does not meet a price threshold or is in excess of the minted tiers, the balance is stored as a credit which will be added to future payments and applied to mints at that time. A flag can also be passed to avoid accepting payments that aren't applied to mints in full.
 
 The contract's owner can mint on demand from tier's that have been pre-programmed to allow manual token minting.
 
 The NFTs from each tier can also be used for redemptions against the underlying Juicebox treasury. The rate of redemptions corresponds to the price floor of the tier being redeemed, compared to the total price floors of all minted NFTs. Fungible project tokens cannot be being redeemed at the same time. In order to activate NFT redemptions, turn on the `shouldUseDataSourceForRedeem` metadata flag of your next funding cycle.
 
-The NFTs can serve as utilities for on-chain governance if specified during the collection's deployment. Voting delegation can be made on a per-tier basis, or on a global basis.
+The NFTs can serve as utilities for on-chain governance if specified during the collection's deployment.
 
 ## Architecture
 
@@ -41,9 +42,16 @@ An understanding of how the Juicebox protocol's pay and redeem functionality wor
 
 In order to use a 721 delegate, a Juicebox project should be launched from `JBTiered721DelegateProjectDeployer` instead of a `JBController`. This Deployer will deploy a `JBTiered721Delegate` (through it's reference to a `JBTiered721DelegateDeployer`) and attach it to the first funding cycle of the newly launched project as a DataSource and Delegate. Funding cycle reconfigurations can also be done using the `JBTiered721DelegateProjectDeployer`, though it will need to have Operator permissions from the project's owner.
 
-The abstract `JB721Delegate` implementation of the ERC721 Juicebox DataSource+Delegate extension can be used for any distribution mechanic. This repo includes one implementation – the `JBTiered721Delegate` – as well as two extensions that offer on-chain governance capabilities to the distributed tokens. 
+The abstract `JB721Delegate` implementation of the ERC721 Juicebox DataSource+Delegate extension can be used for any distribution mechanic. This repo includes one implementation – the `JBTiered721Delegate` – as well as an extensions that offer on-chain governance capabilities to the distributed tokens. 
 
 All `JBTiered721Delegate`'s use a generic `JBTiered721DelegateStore` to store it's data.
+
+The pay metadata structure is as follows:
+bytes32: ignored
+bytes32: ignored
+bytes4: send 0xf8b169f8 if the behavior from this delegate is expected to be triggered.
+bool: A flag indicating if the transaction should be allowed to proceed even if more funds are being paid than the specified NFTs cost.
+uint16[]: A list of tier IDs to mint from.
 
 ## Deploy
 
