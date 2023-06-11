@@ -46,6 +46,13 @@ The abstract `JB721Delegate` implementation of the ERC721 Juicebox DataSource+De
 
 All `JBTiered721Delegate`'s use a generic `JBTiered721DelegateStore` to store it's data.
 
+The pay metadata structure is as follows:
+bytes32: ignored
+bytes32: ignored
+bytes4: send 0xf8b169f8 if the behavior from this delegate is expected to be triggered.
+bool: A flag indicating if the transaction should be allowed to proceed even if more funds are being paid than the specified NFTs cost.
+uint16[]: A list of tier IDs to mint from.
+
 ## Deploy
 
 The deployer copies the data of a pre-existing cononical version of the 721 contracts, which can be either GlobalGovernance, TierGovernance, or no governance. This was done to keep the deployer contract size small enough to be deployable, without the extra cost of the delegatecalls associated with a proxy pattern. 
