@@ -67,11 +67,9 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     mapping(address => uint256) public override creditsOf;
 
     /// @notice The common base for the tokenUris.
-    /// @custom:param _nft The NFT for which the base URI applies.
     string public override baseURI;
 
     /// @notice Contract metadata uri.
-    /// @custom:param _nft The NFT for which the contract URI resolver applies.
     string public override contractURI;
 
     //*********************************************************************//
