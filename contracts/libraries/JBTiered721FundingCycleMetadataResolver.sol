@@ -17,7 +17,7 @@ library JBTiered721FundingCycleMetadataResolver {
     /// @notice Pack the tiered 721 funding cycle metadata.
     /// @param _metadata The metadata to validate and pack.
     /// @return packed The packed uint256 of all tiered 721 metadata params.
-    function packFundingCycleGlobalMetadata(JBTiered721FundingCycleMetadata memory _metadata)
+    function packTiered721FundingCycleMetadata(JBTiered721FundingCycleMetadata memory _metadata)
         internal
         pure
         returns (uint256 packed)
