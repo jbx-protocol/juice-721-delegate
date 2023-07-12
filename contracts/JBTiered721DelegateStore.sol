@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import { PRBMath } from "@paulrberg/contracts/math/PRBMath.sol";
-
 import { IJBTiered721DelegateStore } from "./interfaces/IJBTiered721DelegateStore.sol";
 import { IJB721TokenUriResolver } from "./interfaces/IJB721TokenUriResolver.sol";
 import { JBBitmap } from "./libraries/JBBitmap.sol";
