@@ -3,9 +3,10 @@ pragma solidity ^0.8.16;
 
 import "@jbx-protocol/juice-contracts-v3/contracts/JBController3_1.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/JBDirectory.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/JBETHPaymentTerminal.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/JBERC20PaymentTerminal.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/JBSingleTokenPaymentTerminalStore3_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/JBETHPaymentTerminal3_1_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/JBERC20PaymentTerminal3_1_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/JBFundAccessConstraintsStore.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/JBSingleTokenPaymentTerminalStore3_1_1.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/JBFundingCycleStore.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/JBOperatorStore.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/JBPrices.sol";
@@ -14,8 +15,8 @@ import "@jbx-protocol/juice-contracts-v3/contracts/JBSplitsStore.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/JBToken.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/JBTokenStore.sol";
 
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData3_1_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData3_1_1.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFee.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundAccessConstraints.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol";
@@ -34,7 +35,7 @@ import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBToken.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBOperations.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
 
-import "@paulrberg/contracts/math/PRBMath.sol";
+import {mulDiv} from '@prb/math/src/Common.sol';
 
 import "forge-std/Test.sol";
 
@@ -60,10 +61,11 @@ contract TestBaseWorkflow is Test {
     JBDirectory internal _jbDirectory;
     JBFundingCycleStore internal _jbFundingCycleStore;
     JBTokenStore internal _jbTokenStore;
+    JBFundAccessConstraintsStore internal _jbFundsAccessConstraintsStore;
     JBSplitsStore internal _jbSplitsStore;
     JBController3_1 internal _jbController;
-    JBSingleTokenPaymentTerminalStore3_1 internal _jbPaymentTerminalStore;
-    JBETHPaymentTerminal internal _jbETHPaymentTerminal;
+    JBSingleTokenPaymentTerminalStore3_1_1 internal _jbPaymentTerminalStore;
+    JBETHPaymentTerminal3_1_1 internal _jbETHPaymentTerminal;
     JBProjectMetadata internal _projectMetadata;
     JBFundingCycleData internal _data;
     JBPayDataSourceFundingCycleMetadata internal _metadata;
@@ -103,7 +105,9 @@ contract TestBaseWorkflow is Test {
     );
         vm.label(address(_jbDirectory), "JBDirectory");
 
-        _jbTokenStore = new JBTokenStore(
+     _jbFundsAccessConstraintsStore = new JBFundAccessConstraintsStore(_jbDirectory);
+
+     _jbTokenStore = new JBTokenStore(
       _jbOperatorStore,
       _jbProjects,
       _jbDirectory,
@@ -120,33 +124,34 @@ contract TestBaseWorkflow is Test {
       _jbDirectory,
       _jbFundingCycleStore,
       _jbTokenStore,
-      _jbSplitsStore
+      _jbSplitsStore,
+      _jbFundsAccessConstraintsStore
     );
         vm.label(address(_jbController), "JBController");
 
         vm.prank(_projectOwner);
         _jbDirectory.setIsAllowedToSetFirstController(address(_jbController), true);
 
-        _jbPaymentTerminalStore = new JBSingleTokenPaymentTerminalStore3_1(
+        _jbPaymentTerminalStore = new JBSingleTokenPaymentTerminalStore3_1_1(
       _jbDirectory,
       _jbFundingCycleStore,
       _jbPrices
     );
-        vm.label(address(_jbPaymentTerminalStore), "JBSingleTokenPaymentTerminalStore3_1");
+        vm.label(address(_jbPaymentTerminalStore), "JBSingleTokenPaymentTerminalStore3_1_1");
 
         _accessJBLib = new AccessJBLib();
 
-        _jbETHPaymentTerminal = new JBETHPaymentTerminal(
+        _jbETHPaymentTerminal = new JBETHPaymentTerminal3_1_1(
       _accessJBLib.ETH(),
       _jbOperatorStore,
       _jbProjects,
       _jbDirectory,
       _jbSplitsStore,
       _jbPrices,
-      _jbPaymentTerminalStore,
+      address(_jbPaymentTerminalStore),
       _projectOwner
     );
-        vm.label(address(_jbETHPaymentTerminal), "JBETHPaymentTerminal");
+        vm.label(address(_jbETHPaymentTerminal), "JBETHPaymentTerminal3_1_1");
 
         _terminals.push(_jbETHPaymentTerminal);
 

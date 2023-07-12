@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import { PRBMath } from "@paulrberg/contracts/math/PRBMath.sol";
+import {mulDiv} from '@prb/math/src/Common.sol';
 import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
 import { JBOwnable } from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
 import { JBFundingCycleMetadataResolver } from "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
@@ -10,7 +10,7 @@ import { IJBPrices } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces
 import { IJBProjects } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol";
 import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
 import { JBRedeemParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol";
-import { JBDidPayData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol";
+import { JBDidPayData3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData3_1_1.sol";
 import { JBFundingCycle } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycle.sol";
 
 import { JB721Delegate } from "./abstract/JB721Delegate.sol";
@@ -432,7 +432,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
 
     /// @notice Mints for a given contribution to the beneficiary.
     /// @param _data The standard data passed when paying a Juicebox project.
-    function _processPayment(JBDidPayData calldata _data) internal virtual override {
+    function _processPayment(JBDidPayData3_1_1 calldata _data) internal virtual override {
         // Normalize the currency.
         uint256 _value;
 
@@ -448,7 +448,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
                 if (_prices != IJBPrices(address(0))) {
                     // pricing decimals in bits 48-95 (48 bits).
                     uint256 _pricingDecimals = uint256(uint48(_packed >> 48));
-                    _value = PRBMath.mulDiv(
+                    _value = mulDiv(
                         _data.amount.value,
                         10 ** _pricingDecimals,
                         _prices.priceFor(_data.amount.currency, _pricingCurrency, _data.amount.decimals)
@@ -482,13 +482,13 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         // Skip the first 32 bytes which are used by the Juicebox protocol to pass the referring project's ID.
         // Skip another 32 bytes which are reserved for generic extension parameters.
         // Check the 4 byte interfaceId to verify that the metadata is intended for this contract.
-        if (_data.metadata.length > 68 && bytes4(_data.metadata[64:68]) == type(IJBTiered721Delegate).interfaceId) {
+        if (_data.payerMetadata.length > 68 && bytes4(_data.payerMetadata[64:68]) == type(IJBTiered721Delegate).interfaceId) {
             // Keep a reference to the tier IDs to mint.
             uint16[] memory _tierIdsToMint;
 
             // Decode the metadata.
             (,,, _allowOverspending, _tierIdsToMint) =
-                abi.decode(_data.metadata, (bytes32, bytes32, bytes4, bool, uint16[]));
+                abi.decode(_data.payerMetadata, (bytes32, bytes32, bytes4, bool, uint16[]));
 
             // Make sure overspending is allowed if requested.
             if (_allowOverspending && store.flagsOf(address(this)).preventOverspending) {
