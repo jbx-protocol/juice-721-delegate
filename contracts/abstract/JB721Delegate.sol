@@ -17,6 +17,8 @@ import { JBRedeemParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/s
 import { JBPayDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation3_1_1.sol";
 import { JBRedemptionDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation3_1_1.sol";
 
+import {JBDelegateMetadataHelper} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataHelper.sol';
+
 import { IJB721Delegate } from "../interfaces/IJB721Delegate.sol";
 import { ERC721 } from "./ERC721.sol";
 
@@ -24,6 +26,7 @@ import { ERC721 } from "./ERC721.sol";
 /// @notice This delegate makes NFTs available to a project's contributors upon payment, and allows project owners to enable NFT redemption for treasury assets.
 abstract contract JB721Delegate is
     ERC721,
+    JBDelegateMetadataHelper,
     IJB721Delegate,
     IJBFundingCycleDataSource3_1_1,
     IJBPayDelegate3_1_1,
@@ -48,6 +51,10 @@ abstract contract JB721Delegate is
 
     /// @notice The directory of terminals and controllers for projects.
     IJBDirectory public override directory;
+
+    /// @notice The 4bytes ID of this delegate, used for metadata parsing
+    bytes4 public override delegateId;
+
 
     //*********************************************************************//
     // ------------------------- external views -------------------------- //
@@ -87,9 +94,12 @@ abstract contract JB721Delegate is
         // Make sure fungible project tokens aren't also being redeemed.
         if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
-        // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
+        // fetch this delegates metadata from the delegate id
+        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.metadata);
+
+        // handle the case where the metadata was not intended for this contract
         // Skip 32 bytes reserved for generic extension parameters.
-        if (_data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId) {
+        if (!_valid || _metadata.length < 36 ) {
             revert INVALID_REDEMPTION_METADATA();
         }
 
@@ -98,7 +108,7 @@ abstract contract JB721Delegate is
         delegateAllocations[0] = JBRedemptionDelegateAllocation3_1_1(this, 0, bytes(''));
 
         // Decode the metadata
-        (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+        (,, uint256[] memory _decodedTokenIds) = abi.decode(_metadata, (bytes32, bytes4, uint256[]));
 
         // Get a reference to the redemption rate of the provided tokens.
         uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds, _data);
@@ -171,15 +181,17 @@ abstract contract JB721Delegate is
     /// @notice Initializes the contract with project details and ERC721 token details.
     /// @param _projectId The ID of the project this contract's functionality applies to.
     /// @param _directory The directory of terminals and controllers for projects.
+    /// @param _delegateId The 4bytes ID of this delegate, used for metadata parsing
     /// @param _name The name of the token.
     /// @param _symbol The symbol representing the token.
-    function _initialize(uint256 _projectId, IJBDirectory _directory, string memory _name, string memory _symbol)
+    function _initialize(uint256 _projectId, IJBDirectory _directory, bytes4 _delegateId, string memory _name, string memory _symbol)
         internal
     {
         ERC721._initialize(_name, _symbol);
 
         projectId = _projectId;
         directory = _directory;
+        delegateId = _delegateId;
     }
 
     //*********************************************************************//
@@ -212,14 +224,17 @@ abstract contract JB721Delegate is
                 || _data.projectId != projectId
         ) revert INVALID_REDEMPTION_EVENT();
 
-        // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract.
+        // fetch this delegates metadata from the delegate id
+        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.redeemerMetadata);
+
+        // handle the case where the metadata was not intended for this contract.
         // Skip 32 bytes reserved for generic extension parameters.
-        if (_data.redeemerMetadata.length < 36 || bytes4(_data.redeemerMetadata[32:36]) != type(IJB721Delegate).interfaceId) {
+        if (!_valid || _metadata.length < 36 ) {
             revert INVALID_REDEMPTION_METADATA();
         }
 
         // Decode the metadata.
-        (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.redeemerMetadata, (bytes32, bytes4, uint256[]));
+        (,, uint256[] memory _decodedTokenIds) = abi.decode(_metadata, (bytes32, bytes4, uint256[]));
 
         // Get a reference to the number of token IDs being checked.
         uint256 _numberOfTokenIds = _decodedTokenIds.length;

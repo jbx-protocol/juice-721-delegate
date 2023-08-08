@@ -172,6 +172,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     /// @notice Initializes a cloned copy of the original JB721Delegate contract.
     /// @param _projectId The ID of the project this contract's functionality applies to.
     /// @param _directory A directory of terminals and controllers for projects.
+    /// @param _delegateId The 4bytes ID of this delegate, used for metadata parsing
     /// @param _name The name of the NFT collection distributed through this contract.
     /// @param _symbol The symbol that the NFT collection should be represented by.
     /// @param _fundingCycleStore A contract storing all funding cycle configurations.
@@ -184,6 +185,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     function initialize(
         uint256 _projectId,
         IJBDirectory _directory,
+        bytes4 _delegateId,
         string memory _name,
         string memory _symbol,
         IJBFundingCycleStore _fundingCycleStore,
@@ -198,7 +200,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         if (address(store) != address(0)) revert();
 
         // Initialize the superclass.
-        JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
+        JB721Delegate._initialize(_projectId, _directory, _delegateId, _name, _symbol);
 
         fundingCycleStore = _fundingCycleStore;
         store = _store;
@@ -479,16 +481,19 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         // Keep a reference to the flag which indicates if transactions which don't spend all of the provided funds should be allowed (not revert). Defaults to false, meaning only a minimum payment is enforced.
         bool _allowOverspending;
 
+        // fetch this delegates metadata from the delegate id
+        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.payerMetadata);
+        if (!_valid) revert();
+
         // Skip the first 32 bytes which are used by the Juicebox protocol to pass the referring project's ID.
         // Skip another 32 bytes which are reserved for generic extension parameters.
-        // Check the 4 byte interfaceId to verify that the metadata is intended for this contract.
-        if (_data.payerMetadata.length > 68 && bytes4(_data.payerMetadata[64:68]) == type(IJBTiered721Delegate).interfaceId) {
+        else if (_metadata.length > 68) {
             // Keep a reference to the tier IDs to mint.
             uint16[] memory _tierIdsToMint;
 
             // Decode the metadata.
             (,,, _allowOverspending, _tierIdsToMint) =
-                abi.decode(_data.payerMetadata, (bytes32, bytes32, bytes4, bool, uint16[]));
+                abi.decode(_metadata, (bytes32, bytes32, bytes4, bool, uint16[]));
 
             // Make sure overspending is allowed if requested.
             if (_allowOverspending && store.flagsOf(address(this)).preventOverspending) {

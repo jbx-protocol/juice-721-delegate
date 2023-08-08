@@ -82,6 +82,7 @@ interface IJBTiered721Delegate is IJB721Delegate {
     function initialize(
         uint256 projectId,
         IJBDirectory directory,
+        bytes4 _delegateId,
         string memory name,
         string memory symbol,
         IJBFundingCycleStore fundingCycleStore,

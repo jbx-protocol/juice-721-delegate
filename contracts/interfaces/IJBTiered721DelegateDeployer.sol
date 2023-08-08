@@ -18,6 +18,7 @@ interface IJBTiered721DelegateDeployer {
     function deployDelegateFor(
         uint256 projectId,
         JBDeployTiered721DelegateData memory deployTieredNFTRewardDelegateData,
-        IJBDirectory directory
+        IJBDirectory directory,
+        bytes4 _delegateId
     ) external returns (IJBTiered721Delegate delegate);
 }
