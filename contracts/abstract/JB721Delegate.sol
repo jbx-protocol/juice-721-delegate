@@ -53,7 +53,10 @@ abstract contract JB721Delegate is
     IJBDirectory public override directory;
 
     /// @notice The 4bytes ID of this delegate, used for metadata parsing
-    bytes4 public override delegateId;
+    bytes4 public override payMetadataDelegateId;
+
+    /// @notice The 4bytes ID of this delegate, used for metadata parsing
+    bytes4 public override redeemMetadataDelegateId;
 
 
     //*********************************************************************//
@@ -95,20 +98,16 @@ abstract contract JB721Delegate is
         if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
         // fetch this delegates metadata from the delegate id
-        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.metadata);
-
-        // handle the case where the metadata was not intended for this contract
-        // Skip 32 bytes reserved for generic extension parameters.
-        if (!_valid || _metadata.length < 36 ) {
-            revert INVALID_REDEMPTION_METADATA();
-        }
+        (bool _valid, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.metadata);
 
         // Set the only delegate allocation to be a callback to this contract.
         delegateAllocations = new JBRedemptionDelegateAllocation3_1_1[](1);
         delegateAllocations[0] = JBRedemptionDelegateAllocation3_1_1(this, 0, bytes(''));
 
+        uint256[] memory _decodedTokenIds;
+
         // Decode the metadata
-        (,, uint256[] memory _decodedTokenIds) = abi.decode(_metadata, (bytes32, bytes4, uint256[]));
+        if (_valid) (,, _decodedTokenIds) = abi.decode(_metadata, (bytes32, bytes4, uint256[]));
 
         // Get a reference to the redemption rate of the provided tokens.
         uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds, _data);
@@ -181,17 +180,19 @@ abstract contract JB721Delegate is
     /// @notice Initializes the contract with project details and ERC721 token details.
     /// @param _projectId The ID of the project this contract's functionality applies to.
     /// @param _directory The directory of terminals and controllers for projects.
-    /// @param _delegateId The 4bytes ID of this delegate, used for metadata parsing
+    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
+    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
     /// @param _name The name of the token.
     /// @param _symbol The symbol representing the token.
-    function _initialize(uint256 _projectId, IJBDirectory _directory, bytes4 _delegateId, string memory _name, string memory _symbol)
+    function _initialize(uint256 _projectId, IJBDirectory _directory, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId,  string memory _name, string memory _symbol)
         internal
     {
         ERC721._initialize(_name, _symbol);
 
         projectId = _projectId;
         directory = _directory;
-        delegateId = _delegateId;
+        payMetadataDelegateId = _payMetadataDelegateId;
+        redeemMetadataDelegateId = _redeemMetadataDelegateId;
     }
 
     //*********************************************************************//
@@ -225,16 +226,12 @@ abstract contract JB721Delegate is
         ) revert INVALID_REDEMPTION_EVENT();
 
         // fetch this delegates metadata from the delegate id
-        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.redeemerMetadata);
+        (bool _valid, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.redeemerMetadata);
 
-        // handle the case where the metadata was not intended for this contract.
-        // Skip 32 bytes reserved for generic extension parameters.
-        if (!_valid || _metadata.length < 36 ) {
-            revert INVALID_REDEMPTION_METADATA();
-        }
+        uint256[] memory _decodedTokenIds;
 
         // Decode the metadata.
-        (,, uint256[] memory _decodedTokenIds) = abi.decode(_metadata, (bytes32, bytes4, uint256[]));
+        if (_valid) (,, _decodedTokenIds) = abi.decode(_metadata, (bytes32, bytes4, uint256[]));
 
         // Get a reference to the number of token IDs being checked.
         uint256 _numberOfTokenIds = _decodedTokenIds.length;

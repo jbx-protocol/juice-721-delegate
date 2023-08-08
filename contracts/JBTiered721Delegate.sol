@@ -172,7 +172,8 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     /// @notice Initializes a cloned copy of the original JB721Delegate contract.
     /// @param _projectId The ID of the project this contract's functionality applies to.
     /// @param _directory A directory of terminals and controllers for projects.
-    /// @param _delegateId The 4bytes ID of this delegate, used for metadata parsing
+    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
+    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
     /// @param _name The name of the NFT collection distributed through this contract.
     /// @param _symbol The symbol that the NFT collection should be represented by.
     /// @param _fundingCycleStore A contract storing all funding cycle configurations.
@@ -185,7 +186,8 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     function initialize(
         uint256 _projectId,
         IJBDirectory _directory,
-        bytes4 _delegateId,
+        bytes4 _payMetadataDelegateId,
+        bytes4 _redeemMetadataDelegateId,
         string memory _name,
         string memory _symbol,
         IJBFundingCycleStore _fundingCycleStore,
@@ -200,7 +202,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         if (address(store) != address(0)) revert();
 
         // Initialize the superclass.
-        JB721Delegate._initialize(_projectId, _directory, _delegateId, _name, _symbol);
+        JB721Delegate._initialize(_projectId, _directory, _payMetadataDelegateId, _redeemMetadataDelegateId,  _name, _symbol);
 
         fundingCycleStore = _fundingCycleStore;
         store = _store;
@@ -482,12 +484,9 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         bool _allowOverspending;
 
         // fetch this delegates metadata from the delegate id
-        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.payerMetadata);
-        if (!_valid) revert();
+        (bool _valid, bytes memory _metadata) = getMetadata(payMetadataDelegateId, _data.payerMetadata);
 
-        // Skip the first 32 bytes which are used by the Juicebox protocol to pass the referring project's ID.
-        // Skip another 32 bytes which are reserved for generic extension parameters.
-        else if (_metadata.length > 68) {
+        if (_valid) {
             // Keep a reference to the tier IDs to mint.
             uint16[] memory _tierIdsToMint;
 
