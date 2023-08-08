@@ -12,9 +12,12 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBFundingCycleMetadata.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBTokenAmount.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol";
-import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData3_1_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData3_1_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData3_1_1.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation3_1_1.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol";
+import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol";
 import "@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol";
 
 import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatable.sol";
@@ -172,7 +175,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         noGovernanceOrigin = new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
         JBTiered721GovernanceDelegate onchainGovernance =
             new JBTiered721GovernanceDelegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
-        delegatesRegistry = new JBDelegatesRegistry();
+        delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         jbDelegateDeployer = new JBTiered721DelegateDeployer(
         onchainGovernance,
         noGovernanceOrigin,
@@ -3974,7 +3977,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -3984,6 +3987,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                new bytes(0),
                 new bytes(0)
             )
         );
@@ -3999,7 +4003,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4009,6 +4013,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                new bytes(0),
                 new bytes(0)
             )
         );
@@ -4034,7 +4039,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4044,6 +4049,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4070,7 +4076,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4080,6 +4086,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4108,7 +4115,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         emit AddCredits(_newCredits, _newCredits, beneficiary, mockTerminalAddress);
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4118,6 +4125,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4150,7 +4158,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // First call will mint the 3 tiers requested + accumulate half of first floor in credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 beneficiary,
                 projectId,
                 0,
@@ -4160,6 +4168,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4187,7 +4196,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // Second call will mint another 3 tiers requested + mint from the first tier with the credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 beneficiary,
                 projectId,
                 0,
@@ -4197,6 +4206,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4236,7 +4246,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // First call will mint the 3 tiers requested + accumulate half of first floor in credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 beneficiary,
                 projectId,
                 0,
@@ -4246,6 +4256,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4254,7 +4265,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // Second call will mint another 3 tiers requested BUT not with the credit accumulated
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4264,6 +4275,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4328,7 +4340,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4338,6 +4350,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4373,7 +4386,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.TIER_REMOVED.selector));
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4383,6 +4396,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4412,7 +4426,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.INVALID_TIER.selector));
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4422,6 +4436,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4449,7 +4464,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.INSUFFICIENT_AMOUNT.selector));
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4459,6 +4474,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4489,7 +4505,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             // Perform the pay
             vm.prank(mockTerminalAddress);
             delegate.didPay(
-                JBDidPayData(
+                JBDidPayData3_1_1(
                     msg.sender,
                     projectId,
                     0,
@@ -4499,6 +4515,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                     msg.sender,
                     false,
                     "",
+                    bytes(''),
                     _metadata
                 )
             );
@@ -4525,7 +4542,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.prank(_terminal);
         vm.expectRevert(abi.encodeWithSelector(JB721Delegate.INVALID_PAYMENT_EVENT.selector));
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4535,6 +4552,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 new bytes(0)
             )
         );
@@ -4551,7 +4569,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // The caller is the _expectedCaller however the terminal in the calldata is not correct
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4561,6 +4579,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 new bytes(0)
             )
         );
@@ -4593,7 +4612,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // First call will mint the 3 tiers requested + accumulate half of first floor in credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 beneficiary,
                 projectId,
                 0,
@@ -4603,6 +4622,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4624,7 +4644,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // minting with left over credits
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 beneficiary,
                 projectId,
                 0,
@@ -4634,6 +4654,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4658,7 +4679,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.prank(mockTerminalAddress);
         vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4668,6 +4689,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4710,7 +4732,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }
         vm.prank(mockTerminalAddress);
         delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4720,6 +4742,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4821,7 +4844,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4831,6 +4854,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -4919,7 +4943,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 msg.sender,
                 projectId,
                 0,
@@ -4929,6 +4953,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
+                bytes(''),
                 _metadata
             )
         );
@@ -5021,7 +5046,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         // which leads to underflow on redeem
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
-            JBDidPayData(
+            JBDidPayData3_1_1(
                 _holder,
                 projectId,
                 0,
@@ -5031,6 +5056,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 _holder,
                 false,
                 "",
+                bytes(''),
                 metadata
             )
         );
@@ -5038,7 +5064,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tokenToRedeem[0] = _generateTokenId(1, 1);
         vm.prank(mockTerminalAddress);
         _delegate.didRedeem(
-            JBDidRedeemData({
+            JBDidRedeemData3_1_1({
                 holder: _holder,
                 projectId: projectId,
                 currentFundingCycleConfiguration: 1,
@@ -5047,7 +5073,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenToRedeem)
+                dataSourceMetadata: bytes(''),
+                redeemerMetadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenToRedeem)
             })
         );
         // Balance should be 0 again
@@ -5124,7 +5151,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _tokenList[i] = _tokenId;
             _weight += (i + 1) * 10;
         }
-        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation[] memory _returnedDelegate) =
+        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate) =
         _delegate.redeemParams(
             JBRedeemParamsData({
                 terminal: IJBPaymentTerminal(address(0)),
@@ -5142,10 +5169,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
             })
         );
         // Portion of the overflow accessible (pro rata weight held)
-        uint256 _base = PRBMath.mulDiv(_overflow, _weight, _totalWeight);
-        uint256 _claimableOverflow = PRBMath.mulDiv(
+        uint256 _base = mulDiv(_overflow, _weight, _totalWeight);
+        uint256 _claimableOverflow = mulDiv(
             _base,
-            _redemptionRate + PRBMath.mulDiv(_weight, _accessJBLib.MAX_RESERVED_RATE() - _redemptionRate, _totalWeight),
+            _redemptionRate + mulDiv(_weight, _accessJBLib.MAX_RESERVED_RATE() - _redemptionRate, _totalWeight),
             _accessJBLib.MAX_RESERVED_RATE()
         );
         assertEq(reclaimAmount, _claimableOverflow);
@@ -5219,7 +5246,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _tokenList[i] = i + 1;
             _weight += (i + 1) * (i + 1) * 10;
         }
-        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation[] memory _returnedDelegate) =
+        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate) =
         _delegate.redeemParams(
             JBRedeemParamsData({
                 terminal: IJBPaymentTerminal(address(0)),
@@ -5307,7 +5334,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _tokenList[i] = _generateTokenId(i + 1, 1);
             _weight += (i + 1) * 10;
         }
-        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation[] memory _returnedDelegate) =
+        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate) =
         _delegate.redeemParams(
             JBRedeemParamsData({
                 terminal: IJBPaymentTerminal(address(0)),
@@ -5325,7 +5352,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             })
         );
         // Portion of the overflow accessible (pro rata weight held)
-        uint256 _base = PRBMath.mulDiv(_overflow, _weight, _totalWeight);
+        uint256 _base = mulDiv(_overflow, _weight, _totalWeight);
         assertEq(reclaimAmount, _base);
         assertEq(memo, "plz gib");
         assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
@@ -5396,7 +5423,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             // which leads to underflow on redeem
             vm.prank(mockTerminalAddress);
             _delegate.didPay(
-                JBDidPayData(
+                JBDidPayData3_1_1(
                     _holder,
                     projectId,
                     0,
@@ -5406,6 +5433,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                     _holder,
                     false,
                     "",
+                    bytes(''),
                     _metadata
                 )
             );
@@ -5415,7 +5443,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         }
         vm.prank(mockTerminalAddress);
         _delegate.didRedeem(
-            JBDidRedeemData({
+            JBDidRedeemData3_1_1({
                 holder: _holder,
                 projectId: projectId,
                 currentFundingCycleConfiguration: 1,
@@ -5424,7 +5452,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
+                dataSourceMetadata: bytes(''),
+                redeemerMetadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
             })
         );
         // Balance should be 0 again
@@ -5579,7 +5608,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JB721Delegate.INVALID_REDEMPTION_EVENT.selector));
         vm.prank(mockTerminalAddress);
         delegate.didRedeem(
-            JBDidRedeemData({
+            JBDidRedeemData3_1_1({
                 holder: _holder,
                 projectId: _wrongProjectId,
                 currentFundingCycleConfiguration: 1,
@@ -5588,7 +5617,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), //sv 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                metadata: abi.encode(type(IJBTiered721Delegate).interfaceId, _tokenList)
+                dataSourceMetadata: bytes(''),
+                redeemerMetadata: abi.encode(type(IJBTiered721Delegate).interfaceId, _tokenList)
             })
         );
     }
@@ -5606,7 +5636,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JB721Delegate.INVALID_REDEMPTION_EVENT.selector));
         vm.prank(mockTerminalAddress);
         delegate.didRedeem(
-            JBDidRedeemData({
+            JBDidRedeemData3_1_1({
                 holder: _holder,
                 projectId: projectId,
                 currentFundingCycleConfiguration: 1,
@@ -5615,7 +5645,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                metadata: abi.encode(type(IJBTiered721Delegate).interfaceId, _tokenList)
+                dataSourceMetadata: bytes(''),
+                redeemerMetadata: abi.encode(type(IJBTiered721Delegate).interfaceId, _tokenList)
             })
         );
     }
@@ -5656,7 +5687,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.expectRevert(abi.encodeWithSelector(JB721Delegate.UNAUTHORIZED_TOKEN.selector, tokenId));
         vm.prank(mockTerminalAddress);
         _delegate.didRedeem(
-            JBDidRedeemData({
+            JBDidRedeemData3_1_1({
                 holder: _wrongHolder,
                 projectId: projectId,
                 currentFundingCycleConfiguration: 1,
@@ -5665,7 +5696,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_wrongHolder),
                 memo: "thy shall redeem",
-                metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
+                dataSourceMetadata: bytes(''),
+                redeemerMetadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
             })
         );
     }

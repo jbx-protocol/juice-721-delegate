@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import {mulDiv} from '@prb/math/src/Common.sol';
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IJBFundingCycleDataSource } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource.sol";
+import { IERC2981 } from "@openzeppelin/contracts/interfaces/IERC2981.sol";
+import { IJBFundingCycleDataSource3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleDataSource3_1_1.sol";
 import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
-import { IJBPayDelegate } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate.sol";
-import { IJBRedemptionDelegate } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBRedemptionDelegate.sol";
+import { IJBPayDelegate3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPayDelegate3_1_1.sol";
+import { IJBRedemptionDelegate3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBRedemptionDelegate3_1_1.sol";
 import { IJBPaymentTerminal } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol";
 import { JBConstants } from "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBConstants.sol";
 import { JBPayParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayParamsData.sol";
-import { JBDidPayData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData.sol";
-import { JBDidRedeemData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData.sol";
+import { JBDidPayData3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidPayData3_1_1.sol";
+import { JBDidRedeemData3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData3_1_1.sol";
 import { JBRedeemParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol";
-import { JBPayDelegateAllocation } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation.sol";
-import { JBRedemptionDelegateAllocation } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation.sol";
-import { IERC2981 } from "@openzeppelin/contracts/interfaces/IERC2981.sol";
-import { PRBMath } from "@paulrberg/contracts/math/PRBMath.sol";
+import { JBPayDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation3_1_1.sol";
+import { JBRedemptionDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation3_1_1.sol";
 
 import { IJB721Delegate } from "../interfaces/IJB721Delegate.sol";
 import { ERC721 } from "./ERC721.sol";
@@ -25,9 +25,9 @@ import { ERC721 } from "./ERC721.sol";
 abstract contract JB721Delegate is
     ERC721,
     IJB721Delegate,
-    IJBFundingCycleDataSource,
-    IJBPayDelegate,
-    IJBRedemptionDelegate
+    IJBFundingCycleDataSource3_1_1,
+    IJBPayDelegate3_1_1,
+    IJBRedemptionDelegate3_1_1
 {
     //*********************************************************************//
     // --------------------------- custom errors ------------------------- //
@@ -63,13 +63,13 @@ abstract contract JB721Delegate is
         view
         virtual
         override
-        returns (uint256 weight, string memory memo, JBPayDelegateAllocation[] memory delegateAllocations)
+        returns (uint256 weight, string memory memo, JBPayDelegateAllocation3_1_1[] memory delegateAllocations)
     {
         // Forward the received weight and memo, and use this contract as a pay delegate.
         weight = _data.weight;
         memo = _data.memo;
-        delegateAllocations = new JBPayDelegateAllocation[](1);
-        delegateAllocations[0] = JBPayDelegateAllocation(this, 0);
+        delegateAllocations = new JBPayDelegateAllocation3_1_1[](1);
+        delegateAllocations[0] = JBPayDelegateAllocation3_1_1(this, 0, bytes(''));
     }
 
     /// @notice This function gets called when the project's (NFT) token holders redeem. Part of IJBFundingCycleDataSource.
@@ -82,7 +82,7 @@ abstract contract JB721Delegate is
         view
         virtual
         override
-        returns (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation[] memory delegateAllocations)
+        returns (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory delegateAllocations)
     {
         // Make sure fungible project tokens aren't also being redeemed.
         if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
@@ -94,8 +94,8 @@ abstract contract JB721Delegate is
         }
 
         // Set the only delegate allocation to be a callback to this contract.
-        delegateAllocations = new JBRedemptionDelegateAllocation[](1);
-        delegateAllocations[0] = JBRedemptionDelegateAllocation(this, 0);
+        delegateAllocations = new JBRedemptionDelegateAllocation3_1_1[](1);
+        delegateAllocations[0] = JBRedemptionDelegateAllocation3_1_1(this, 0, bytes(''));
 
         // Decode the metadata
         (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
@@ -107,7 +107,7 @@ abstract contract JB721Delegate is
         uint256 _total = totalRedemptionWeight(_data);
 
         // Get a reference to the linear proportion.
-        uint256 _base = PRBMath.mulDiv(_data.overflow, _redemptionWeight, _total);
+        uint256 _base = mulDiv(_data.overflow, _redemptionWeight, _total);
 
         // These conditions are all part of the same curve. Edge conditions are separated because fewer operation are necessary.
         if (_data.redemptionRate == JBConstants.MAX_REDEMPTION_RATE) {
@@ -116,10 +116,10 @@ abstract contract JB721Delegate is
 
         // Return the weighted overflow, and this contract as the delegate so that tokens can be deleted.
         return (
-            PRBMath.mulDiv(
+            mulDiv(
                 _base,
                 _data.redemptionRate
-                    + PRBMath.mulDiv(_redemptionWeight, JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate, _total),
+                    + mulDiv(_redemptionWeight, JBConstants.MAX_REDEMPTION_RATE - _data.redemptionRate, _total),
                 JBConstants.MAX_REDEMPTION_RATE
                 ),
             _data.memo,
@@ -159,8 +159,8 @@ abstract contract JB721Delegate is
     /// @param _interfaceId The ID of the interface to check for adherence to.
     function supportsInterface(bytes4 _interfaceId) public view virtual override(ERC721, IERC165) returns (bool) {
         return _interfaceId == type(IJB721Delegate).interfaceId
-            || _interfaceId == type(IJBFundingCycleDataSource).interfaceId
-            || _interfaceId == type(IJBPayDelegate).interfaceId || _interfaceId == type(IJBRedemptionDelegate).interfaceId
+            || _interfaceId == type(IJBFundingCycleDataSource3_1_1).interfaceId
+            || _interfaceId == type(IJBPayDelegate3_1_1).interfaceId || _interfaceId == type(IJBRedemptionDelegate3_1_1).interfaceId
             || _interfaceId == type(IERC2981).interfaceId || super.supportsInterface(_interfaceId);
     }
 
@@ -189,7 +189,7 @@ abstract contract JB721Delegate is
     /// @notice Mints an NFT to the contributor (_data.beneficiary) upon project payment if conditions are met. Part of IJBPayDelegate.
     /// @dev Reverts if the calling contract is not one of the project's terminals.
     /// @param _data Standard Juicebox project payment data.
-    function didPay(JBDidPayData calldata _data) external payable virtual override {
+    function didPay(JBDidPayData3_1_1 calldata _data) external payable virtual override {
         uint256 _projectId = projectId;
 
         // Make sure the caller is a terminal of the project, and that the call is being made on behalf of an interaction with the correct project.
@@ -205,7 +205,7 @@ abstract contract JB721Delegate is
     /// @notice Burns specified NFTs upon token holder redemption, reclaiming funds from the project's balance to _data.beneficiary. Part of IJBRedeemDelegate.
     /// @dev Reverts if the calling contract is not one of the project's terminals.
     /// @param _data Standard Juicebox project redemption data.
-    function didRedeem(JBDidRedeemData calldata _data) external payable virtual override {
+    function didRedeem(JBDidRedeemData3_1_1 calldata _data) external payable virtual override {
         // Make sure the caller is a terminal of the project, and that the call is being made on behalf of an interaction with the correct project.
         if (
             msg.value != 0 || !directory.isTerminalOf(projectId, IJBPaymentTerminal(msg.sender))
@@ -214,12 +214,12 @@ abstract contract JB721Delegate is
 
         // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract.
         // Skip 32 bytes reserved for generic extension parameters.
-        if (_data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId) {
+        if (_data.redeemerMetadata.length < 36 || bytes4(_data.redeemerMetadata[32:36]) != type(IJB721Delegate).interfaceId) {
             revert INVALID_REDEMPTION_METADATA();
         }
 
         // Decode the metadata.
-        (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+        (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.redeemerMetadata, (bytes32, bytes4, uint256[]));
 
         // Get a reference to the number of token IDs being checked.
         uint256 _numberOfTokenIds = _decodedTokenIds.length;
@@ -253,7 +253,7 @@ abstract contract JB721Delegate is
 
     /// @notice Process a received payment.
     /// @param _data Standard Juicebox project payment data.
-    function _processPayment(JBDidPayData calldata _data) internal virtual {
+    function _processPayment(JBDidPayData3_1_1 calldata _data) internal virtual {
         _data; // Prevents unused var compiler and natspec complaints.
     }
 

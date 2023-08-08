@@ -72,7 +72,7 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
             new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
         JBTiered721GovernanceDelegate onchainGovernance =
             new JBTiered721GovernanceDelegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
-        delegatesRegistry = new JBDelegatesRegistry();
+        delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         delegateDeployer = new JBTiered721DelegateDeployer(
       onchainGovernance,
       noGovernance,

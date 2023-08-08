@@ -52,7 +52,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       _jbProjects,
       _jbOperatorStore
     );
-        delegatesRegistry = new JBDelegatesRegistry();
+        delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer(
       onchainGovernance,
       noGovernance,
