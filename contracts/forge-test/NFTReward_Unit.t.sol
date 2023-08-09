@@ -176,7 +176,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         noGovernanceOrigin = new JBTiered721Delegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance =
-            new JBTiered721GovernanceDelegate(IJBDirectory(mockJBProjects), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
+            new JBTiered721GovernanceDelegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
         delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         jbDelegateDeployer = new JBTiered721DelegateDeployer(
         onchainGovernance,
