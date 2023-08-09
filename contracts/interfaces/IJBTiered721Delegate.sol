@@ -49,8 +49,6 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
     function codeOrigin() external view returns (address);
 
-    function payMetadataDelegateId() external view returns (bytes4);
-
     function store() external view returns (IJBTiered721DelegateStore);
 
     function fundingCycleStore() external view returns (IJBFundingCycleStore);
@@ -83,7 +81,6 @@ interface IJBTiered721Delegate is IJB721Delegate {
 
     function initialize(
         uint256 projectId,
-        IJBDirectory directory,  
         string memory name,
         string memory symbol,
         IJBFundingCycleStore fundingCycleStore,

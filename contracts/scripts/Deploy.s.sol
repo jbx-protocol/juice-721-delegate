@@ -42,8 +42,9 @@ contract DeployMainnet is Script {
 
         vm.startBroadcast();
 
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, _projects, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
+      jbDirectory,
       _projects,
       jbOperatorStore,
       payMetadataDelegateId,
@@ -93,8 +94,9 @@ contract DeployGoerli is Script {
 
         vm.startBroadcast();
 
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, _projects, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
+      jbDirectory,
       _projects,
       jbOperatorStore,
       payMetadataDelegateId, 

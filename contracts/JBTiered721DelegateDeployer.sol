@@ -87,7 +87,6 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
         newDelegate.initialize(
             _projectId,
-            _directory,
             _deployTiered721DelegateData.name,
             _deployTiered721DelegateData.symbol,
             _deployTiered721DelegateData.fundingCycleStore,

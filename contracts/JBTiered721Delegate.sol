@@ -50,16 +50,6 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     uint256 internal _packedPricingContext;
 
     //*********************************************************************//
-    // --------------------- immutable properties -------------------- //
-    //*********************************************************************//
-
-    /// @notice The 4bytes ID of this delegate, used for pay metadata parsing
-    bytes4 public override immutable payMetadataDelegateId;
-
-    /// @notice The 4bytes ID of this delegate, used for redeem metadata parsing
-    bytes4 public immutable redeemMetadataDelegateId;
-
-    //*********************************************************************//
     // --------------------- public stored properties -------------------- //
     //*********************************************************************//
 
@@ -173,19 +163,17 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     // -------------------------- constructor ---------------------------- //
     //*********************************************************************//
 
+    /// @param _directory A directory of terminals and controllers for projects.
     /// @param _projects A contract which mints ERC-721s that represent Juicebox project ownership.
     /// @param _operatorStore A contract which stores operator assignments.
     /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
     /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
-    constructor(IJBProjects _projects, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) JBOwnable(_projects, _operatorStore) {
+    constructor(IJBDirectory _directory, IJBProjects _projects, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) JBOwnable(_projects, _operatorStore) JB721Delegate(_directory, _payMetadataDelegateId, _redeemMetadataDelegateId) {
         codeOrigin = address(this);
-        payMetadataDelegateId = _payMetadataDelegateId;
-        redeemMetadataDelegateId = _redeemMetadataDelegateId;
     }
 
     /// @notice Initializes a cloned copy of the original JB721Delegate contract.
     /// @param _projectId The ID of the project this contract's functionality applies to.
-    /// @param _directory A directory of terminals and controllers for projects.
     /// @param _name The name of the NFT collection distributed through this contract.
     /// @param _symbol The symbol that the NFT collection should be represented by.
     /// @param _fundingCycleStore A contract storing all funding cycle configurations.
@@ -197,7 +185,6 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     /// @param _flags A set of flags that help to define how this contract works.
     function initialize(
         uint256 _projectId,
-        IJBDirectory _directory,
         string memory _name,
         string memory _symbol,
         IJBFundingCycleStore _fundingCycleStore,
@@ -212,7 +199,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         if (address(store) != address(0)) revert();
 
         // Initialize the superclass.
-        JB721Delegate._initialize(_projectId, _directory, redeemMetadataDelegateId, _name, _symbol);
+        JB721Delegate._initialize(_projectId, _name, _symbol);
 
         fundingCycleStore = _fundingCycleStore;
         store = _store;
