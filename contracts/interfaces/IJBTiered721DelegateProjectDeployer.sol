@@ -21,26 +21,20 @@ interface IJBTiered721DelegateProjectDeployer {
         address owner,
         JBDeployTiered721DelegateData memory deployTiered721DelegateData,
         JBLaunchProjectData memory launchProjectData,
-        IJBController3_1 controller,
-        bytes4 _payMetadataDelegateId,
-        bytes4 _redeemMetadataDelegateId
+        IJBController3_1 controller
     ) external returns (uint256 projectId);
 
     function launchFundingCyclesFor(
         uint256 projectId,
         JBDeployTiered721DelegateData memory deployTiered721DelegateData,
         JBLaunchFundingCyclesData memory launchFundingCyclesData,
-        IJBController3_1 controller,
-        bytes4 _payMetadataDelegateId,
-        bytes4 _redeemMetadataDelegateId
+        IJBController3_1 controller
     ) external returns (uint256 configuration);
 
     function reconfigureFundingCyclesOf(
         uint256 projectId,
         JBDeployTiered721DelegateData memory deployTiered721DelegateData,
         JBReconfigureFundingCyclesData memory reconfigureFundingCyclesData,
-        IJBController3_1 controller,
-        bytes4 _payMetadataDelegateId,
-        bytes4 _redeemMetadataDelegateId
+        IJBController3_1 controller
     ) external returns (uint256 configuration);
 }

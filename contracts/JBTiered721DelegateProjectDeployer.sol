@@ -56,23 +56,19 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     /// @param _deployTiered721DelegateData Data necessary to deploy the delegate.
     /// @param _launchProjectData Data necessary to launch the project.
     /// @param _controller The controller with which the funding cycles should be configured.
-    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
-    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
     /// @return projectId The ID of the newly configured project.
     function launchProjectFor(
         address _owner,
         JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
         JBLaunchProjectData memory _launchProjectData,
-        IJBController3_1 _controller,
-        bytes4 _payMetadataDelegateId,
-        bytes4 _redeemMetadataDelegateId
+        IJBController3_1 _controller
     ) external override returns (uint256 projectId) {
         // Get the project ID, optimistically knowing it will be one greater than the current count.
         projectId = directory.projects().count() + 1;
 
         // Deploy the delegate contract.
         IJBTiered721Delegate _delegate =
-            delegateDeployer.deployDelegateFor(projectId, _deployTiered721DelegateData, directory, _payMetadataDelegateId, _redeemMetadataDelegateId);
+            delegateDeployer.deployDelegateFor(projectId, _deployTiered721DelegateData, directory);
 
         // Launch the project.
         _launchProjectFor(_owner, _launchProjectData, _delegate, _controller);
@@ -87,16 +83,12 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     /// @param _deployTiered721DelegateData Data necessary to deploy a delegate.
     /// @param _launchFundingCyclesData Data necessary to launch the funding cycles for the project.
     /// @param _controller The controller with which the funding cycles should be configured.
-    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
-    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
     /// @return configuration The configuration of the funding cycle that was successfully created.
     function launchFundingCyclesFor(
         uint256 _projectId,
         JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
         JBLaunchFundingCyclesData memory _launchFundingCyclesData,
-        IJBController3_1 _controller,
-        bytes4 _payMetadataDelegateId,
-        bytes4 _redeemMetadataDelegateId
+        IJBController3_1 _controller
     )
         external
         override
@@ -105,7 +97,7 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     {
         // Deploy the delegate contract.
         IJBTiered721Delegate _delegate =
-            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData, directory, _payMetadataDelegateId, _redeemMetadataDelegateId);
+            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData, directory);
 
         // Transfer the ownership of the delegate to the project.
         JBOwnable(address(_delegate)).transferOwnershipToProject(_projectId);
@@ -120,16 +112,12 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     /// @param _deployTiered721DelegateData Data necessary to deploy a delegate.
     /// @param _reconfigureFundingCyclesData Data necessary to reconfigure the funding cycle.
     /// @param _controller The controller with which the funding cycles should be configured.
-    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
-    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
     /// @return configuration The configuration of the successfully reconfigured funding cycle.
     function reconfigureFundingCyclesOf(
         uint256 _projectId,
         JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
         JBReconfigureFundingCyclesData memory _reconfigureFundingCyclesData,
-        IJBController3_1 _controller,
-        bytes4 _payMetadataDelegateId,
-        bytes4 _redeemMetadataDelegateId
+        IJBController3_1 _controller
     )
         external
         override
@@ -138,7 +126,7 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     {
         // Deploy the delegate contract.
         IJBTiered721Delegate _delegate =
-            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData, directory, _payMetadataDelegateId, _redeemMetadataDelegateId);
+            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData, directory);
 
         // Transfer the ownership of the delegate to the project.
         JBOwnable(address(_delegate)).transferOwnershipToProject(_projectId);

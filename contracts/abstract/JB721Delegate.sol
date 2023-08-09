@@ -52,12 +52,8 @@ abstract contract JB721Delegate is
     /// @notice The directory of terminals and controllers for projects.
     IJBDirectory public override directory;
 
-    /// @notice The 4bytes ID of this delegate, used for metadata parsing
-    bytes4 public override payMetadataDelegateId;
-
-    /// @notice The 4bytes ID of this delegate, used for metadata parsing
-    bytes4 public override redeemMetadataDelegateId;
-
+    /// @notice The 4bytes ID of this delegate, used for redeem metadata parsing
+    bytes4 public override delegateId;
 
     //*********************************************************************//
     // ------------------------- external views -------------------------- //
@@ -98,7 +94,7 @@ abstract contract JB721Delegate is
         if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
         // fetch this delegates metadata from the delegate id
-        (bool _valid, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.metadata);
+        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.metadata);
 
         // Set the only delegate allocation to be a callback to this contract.
         delegateAllocations = new JBRedemptionDelegateAllocation3_1_1[](1);
@@ -180,19 +176,17 @@ abstract contract JB721Delegate is
     /// @notice Initializes the contract with project details and ERC721 token details.
     /// @param _projectId The ID of the project this contract's functionality applies to.
     /// @param _directory The directory of terminals and controllers for projects.
-    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
     /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
     /// @param _name The name of the token.
     /// @param _symbol The symbol representing the token.
-    function _initialize(uint256 _projectId, IJBDirectory _directory, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId,  string memory _name, string memory _symbol)
+    function _initialize(uint256 _projectId, IJBDirectory _directory, bytes4 _redeemMetadataDelegateId,  string memory _name, string memory _symbol)
         internal
     {
         ERC721._initialize(_name, _symbol);
 
         projectId = _projectId;
         directory = _directory;
-        payMetadataDelegateId = _payMetadataDelegateId;
-        redeemMetadataDelegateId = _redeemMetadataDelegateId;
+        delegateId = _redeemMetadataDelegateId;
     }
 
     //*********************************************************************//
@@ -226,7 +220,7 @@ abstract contract JB721Delegate is
         ) revert INVALID_REDEMPTION_EVENT();
 
         // fetch this delegates metadata from the delegate id
-        (bool _valid, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.redeemerMetadata);
+        (bool _valid, bytes memory _metadata) = getMetadata(delegateId, _data.redeemerMetadata);
 
         uint256[] memory _decodedTokenIds;
 
