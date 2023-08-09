@@ -40,6 +40,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     string symbol = "SYM";
     string baseUri = "http://www.null.com/";
     string contractUri = "ipfs://null";
+    bytes4 payMetadataDelegateId = bytes4(hex'70');
+    bytes4 redeemMetadataDelegateId = bytes4(hex'71');
     // NodeJS: function con(hash) { Buffer.from(bs58.decode(hash).slice(2)).toString('hex') }
     // JS;  0x${bs58.decode(hash).slice(2).toString('hex')})
     bytes32[] tokenUris = [
@@ -172,9 +174,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.mockCall(
             mockJBDirectory, abi.encodeWithSelector(IJBOperatable.operatorStore.selector), abi.encode(mockJBProjects)
         );
-        noGovernanceOrigin = new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+        noGovernanceOrigin = new JBTiered721Delegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance =
-            new JBTiered721GovernanceDelegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+            new JBTiered721GovernanceDelegate(IJBDirectory(mockJBProjects), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
         delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         jbDelegateDeployer = new JBTiered721DelegateDeployer(
         onchainGovernance,
@@ -200,7 +202,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             JB721GovernanceType.NONE
         );
         delegate = JBTiered721Delegate(
-            address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData, IJBDirectory(mockJBDirectory)))
+            address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData))
         );
         delegate.transferOwnership(owner);
     }
@@ -291,7 +293,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
 
         JBTiered721Delegate _delegate = JBTiered721Delegate(
-            address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData, IJBDirectory(mockJBDirectory)))
+            address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData))
         );
 
         (uint256 __currency, uint256 __decimals, IJBPrices __prices) = _delegate.pricingContext();
@@ -1197,7 +1199,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -1257,7 +1258,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -1890,7 +1890,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2027,7 +2026,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2180,7 +2178,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2291,7 +2288,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2402,7 +2398,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2515,7 +2510,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2672,7 +2666,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2827,7 +2820,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2937,7 +2929,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -3093,7 +3084,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -3341,7 +3331,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -3780,7 +3769,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -4303,7 +4291,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -5852,13 +5839,12 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
         JBTiered721Flags memory _flags
     )
         // The directory is also an IJBOperatable
-        JBTiered721Delegate(_directory.projects(), IJBOperatable(address(_directory)).operatorStore())
+        JBTiered721Delegate(_directory , IJBOperatable(address(_directory)).operatorStore(), payMetadataDelegateId, redeemMetadataDelegateId)
     {
         // Disable the safety check to not allow initializing the original contract
         codeOrigin = address(0);
         JBTiered721Delegate.initialize(
             _projectId,
-            _directory,
             _name,
             _symbol,
             _fundingCycleStore,

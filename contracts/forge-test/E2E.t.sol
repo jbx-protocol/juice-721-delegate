@@ -42,15 +42,20 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
         bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
     ];
+    bytes4 payMetadataDelegateId = bytes4(hex'70');
+    bytes4 redeemMetadataDelegateId = bytes4(hex'71');
+
     JBTiered721DelegateProjectDeployer deployer;
     JBDelegatesRegistry delegatesRegistry;
 
     function setUp() public override {
         super.setUp();
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(_jbProjects, _jbOperatorStore);
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(_jbDirectory, _jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
-      _jbProjects,
-      _jbOperatorStore
+      _jbDirectory,
+      _jbOperatorStore,
+      payMetadataDelegateId,
+      redeemMetadataDelegateId
     );
         delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer(

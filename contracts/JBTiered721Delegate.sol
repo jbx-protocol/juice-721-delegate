@@ -487,8 +487,8 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
             uint16[] memory _tierIdsToMint;
 
             // Decode the metadata.
-            (,,, _allowOverspending, _tierIdsToMint) =
-                abi.decode(_metadata, (bytes32, bytes32, bytes4, bool, uint16[]));
+            (_allowOverspending, _tierIdsToMint) =
+                abi.decode(_metadata, (bool, uint16[]));
 
             // Make sure overspending is allowed if requested.
             if (_allowOverspending && store.flagsOf(address(this)).preventOverspending) {
