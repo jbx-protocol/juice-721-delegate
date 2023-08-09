@@ -164,11 +164,10 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     //*********************************************************************//
 
     /// @param _directory A directory of terminals and controllers for projects.
-    /// @param _projects A contract which mints ERC-721s that represent Juicebox project ownership.
     /// @param _operatorStore A contract which stores operator assignments.
     /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
     /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
-    constructor(IJBDirectory _directory, IJBProjects _projects, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) JBOwnable(_projects, _operatorStore) JB721Delegate(_directory, _payMetadataDelegateId, _redeemMetadataDelegateId) {
+    constructor(IJBDirectory _directory, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) JBOwnable(_directory.projects(), _operatorStore) JB721Delegate(_directory, _payMetadataDelegateId, _redeemMetadataDelegateId) {
         codeOrigin = address(this);
     }
 

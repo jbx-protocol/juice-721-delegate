@@ -17,12 +17,11 @@ contract JBTiered721GovernanceDelegate is Votes, JBTiered721Delegate {
     //*********************************************************************//
 
     /// @param _directory A directory of terminals and controllers for projects.
-    /// @param _projects The IJBProjects that will be used to check project ownership.
     /// @param _operatorStore The operatorStore that will be used to check operator permissions.
     /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
     /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
-    constructor(IJBDirectory _directory, IJBProjects _projects, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId)
-        JBTiered721Delegate(_directory, _projects, _operatorStore, _payMetadataDelegateId, _redeemMetadataDelegateId)
+    constructor(IJBDirectory _directory, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId)
+        JBTiered721Delegate(_directory, _operatorStore, _payMetadataDelegateId, _redeemMetadataDelegateId)
     {}
 
     //*********************************************************************//

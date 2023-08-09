@@ -35,17 +35,15 @@ contract DeployMainnet is Script {
                 ".transactions[0].contractAddress"
             )
         );
-        IJBProjects _projects = jbDirectory.projects();
 
         // Make a static call for sanity check
         assert(registry.deployerOf(address(0)) == address(0));
 
         vm.startBroadcast();
 
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, _projects, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
       jbDirectory,
-      _projects,
       jbOperatorStore,
       payMetadataDelegateId,
       redeemMetadataDelegateId
@@ -87,17 +85,15 @@ contract DeployGoerli is Script {
                 ".transactions[0].contractAddress"
             )
         );
-        IJBProjects _projects = jbDirectory.projects();
 
         // Make a static call for sanity check
         assert(registry.deployerOf(address(0)) == address(0));
 
         vm.startBroadcast();
 
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, _projects, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
       jbDirectory,
-      _projects,
       jbOperatorStore,
       payMetadataDelegateId, 
       redeemMetadataDelegateId
