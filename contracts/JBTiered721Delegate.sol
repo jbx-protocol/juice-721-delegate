@@ -26,6 +26,8 @@ import { JBTiered721Flags } from "./structs/JBTiered721Flags.sol";
 import { JB721PricingParams } from "./structs/JB721PricingParams.sol";
 import { JBTiered721MintReservesForTiersData } from "./structs/JBTiered721MintReservesForTiersData.sol";
 
+import {JBDelegateMetadataLib} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataLib.sol';
+
 /// @title JBTiered721Delegate
 /// @notice This delegate makes multiple NFT tiers with custom price floors available to a project's contributors upon payment, and allows project owners to enable NFT redemption for treasury assets based on the price floors of those NFTs.
 /// @custom:version 3.3
@@ -480,7 +482,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         bool _allowOverspending;
 
         // fetch this delegates metadata from the delegate id
-        (bool _found, bytes memory _metadata) = getMetadata(payMetadataDelegateId, _data.payerMetadata);
+        (bool _found, bytes memory _metadata) = JBDelegateMetadataLib.getMetadata(payMetadataDelegateId, _data.payerMetadata);
         
         if (_found) {
             // Keep a reference to the tier IDs to mint.

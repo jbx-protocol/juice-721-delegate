@@ -45,7 +45,7 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
                 _ids[0] = payMetadataDelegateId;
 
                 // Generate the metadata
-                _delegateMetadata = _delegate.createMetadata(_ids, _data);
+                _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
             }
             _jbETHPaymentTerminal.pay{value: _payAmount}(
                 projectId, 100, address(0), _user, 0, false, "Take my money!", _delegateMetadata
@@ -115,7 +115,7 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
         _ids[0] = payMetadataDelegateId;
 
         // Generate the metadata
-        bytes memory _delegateMetadata = _delegate.createMetadata(_ids, _data);
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
 
         // Pay and mint an NFT
         vm.deal(_user, _payAmount);

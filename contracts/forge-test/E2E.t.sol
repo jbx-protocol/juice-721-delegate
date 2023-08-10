@@ -10,6 +10,8 @@ import "../JBTiered721DelegateStore.sol";
 
 import "./utils/TestBaseWorkflow.sol";
 import "../interfaces/IJBTiered721Delegate.sol";
+import {JBDelegateMetadataHelper} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataHelper.sol';
+
 
 contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     using JBFundingCycleMetadataResolver for JBFundingCycle;
@@ -17,6 +19,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     address reserveBeneficiary = address(bytes20(keccak256("reserveBeneficiary")));
 
     JBTiered721Delegate noGovernance;
+
+    JBDelegateMetadataHelper metadataHelper;
 
     event Mint(
         uint256 indexed tokenId,
@@ -70,6 +74,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       delegateDeployer,
       IJBOperatorStore(_jbOperatorStore)
     );
+
+    metadataHelper = new JBDelegateMetadataHelper();
     }
 
     function testDeployLaunchProjectAndAddToRegistry() external {
@@ -105,7 +111,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         _ids[0] = payMetadataDelegateId;
 
         // Generate the metadata
-        bytes memory _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+        bytes memory _delegateMetadata =  metadataHelper.createMetadata(_ids, _data);
 
         // Check: correct tier and id?
         vm.expectEmit(true, true, true, true);
@@ -185,7 +191,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         _ids[0] = payMetadataDelegateId;
 
         // Generate the metadata
-        bytes memory _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
 
         vm.prank(_caller);
         _jbETHPaymentTerminal.pay{value: _amountNeeded}(
@@ -310,7 +316,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         _ids[0] = payMetadataDelegateId;
 
         // Generate the metadata
-        bytes memory _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
 
         // Check: correct tier and id?
         vm.expectEmit(true, true, true, true);
@@ -401,7 +407,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             _ids[0] = payMetadataDelegateId;
 
             // Generate the metadata
-            _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+            _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
         vm.prank(_caller);
         _jbETHPaymentTerminal.pay{value: valueSent}(
@@ -429,7 +435,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         _ids[0] = redeemMetadataDelegateId;
 
         // Generate the metadata
-        _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+        _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
 
         address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
@@ -497,7 +503,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         _ids[0] = payMetadataDelegateId;
 
         // Generate the metadata
-        bytes memory _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+        bytes memory _delegateMetadata =  metadataHelper.createMetadata(_ids, _data);
 
         vm.prank(_caller);
         _jbETHPaymentTerminal.pay{value: floor * rawMetadata.length}(
@@ -533,7 +539,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         _ids[0] = redeemMetadataDelegateId;
 
         // Generate the metadata
-        _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+        _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
 
         vm.prank(_beneficiary);
         _jbETHPaymentTerminal.redeemTokensOf({
@@ -565,7 +571,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         _ids[0] = payMetadataDelegateId;
 
         // Generate the metadata
-        _delegateMetadata = noGovernance.createMetadata(_ids, _data);
+        _delegateMetadata =  metadataHelper.createMetadata(_ids, _data);
 
         // Check: Can mint again the token previously burned
         vm.prank(_caller);

@@ -17,7 +17,7 @@ import { JBRedeemParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/s
 import { JBPayDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation3_1_1.sol";
 import { JBRedemptionDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation3_1_1.sol";
 
-import {JBDelegateMetadataHelper} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataHelper.sol';
+import {JBDelegateMetadataLib} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataLib.sol';
 
 import { IJB721Delegate } from "../interfaces/IJB721Delegate.sol";
 import { ERC721 } from "./ERC721.sol";
@@ -26,7 +26,6 @@ import { ERC721 } from "./ERC721.sol";
 /// @notice This delegate makes NFTs available to a project's contributors upon payment, and allows project owners to enable NFT redemption for treasury assets.
 abstract contract JB721Delegate is
     ERC721,
-    JBDelegateMetadataHelper,
     IJB721Delegate,
     IJBFundingCycleDataSource3_1_1,
     IJBPayDelegate3_1_1,
@@ -102,7 +101,7 @@ abstract contract JB721Delegate is
         if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
         // fetch this delegates metadata from the delegate id
-        (bool _found, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.metadata);
+        (bool _found, bytes memory _metadata) = JBDelegateMetadataLib.getMetadata(redeemMetadataDelegateId, _data.metadata);
 
         // Set the only delegate allocation to be a callback to this contract.
         delegateAllocations = new JBRedemptionDelegateAllocation3_1_1[](1);
@@ -232,7 +231,7 @@ abstract contract JB721Delegate is
         ) revert INVALID_REDEMPTION_EVENT();
 
         // fetch this delegates metadata from the delegate id
-        (bool _found, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.redeemerMetadata);
+        (bool _found, bytes memory _metadata) = JBDelegateMetadataLib.getMetadata(redeemMetadataDelegateId, _data.redeemerMetadata);
 
         uint256[] memory _decodedTokenIds;
 
