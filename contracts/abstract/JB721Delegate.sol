@@ -107,7 +107,7 @@ abstract contract JB721Delegate is
         uint256[] memory _decodedTokenIds;
 
         // Decode the metadata
-        if (_valid) (_decodedTokenIds) = abi.decode(_metadata, (uint256[]));
+        if (_valid) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
 
         // Get a reference to the redemption rate of the provided tokens.
         uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds, _data);
@@ -238,7 +238,7 @@ abstract contract JB721Delegate is
         uint256[] memory _decodedTokenIds;
 
         // Decode the metadata.
-        if (_valid) (_decodedTokenIds) = abi.decode(_metadata, (uint256[]));
+        if (_valid) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
 
         // Get a reference to the number of token IDs being checked.
         uint256 _numberOfTokenIds = _decodedTokenIds.length;

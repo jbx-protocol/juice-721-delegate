@@ -70,6 +70,9 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         vm.etch(mockTokenUriResolver, new bytes(0x69));
         vm.etch(mockTerminalAddress, new bytes(0x69));
         vm.etch(mockJBProjects, new bytes(0x69));
+
+        vm.mockCall(mockJBDirectory, abi.encodeWithSelector(IJBDirectory.projects.selector), abi.encode(mockJBProjects));
+
         store = new JBTiered721DelegateStore();
         JBTiered721Delegate noGovernance =
             new JBTiered721Delegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
