@@ -5145,17 +5145,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         // Metadata to mint
         bytes memory _delegateMetadata;
+        bytes[] memory _data = new bytes[](1);
+        bytes4[] memory _ids = new bytes4[](1);
         {
             // Craft the metadata: mint the specified tier
             uint16[] memory rawMetadata = new uint16[](1);
             rawMetadata[0] = uint16(1); // 1 indexed
 
             // Build the metadata with the tiers to mint and the overspending flag
-            bytes[] memory _data = new bytes[](1);
             _data[0] = abi.encode(true, rawMetadata);
 
             // Pass the delegate id
-            bytes4[] memory _ids = new bytes4[](1);
             _ids[0] = PAY_DELEGATE_ID;
 
             // Generate the metadata
@@ -5181,6 +5181,16 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         uint256[] memory _tokenToRedeem = new uint256[](1);
         _tokenToRedeem[0] = _generateTokenId(1, 1);
+
+        // Build the metadata with the tiers to redeem
+        _data[0] = abi.encode(_tokenToRedeem);
+
+        // Pass the delegate id
+        _ids[0] = REDEEM_DELEGATE_ID;
+
+        // Generate the metadata
+        _delegateMetadata = _delegate.createMetadata(_ids, _data);
+
         vm.prank(mockTerminalAddress);
         _delegate.didRedeem(
             JBDidRedeemData3_1_1({
@@ -5193,7 +5203,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
                 dataSourceMetadata: bytes(""),
-                redeemerMetadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenToRedeem)
+                redeemerMetadata: _delegateMetadata
             })
         );
         // Balance should be 0 again

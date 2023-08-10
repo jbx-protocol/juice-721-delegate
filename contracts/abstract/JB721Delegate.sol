@@ -102,7 +102,7 @@ abstract contract JB721Delegate is
         if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
         // fetch this delegates metadata from the delegate id
-        (bool _valid, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.metadata);
+        (bool _found, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.metadata);
 
         // Set the only delegate allocation to be a callback to this contract.
         delegateAllocations = new JBRedemptionDelegateAllocation3_1_1[](1);
@@ -111,7 +111,7 @@ abstract contract JB721Delegate is
         uint256[] memory _decodedTokenIds;
 
         // Decode the metadata
-        if (_valid) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
+        if (_found) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
 
         // Get a reference to the redemption rate of the provided tokens.
         uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds, _data);
@@ -232,12 +232,12 @@ abstract contract JB721Delegate is
         ) revert INVALID_REDEMPTION_EVENT();
 
         // fetch this delegates metadata from the delegate id
-        (bool _valid, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.redeemerMetadata);
+        (bool _found, bytes memory _metadata) = getMetadata(redeemMetadataDelegateId, _data.redeemerMetadata);
 
         uint256[] memory _decodedTokenIds;
 
         // Decode the metadata.
-        if (_valid) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
+        if (_found) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
 
         // Get a reference to the number of token IDs being checked.
         uint256 _numberOfTokenIds = _decodedTokenIds.length;
