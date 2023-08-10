@@ -24,6 +24,8 @@ import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatable.sol"
 
 bytes4 constant PAY_DELEGATE_ID = bytes4(hex"70");
 bytes4 constant REDEEM_DELEGATE_ID = bytes4(hex"71");
+uint256 constant OVERFLOW = 10e18;
+uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
 
 contract TestJBTieredNFTRewardDelegate is Test {
     using stdStorage for StdStorage;
@@ -5214,10 +5216,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // ----------------
 
     function testJBTieredNFTRewardDelegate_redeemParams_returnsCorrectAmount() public {
-        uint256 _overflow = 10e18;
-        uint256 _redemptionRate = 4000; // 40%
         uint256 _weight;
         uint256 _totalWeight;
+        ForTest_JBTiered721Delegate _delegate;
+        {
         JB721TierParams[] memory _tierParams = new JB721TierParams[](10);
         // Temp for constructor
         for (uint256 i; i < 10; i++) {
@@ -5236,7 +5238,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             });
         }
         ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+        _delegate = new ForTest_JBTiered721Delegate(
         projectId,
         IJBDirectory(mockJBDirectory),
         name,
@@ -5272,6 +5274,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             );
             _totalWeight += (10 * i - 5 * i) * i * 10;
         }
+        } 
         // Redeem based on holding 1 NFT in each of the 5 first tiers
         uint256[] memory _tokenList = new uint256[](5);
         for (uint256 i; i < 5; i++) {
@@ -5290,34 +5293,35 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _ids[0] = REDEEM_DELEGATE_ID;
 
         // Generate the metadata
-        // bytes memory _delegateMetadata = _delegate.createMetadata(_ids, _data);
-        // (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate) =
-        // _delegate.redeemParams(
-        //     JBRedeemParamsData({
-        //         terminal: IJBPaymentTerminal(address(0)),
-        //         holder: beneficiary,
-        //         projectId: projectId,
-        //         currentFundingCycleConfiguration: 0,
-        //         tokenCount: 0,
-        //         totalSupply: 0,
-        //         overflow: _overflow,
-        //         reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}),
-        //         useTotalOverflow: true,
-        //         redemptionRate: _redemptionRate,
-        //         memo: "plz gib",
-        //         metadata: _delegateMetadata
-        //     })
-        // );
-        // // Portion of the overflow accessible (pro rata weight held)
-        // uint256 _base = mulDiv(_overflow, _weight, _totalWeight);
-        // uint256 _claimableOverflow = mulDiv(
-        //     _base,
-        //     _redemptionRate + mulDiv(_weight, _accessJBLib.MAX_RESERVED_RATE() - _redemptionRate, _totalWeight),
-        //     _accessJBLib.MAX_RESERVED_RATE()
-        // );
-        // assertEq(reclaimAmount, _claimableOverflow);
-        // assertEq(memo, "plz gib");
-        // assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
+        bytes memory _delegateMetadata = _delegate.createMetadata(_ids, _data);
+        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate) =
+        _delegate.redeemParams(
+            JBRedeemParamsData({
+                terminal: IJBPaymentTerminal(address(0)),
+                holder: beneficiary,
+                projectId: projectId,
+                currentFundingCycleConfiguration: 0,
+                tokenCount: 0,
+                totalSupply: 0,
+                overflow: OVERFLOW,
+                reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}),
+                useTotalOverflow: true,
+                redemptionRate: REDEMPTION_RATE,
+                memo: "plz gib",
+                metadata: _delegateMetadata
+            })
+        ); 
+
+        // Portion of the overflow accessible (pro rata weight held)
+        uint256 _base = mulDiv(OVERFLOW, _weight, _totalWeight);
+        uint256 _claimableOverflow = mulDiv(
+            _base,
+            REDEMPTION_RATE + mulDiv(_weight, _accessJBLib.MAX_RESERVED_RATE() - REDEMPTION_RATE, _totalWeight),
+            _accessJBLib.MAX_RESERVED_RATE()
+        );
+        assertEq(reclaimAmount, _claimableOverflow);
+        assertEq(memo, "plz gib");
+        assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
     }
 
     function testJBTieredNFTRewardDelegate_redeemParams_returnsZeroAmountIfReservedRateIsZero() public {
@@ -5409,8 +5413,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
 
     function testJBTieredNFTRewardDelegate_redeemParams_returnsPartOfOverflowOwnedIfRedemptionRateIsMaximum() public {
-        uint256 _overflow = 10e18;
-        uint256 _redemptionRate = _accessJBLib.MAX_RESERVED_RATE(); // 40%
         uint256 _weight;
         uint256 _totalWeight;
 
@@ -5493,31 +5495,30 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _ids[0] = REDEEM_DELEGATE_ID;
 
             // Generate the metadata
-            // bytes memory _delegateMetadata = _delegate.createMetadata(_ids, _data);
-            // (reclaimAmount, memo, _returnedDelegate) =
-            // _delegate.redeemParams(
-            //     JBRedeemParamsData({
-            //         terminal: IJBPaymentTerminal(address(0)),
-            //         holder: beneficiary,
-            //         projectId: projectId,
-            //         currentFundingCycleConfiguration: 0,
-            //         tokenCount: 0,
-            //         totalSupply: 0,
-            //         overflow: _overflow,
-            //         reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}),
-            //         useTotalOverflow: true,
-            //         redemptionRate: _redemptionRate,
-            //         memo: "plz gib",
-            //         metadata: _delegateMetadata
-            //     })
-            // );
-            // }
-            // // Portion of the overflow accessible (pro rata weight held)
-            // uint256 _base = mulDiv(_overflow, _weight, _totalWeight);
-            // assertEq(reclaimAmount, _base);
-            // assertEq(memo, "plz gib");
-            // assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
-        }
+            bytes memory _delegateMetadata = _delegate.createMetadata(_ids, _data);
+            (reclaimAmount, memo, _returnedDelegate) =
+            _delegate.redeemParams(
+                JBRedeemParamsData({
+                    terminal: IJBPaymentTerminal(address(0)),
+                    holder: beneficiary,
+                    projectId: projectId,
+                    currentFundingCycleConfiguration: 0,
+                    tokenCount: 0,
+                    totalSupply: 0,
+                    overflow: OVERFLOW,
+                    reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}),
+                    useTotalOverflow: true,
+                    redemptionRate: REDEMPTION_RATE,
+                    memo: "plz gib",
+                    metadata: _delegateMetadata
+                })
+            );
+            }
+            // Portion of the overflow accessible (pro rata weight held)
+            uint256 _base = mulDiv(OVERFLOW, _weight, _totalWeight);
+            assertEq(reclaimAmount, _base);
+            assertEq(memo, "plz gib");
+            assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
     }
 
     function testJBTieredNFTRewardDelegate_redeemParams_revertIfNonZeroTokenCount(uint256 _tokenCount) public {
