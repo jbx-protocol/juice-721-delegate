@@ -25,7 +25,6 @@ import { JB721Tier } from "./structs/JB721Tier.sol";
 import { JBTiered721Flags } from "./structs/JBTiered721Flags.sol";
 import { JB721PricingParams } from "./structs/JB721PricingParams.sol";
 import { JBTiered721MintReservesForTiersData } from "./structs/JBTiered721MintReservesForTiersData.sol";
-
 import {JBDelegateMetadataLib} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataLib.sol';
 
 /// @title JBTiered721Delegate
