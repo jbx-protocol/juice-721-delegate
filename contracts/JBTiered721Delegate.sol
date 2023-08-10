@@ -481,7 +481,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
 
         // fetch this delegates metadata from the delegate id
         (bool _valid, bytes memory _metadata) = getMetadata(payMetadataDelegateId, _data.payerMetadata);
-
+        
         if (_valid) {
             // Keep a reference to the tier IDs to mint.
             uint16[] memory _tierIdsToMint;

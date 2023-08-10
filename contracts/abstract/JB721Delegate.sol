@@ -46,8 +46,6 @@ abstract contract JB721Delegate is
     // --------------- public immutable stored properties ---------------- //
     //*********************************************************************//
 
-    /// @notice The Juicebox project ID this contract's functionality applies to.
-    uint256 public override projectId;
 
     /// @notice The directory of terminals and controllers for projects.
     IJBDirectory public override immutable directory;
@@ -56,8 +54,14 @@ abstract contract JB721Delegate is
     bytes4 public override immutable payMetadataDelegateId;
 
     /// @notice The 4bytes ID of this delegate, used for redeem metadata parsing
-    bytes4 public immutable redeemMetadataDelegateId;
+    bytes4 public override immutable redeemMetadataDelegateId;
 
+    //*********************************************************************//
+    // -------------------- public stored properties --------------------- //
+    //*********************************************************************//
+
+    /// @notice The Juicebox project ID this contract's functionality applies to.
+    uint256 public override projectId;
 
     //*********************************************************************//
     // ------------------------- external views -------------------------- //
@@ -177,6 +181,15 @@ abstract contract JB721Delegate is
     // -------------------------- constructor ---------------------------- //
     //*********************************************************************//
 
+    /// @param _directory A directory of terminals and controllers for projects.
+    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
+    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
+    constructor(IJBDirectory _directory, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) {
+        directory = _directory;
+        payMetadataDelegateId = _payMetadataDelegateId;
+        redeemMetadataDelegateId = _redeemMetadataDelegateId;
+    }
+
     /// @notice Initializes the contract with project details and ERC721 token details.
     /// @param _projectId The ID of the project this contract's functionality applies to.
     /// @param _name The name of the token.
@@ -185,21 +198,7 @@ abstract contract JB721Delegate is
         internal
     {
         ERC721._initialize(_name, _symbol);
-
         projectId = _projectId;
-    }
-
-    //*********************************************************************//
-    // -------------------------- constructor ---------------------------- //
-    //*********************************************************************//
-
-    /// @param _directory A directory of terminals and controllers for projects.
-    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
-    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
-    constructor(IJBDirectory _directory, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) {
-        directory = _directory;
-        payMetadataDelegateId = _payMetadataDelegateId;
-        redeemMetadataDelegateId = _redeemMetadataDelegateId;
     }
 
     //*********************************************************************//
