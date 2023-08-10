@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import {mulDiv} from '@prb/math/src/Common.sol';
+import { mulDiv } from '@prb/math/src/Common.sol';
 import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
 import { JBOwnable } from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
 import { JBFundingCycleMetadataResolver } from "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
@@ -25,7 +25,7 @@ import { JB721Tier } from "./structs/JB721Tier.sol";
 import { JBTiered721Flags } from "./structs/JBTiered721Flags.sol";
 import { JB721PricingParams } from "./structs/JB721PricingParams.sol";
 import { JBTiered721MintReservesForTiersData } from "./structs/JBTiered721MintReservesForTiersData.sol";
-import {JBDelegateMetadataLib} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataLib.sol';
+import { JBDelegateMetadataLib } from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataLib.sol';
 
 /// @title JBTiered721Delegate
 /// @notice This delegate makes multiple NFT tiers with custom price floors available to a project's contributors upon payment, and allows project owners to enable NFT redemption for treasury assets based on the price floors of those NFTs.
