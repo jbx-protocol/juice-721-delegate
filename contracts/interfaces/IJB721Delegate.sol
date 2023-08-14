@@ -7,4 +7,8 @@ interface IJB721Delegate {
     function projectId() external view returns (uint256);
 
     function directory() external view returns (IJBDirectory);
+
+    function payMetadataDelegateId() external view returns (bytes4);
+
+    function redeemMetadataDelegateId() external view returns (bytes4);
 }

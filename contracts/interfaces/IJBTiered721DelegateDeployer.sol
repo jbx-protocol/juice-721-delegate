@@ -11,13 +11,11 @@ interface IJBTiered721DelegateDeployer {
     event DelegateDeployed(
         uint256 indexed projectId,
         IJBTiered721Delegate newDelegate,
-        JB721GovernanceType governanceType,
-        IJBDirectory directory
+        JB721GovernanceType governanceType
     );
 
     function deployDelegateFor(
         uint256 projectId,
-        JBDeployTiered721DelegateData memory deployTieredNFTRewardDelegateData,
-        IJBDirectory directory
+        JBDeployTiered721DelegateData memory deployTieredNFTRewardDelegateData
     ) external returns (IJBTiered721Delegate delegate);
 }

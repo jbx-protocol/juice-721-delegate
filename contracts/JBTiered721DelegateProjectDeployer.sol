@@ -68,7 +68,7 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
 
         // Deploy the delegate contract.
         IJBTiered721Delegate _delegate =
-            delegateDeployer.deployDelegateFor(projectId, _deployTiered721DelegateData, directory);
+            delegateDeployer.deployDelegateFor(projectId, _deployTiered721DelegateData);
 
         // Launch the project.
         _launchProjectFor(_owner, _launchProjectData, _delegate, _controller);
@@ -97,7 +97,7 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     {
         // Deploy the delegate contract.
         IJBTiered721Delegate _delegate =
-            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData, directory);
+            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData);
 
         // Transfer the ownership of the delegate to the project.
         JBOwnable(address(_delegate)).transferOwnershipToProject(_projectId);
@@ -126,7 +126,7 @@ contract JBTiered721DelegateProjectDeployer is JBOperatable, IJBTiered721Delegat
     {
         // Deploy the delegate contract.
         IJBTiered721Delegate _delegate =
-            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData, directory);
+            delegateDeployer.deployDelegateFor(_projectId, _deployTiered721DelegateData);
 
         // Transfer the ownership of the delegate to the project.
         JBOwnable(address(_delegate)).transferOwnershipToProject(_projectId);

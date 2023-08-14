@@ -22,6 +22,12 @@ import "@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol";
 
 import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatable.sol";
 
+import {JBDelegateMetadataHelper} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataHelper.sol';
+
+
+bytes4 constant PAY_DELEGATE_ID = bytes4(hex"70");
+bytes4 constant REDEEM_DELEGATE_ID = bytes4(hex"71");
+
 contract TestJBTieredNFTRewardDelegate is Test {
     using stdStorage for StdStorage;
 
@@ -40,6 +46,9 @@ contract TestJBTieredNFTRewardDelegate is Test {
     string symbol = "SYM";
     string baseUri = "http://www.null.com/";
     string contractUri = "ipfs://null";
+    uint256 constant OVERFLOW = 10e18;
+    uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
+
     // NodeJS: function con(hash) { Buffer.from(bs58.decode(hash).slice(2)).toString('hex') }
     // JS;  0x${bs58.decode(hash).slice(2).toString('hex')})
     bytes32[] tokenUris = [
@@ -71,6 +80,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
     JBTiered721Delegate noGovernanceOrigin; // noGovernanceOrigin
     JBDelegatesRegistry delegatesRegistry;
     JBTiered721DelegateDeployer jbDelegateDeployer;
+    JBDelegateMetadataHelper metadataHelper;
     address delegate_i = address(bytes20(keccak256("delegate_implementation")));
 
     event Mint(
@@ -172,9 +182,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
         vm.mockCall(
             mockJBDirectory, abi.encodeWithSelector(IJBOperatable.operatorStore.selector), abi.encode(mockJBProjects)
         );
-        noGovernanceOrigin = new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+        noGovernanceOrigin =
+        new JBTiered721Delegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), PAY_DELEGATE_ID, REDEEM_DELEGATE_ID);
         JBTiered721GovernanceDelegate onchainGovernance =
-            new JBTiered721GovernanceDelegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+        new JBTiered721GovernanceDelegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), PAY_DELEGATE_ID, REDEEM_DELEGATE_ID);
         delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         jbDelegateDeployer = new JBTiered721DelegateDeployer(
         onchainGovernance,
@@ -199,10 +210,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
             }),
             JB721GovernanceType.NONE
         );
-        delegate = JBTiered721Delegate(
-            address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData, IJBDirectory(mockJBDirectory)))
-        );
+        delegate = JBTiered721Delegate(address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData)));
         delegate.transferOwnership(owner);
+
+        metadataHelper = new JBDelegateMetadataHelper();
     }
 
     function testJBTieredNFTRewardDelegate_tiers_returnsAllTiers(uint256 numberOfTiers) public {
@@ -290,9 +301,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
             JB721GovernanceType.NONE
         );
 
-        JBTiered721Delegate _delegate = JBTiered721Delegate(
-            address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData, IJBDirectory(mockJBDirectory)))
-        );
+        JBTiered721Delegate _delegate =
+            JBTiered721Delegate(address(jbDelegateDeployer.deployDelegateFor(projectId, delegateData)));
 
         (uint256 __currency, uint256 __decimals, IJBPrices __prices) = _delegate.pricingContext();
         assertEq(__currency, uint256(_currency));
@@ -1197,7 +1207,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -1257,7 +1266,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -1890,7 +1898,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2027,7 +2034,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2180,7 +2186,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2291,7 +2296,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2402,7 +2406,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2515,7 +2518,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2672,7 +2674,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2827,7 +2828,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -2937,7 +2937,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -3093,7 +3092,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _delegate = JBTiered721Delegate(delegate_i);
             _delegate.initialize(
                 projectId,
-                IJBDirectory(mockJBDirectory),
                 name,
                 symbol,
                 IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -3341,7 +3339,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -3780,7 +3777,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -4034,9 +4030,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         vm.prank(mockTerminalAddress);
         delegate.didPay(
             JBDidPayData3_1_1(
@@ -4049,8 +4053,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Make sure a new NFT was minted
@@ -4086,7 +4090,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
+                bytes(""),
                 _metadata
             )
         );
@@ -4106,9 +4110,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](1);
         _tierIdsToMint[0] = uint16(1);
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         // calculating new credits
         uint256 _newCredits = _leftover + delegate.creditsOf(beneficiary);
         vm.expectEmit(true, true, true, true, address(delegate));
@@ -4125,8 +4138,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Check: credit is updated?
@@ -4148,9 +4161,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         uint256 _credits = delegate.creditsOf(beneficiary);
         _leftover = _leftover / 2 + _credits; //left over amount
         vm.expectEmit(true, true, true, true, address(delegate));
@@ -4168,8 +4189,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
@@ -4180,9 +4201,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _moreTierIdsToMint[1] = 1;
             _moreTierIdsToMint[2] = 2;
             _moreTierIdsToMint[3] = 1;
-            _metadata = abi.encode(
-                bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _moreTierIdsToMint
-            );
+
+            _data[0] = abi.encode(_allowOverspending, _moreTierIdsToMint);
+
+            // Generate the metadata
+            _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
         // fetch existing credits
         _credits = delegate.creditsOf(beneficiary);
@@ -4206,8 +4229,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Check: total supply has increased?
@@ -4240,9 +4263,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         // First call will mint the 3 tiers requested + accumulate half of first floor in credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -4256,8 +4287,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
@@ -4275,8 +4306,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Check: total supply has increased with the 3 token?
@@ -4303,7 +4334,6 @@ contract TestJBTieredNFTRewardDelegate is Test {
         JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
         _delegate.initialize(
             projectId,
-            IJBDirectory(mockJBDirectory),
             name,
             symbol,
             IJBFundingCycleStore(mockJBFundingCycleStore),
@@ -4335,9 +4365,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
             JBDidPayData3_1_1(
@@ -4350,8 +4389,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Make sure a new NFT was minted
@@ -4376,9 +4415,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         uint256[] memory _toRemove = new uint256[](1);
         _toRemove[0] = 1;
         vm.prank(owner);
@@ -4396,8 +4443,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Make sure no new NFT was minted
@@ -4416,9 +4463,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](1);
         _tierIdsToMint[0] = _invalidTier;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         uint256[] memory _toRemove = new uint256[](1);
         _toRemove[0] = 1;
         vm.prank(owner);
@@ -4436,8 +4491,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Make sure no new NFT was minted
@@ -4458,9 +4513,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.INSUFFICIENT_AMOUNT.selector));
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -4474,8 +4537,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // Make sure no new NFT was minted
@@ -4492,16 +4555,28 @@ contract TestJBTieredNFTRewardDelegate is Test {
         uint256 _supplyLeft = tiers[0].initialQuantity;
         while (true) {
             uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
+
+            bool _allowOverspending = true;
+
+            uint16[] memory tierSelected = new uint16[](1);
+            tierSelected[0] = 1;
+
+            // Build the metadata with the tiers to mint and the overspending flag
+            bytes[] memory _data = new bytes[](1);
+            _data[0] = abi.encode(_allowOverspending, tierSelected);
+
+            // Pass the delegate id
+            bytes4[] memory _ids = new bytes4[](1);
+            _ids[0] = PAY_DELEGATE_ID;
+
+            // Generate the metadata
+            bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
             // If there is no supply left this should revert
             if (_supplyLeft == 0) {
                 vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.OUT.selector));
             }
-            bool _allowOverspending = true;
-            uint16[] memory tierSelected = new uint16[](1);
-            tierSelected[0] = 1;
-            bytes memory _metadata = abi.encode(
-                bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, tierSelected
-            );
+
             // Perform the pay
             vm.prank(mockTerminalAddress);
             delegate.didPay(
@@ -4515,8 +4590,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                     msg.sender,
                     false,
                     "",
-                    bytes(''),
-                    _metadata
+                    bytes(""),
+                    _delegateMetadata
                 )
             );
             // Make sure if there was no supply left there was no NFT minted
@@ -4552,7 +4627,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
+                bytes(""),
                 new bytes(0)
             )
         );
@@ -4579,7 +4654,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
+                bytes(""),
                 new bytes(0)
             )
         );
@@ -4602,9 +4677,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         uint256 _credits = delegate.creditsOf(beneficiary);
         _leftover = _leftover / 2 + _credits; //left over amount
         vm.expectEmit(true, true, true, true, address(delegate));
@@ -4622,8 +4706,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
@@ -4631,9 +4715,11 @@ contract TestJBTieredNFTRewardDelegate is Test {
             // We now attempt an additional tier 1 by using the credit we collected from last pay
             uint16[] memory _moreTierIdsToMint = new uint16[](1);
             _moreTierIdsToMint[0] = 1;
-            _metadata = abi.encode(
-                bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _moreTierIdsToMint
-            );
+
+            _data[0] = abi.encode(_allowOverspending, _moreTierIdsToMint);
+
+            // Generate the metadata
+            _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
         // fetch existing credits
         _credits = delegate.creditsOf(beneficiary);
@@ -4654,8 +4740,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         // total supply increases
@@ -4673,9 +4759,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](0);
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         vm.prank(mockTerminalAddress);
         vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
         delegate.didPay(
@@ -4689,8 +4783,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
     }
@@ -4742,7 +4836,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 beneficiary,
                 false,
                 "",
-                bytes(''),
+                bytes(""),
                 _metadata
             )
         );
@@ -4839,9 +4933,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
             JBDidPayData3_1_1(
@@ -4854,8 +4957,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         uint256 _tokenId = _generateTokenId(1, 1);
@@ -4915,6 +5018,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             )
         );
         ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+
         ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
         projectId,
         IJBDirectory(mockJBDirectory),
@@ -4933,14 +5037,25 @@ contract TestJBTieredNFTRewardDelegate is Test {
           lockManualMintingChanges: true
         })
       );
+
+
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
         _tierIdsToMint[1] = 1;
         _tierIdsToMint[2] = 2;
-        bytes memory _metadata = abi.encode(
-            bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
-        );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_allowOverspending, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
             JBDidPayData3_1_1(
@@ -4953,10 +5068,12 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 msg.sender,
                 false,
                 "",
-                bytes(''),
-                _metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
+
+
         uint256 _tokenId = _generateTokenId(1, 1);
         vm.prank(msg.sender);
         IERC721(_delegate).transferFrom(msg.sender, beneficiary, _tokenId);
@@ -5035,12 +5152,22 @@ contract TestJBTieredNFTRewardDelegate is Test {
             abi.encode(true)
         );
         // Metadata to mint
-        bytes memory metadata;
+        bytes memory _delegateMetadata;
+        bytes[] memory _data = new bytes[](1);
+        bytes4[] memory _ids = new bytes4[](1);
         {
             // Craft the metadata: mint the specified tier
             uint16[] memory rawMetadata = new uint16[](1);
             rawMetadata[0] = uint16(1); // 1 indexed
-            metadata = abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+
+            // Build the metadata with the tiers to mint and the overspending flag
+            _data[0] = abi.encode(true, rawMetadata);
+
+            // Pass the delegate id
+            _ids[0] = PAY_DELEGATE_ID;
+
+            // Generate the metadata
+            _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
         // We mint the NFTs otherwise the voting balance does not get incremented
         // which leads to underflow on redeem
@@ -5056,12 +5183,22 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 _holder,
                 false,
                 "",
-                bytes(''),
-                metadata
+                bytes(""),
+                _delegateMetadata
             )
         );
         uint256[] memory _tokenToRedeem = new uint256[](1);
         _tokenToRedeem[0] = _generateTokenId(1, 1);
+
+        // Build the metadata with the tiers to redeem
+        _data[0] = abi.encode(_tokenToRedeem);
+
+        // Pass the delegate id
+        _ids[0] = REDEEM_DELEGATE_ID;
+
+        // Generate the metadata
+        _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(mockTerminalAddress);
         _delegate.didRedeem(
             JBDidRedeemData3_1_1({
@@ -5073,8 +5210,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                dataSourceMetadata: bytes(''),
-                redeemerMetadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenToRedeem)
+                dataSourceMetadata: bytes(""),
+                redeemerMetadata: _delegateMetadata
             })
         );
         // Balance should be 0 again
@@ -5085,10 +5222,10 @@ contract TestJBTieredNFTRewardDelegate is Test {
     // ----------------
 
     function testJBTieredNFTRewardDelegate_redeemParams_returnsCorrectAmount() public {
-        uint256 _overflow = 10e18;
-        uint256 _redemptionRate = 4000; // 40%
         uint256 _weight;
         uint256 _totalWeight;
+        ForTest_JBTiered721Delegate _delegate;
+        {
         JB721TierParams[] memory _tierParams = new JB721TierParams[](10);
         // Temp for constructor
         for (uint256 i; i < 10; i++) {
@@ -5107,7 +5244,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             });
         }
         ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+        _delegate = new ForTest_JBTiered721Delegate(
         projectId,
         IJBDirectory(mockJBDirectory),
         name,
@@ -5143,6 +5280,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
             );
             _totalWeight += (10 * i - 5 * i) * i * 10;
         }
+        } 
         // Redeem based on holding 1 NFT in each of the 5 first tiers
         uint256[] memory _tokenList = new uint256[](5);
         for (uint256 i; i < 5; i++) {
@@ -5151,6 +5289,17 @@ contract TestJBTieredNFTRewardDelegate is Test {
             _tokenList[i] = _tokenId;
             _weight += (i + 1) * 10;
         }
+
+        //Build the metadata with the tiers to redee
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_tokenList);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = REDEEM_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate) =
         _delegate.redeemParams(
             JBRedeemParamsData({
@@ -5160,19 +5309,20 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 currentFundingCycleConfiguration: 0,
                 tokenCount: 0,
                 totalSupply: 0,
-                overflow: _overflow,
+                overflow: OVERFLOW,
                 reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}),
                 useTotalOverflow: true,
-                redemptionRate: _redemptionRate,
+                redemptionRate: REDEMPTION_RATE,
                 memo: "plz gib",
-                metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
+                metadata: _delegateMetadata
             })
-        );
+        ); 
+
         // Portion of the overflow accessible (pro rata weight held)
-        uint256 _base = mulDiv(_overflow, _weight, _totalWeight);
+        uint256 _base = mulDiv(OVERFLOW, _weight, _totalWeight);
         uint256 _claimableOverflow = mulDiv(
             _base,
-            _redemptionRate + mulDiv(_weight, _accessJBLib.MAX_RESERVED_RATE() - _redemptionRate, _totalWeight),
+            REDEMPTION_RATE + mulDiv(_weight, _accessJBLib.MAX_RESERVED_RATE() - REDEMPTION_RATE, _totalWeight),
             _accessJBLib.MAX_RESERVED_RATE()
         );
         assertEq(reclaimAmount, _claimableOverflow);
@@ -5269,29 +5419,31 @@ contract TestJBTieredNFTRewardDelegate is Test {
     }
 
     function testJBTieredNFTRewardDelegate_redeemParams_returnsPartOfOverflowOwnedIfRedemptionRateIsMaximum() public {
-        uint256 _overflow = 10e18;
-        uint256 _redemptionRate = _accessJBLib.MAX_RESERVED_RATE(); // 40%
         uint256 _weight;
         uint256 _totalWeight;
-        JB721TierParams[] memory _tierParams = new JB721TierParams[](10);
-        // Temp for constructor
-        for (uint256 i; i < 10; i++) {
-            _tierParams[i] = JB721TierParams({
-                price: uint104((i + 1) * 10),
-                initialQuantity: uint32(100),
-                votingUnits: uint16(i + 1),
-                reservedRate: uint16(0),
-                reservedTokenBeneficiary: reserveBeneficiary,
-                encodedIPFSUri: tokenUris[0],
-                category: uint24(100),
-                allowManualMint: false,
-                shouldUseReservedTokenBeneficiaryAsDefault: false,
-                transfersPausable: false,
-                useVotingUnits: false
-            });
-        }
-        ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
+
+        ForTest_JBTiered721Delegate _delegate;
+        {
+            JB721TierParams[] memory _tierParams = new JB721TierParams[](10);
+            // Temp for constructor
+            for (uint256 i; i < 10; i++) {
+                _tierParams[i] = JB721TierParams({
+                    price: uint104((i + 1) * 10),
+                    initialQuantity: uint32(100),
+                    votingUnits: uint16(i + 1),
+                    reservedRate: uint16(0),
+                    reservedTokenBeneficiary: reserveBeneficiary,
+                    encodedIPFSUri: tokenUris[0],
+                    category: uint24(100),
+                    allowManualMint: false,
+                    shouldUseReservedTokenBeneficiaryAsDefault: false,
+                    transfersPausable: false,
+                    useVotingUnits: false
+                });
+            }
+
+            ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
+            _delegate = new ForTest_JBTiered721Delegate(
         projectId,
         IJBDirectory(mockJBDirectory),
         name,
@@ -5309,53 +5461,70 @@ contract TestJBTieredNFTRewardDelegate is Test {
           lockManualMintingChanges: true
         })
       );
-        _delegate.transferOwnership(owner);
-        // Set 10 tiers, with half supply minted for each
-        for (uint256 i = 1; i <= 10; i++) {
-            _delegate.test_store().ForTest_setTier(
-                address(_delegate),
-                i,
-                JBStored721Tier({
-                    price: uint104(i * 10),
-                    remainingQuantity: uint32(10 * i - 5 * i),
-                    initialQuantity: uint32(10 * i),
-                    votingUnits: uint16(0),
-                    reservedRate: uint16(0),
-                    category: uint24(100),
-                    packedBools: _delegate.test_store().ForTest_packBools(false, false, false)
+            _delegate.transferOwnership(owner);
+            // Set 10 tiers, with half supply minted for each
+            for (uint256 i = 1; i <= 10; i++) {
+                _delegate.test_store().ForTest_setTier(
+                    address(_delegate),
+                    i,
+                    JBStored721Tier({
+                        price: uint104(i * 10),
+                        remainingQuantity: uint32(10 * i - 5 * i),
+                        initialQuantity: uint32(10 * i),
+                        votingUnits: uint16(0),
+                        reservedRate: uint16(0),
+                        category: uint24(100),
+                        packedBools: _delegate.test_store().ForTest_packBools(false, false, false)
+                    })
+                );
+                _totalWeight += (10 * i - 5 * i) * i * 10;
+            }
+        }
+        uint256 reclaimAmount;
+        JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate;
+        string memory memo;
+        {
+            // Redeem based on holding 1 NFT in each of the 5 first tiers
+            uint256[] memory _tokenList = new uint256[](5);
+            for (uint256 i; i < 5; i++) {
+                _delegate.ForTest_setOwnerOf(_generateTokenId(i + 1, 1), beneficiary);
+                _tokenList[i] = _generateTokenId(i + 1, 1);
+                _weight += (i + 1) * 10;
+            }
+
+            //Build the metadata with the tiers to redee
+            bytes[] memory _data = new bytes[](1);
+            _data[0] = abi.encode(_tokenList);
+
+            // Pass the delegate id
+            bytes4[] memory _ids = new bytes4[](1);
+            _ids[0] = REDEEM_DELEGATE_ID;
+
+            // Generate the metadata
+            bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+            (reclaimAmount, memo, _returnedDelegate) =
+            _delegate.redeemParams(
+                JBRedeemParamsData({
+                    terminal: IJBPaymentTerminal(address(0)),
+                    holder: beneficiary,
+                    projectId: projectId,
+                    currentFundingCycleConfiguration: 0,
+                    tokenCount: 0,
+                    totalSupply: 0,
+                    overflow: OVERFLOW,
+                    reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}),
+                    useTotalOverflow: true,
+                    redemptionRate: REDEMPTION_RATE,
+                    memo: "plz gib",
+                    metadata: _delegateMetadata
                 })
             );
-            _totalWeight += (10 * i - 5 * i) * i * 10;
-        }
-        // Redeem based on holding 1 NFT in each of the 5 first tiers
-        uint256[] memory _tokenList = new uint256[](5);
-        for (uint256 i; i < 5; i++) {
-            _delegate.ForTest_setOwnerOf(_generateTokenId(i + 1, 1), beneficiary);
-            _tokenList[i] = _generateTokenId(i + 1, 1);
-            _weight += (i + 1) * 10;
-        }
-        (uint256 reclaimAmount, string memory memo, JBRedemptionDelegateAllocation3_1_1[] memory _returnedDelegate) =
-        _delegate.redeemParams(
-            JBRedeemParamsData({
-                terminal: IJBPaymentTerminal(address(0)),
-                holder: beneficiary,
-                projectId: projectId,
-                currentFundingCycleConfiguration: 0,
-                tokenCount: 0,
-                totalSupply: 0,
-                overflow: _overflow,
-                reclaimAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}),
-                useTotalOverflow: true,
-                redemptionRate: _redemptionRate,
-                memo: "plz gib",
-                metadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
-            })
-        );
-        // Portion of the overflow accessible (pro rata weight held)
-        uint256 _base = mulDiv(_overflow, _weight, _totalWeight);
-        assertEq(reclaimAmount, _base);
-        assertEq(memo, "plz gib");
-        assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
+            }
+            // Portion of the overflow accessible (pro rata weight held)
+            uint256 _base = mulDiv(OVERFLOW, _weight, _totalWeight);
+            assertEq(reclaimAmount, _base);
+            assertEq(memo, "plz gib");
+            assertEq(address(_returnedDelegate[0].delegate), address(_delegate));
     }
 
     function testJBTieredNFTRewardDelegate_redeemParams_revertIfNonZeroTokenCount(uint256 _tokenCount) public {
@@ -5411,13 +5580,24 @@ contract TestJBTieredNFTRewardDelegate is Test {
         );
         uint256[] memory _tokenList = new uint256[](_numberOfNFT);
         // TODO: mint different tiers
+        bytes memory _delegateMetadata;
+        bytes[] memory _data;
+        bytes4[] memory _ids;
         for (uint256 i; i < _numberOfNFT; i++) {
-            bytes memory _metadata;
             {
                 uint16[] memory _tierIdsToMint = new uint16[](1);
                 _tierIdsToMint[0] = 1;
-                _metadata =
-                    abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, false, _tierIdsToMint);
+
+                // Build the metadata with the tiers to mint and the overspending flag
+                _data = new bytes[](1);
+                _data[0] = abi.encode(false, _tierIdsToMint);
+
+                // Pass the delegate id
+                _ids = new bytes4[](1);
+                _ids[0] = PAY_DELEGATE_ID;
+
+                // Generate the metadata
+                _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
             }
             // We mint the NFTs otherwise the voting balance does not get incremented
             // which leads to underflow on redeem
@@ -5433,14 +5613,26 @@ contract TestJBTieredNFTRewardDelegate is Test {
                     _holder,
                     false,
                     "",
-                    bytes(''),
-                    _metadata
+                    bytes(""),
+                    _delegateMetadata
                 )
             );
             _tokenList[i] = _generateTokenId(1, i + 1);
             // Assert that a new NFT was minted
             assertEq(_delegate.balanceOf(_holder), i + 1);
         }
+
+        // Build the metadata with the tiers to redeem
+        _data = new bytes[](1);
+        _data[0] = abi.encode(_tokenList);
+
+        // Pass the delegate id
+        _ids = new bytes4[](1);
+        _ids[0] = REDEEM_DELEGATE_ID;
+
+        // Generate the metadata
+        _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(mockTerminalAddress);
         _delegate.didRedeem(
             JBDidRedeemData3_1_1({
@@ -5452,8 +5644,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                dataSourceMetadata: bytes(''),
-                redeemerMetadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
+                dataSourceMetadata: bytes(""),
+                redeemerMetadata: _delegateMetadata
             })
         );
         // Balance should be 0 again
@@ -5617,7 +5809,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), //sv 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                dataSourceMetadata: bytes(''),
+                dataSourceMetadata: bytes(""),
                 redeemerMetadata: abi.encode(type(IJBTiered721Delegate).interfaceId, _tokenList)
             })
         );
@@ -5645,7 +5837,7 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_holder),
                 memo: "thy shall redeem",
-                dataSourceMetadata: bytes(''),
+                dataSourceMetadata: bytes(""),
                 redeemerMetadata: abi.encode(type(IJBTiered721Delegate).interfaceId, _tokenList)
             })
         );
@@ -5678,6 +5870,18 @@ contract TestJBTieredNFTRewardDelegate is Test {
         _delegate.ForTest_setOwnerOf(tokenId, _holder);
         uint256[] memory _tokenList = new uint256[](1);
         _tokenList[0] = tokenId;
+
+        //Build the metadata with the tiers to redee
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(_tokenList);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = REDEEM_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         // Mock the directory call
         vm.mockCall(
             address(mockJBDirectory),
@@ -5696,8 +5900,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
                 forwardedAmount: JBTokenAmount({token: address(0), value: 0, decimals: 18, currency: JBCurrencies.ETH}), // 0 fwd to delegate
                 beneficiary: payable(_wrongHolder),
                 memo: "thy shall redeem",
-                dataSourceMetadata: bytes(''),
-                redeemerMetadata: abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, _tokenList)
+                dataSourceMetadata: bytes(""),
+                redeemerMetadata: _delegateMetadata
             })
         );
     }
@@ -5837,6 +6041,10 @@ interface IJBTiered721DelegateStore_ForTest is IJBTiered721DelegateStore {
 
 contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
     IJBTiered721DelegateStore_ForTest public test_store;
+    JBDelegateMetadataHelper metadataHelper;
+
+    uint256 constant OVERFLOW = 10e18;
+    uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
 
     constructor(
         uint256 _projectId,
@@ -5850,15 +6058,20 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
         JB721TierParams[] memory _tiers,
         IJBTiered721DelegateStore _test_store,
         JBTiered721Flags memory _flags
-    )
+    )   
         // The directory is also an IJBOperatable
-        JBTiered721Delegate(_directory.projects(), IJBOperatable(address(_directory)).operatorStore())
+        JBTiered721Delegate(
+            _directory,
+            IJBOperatable(address(_directory)).operatorStore(),
+            PAY_DELEGATE_ID,
+            REDEEM_DELEGATE_ID
+        )
     {
+
         // Disable the safety check to not allow initializing the original contract
         codeOrigin = address(0);
         JBTiered721Delegate.initialize(
             _projectId,
-            _directory,
             _name,
             _symbol,
             _fundingCycleStore,
@@ -5870,6 +6083,8 @@ contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
             _flags
         );
         test_store = IJBTiered721DelegateStore_ForTest(address(_test_store));
+
+        metadataHelper = new JBDelegateMetadataHelper();
     }
 
     function ForTest_setOwnerOf(uint256 tokenId, address _owner) public {

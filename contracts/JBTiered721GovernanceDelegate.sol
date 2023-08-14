@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
+import { IJBDirectory } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBDirectory.sol";
 import { IJBProjects } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBProjects.sol";
 import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBOperatorStore.sol";
 
@@ -15,10 +16,12 @@ contract JBTiered721GovernanceDelegate is Votes, JBTiered721Delegate {
     // -------------------------- constructor ---------------------------- //
     //*********************************************************************//
 
-    /// @param _projects The IJBProjects that will be used to check project ownership.
+    /// @param _directory A directory of terminals and controllers for projects.
     /// @param _operatorStore The operatorStore that will be used to check operator permissions.
-    constructor(IJBProjects _projects, IJBOperatorStore _operatorStore)
-        JBTiered721Delegate(_projects, _operatorStore)
+    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
+    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
+    constructor(IJBDirectory _directory, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId)
+        JBTiered721Delegate(_directory, _operatorStore, _payMetadataDelegateId, _redeemMetadataDelegateId)
     {}
 
     //*********************************************************************//

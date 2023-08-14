@@ -70,12 +70,10 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
     /// @notice Deploys a delegate for the provided project.
     /// @param _projectId The ID of the project for which the delegate will be deployed.
     /// @param _deployTiered721DelegateData Structure containing data necessary for delegate deployment.
-    /// @param _directory The directory of terminals and controllers for projects.
     /// @return newDelegate The address of the newly deployed delegate.
     function deployDelegateFor(
         uint256 _projectId,
-        JBDeployTiered721DelegateData memory _deployTiered721DelegateData,
-        IJBDirectory _directory
+        JBDeployTiered721DelegateData memory _deployTiered721DelegateData
     ) external override returns (IJBTiered721Delegate newDelegate) {
         // Deploy the governance variant that was requested
         if (_deployTiered721DelegateData.governanceType == JB721GovernanceType.NONE) {
@@ -88,7 +86,6 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
 
         newDelegate.initialize(
             _projectId,
-            _directory,
             _deployTiered721DelegateData.name,
             _deployTiered721DelegateData.symbol,
             _deployTiered721DelegateData.fundingCycleStore,
@@ -106,7 +103,7 @@ contract JBTiered721DelegateDeployer is IJBTiered721DelegateDeployer {
         // Add the delegate to the registry. Contract nonce starts at 1.
         delegatesRegistry.addDelegate(address(this), ++_nonce);
 
-        emit DelegateDeployed(_projectId, newDelegate, _deployTiered721DelegateData.governanceType, _directory);
+        emit DelegateDeployed(_projectId, newDelegate, _deployTiered721DelegateData.governanceType);
 
         return newDelegate;
     }

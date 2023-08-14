@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.16;
 
-import {mulDiv} from '@prb/math/src/Common.sol';
+import { mulDiv } from '@prb/math/src/Common.sol';
 import { IJBOperatorStore } from "@jbx-protocol/juice-contracts-v3/contracts/abstract/JBOperatable.sol";
 import { JBOwnable } from "@jbx-protocol/juice-ownable/src/JBOwnable.sol";
 import { JBFundingCycleMetadataResolver } from "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
@@ -25,6 +25,7 @@ import { JB721Tier } from "./structs/JB721Tier.sol";
 import { JBTiered721Flags } from "./structs/JBTiered721Flags.sol";
 import { JB721PricingParams } from "./structs/JB721PricingParams.sol";
 import { JBTiered721MintReservesForTiersData } from "./structs/JBTiered721MintReservesForTiersData.sol";
+import { JBDelegateMetadataLib } from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataLib.sol';
 
 /// @title JBTiered721Delegate
 /// @notice This delegate makes multiple NFT tiers with custom price floors available to a project's contributors upon payment, and allows project owners to enable NFT redemption for treasury assets based on the price floors of those NFTs.
@@ -163,15 +164,16 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     // -------------------------- constructor ---------------------------- //
     //*********************************************************************//
 
-    /// @param _projects A contract which mints ERC-721s that represent Juicebox project ownership.
+    /// @param _directory A directory of terminals and controllers for projects.
     /// @param _operatorStore A contract which stores operator assignments.
-    constructor(IJBProjects _projects, IJBOperatorStore _operatorStore) JBOwnable(_projects, _operatorStore) {
+    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
+    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
+    constructor(IJBDirectory _directory, IJBOperatorStore _operatorStore, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) JBOwnable(_directory.projects(), _operatorStore) JB721Delegate(_directory, _payMetadataDelegateId, _redeemMetadataDelegateId) {
         codeOrigin = address(this);
     }
 
     /// @notice Initializes a cloned copy of the original JB721Delegate contract.
     /// @param _projectId The ID of the project this contract's functionality applies to.
-    /// @param _directory A directory of terminals and controllers for projects.
     /// @param _name The name of the NFT collection distributed through this contract.
     /// @param _symbol The symbol that the NFT collection should be represented by.
     /// @param _fundingCycleStore A contract storing all funding cycle configurations.
@@ -183,7 +185,6 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
     /// @param _flags A set of flags that help to define how this contract works.
     function initialize(
         uint256 _projectId,
-        IJBDirectory _directory,
         string memory _name,
         string memory _symbol,
         IJBFundingCycleStore _fundingCycleStore,
@@ -198,7 +199,7 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         if (address(store) != address(0)) revert();
 
         // Initialize the superclass.
-        JB721Delegate._initialize(_projectId, _directory, _name, _symbol);
+        JB721Delegate._initialize(_projectId, _name, _symbol);
 
         fundingCycleStore = _fundingCycleStore;
         store = _store;
@@ -479,16 +480,16 @@ contract JBTiered721Delegate is JBOwnable, JB721Delegate, IJBTiered721Delegate {
         // Keep a reference to the flag which indicates if transactions which don't spend all of the provided funds should be allowed (not revert). Defaults to false, meaning only a minimum payment is enforced.
         bool _allowOverspending;
 
-        // Skip the first 32 bytes which are used by the Juicebox protocol to pass the referring project's ID.
-        // Skip another 32 bytes which are reserved for generic extension parameters.
-        // Check the 4 byte interfaceId to verify that the metadata is intended for this contract.
-        if (_data.payerMetadata.length > 68 && bytes4(_data.payerMetadata[64:68]) == type(IJBTiered721Delegate).interfaceId) {
+        // fetch this delegates metadata from the delegate id
+        (bool _found, bytes memory _metadata) = JBDelegateMetadataLib.getMetadata(payMetadataDelegateId, _data.payerMetadata);
+        
+        if (_found) {
             // Keep a reference to the tier IDs to mint.
             uint16[] memory _tierIdsToMint;
 
             // Decode the metadata.
-            (,,, _allowOverspending, _tierIdsToMint) =
-                abi.decode(_data.payerMetadata, (bytes32, bytes32, bytes4, bool, uint16[]));
+            (_allowOverspending, _tierIdsToMint) =
+                abi.decode(_metadata, (bool, uint16[]));
 
             // Make sure overspending is allowed if requested.
             if (_allowOverspending && store.flagsOf(address(this)).preventOverspending) {

@@ -10,11 +10,17 @@ import "../JBTiered721DelegateStore.sol";
 
 import "./utils/TestBaseWorkflow.sol";
 import "../interfaces/IJBTiered721Delegate.sol";
+import {JBDelegateMetadataHelper} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataHelper.sol';
+
 
 contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
     using JBFundingCycleMetadataResolver for JBFundingCycle;
 
     address reserveBeneficiary = address(bytes20(keccak256("reserveBeneficiary")));
+
+    JBTiered721Delegate noGovernance;
+
+    JBDelegateMetadataHelper metadataHelper;
 
     event Mint(
         uint256 indexed tokenId,
@@ -42,15 +48,20 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89),
         bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
     ];
+    bytes4 payMetadataDelegateId = bytes4(hex'70');
+    bytes4 redeemMetadataDelegateId = bytes4(hex'71');
+
     JBTiered721DelegateProjectDeployer deployer;
     JBDelegatesRegistry delegatesRegistry;
 
     function setUp() public override {
         super.setUp();
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(_jbProjects, _jbOperatorStore);
+        noGovernance = new JBTiered721Delegate(_jbDirectory, _jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
-      _jbProjects,
-      _jbOperatorStore
+      _jbDirectory,
+      _jbOperatorStore,
+      payMetadataDelegateId,
+      redeemMetadataDelegateId
     );
         delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         JBTiered721DelegateDeployer delegateDeployer = new JBTiered721DelegateDeployer(
@@ -63,6 +74,8 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
       delegateDeployer,
       IJBOperatorStore(_jbOperatorStore)
     );
+
+    metadataHelper = new JBDelegateMetadataHelper();
     }
 
     function testDeployLaunchProjectAndAddToRegistry() external {
@@ -88,8 +101,18 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         // Craft the metadata: claim from the highest tier
         uint16[] memory rawMetadata = new uint16[](1);
         rawMetadata[0] = uint16(highestTier);
-        bytes memory metadata =
-            abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(true, rawMetadata);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = payMetadataDelegateId;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata =  metadataHelper.createMetadata(_ids, _data);
+
         // Check: correct tier and id?
         vm.expectEmit(true, true, true, true);
         emit Mint(
@@ -112,7 +135,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             /* _memo */
             "Take my money!",
             /* _delegateMetadata */
-            metadata
+            _delegateMetadata
         );
         uint256 tokenId = _generateTokenId(highestTier, 1);
         // Check: NFT actually received?
@@ -158,9 +181,18 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
                 address(_jbETHPaymentTerminal) // msg.sender
             );
         }
-        // Encode it to metadata
-        bytes memory metadata =
-            abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(true, rawMetadata);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = payMetadataDelegateId;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(_caller);
         _jbETHPaymentTerminal.pay{value: _amountNeeded}(
             projectId,
@@ -174,8 +206,9 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             /* _memo */
             "Take my money!",
             /* _delegateMetadata */
-            metadata
+            _delegateMetadata
         );
+
         // Check: NFT actually received?
         address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
         assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 5);
@@ -273,8 +306,18 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         IJBTiered721Delegate(NFTRewardDataSource).mintReservesFor(highestTier, 1);
         uint16[] memory rawMetadata = new uint16[](1);
         rawMetadata[0] = uint16(highestTier); // reward tier
-        bytes memory metadata =
-            abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(true, rawMetadata);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = payMetadataDelegateId;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         // Check: correct tier and id?
         vm.expectEmit(true, true, true, true);
         emit Mint(
@@ -297,7 +340,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             /* _memo */
             "Take my money!",
             /* _delegateMetadata */
-            metadata
+            _delegateMetadata
         );
         // Check: new reserved one (1 minted == 1 reserved, due to rounding up)
         assertEq(
@@ -348,11 +391,23 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         uint256 projectId =
             deployer.launchProjectFor(_projectOwner, tiered721DeployerData, launchProjectData, _jbController);
         // Craft the metadata: claim from the highest tier
-        bytes memory metadata;
+        bytes memory _delegateMetadata;
+        bytes[] memory _data;
+        bytes4[] memory _ids;
         {
             uint16[] memory rawMetadata = new uint16[](1);
             rawMetadata[0] = uint16(highestTier);
-            metadata = abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+            
+            // Build the metadata with the tiers to mint and the overspending flag
+            _data = new bytes[](1);
+            _data[0] = abi.encode(true, rawMetadata);
+
+            // Pass the delegate id
+            _ids = new bytes4[](1);
+            _ids[0] = payMetadataDelegateId;
+
+            // Generate the metadata
+            _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
         vm.prank(_caller);
         _jbETHPaymentTerminal.pay{value: valueSent}(
@@ -363,16 +418,30 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             0, // _minReturnedTokens
             false, //_preferClaimedTokens
             "Take my money!", // _memo
-            metadata //_delegateMetadata
+            _delegateMetadata //_delegateMetadata
         );
+
+        {
         uint256 tokenId = _generateTokenId(highestTier, 1);
-        address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
-        // New token balance
-        uint256 tokenBalance = IERC721(NFTRewardDataSource).balanceOf(_beneficiary);
+
         // Craft the metadata: redeem the tokenId
         uint256[] memory redemptionId = new uint256[](1);
         redemptionId[0] = tokenId;
-        bytes memory redemptionMetadata = abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, redemptionId);
+
+        // Build the metadata with the tiers to redeem
+        _data[0] = abi.encode(redemptionId);
+
+        // Pass the delegate id
+        _ids[0] = redeemMetadataDelegateId;
+
+        // Generate the metadata
+        _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+        }
+
+        address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
+        // New token balance
+        uint256 tokenBalance = IERC721(NFTRewardDataSource).balanceOf(_beneficiary);
+        
         vm.prank(_beneficiary);
         _jbETHPaymentTerminal.redeemTokensOf({
             _holder: _beneficiary,
@@ -382,7 +451,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             _minReturnedTokens: 0,
             _beneficiary: payable(_beneficiary),
             _memo: "imma out of here",
-            _metadata: redemptionMetadata
+            _metadata: _delegateMetadata
         });
         // Check: NFT actually redeemed?
         assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), tokenBalance - 1);
@@ -424,8 +493,18 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
         for (uint256 i; i < rawMetadata.length; i++) {
             rawMetadata[i] = uint16(tier);
         }
-        bytes memory metadata =
-            abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(true, rawMetadata);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = payMetadataDelegateId;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata =  metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(_caller);
         _jbETHPaymentTerminal.pay{value: floor * rawMetadata.length}(
             projectId,
@@ -435,7 +514,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             0, // _minReturnedTokens
             false, //_preferClaimedTokens
             "Take my money!", // _memo
-            metadata //_delegateMetadata
+            _delegateMetadata //_delegateMetadata
         );
         address NFTRewardDataSource = _jbFundingCycleStore.currentOf(projectId).dataSource();
         // New token balance
@@ -452,7 +531,16 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             uint256 tokenId = _generateTokenId(tier, i + 1);
             redemptionId[i] = tokenId;
         }
-        bytes memory redemptionMetadata = abi.encode(bytes32(0), type(IJB721Delegate).interfaceId, redemptionId);
+
+        // Build the metadata with the tiers to redeem
+        _data[0] = abi.encode(redemptionId);
+
+        // Pass the delegate id
+        _ids[0] = redeemMetadataDelegateId;
+
+        // Generate the metadata
+        _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.prank(_beneficiary);
         _jbETHPaymentTerminal.redeemTokensOf({
             _holder: _beneficiary,
@@ -462,7 +550,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             _minReturnedTokens: 0,
             _beneficiary: payable(_beneficiary),
             _memo: "imma out of here",
-            _metadata: redemptionMetadata
+            _metadata: _delegateMetadata
         });
         // Check: NFT actually redeemed?
         assertEq(IERC721(NFTRewardDataSource).balanceOf(_beneficiary), 0);
@@ -475,6 +563,16 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             ),
             0
         );
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        _data[0] = abi.encode(true, rawMetadata);
+
+        // Pass the delegate id
+        _ids[0] = payMetadataDelegateId;
+
+        // Generate the metadata
+        _delegateMetadata =  metadataHelper.createMetadata(_ids, _data);
+
         // Check: Can mint again the token previously burned
         vm.prank(_caller);
         _jbETHPaymentTerminal.pay{value: floor * rawMetadata.length}(
@@ -485,7 +583,7 @@ contract TestJBTieredNFTRewardDelegateE2E is TestBaseWorkflow {
             0, // _minReturnedTokens
             false, //_preferClaimedTokens
             "Take my money!", // _memo
-            metadata //_delegateMetadata
+            _delegateMetadata //_delegateMetadata
         );
         // New token balance
         tokenBalance = IERC721(NFTRewardDataSource).balanceOf(_beneficiary);

@@ -19,6 +19,9 @@ contract DeployMainnet is Script {
     IJBDirectory jbDirectory = IJBDirectory(0x65572FB928b46f9aDB7cfe5A4c41226F636161ea);
     IJBOperatorStore jbOperatorStore = IJBOperatorStore(0x6F3C5afCa0c9eDf3926eF2dDF17c8ae6391afEfb);
 
+    bytes4 payMetadataDelegateId = bytes4(hex'80');
+    bytes4 redeemMetadataDelegateId = bytes4(hex'81');
+
     JBTiered721DelegateDeployer delegateDeployer;
     JBTiered721DelegateProjectDeployer projectDeployer;
     JBTiered721DelegateStore store;
@@ -32,17 +35,18 @@ contract DeployMainnet is Script {
                 ".transactions[0].contractAddress"
             )
         );
-        IJBProjects _projects = jbDirectory.projects();
 
         // Make a static call for sanity check
         assert(registry.deployerOf(address(0)) == address(0));
 
         vm.startBroadcast();
 
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore);
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
-      _projects,
-      jbOperatorStore
+      jbDirectory,
+      jbOperatorStore,
+      payMetadataDelegateId,
+      redeemMetadataDelegateId
     );
 
         delegateDeployer = new JBTiered721DelegateDeployer(onchainGovernance, noGovernance, registry);
@@ -65,6 +69,9 @@ contract DeployGoerli is Script {
     IJBDirectory jbDirectory = IJBDirectory(0x8E05bcD2812E1449f0EC3aE24E2C395F533d9A99);
     IJBOperatorStore jbOperatorStore = IJBOperatorStore(0x99dB6b517683237dE9C494bbd17861f3608F3585);
 
+    bytes4 payMetadataDelegateId = bytes4(hex'70');
+    bytes4 redeemMetadataDelegateId = bytes4(hex'71');
+
     JBTiered721DelegateDeployer delegateDeployer;
     JBTiered721DelegateProjectDeployer projectDeployer;
     JBTiered721DelegateStore store;
@@ -78,17 +85,18 @@ contract DeployGoerli is Script {
                 ".transactions[0].contractAddress"
             )
         );
-        IJBProjects _projects = jbDirectory.projects();
 
         // Make a static call for sanity check
         assert(registry.deployerOf(address(0)) == address(0));
 
         vm.startBroadcast();
 
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(_projects, jbOperatorStore);
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
-      _projects,
-      jbOperatorStore
+      jbDirectory,
+      jbOperatorStore,
+      payMetadataDelegateId, 
+      redeemMetadataDelegateId
     );
 
         delegateDeployer = new JBTiered721DelegateDeployer(onchainGovernance, noGovernance, registry);

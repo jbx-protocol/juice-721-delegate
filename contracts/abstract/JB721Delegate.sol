@@ -16,6 +16,7 @@ import { JBDidRedeemData3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts
 import { JBRedeemParamsData } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedeemParamsData.sol";
 import { JBPayDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBPayDelegateAllocation3_1_1.sol";
 import { JBRedemptionDelegateAllocation3_1_1 } from "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation3_1_1.sol";
+import { JBDelegateMetadataLib } from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataLib.sol';
 
 import { IJB721Delegate } from "../interfaces/IJB721Delegate.sol";
 import { ERC721 } from "./ERC721.sol";
@@ -43,11 +44,22 @@ abstract contract JB721Delegate is
     // --------------- public immutable stored properties ---------------- //
     //*********************************************************************//
 
-    /// @notice The Juicebox project ID this contract's functionality applies to.
-    uint256 public override projectId;
 
     /// @notice The directory of terminals and controllers for projects.
-    IJBDirectory public override directory;
+    IJBDirectory public override immutable directory;
+
+    /// @notice The 4bytes ID of this delegate, used for pay metadata parsing
+    bytes4 public override immutable payMetadataDelegateId;
+
+    /// @notice The 4bytes ID of this delegate, used for redeem metadata parsing
+    bytes4 public override immutable redeemMetadataDelegateId;
+
+    //*********************************************************************//
+    // -------------------- public stored properties --------------------- //
+    //*********************************************************************//
+
+    /// @notice The Juicebox project ID this contract's functionality applies to.
+    uint256 public override projectId;
 
     //*********************************************************************//
     // ------------------------- external views -------------------------- //
@@ -87,18 +99,17 @@ abstract contract JB721Delegate is
         // Make sure fungible project tokens aren't also being redeemed.
         if (_data.tokenCount > 0) revert UNEXPECTED_TOKEN_REDEEMED();
 
-        // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract
-        // Skip 32 bytes reserved for generic extension parameters.
-        if (_data.metadata.length < 36 || bytes4(_data.metadata[32:36]) != type(IJB721Delegate).interfaceId) {
-            revert INVALID_REDEMPTION_METADATA();
-        }
+        // fetch this delegates metadata from the delegate id
+        (bool _found, bytes memory _metadata) = JBDelegateMetadataLib.getMetadata(redeemMetadataDelegateId, _data.metadata);
 
         // Set the only delegate allocation to be a callback to this contract.
         delegateAllocations = new JBRedemptionDelegateAllocation3_1_1[](1);
         delegateAllocations[0] = JBRedemptionDelegateAllocation3_1_1(this, 0, bytes(''));
 
+        uint256[] memory _decodedTokenIds;
+
         // Decode the metadata
-        (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.metadata, (bytes32, bytes4, uint256[]));
+        if (_found) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
 
         // Get a reference to the redemption rate of the provided tokens.
         uint256 _redemptionWeight = redemptionWeightOf(_decodedTokenIds, _data);
@@ -168,18 +179,24 @@ abstract contract JB721Delegate is
     // -------------------------- constructor ---------------------------- //
     //*********************************************************************//
 
+    /// @param _directory A directory of terminals and controllers for projects.
+    /// @param _payMetadataDelegateId The 4bytes ID of this delegate, used for pay metadata parsing
+    /// @param _redeemMetadataDelegateId The 4bytes ID of this delegate, used for redeem metadata parsing
+    constructor(IJBDirectory _directory, bytes4 _payMetadataDelegateId, bytes4 _redeemMetadataDelegateId) {
+        directory = _directory;
+        payMetadataDelegateId = _payMetadataDelegateId;
+        redeemMetadataDelegateId = _redeemMetadataDelegateId;
+    }
+
     /// @notice Initializes the contract with project details and ERC721 token details.
     /// @param _projectId The ID of the project this contract's functionality applies to.
-    /// @param _directory The directory of terminals and controllers for projects.
     /// @param _name The name of the token.
     /// @param _symbol The symbol representing the token.
-    function _initialize(uint256 _projectId, IJBDirectory _directory, string memory _name, string memory _symbol)
+    function _initialize(uint256 _projectId, string memory _name, string memory _symbol)
         internal
     {
         ERC721._initialize(_name, _symbol);
-
         projectId = _projectId;
-        directory = _directory;
     }
 
     //*********************************************************************//
@@ -212,14 +229,13 @@ abstract contract JB721Delegate is
                 || _data.projectId != projectId
         ) revert INVALID_REDEMPTION_EVENT();
 
-        // Check the 4 bytes interfaceId and handle the case where the metadata was not intended for this contract.
-        // Skip 32 bytes reserved for generic extension parameters.
-        if (_data.redeemerMetadata.length < 36 || bytes4(_data.redeemerMetadata[32:36]) != type(IJB721Delegate).interfaceId) {
-            revert INVALID_REDEMPTION_METADATA();
-        }
+        // fetch this delegates metadata from the delegate id
+        (bool _found, bytes memory _metadata) = JBDelegateMetadataLib.getMetadata(redeemMetadataDelegateId, _data.redeemerMetadata);
+
+        uint256[] memory _decodedTokenIds;
 
         // Decode the metadata.
-        (,, uint256[] memory _decodedTokenIds) = abi.decode(_data.redeemerMetadata, (bytes32, bytes4, uint256[]));
+        if (_found) _decodedTokenIds = abi.decode(_metadata, (uint256[]));
 
         // Get a reference to the number of token IDs being checked.
         uint256 _numberOfTokenIds = _decodedTokenIds.length;

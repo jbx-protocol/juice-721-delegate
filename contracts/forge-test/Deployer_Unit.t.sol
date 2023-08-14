@@ -47,6 +47,9 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         bytes32(0x7D5A99F603F231D53A4F39D1521F98D2E8BB279CF29BEBFD0687DC98458E7F89)
     ];
     string fcMemo = "meemoo";
+    bytes4 payMetadataDelegateId = bytes4(hex'70');
+    bytes4 redeemMetadataDelegateId = bytes4(hex'71');
+
     IJBTiered721DelegateStore store;
     IJBTiered721DelegateProjectDeployer deployer;
     IJBTiered721DelegateDeployer delegateDeployer;
@@ -67,11 +70,14 @@ contract TestJBTiered721DelegateProjectDeployer is Test {
         vm.etch(mockTokenUriResolver, new bytes(0x69));
         vm.etch(mockTerminalAddress, new bytes(0x69));
         vm.etch(mockJBProjects, new bytes(0x69));
+
+        vm.mockCall(mockJBDirectory, abi.encodeWithSelector(IJBDirectory.projects.selector), abi.encode(mockJBProjects));
+
         store = new JBTiered721DelegateStore();
         JBTiered721Delegate noGovernance =
-            new JBTiered721Delegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+            new JBTiered721Delegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
         JBTiered721GovernanceDelegate onchainGovernance =
-            new JBTiered721GovernanceDelegate(IJBProjects(mockJBProjects), IJBOperatorStore(mockJBOperatorStore));
+            new JBTiered721GovernanceDelegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), payMetadataDelegateId, redeemMetadataDelegateId);
         delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
         delegateDeployer = new JBTiered721DelegateDeployer(
       onchainGovernance,

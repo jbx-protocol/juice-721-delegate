@@ -31,15 +31,24 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
             // Pay and mint an NFT
             vm.deal(_user, _payAmount);
             vm.prank(_user);
-            bytes memory metadata;
+            bytes memory _delegateMetadata;
             {
                 // Craft the metadata: mint the specified tier
                 uint16[] memory rawMetadata = new uint16[](1);
                 rawMetadata[0] = uint16(_tier + 1); // 1 indexed
-                metadata = abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+
+                bytes[] memory _data = new bytes[](1);
+                _data[0] = abi.encode(true, rawMetadata);
+
+                // Pass the delegate id
+                bytes4[] memory _ids = new bytes4[](1);
+                _ids[0] = payMetadataDelegateId;
+
+                // Generate the metadata
+                _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
             }
             _jbETHPaymentTerminal.pay{value: _payAmount}(
-                projectId, 100, address(0), _user, 0, false, "Take my money!", metadata
+                projectId, 100, address(0), _user, 0, false, "Take my money!", _delegateMetadata
             );
         }
         // Assert that the user received the votingUnits
@@ -63,47 +72,66 @@ contract TestJBTiered721DelegateGovernance is TestJBTieredNFTRewardDelegateE2E {
     function testMintAndDelegateVotingUnits(uint256 _tier, bool _selfDelegateBeforeReceive) public {
         address _user = address(bytes20(keccak256("user")));
         address _userFren = address(bytes20(keccak256("user_fren")));
-        (JBDeployTiered721DelegateData memory tiered721DeployerData, JBLaunchProjectData memory launchProjectData) =
+
+        JBDeployTiered721DelegateData memory tiered721DeployerData;
+        uint256 projectId;
+        JBTiered721GovernanceDelegate _delegate;
+        
+        {
+        JBLaunchProjectData memory launchProjectData;
+        (tiered721DeployerData, launchProjectData) =
             createData();
         // _tier has to be a valid tier (0-indexed)
         _tier = bound(_tier, 0, tiered721DeployerData.pricing.tiers.length - 1);
         // Set the governance type to tiered
         tiered721DeployerData.governanceType = JB721GovernanceType.ONCHAIN;
-        uint256 projectId =
+        projectId =
             deployer.launchProjectFor(_projectOwner, tiered721DeployerData, launchProjectData, _jbController);
         // Get the dataSource
-        JBTiered721GovernanceDelegate _delegate =
+        _delegate =
             JBTiered721GovernanceDelegate(_jbFundingCycleStore.currentOf(projectId).dataSource());
-        uint256 _payAmount = tiered721DeployerData.pricing.tiers[_tier].price;
         // Delegate NFT to fren
-        vm.prank(_user);
+        vm.startPrank(_user);
         _delegate.delegate(_userFren);
         // Delegate NFT to self
         if (_selfDelegateBeforeReceive) {
-            vm.prank(_user);
             _delegate.delegate(_user);
         }
+        }
+
+        {
+        uint256 _payAmount = tiered721DeployerData.pricing.tiers[_tier].price;
+
         // Craft the metadata: mint the specified tier
         uint16[] memory rawMetadata = new uint16[](1);
         rawMetadata[0] = uint16(_tier + 1); // 1 indexed
-        bytes memory metadata =
-            abi.encode(bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, true, rawMetadata);
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(true, rawMetadata);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = payMetadataDelegateId;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         // Pay and mint an NFT
         vm.deal(_user, _payAmount);
-        vm.prank(_user);
         _jbETHPaymentTerminal.pay{value: _payAmount}(
-            projectId, 100, address(0), _user, 0, false, "Take my money!", metadata
+            projectId, 100, address(0), _user, 0, false, "Take my money!", _delegateMetadata
         );
+        }
         // Delegate NFT to self
         if (!_selfDelegateBeforeReceive) {
-            vm.prank(_user);
             _delegate.delegate(_user);
         }
         // Assert that the user received the votingUnits
         assertEq(_delegate.getVotes(_user), tiered721DeployerData.pricing.tiers[_tier].votingUnits);
         // Delegate to the users fren
-        vm.prank(_user);
         _delegate.delegate(_userFren);
+        vm.stopPrank();
         // Assert that the user lost their voting units
         assertEq(_delegate.getVotes(_user), 0);
         // Assert that fren received the voting units
