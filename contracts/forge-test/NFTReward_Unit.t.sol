@@ -27,8 +27,6 @@ import {JBDelegateMetadataHelper} from '@jbx-protocol/juice-delegate-metadata-li
 
 bytes4 constant PAY_DELEGATE_ID = bytes4(hex"70");
 bytes4 constant REDEEM_DELEGATE_ID = bytes4(hex"71");
-uint256 constant OVERFLOW = 10e18;
-uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
 
 contract TestJBTieredNFTRewardDelegate is Test {
     using stdStorage for StdStorage;
@@ -48,6 +46,8 @@ contract TestJBTieredNFTRewardDelegate is Test {
     string symbol = "SYM";
     string baseUri = "http://www.null.com/";
     string contractUri = "ipfs://null";
+    uint256 constant OVERFLOW = 10e18;
+    uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
 
     // NodeJS: function con(hash) { Buffer.from(bs58.decode(hash).slice(2)).toString('hex') }
     // JS;  0x${bs58.decode(hash).slice(2).toString('hex')})
@@ -6042,6 +6042,9 @@ interface IJBTiered721DelegateStore_ForTest is IJBTiered721DelegateStore {
 contract ForTest_JBTiered721Delegate is JBTiered721Delegate {
     IJBTiered721DelegateStore_ForTest public test_store;
     JBDelegateMetadataHelper metadataHelper;
+
+    uint256 constant OVERFLOW = 10e18;
+    uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
 
     constructor(
         uint256 _projectId,
