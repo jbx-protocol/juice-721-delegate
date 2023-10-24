@@ -6,17 +6,17 @@ import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleSto
 import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPrices.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
-import "../JBTiered721DelegateProjectDeployer.sol";
-import "../JBTiered721DelegateDeployer.sol";
-import "../JBTiered721DelegateStore.sol";
-import "../enums/JB721GovernanceType.sol";
-import "../interfaces/IJBTiered721DelegateProjectDeployer.sol";
-import "../structs/JBLaunchProjectData.sol";
-import "../structs/JB721PricingParams.sol";
+import "../../JBTiered721DelegateProjectDeployer.sol";
+import "../../JBTiered721DelegateDeployer.sol";
+import "../../JBTiered721DelegateStore.sol";
+import "../../enums/JB721GovernanceType.sol";
+import "../../interfaces/IJBTiered721DelegateProjectDeployer.sol";
+import "../../structs/JBLaunchProjectData.sol";
+import "../../structs/JB721PricingParams.sol";
 
 import "forge-std/Test.sol";
 
-contract TestJBTiered721DelegateProjectDeployer is Test {
+contract TestJBTiered721DelegateProjectDeployer_Unit is Test {
     using stdStorage for StdStorage;
 
     address owner = address(bytes20(keccak256("owner")));
