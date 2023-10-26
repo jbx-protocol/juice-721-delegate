@@ -3,13 +3,13 @@ pragma solidity ^0.8.16;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol";
 
-import "../JBTiered721Delegate.sol";
-import "../JBTiered721DelegateProjectDeployer.sol";
-import "../JBTiered721DelegateDeployer.sol";
-import "../JBTiered721DelegateStore.sol";
+import "../../JBTiered721Delegate.sol";
+import "../../JBTiered721DelegateProjectDeployer.sol";
+import "../../JBTiered721DelegateDeployer.sol";
+import "../../JBTiered721DelegateStore.sol";
 
-import "./utils/TestBaseWorkflow.sol";
-import "../interfaces/IJBTiered721Delegate.sol";
+import "../utils/TestBaseWorkflow.sol";
+import "../../interfaces/IJBTiered721Delegate.sol";
 import {JBDelegateMetadataHelper} from '@jbx-protocol/juice-delegate-metadata-lib/src/JBDelegateMetadataHelper.sol';
 
 

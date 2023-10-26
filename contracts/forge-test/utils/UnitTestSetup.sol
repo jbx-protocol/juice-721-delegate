@@ -28,8 +28,6 @@ bytes4 constant PAY_DELEGATE_ID = bytes4(hex"70");
 bytes4 constant REDEEM_DELEGATE_ID = bytes4(hex"71");
 
 contract UnitTestSetup is Test {
-
-
     address beneficiary;
     address owner;
     address reserveBeneficiary;
@@ -47,6 +45,8 @@ contract UnitTestSetup is Test {
     string contractUri = "ipfs://null";
     uint256 constant OVERFLOW = 10e18;
     uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
+
+    JB721TierParams defaultTierParams;
 
     // NodeJS: function con(hash) { Buffer.from(bs58.decode(hash).slice(2)).toString('hex') }
     // JS;  0x${bs58.decode(hash).slice(2).toString('hex')})
@@ -121,6 +121,20 @@ contract UnitTestSetup is Test {
         vm.etch(mockTokenUriResolver, new bytes(0x69));
         vm.etch(mockTerminalAddress, new bytes(0x69));
         vm.etch(mockJBProjects, new bytes(0x69));
+
+        defaultTierParams = JB721TierParams({
+                                    price: 0, // use defaut prices
+                                    initialQuantity: 0, // use default Qt
+                                    votingUnits: uint16(0), // default voting units
+                                    reservedRate: uint16(10), // default rr
+                                    reservedTokenBeneficiary: reserveBeneficiary, // default beneficiary
+                                    encodedIPFSUri: bytes32(0), // default hashes array
+                                    category: 0,
+                                    allowManualMint: false,
+                                    shouldUseReservedTokenBeneficiaryAsDefault: false,
+                                    transfersPausable: false,
+                                    useVotingUnits: false
+                                });
 
         // Create 10 tiers, each with 100 tokens available to mint
         for (uint256 i; i < 10; i++) {
@@ -226,6 +240,7 @@ contract UnitTestSetup is Test {
         delegate.transferOwnership(owner);
 
         metadataHelper = new JBDelegateMetadataHelper();
+
     }
 
     function ETH() internal pure returns (uint256) {
@@ -383,5 +398,121 @@ contract UnitTestSetup is Test {
             if (minIndex != i) (_in[i], _in[minIndex]) = (_in[minIndex], _in[i]);
         }
         return _in;
+    }
+
+    function _createArray(uint256 _length, uint256 _seed) internal pure returns(uint16[] memory) {
+        uint16[] memory _out = new uint16[](_length);
+
+        for(uint256 i; i < _length; i++) {
+            _out[i] = uint16(uint256(keccak256(abi.encode(_seed, i))));
+        }
+
+        return _out;
+    }
+
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+        return _createTiers(_tierParams, _numberOfTiers, 0, new uint16[](_numberOfTiers), 0);
+    }
+
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _categoryIncrement) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+        return _createTiers(_tierParams, _numberOfTiers, 0, new uint16[](_numberOfTiers), _categoryIncrement);
+    }
+
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _initialId, uint16[] memory _floors) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+        return _createTiers(_tierParams, _numberOfTiers, _initialId, _floors, 0);
+    }
+
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _initialId, uint16[] memory _floors, uint256 _categoryIncrement) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+            _tiersParams = new JB721TierParams[](_numberOfTiers);
+            _tiers = new JB721Tier[](_numberOfTiers);
+
+            for (uint256 i; i < _numberOfTiers; i++) {
+                _tiersParams[i] = JB721TierParams({
+                    price: _floors[i] == 0 ? uint16((i + 1) * 10) : _floors[i],
+                    initialQuantity: _tierParams.initialQuantity == 0 ? uint32(100) : _tierParams.initialQuantity,
+                    votingUnits: _tierParams.votingUnits,
+                    reservedRate: _tierParams.reservedRate,
+                    reservedTokenBeneficiary: reserveBeneficiary,
+                    encodedIPFSUri: i < tokenUris.length -1 ? tokenUris[i] : tokenUris[0],
+                    category: _categoryIncrement == 0
+                        ? _tierParams.category == 0
+                            ? uint24(i*2+1)
+                            : _tierParams.category
+                        : uint24(i * 2 + _categoryIncrement),
+                    allowManualMint: _tierParams.allowManualMint,
+                    shouldUseReservedTokenBeneficiaryAsDefault: _tierParams.shouldUseReservedTokenBeneficiaryAsDefault,
+                    transfersPausable: _tierParams.transfersPausable,
+                    useVotingUnits: _tierParams.useVotingUnits
+                });
+
+                _tiers[i] = JB721Tier({
+                    id: _initialId + i + 1,
+                    price: _tiersParams[i].price,
+                    remainingQuantity: _tiersParams[i].initialQuantity,
+                    initialQuantity: _tiersParams[i].initialQuantity,
+                    votingUnits: _tiersParams[i].votingUnits,
+                    reservedRate: _tiersParams[i].reservedRate,
+                    reservedTokenBeneficiary: _tiersParams[i].reservedTokenBeneficiary,
+                    encodedIPFSUri: _tiersParams[i].encodedIPFSUri,
+                    category: _tiersParams[i].category,
+                    allowManualMint: _tiersParams[i].allowManualMint,
+                    transfersPausable: _tiersParams[i].transfersPausable,
+                    resolvedUri: ""
+                });
+            }
+    }
+    function _addDeleteTiers(JBTiered721Delegate _delegate, uint256 _currentNumberOfTiers, uint256 _numberOfTiersToRemove, JB721TierParams[] memory _tiersToAdd) internal returns (uint256) {
+            uint256 _newNumberOfTiers = _currentNumberOfTiers;
+            uint256[] memory tiersToRemove = new uint256[](_numberOfTiersToRemove);
+            
+            for(uint256 i; i < _numberOfTiersToRemove && _newNumberOfTiers != 0; i++) {
+                tiersToRemove[i] = _currentNumberOfTiers - i - 1;
+                _newNumberOfTiers--;
+
+            }
+
+            _newNumberOfTiers += _tiersToAdd.length;
+
+            vm.startPrank(owner);
+            _delegate.adjustTiers(_tiersToAdd, tiersToRemove);
+            _delegate.store().cleanTiers(address(_delegate));
+            vm.stopPrank();
+
+            JB721Tier[] memory _storedTiers = _delegate.store().tiersOf(
+                address(_delegate), new uint256[](0), false, 0, _newNumberOfTiers
+            );
+            assertEq(_storedTiers.length, _newNumberOfTiers);
+
+            return _newNumberOfTiers;
+    }
+
+    function _initializeDelegateDefaultTiers(uint256 _initialNumberOfTiers) internal returns(JBTiered721Delegate _delegate){
+        // Initialize first tiers to add
+        (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) = _createTiers(
+            defaultTierParams,
+            _initialNumberOfTiers);
+
+        JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+        vm.etch(delegate_i, address(delegate).code);
+        _delegate = JBTiered721Delegate(delegate_i);
+
+        _delegate.initialize(
+            projectId,
+            name,
+            symbol,
+            IJBFundingCycleStore(mockJBFundingCycleStore),
+            baseUri,
+            IJB721TokenUriResolver(mockTokenUriResolver),
+            contractUri,
+            JB721PricingParams({tiers: _tiersParams, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+            IJBTiered721DelegateStore(_store),
+            JBTiered721Flags({
+                preventOverspending: false,
+                lockReservedTokenChanges: false,
+                lockVotingUnitChanges: false,
+                lockManualMintingChanges: true
+            })
+        );
+        _delegate.transferOwnership(owner);
     }
 }

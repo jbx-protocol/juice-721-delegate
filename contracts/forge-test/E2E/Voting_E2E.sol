@@ -1,6 +1,6 @@
 pragma solidity ^0.8.16;
 
-import "../E2E.t.sol";
+import "./Pay_Mint_Redeem_E2E.t.sol";
 
 import "../../JBTiered721GovernanceDelegate.sol";
 import "../../abstract/ERC721.sol";
