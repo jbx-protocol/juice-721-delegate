@@ -162,7 +162,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
             numberOfFloorTiersToAdd,
             initialNumberOfTiers,
             floorTiersToAdd,
-            3);
+            2);
 
         // remove 2 tiers and add the new ones
         uint256 _tiersLeft = initialNumberOfTiers;
@@ -174,14 +174,15 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         );
 
         // Check: Expected number of tiers?
-        assertEq(_storedTiers.length, _tiersLeft);
+        assertEq(_storedTiers.length, _tiersLeft, "Length mismatch");
         
         // Check: Are all tiers in the new tiers (unsorted)?
-        // assertTrue(_isIn(_defaultStoredTiers, _storedTiers)); // Original tiers
-        assertTrue(_isIn(_tiersToAdd, _storedTiers)); // New tiers
+        // assertTrue(_isIn(_defaultStoredTiers, _storedTiers), "Original not included"); // Original tiers
+        assertTrue(_isIn(_tiersToAdd, _storedTiers), "New not included"); // New tiers
+
         // Check: Are all the tiers sorted?
         for (uint256 i = 1; i < _storedTiers.length; i++) {
-            assertLt(_storedTiers[i - 1].category, _storedTiers[i].category);
+            assertLt(_storedTiers[i - 1].category, _storedTiers[i].category, "Sorting error");
         }
     }
 

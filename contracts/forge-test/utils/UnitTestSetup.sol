@@ -125,7 +125,7 @@ contract UnitTestSetup is Test {
         defaultTierParams = JB721TierParams({
                                     price: 0, // use defaut prices
                                     initialQuantity: 0, // use default Qt
-                                    votingUnits: uint16(0), // default voting units
+                                    votingUnits: 0, // default voting units
                                     reservedRate: uint16(10), // default rr
                                     reservedTokenBeneficiary: reserveBeneficiary, // default beneficiary
                                     encodedIPFSUri: bytes32(0), // default hashes array
@@ -133,7 +133,7 @@ contract UnitTestSetup is Test {
                                     allowManualMint: false,
                                     shouldUseReservedTokenBeneficiaryAsDefault: false,
                                     transfersPausable: false,
-                                    useVotingUnits: false
+                                    useVotingUnits: true
                                 });
 
         // Create 10 tiers, each with 100 tokens available to mint
@@ -150,7 +150,7 @@ contract UnitTestSetup is Test {
                     allowManualMint: false,
                     shouldUseReservedTokenBeneficiaryAsDefault: false,
                     transfersPausable: false,
-                    useVotingUnits: false
+                    useVotingUnits: true
                 })
             );
         }
@@ -340,11 +340,40 @@ contract UnitTestSetup is Test {
             return true;
         } else {
             emit log("_isIn: incomplete inclusion");
+            emit log_uint(count);
+            emit log_uint(smol.length);
             return false;
         }
     }
 
     function _compareTiers(JB721Tier memory first, JB721Tier memory second) internal pure returns (bool) {
+        // Use this for quick debug:
+        // if(first.id != second.id) emit log_string("compareTiers:id");
+
+        // if(first.price != second.price) emit log_string("compareTiers:price");
+        
+        // if(first.remainingQuantity != second.remainingQuantity) emit log_string("compareTiers:remainingQuantity");
+        
+        // if(first.initialQuantity != second.initialQuantity) emit log_string("compareTiers:initialQuantity");
+        
+        // if(first.votingUnits != second.votingUnits) {
+        //     emit log("compareTiers:votingUnits");
+        //     emit log_uint(first.votingUnits);
+        //     emit log_uint(second.votingUnits);
+        // }
+        
+        // if(first.reservedRate != second.reservedRate) emit log_string("compareTiers:reservedRate");
+        
+        // if(first.reservedTokenBeneficiary != second.reservedTokenBeneficiary) emit log_string("compareTiers:reservedTokenBeneficiary");
+        
+        // if(first.encodedIPFSUri != second.encodedIPFSUri) {
+        //     emit log_string("compareTiers:encodedIPFSUri");
+        //     emit log_bytes32(first.encodedIPFSUri);
+        //     emit log_bytes32(second.encodedIPFSUri);
+        // }
+        
+        // if(keccak256(abi.encodePacked(first.resolvedUri)) != keccak256(abi.encodePacked(second.resolvedUri))) emit log_string("compareTiers:uri");
+        
         return (
             first.id == second.id && first.price == second.price && first.remainingQuantity == second.remainingQuantity
                 && first.initialQuantity == second.initialQuantity && first.votingUnits == second.votingUnits
