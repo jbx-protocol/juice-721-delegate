@@ -1832,4 +1832,17 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         // Check: the linked list is only the active tiers
         assertTrue(_isIn(_tiersListDump, tiersRemaining));
     }
+
+    function testJBTieredNFTRewardDelegate_tiersOf_emptyArrayIfNoInitializedTiers(uint256 _size) public {
+        // Initialize with 0 tiers
+        JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(0);
+
+        // Try to get _size tiers
+        JB721Tier[] memory _intialTiers = _delegate.store().tiersOf(
+            address(_delegate), new uint256[](0), false, 0, _size
+        );
+        
+        // Check: Array of size 0?
+        assertEq(_intialTiers.length, 0, "Length mismatch");
+    }
 }
