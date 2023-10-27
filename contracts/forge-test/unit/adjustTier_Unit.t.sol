@@ -130,7 +130,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         // else the tiers would be sorted by categories
         for (uint256 i = 1; i < _storedTiers.length; i++) {
             if (_storedTiers[i - 1].category == _storedTiers[i].category) {
-                assertGt(_storedTiers[i - 1].id, _storedTiers[i].id, "Sorting error if same cat");)
+                assertGt(_storedTiers[i - 1].id, _storedTiers[i].id, "Sorting error if same cat");
             } else {
                 assertLt(_storedTiers[i - 1].category, _storedTiers[i].category, "Sorting error if diff cat");
             }
