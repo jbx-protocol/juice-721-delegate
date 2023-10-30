@@ -7,7 +7,6 @@ import "../utils/ForTest_JBTiered721Delegate.sol";
 import "../../JBTiered721DelegateDeployer.sol";
 import "../../JBTiered721Delegate.sol";
 import "../../JBTiered721DelegateStore.sol";
-// import "../../structs/JBBitmapWord.sol";
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBFundingCycleMetadataResolver.sol";
@@ -129,7 +128,7 @@ contract UnitTestSetup is Test {
                                     reservedRate: uint16(10), // default rr
                                     reservedTokenBeneficiary: reserveBeneficiary, // default beneficiary
                                     encodedIPFSUri: bytes32(0), // default hashes array
-                                    category: 0,
+                                    category: type(uint24).max,
                                     allowManualMint: false,
                                     shouldUseReservedTokenBeneficiaryAsDefault: false,
                                     transfersPausable: false,
@@ -464,7 +463,7 @@ contract UnitTestSetup is Test {
                     reservedTokenBeneficiary: reserveBeneficiary,
                     encodedIPFSUri: i < tokenUris.length -1 ? tokenUris[i] : tokenUris[0],
                     category: _categoryIncrement == 0
-                        ? _tierParams.category == 0
+                        ? _tierParams.category == type(uint24).max
                             ? uint24(i*2+1)
                             : _tierParams.category
                         : uint24(i * 2 + _categoryIncrement),
