@@ -243,8 +243,8 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         uint256 seed
     ) public {
         initialNumberOfTiers = bound(initialNumberOfTiers, 2, 10);
-        
         numberOfFloorTiersToAdd = bound(numberOfFloorTiersToAdd, 4, 14);
+
         uint16[] memory floorTiersToAdd = _createArray(numberOfFloorTiersToAdd, seed);
 
         // Floor are sorted in ascending orderen
@@ -526,13 +526,14 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_adjustTiers_removeTiers(
-        uint16 initialNumberOfTiers,
+        uint256 initialNumberOfTiers,
         uint256 seed,
-        uint8 numberOfTiersToRemove
+        uint256 numberOfTiersToRemove
     ) public {
         // Include adding X new tiers when 0 preexisting ones
-        vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
-        vm.assume(numberOfTiersToRemove > 0 && numberOfTiersToRemove < initialNumberOfTiers);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 1, 14);
+        numberOfTiersToRemove = bound(numberOfTiersToRemove, 1, initialNumberOfTiers);
+
         // Create random tiers to remove
         uint256[] memory tiersToRemove = new uint256[](numberOfTiersToRemove);
 
@@ -558,6 +559,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
                 seed++;
             }
         }
+        
         // Order the tiers to remove for event matching (which are ordered too)
         tiersToRemove = _sortArray(tiersToRemove);
         JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
@@ -827,12 +829,13 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_adjustTiers_revertIfAddingWithVotingPower(
-        uint8 initialNumberOfTiers,
-        uint8 numberTiersToAdd
+        uint256 initialNumberOfTiers,
+        uint256 numberTiersToAdd
     ) public {
         // Include adding X new tiers when 0 preexisting ones
-        vm.assume(initialNumberOfTiers < 30);
-        vm.assume(numberTiersToAdd > 0);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 0, 15);
+        numberTiersToAdd = bound(numberTiersToAdd, 1, 15);
+
         JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
         JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
         for (uint256 i; i < initialNumberOfTiers; i++) {
@@ -921,12 +924,13 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_adjustTiers_revertIfAddingWithReservedRate(
-        uint8 initialNumberOfTiers,
-        uint8 numberTiersToAdd
+        uint256 initialNumberOfTiers,
+        uint256 numberTiersToAdd
     ) public {
         // Include adding X new tiers when 0 preexisting ones
-        vm.assume(initialNumberOfTiers < 30);
-        vm.assume(numberTiersToAdd > 0);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 0, 15);
+        numberTiersToAdd = bound(numberTiersToAdd, 1, 15);
+
         JB721TierParams[] memory _tierParam = new JB721TierParams[](initialNumberOfTiers);
         JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
         for (uint256 i; i < initialNumberOfTiers; i++) {
@@ -1015,12 +1019,13 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_adjustTiers_revertIfEmptyQuantity(
-        uint8 initialNumberOfTiers,
-        uint8 numberTiersToAdd
+        uint256 initialNumberOfTiers,
+        uint256 numberTiersToAdd
     ) public {
         // Include adding X new tiers when 0 preexisting ones
-        vm.assume(initialNumberOfTiers < 30);
-        vm.assume(numberTiersToAdd > 0);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 0, 15);
+        numberTiersToAdd = bound(numberTiersToAdd, 1, 15);
+
         JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
         JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
         for (uint256 i; i < initialNumberOfTiers; i++) {
@@ -1109,11 +1114,12 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_adjustTiers_revertIfRemovingALockedTier(
-        uint16 initialNumberOfTiers,
-        uint8 tierLockedIndex
+        uint256 initialNumberOfTiers,
+        uint256 tierLockedIndex
     ) public {
-        vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
-        vm.assume(tierLockedIndex < initialNumberOfTiers - 1);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 1, 15);
+        tierLockedIndex = bound(tierLockedIndex, 0, initialNumberOfTiers - 1);
+
         JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
         JB721Tier[] memory _tiers = new JB721Tier[](initialNumberOfTiers);
         for (uint256 i; i < initialNumberOfTiers; i++) {
@@ -1180,12 +1186,13 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_adjustTiers_revertIfInvalidCategorySortOrder(
-        uint8 initialNumberOfTiers,
-        uint8 numberTiersToAdd
+        uint256 initialNumberOfTiers,
+        uint256 numberTiersToAdd
     ) public {
         // Include adding X new tiers when 0 preexisting ones
-        vm.assume(initialNumberOfTiers < 30);
-        vm.assume(numberTiersToAdd > 1);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 0, 15);
+        numberTiersToAdd = bound(numberTiersToAdd, 1, 15);
+
         JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
         for (uint256 i; i < initialNumberOfTiers; i++) {
             _tierParams[i] = JB721TierParams({
@@ -1245,12 +1252,13 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_adjustTiers_revertIfMoreVotingUnitsNotAllowedWithPriceChange(
-        uint8 initialNumberOfTiers,
-        uint8 numberTiersToAdd
+        uint256 initialNumberOfTiers,
+        uint256 numberTiersToAdd
     ) public {
         // Include adding X new tiers when 0 preexisting ones
-        vm.assume(initialNumberOfTiers < 30);
-        vm.assume(numberTiersToAdd > 1);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 0, 15);
+        numberTiersToAdd = bound(numberTiersToAdd, 1, 15);
+
         JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
         for (uint256 i; i < initialNumberOfTiers; i++) {
             _tierParams[i] = JB721TierParams({
@@ -1267,26 +1275,28 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
                 useVotingUnits: false
             });
         }
+
         ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
         ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBFundingCycleStore(mockJBFundingCycleStore),
-        baseUri,
-        IJB721TokenUriResolver(mockTokenUriResolver),
-        contractUri,
-        _tierParams,
-        IJBTiered721DelegateStore(address(_ForTest_store)),
-        JBTiered721Flags({
-          preventOverspending: false,
-          lockReservedTokenChanges: false,
-          lockVotingUnitChanges: true,
-          lockManualMintingChanges: true
-        })
-      );
+            projectId,
+            IJBDirectory(mockJBDirectory),
+            name,
+            symbol,
+            IJBFundingCycleStore(mockJBFundingCycleStore),
+            baseUri,
+            IJB721TokenUriResolver(mockTokenUriResolver),
+            contractUri,
+            _tierParams,
+            IJBTiered721DelegateStore(address(_ForTest_store)),
+            JBTiered721Flags({
+            preventOverspending: false,
+            lockReservedTokenChanges: false,
+            lockVotingUnitChanges: true,
+            lockManualMintingChanges: true
+            })
+        );
         _delegate.transferOwnership(owner);
+
         JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](numberTiersToAdd);
         for (uint256 i; i < numberTiersToAdd; i++) {
             _tierParamsToAdd[i] = JB721TierParams({
@@ -1309,13 +1319,14 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));
     }
     function testJBTieredNFTRewardDelegate_cleanTiers_removeTheInactiveTiers(
-        uint16 initialNumberOfTiers,
+        uint256 initialNumberOfTiers,
         uint256 seed,
-        uint8 numberOfTiersToRemove
+        uint256 numberOfTiersToRemove
     ) public {
         // Include adding X new tiers when 0 preexisting ones
-        vm.assume(initialNumberOfTiers > 0 && initialNumberOfTiers < 15);
-        vm.assume(numberOfTiersToRemove > 0 && numberOfTiersToRemove < initialNumberOfTiers);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 1, 15);
+        numberOfTiersToRemove = bound(numberOfTiersToRemove, 0, initialNumberOfTiers - 1);
+
         // Create random tiers to remove
         uint256[] memory tiersToRemove = new uint256[](numberOfTiersToRemove);
         // seed to generate new random tiers, i to iterate to fill the tiersToRemove array
