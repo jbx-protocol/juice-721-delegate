@@ -13,7 +13,7 @@ contract TestJuice721dDelegate_mintFor_mintReservesFor_Unit is UnitTestSetup {
         uint256 reservedMinted = 1;
         uint256 reservedRate = 4000;
         uint256 nbTiers = 3;
-        vm.mockCall(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
+        mockAndExpect(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
         JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
         // Temp tiers, will get overwritten later (pass the constructor check)
         for (uint256 i; i < nbTiers; i++) {
@@ -88,7 +88,7 @@ contract TestJuice721dDelegate_mintFor_mintReservesFor_Unit is UnitTestSetup {
         uint256 reservedMinted = 1;
         uint256 reservedRate = 4000;
         uint256 nbTiers = 3;
-        vm.mockCall(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
+        mockAndExpect(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
         JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
         // Temp tiers, will get overwritten later (pass the constructor check)
         for (uint256 i; i < nbTiers; i++) {
@@ -169,8 +169,8 @@ contract TestJuice721dDelegate_mintFor_mintReservesFor_Unit is UnitTestSetup {
         uint256 reservedMinted = 1;
         uint256 reservedRate = 4000;
         uint256 nbTiers = 3;
-        vm.mockCall(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
-        vm.mockCall(
+        mockAndExpect(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
+        mockAndExpect(
             mockJBFundingCycleStore,
             abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
             abi.encode(
@@ -471,7 +471,7 @@ contract TestJuice721dDelegate_mintFor_mintReservesFor_Unit is UnitTestSetup {
 
     function testJBTieredNFTRewardDelegate_mintFor_mintArrayOfTiers() public {
         uint256 nbTiers = 3;
-        vm.mockCall(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
+        mockAndExpect(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
         JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
         uint16[] memory _tiersToMint = new uint16[](nbTiers * 2);
         // Temp tiers, will get overwritten later (pass the constructor check)
@@ -525,7 +525,7 @@ contract TestJuice721dDelegate_mintFor_mintReservesFor_Unit is UnitTestSetup {
 
     function testJBTieredNFTRewardDelegate_mintFor_revertIfManualMintNotAllowed() public {
         uint256 nbTiers = 3;
-        vm.mockCall(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
+        mockAndExpect(mockJBProjects, abi.encodeWithSelector(IERC721.ownerOf.selector, projectId), abi.encode(owner));
         JB721TierParams[] memory _tiers = new JB721TierParams[](nbTiers);
         uint16[] memory _tiersToMint = new uint16[](nbTiers * 2);
         // Temp tiers, will get overwritten later (pass the constructor check)

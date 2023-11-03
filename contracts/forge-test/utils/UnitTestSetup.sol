@@ -17,6 +17,10 @@ import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBDidRedeemData3_1_1.
 import "@jbx-protocol/juice-contracts-v3/contracts/structs/JBRedemptionDelegateAllocation3_1_1.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBPaymentTerminal.sol";
 import "@jbx-protocol/juice-contracts-v3/contracts/interfaces/IJBFundingCycleBallot.sol";
+
+import "../../structs/JBLaunchProjectData.sol";
+
+
 import "@jbx-protocol/juice-delegates-registry/src/JBDelegatesRegistry.sol";
 
 import "@jbx-protocol/juice-contracts-v3/contracts/libraries/JBCurrencies.sol";
@@ -30,6 +34,7 @@ contract UnitTestSetup is Test {
     address beneficiary;
     address owner;
     address reserveBeneficiary;
+    address mockJBController;
     address mockJBDirectory;
     address mockJBFundingCycleStore;
     address mockTokenUriResolver;
@@ -37,11 +42,14 @@ contract UnitTestSetup is Test {
     address mockJBProjects;
     address mockJBOperatorStore;
     
-    uint256 projectId = 69;
     string name = "NAME";
     string symbol = "SYM";
     string baseUri = "http://www.null.com/";
     string contractUri = "ipfs://null";
+    string fcMemo = "meemoo";
+
+    uint256 projectId = 69;
+
     uint256 constant OVERFLOW = 10e18;
     uint256 constant REDEMPTION_RATE = JBConstants.MAX_RESERVED_RATE; // 40%
 
@@ -76,6 +84,7 @@ contract UnitTestSetup is Test {
     ];
 
     JB721TierParams[] tiers;
+    JBTiered721DelegateStore store;
     JBTiered721Delegate delegate;
     JBTiered721Delegate noGovernanceOrigin; // noGovernanceOrigin
     JBDelegatesRegistry delegatesRegistry;
@@ -104,7 +113,7 @@ contract UnitTestSetup is Test {
         uint256 indexed changeAmount, uint256 indexed newTotalCredits, address indexed account, address caller
     );
 
-    function setUp() public {
+    function setUp() public virtual {
         beneficiary = makeAddr("beneficiary");
         owner = makeAddr("owner");
         reserveBeneficiary = makeAddr("reserveBeneficiary");
@@ -113,6 +122,7 @@ contract UnitTestSetup is Test {
         mockTerminalAddress = makeAddr("mockTerminalAddress");
         mockJBProjects = makeAddr("mockJBProjects");
         mockJBOperatorStore = makeAddr("mockJBOperatorStore");
+        mockJBController = makeAddr("mockJBController");
         mockTokenUriResolver = address(0);
 
         vm.etch(mockJBDirectory, new bytes(0x69));
@@ -120,6 +130,7 @@ contract UnitTestSetup is Test {
         vm.etch(mockTokenUriResolver, new bytes(0x69));
         vm.etch(mockTerminalAddress, new bytes(0x69));
         vm.etch(mockJBProjects, new bytes(0x69));
+        vm.etch(mockJBController, new bytes(0x69));
 
         defaultTierParams = JB721TierParams({
                                     price: 0, // use defaut prices
@@ -199,14 +210,22 @@ contract UnitTestSetup is Test {
         vm.mockCall(mockJBDirectory, abi.encodeWithSelector(IJBDirectory.projects.selector), abi.encode(mockJBProjects));
 
         vm.mockCall(
-            mockJBDirectory, abi.encodeWithSelector(IJBOperatable.operatorStore.selector), abi.encode(mockJBProjects)
+            mockJBDirectory, abi.encodeWithSelector(IJBOperatable.operatorStore.selector), abi.encode(mockJBOperatorStore)
         );
 
-        noGovernanceOrigin =
-        new JBTiered721Delegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), PAY_DELEGATE_ID, REDEEM_DELEGATE_ID);
+        noGovernanceOrigin = new JBTiered721Delegate(
+            IJBDirectory(mockJBDirectory), 
+            IJBOperatorStore(mockJBOperatorStore), 
+            PAY_DELEGATE_ID, 
+            REDEEM_DELEGATE_ID
+        );
 
-        JBTiered721GovernanceDelegate onchainGovernance =
-        new JBTiered721GovernanceDelegate(IJBDirectory(mockJBDirectory), IJBOperatorStore(mockJBOperatorStore), PAY_DELEGATE_ID, REDEEM_DELEGATE_ID);
+        JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
+            IJBDirectory(mockJBDirectory), 
+            IJBOperatorStore(mockJBOperatorStore), 
+            PAY_DELEGATE_ID, 
+            REDEEM_DELEGATE_ID
+        );
 
         delegatesRegistry = new JBDelegatesRegistry(IJBDelegatesRegistry(address(0)));
 
@@ -215,6 +234,8 @@ contract UnitTestSetup is Test {
             noGovernanceOrigin,
             delegatesRegistry
         );
+
+        store = new JBTiered721DelegateStore();
 
         JBDeployTiered721DelegateData memory delegateData = JBDeployTiered721DelegateData(
             name,
@@ -225,7 +246,7 @@ contract UnitTestSetup is Test {
             contractUri,
             JB721PricingParams({tiers: tiers, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
             address(0),
-            new JBTiered721DelegateStore(),
+            store,
             JBTiered721Flags({
                 preventOverspending: false,
                 lockReservedTokenChanges: true,
@@ -308,8 +329,13 @@ contract UnitTestSetup is Test {
             assertEq(first[i].encodedIPFSUri, second[i].encodedIPFSUri);
         }
     }
-    // Generate tokenId's based on token number and tier
 
+    function mockAndExpect(address _target, bytes memory _calldata, bytes memory _returnData) internal {
+        vm.mockCall(_target, _calldata, _returnData);
+        vm.expectCall(_target, _calldata);
+    }
+
+    // Generate tokenId's based on token number and tier
     function _generateTokenId(uint256 _tierId, uint256 _tokenNumber) internal pure returns (uint256) {
         return (_tierId * 1_000_000_000) + _tokenNumber;
     }
@@ -514,15 +540,41 @@ contract UnitTestSetup is Test {
             return _newNumberOfTiers;
     }
 
-    function _initializeDelegateDefaultTiers(uint256 _initialNumberOfTiers) internal returns(JBTiered721Delegate _delegate){
+    function _initializeDelegateDefaultTiers(uint256 _initialNumberOfTiers) internal returns(JBTiered721Delegate){
+        return _initializeDelegateDefaultTiers(_initialNumberOfTiers, false, 1, 18, address(0));
+    }
+
+    function _initializeDelegateDefaultTiers(uint256 _initialNumberOfTiers, bool _preventOverspending) internal returns(JBTiered721Delegate){
+        return _initializeDelegateDefaultTiers(_initialNumberOfTiers, _preventOverspending, 1, 18, address(0));
+    }
+
+    function _initializeDelegateDefaultTiers(uint256 _initialNumberOfTiers, bool _preventOverspending, uint48 _currency, uint48 _decimals, address _oracle) internal returns(JBTiered721Delegate _delegate){
         // Initialize first tiers to add
         (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) = _createTiers(
             defaultTierParams,
             _initialNumberOfTiers);
 
-        JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+        // "Deploy" the delegate
         vm.etch(delegate_i, address(delegate).code);
         _delegate = JBTiered721Delegate(delegate_i);
+
+        // Deploy the delegate store        
+        JBTiered721DelegateStore _store = new JBTiered721DelegateStore();
+
+        // Initialize the delegate, put the struc in memory for stack's sake
+        JBTiered721Flags memory _flags = JBTiered721Flags({
+            preventOverspending: _preventOverspending,
+            lockReservedTokenChanges: false,
+            lockVotingUnitChanges: false,
+            lockManualMintingChanges: false
+        });
+
+        JB721PricingParams memory _pricingParams = JB721PricingParams({
+            tiers: _tiersParams,
+            currency: _currency,
+            decimals: _decimals,
+            prices: IJBPrices(_oracle)
+        });
 
         _delegate.initialize(
             projectId,
@@ -532,15 +584,137 @@ contract UnitTestSetup is Test {
             baseUri,
             IJB721TokenUriResolver(mockTokenUriResolver),
             contractUri,
-            JB721PricingParams({tiers: _tiersParams, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+            _pricingParams,
             IJBTiered721DelegateStore(_store),
+            _flags
+        );
+
+        // Transfer ownership to owner
+        _delegate.transferOwnership(owner);
+    }
+
+    function _initializeForTestDelegate(uint256 _initialNumberOfTiers) internal returns(ForTest_JBTiered721Delegate _delegate){
+        // Initialize first tiers to add
+        (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) = _createTiers(
+            defaultTierParams,
+            _initialNumberOfTiers);
+
+        // Deploy the For Test delegate store        
+        ForTest_JBTiered721DelegateStore _store = new ForTest_JBTiered721DelegateStore();
+
+        // Deploy the For Test delegate
+        _delegate = new ForTest_JBTiered721Delegate(
+            projectId,
+            IJBDirectory(mockJBDirectory),
+            name,
+            symbol,
+            IJBFundingCycleStore(mockJBFundingCycleStore),
+            baseUri,
+            IJB721TokenUriResolver(mockTokenUriResolver),
+            contractUri,
+            _tiersParams,
+            IJBTiered721DelegateStore(address(_store)),
             JBTiered721Flags({
-                preventOverspending: false,
-                lockReservedTokenChanges: false,
-                lockVotingUnitChanges: false,
-                lockManualMintingChanges: true
+            preventOverspending: false,
+            lockReservedTokenChanges: false,
+            lockVotingUnitChanges: false,
+            lockManualMintingChanges: true
             })
         );
+
+        // Transfer ownership to owner
         _delegate.transferOwnership(owner);
+    }
+
+
+    function createData()
+        internal
+        view
+        returns (
+            JBDeployTiered721DelegateData memory tiered721DeployerData,
+            JBLaunchProjectData memory launchProjectData
+        )
+    {
+        JBProjectMetadata memory projectMetadata;
+        JBFundingCycleData memory data;
+        JBPayDataSourceFundingCycleMetadata memory metadata;
+        JBGroupedSplits[] memory groupedSplits;
+        JBFundAccessConstraints[] memory fundAccessConstraints;
+        IJBPaymentTerminal[] memory terminals;
+        JB721TierParams[] memory tierParams = new JB721TierParams[](10);
+        for (uint256 i; i < 10; i++) {
+            tierParams[i] = JB721TierParams({
+                price: uint104((i + 1) * 10),
+                initialQuantity: uint32(100),
+                votingUnits: uint16(0),
+                reservedRate: uint16(0),
+                reservedTokenBeneficiary: reserveBeneficiary,
+                encodedIPFSUri: tokenUris[i],
+                category: uint24(100),
+                allowManualMint: false,
+                shouldUseReservedTokenBeneficiaryAsDefault: false,
+                transfersPausable: false,
+                useVotingUnits: true
+            });
+        }
+        tiered721DeployerData = JBDeployTiered721DelegateData({
+            name: name,
+            symbol: symbol,
+            fundingCycleStore: IJBFundingCycleStore(mockJBFundingCycleStore),
+            baseUri: baseUri,
+            tokenUriResolver: IJB721TokenUriResolver(mockTokenUriResolver),
+            contractUri: contractUri,
+            pricing: JB721PricingParams({tiers: tierParams, currency: 1, decimals: 18, prices: IJBPrices(address(0))}),
+            reservedTokenBeneficiary: reserveBeneficiary,
+            store: store,
+            flags: JBTiered721Flags({
+                preventOverspending: false,
+                lockReservedTokenChanges: true,
+                lockVotingUnitChanges: true,
+                lockManualMintingChanges: true
+            }),
+            governanceType: JB721GovernanceType.NONE
+        });
+
+
+        projectMetadata = JBProjectMetadata({content: "myIPFSHash", domain: 1});
+        data = JBFundingCycleData({
+            duration: 14,
+            weight: 10 ** 18,
+            discountRate: 450_000_000,
+            ballot: IJBFundingCycleBallot(address(0))
+        });
+        metadata = JBPayDataSourceFundingCycleMetadata({
+            global: JBGlobalFundingCycleMetadata({
+                allowSetTerminals: false,
+                allowSetController: false,
+                pauseTransfers: false
+            }),
+            reservedRate: 5000, //50%
+            redemptionRate: 5000, //50%
+            ballotRedemptionRate: 0,
+            pausePay: false,
+            pauseDistributions: false,
+            pauseRedeem: false,
+            pauseBurn: false,
+            allowMinting: false,
+            allowTerminalMigration: false,
+            allowControllerMigration: false,
+            holdFees: false,
+            preferClaimedTokenOverride: false,
+            useTotalOverflowForRedemptions: false,
+            useDataSourceForRedeem: false,
+            metadata: 0x00
+        });
+        launchProjectData = JBLaunchProjectData({
+            projectMetadata: projectMetadata,
+            data: data,
+            metadata: metadata,
+            mustStartAtOrAfter: 0,
+            groupedSplits: groupedSplits,
+            fundAccessConstraints: fundAccessConstraints,
+            terminals: terminals,
+            memo: fcMemo
+        });
     }
 }

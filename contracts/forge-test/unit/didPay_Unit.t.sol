@@ -6,35 +6,18 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     using stdStorage for StdStorage;
 
     // If the amount payed is below the price to receive an NFT the pay should not revert if no metadata passed
-    function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowPriceIfNoMetadataIfPreventOverspending()
-        public
-    {
-        ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBFundingCycleStore(mockJBFundingCycleStore),
-        baseUri,
-        IJB721TokenUriResolver(mockTokenUriResolver),
-        contractUri,
-        tiers,
-        IJBTiered721DelegateStore(address(_ForTest_store)),
-        JBTiered721Flags({
-          preventOverspending: true,
-          lockReservedTokenChanges: true,
-          lockVotingUnitChanges: false,
-          lockManualMintingChanges: true
-        })
-      );
+    function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowPriceIfNoMetadataIfPreventOverspending() public {
+        JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10, true);
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
+
         vm.prank(mockTerminalAddress);
         _delegate.didPay(
             JBDidPayData3_1_1(
@@ -51,16 +34,18 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 new bytes(0)
             )
         );
+
     }
 
     // If the amount payed is below the price to receive an NFT the pay should revert if no metadata passed and the allow overspending flag is false.
     function testJBTieredNFTRewardDelegate_didPay_doesNotRevertOnAmountBelowPriceIfNoMetadata() public {
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         vm.prank(mockTerminalAddress);
         delegate.didPay(
             JBDidPayData3_1_1(
@@ -77,18 +62,21 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 new bytes(0)
             )
         );
+
         assertEq(delegate.creditsOf(msg.sender), tiers[0].price - 1);
     }
 
     // If the amount is above contribution floor and a tier is passed, mint as many corresponding tier as possible
     function testJBTieredNFTRewardDelegate_didPay_mintCorrectTier() public {
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
+        
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -121,8 +109,10 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Make sure a new NFT was minted
         assertEq(_totalSupplyBeforePay + 3, delegate.store().totalSupplyOf(address(delegate)));
+
         // Correct tier has been minted?
         assertEq(delegate.ownerOf(_generateTokenId(1, 1)), msg.sender);
         assertEq(delegate.ownerOf(_generateTokenId(1, 2)), msg.sender);
@@ -131,17 +121,20 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
     function testJBTieredNFTRewardDelegate_didPay_mintNoneIfNonePassed(uint8 _amount) public {
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
+
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](0);
         bytes memory _metadata = abi.encode(
             bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
         );
+
         vm.prank(mockTerminalAddress);
         delegate.didPay(
             JBDidPayData3_1_1(
@@ -158,6 +151,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _metadata
             )
         );
+
         // Make sure no new NFT was minted if amount >= contribution floor
         assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
@@ -165,12 +159,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     function testJBTieredNFTRewardDelegate_didPay_mintTierAndTrackLeftover() public {
         uint256 _leftover = tiers[0].price - 1;
         uint256 _amount = tiers[0].price + _leftover;
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](1);
         _tierIdsToMint[0] = uint16(1);
@@ -188,8 +184,10 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         // calculating new credits
         uint256 _newCredits = _leftover + delegate.creditsOf(beneficiary);
+
         vm.expectEmit(true, true, true, true, address(delegate));
         emit AddCredits(_newCredits, _newCredits, beneficiary, mockTerminalAddress);
+
         vm.prank(mockTerminalAddress);
         delegate.didPay(
             JBDidPayData3_1_1(
@@ -206,6 +204,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Check: credit is updated?
         assertEq(delegate.creditsOf(beneficiary), _leftover);
     }
@@ -214,12 +213,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     function testJBTieredNFTRewardDelegate_didPay_mintCorrectTiersWhenUsingPartialCredits() public {
         uint256 _leftover = tiers[0].price + 1; // + 1 to avoid rounding error
         uint256 _amount = tiers[0].price * 2 + tiers[1].price + _leftover / 2;
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -236,10 +237,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         // Generate the metadata
         bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         uint256 _credits = delegate.creditsOf(beneficiary);
+
         _leftover = _leftover / 2 + _credits; //left over amount
+
         vm.expectEmit(true, true, true, true, address(delegate));
         emit AddCredits(_leftover - _credits, _leftover, beneficiary, mockTerminalAddress);
+
         // First call will mint the 3 tiers requested + accumulate half of first floor in credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -257,6 +262,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
         {
             // We now attempt an additional tier 1 by using the credit we collected from last pay
@@ -271,6 +277,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
             // Generate the metadata
             _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
+
         // fetch existing credits
         _credits = delegate.creditsOf(beneficiary);
         vm.expectEmit(true, true, true, true, address(delegate));
@@ -280,6 +287,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
             beneficiary,
             mockTerminalAddress
         );
+
         // Second call will mint another 3 tiers requested + mint from the first tier with the credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -297,18 +305,22 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Check: total supply has increased?
         assertEq(_totalSupplyBefore + 4, delegate.store().totalSupplyOf(address(delegate)));
+
         // Check: correct tiers have been minted
         // .. On first pay?
         assertEq(delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(1, 2)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(2, 1)), beneficiary);
+
         // ... On second pay?
         assertEq(delegate.ownerOf(_generateTokenId(1, 3)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(1, 4)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(1, 5)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(2, 2)), beneficiary);
+
         // Check: no credit is left?
         assertEq(delegate.creditsOf(beneficiary), 0);
     }
@@ -316,12 +328,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     function testJBTieredNFTRewardDelegate_didPay_doNotMintWithSomeoneElseCredit() public {
         uint256 _leftover = tiers[0].price + 1; // + 1 to avoid rounding error
         uint256 _amount = tiers[0].price * 2 + tiers[1].price + _leftover / 2;
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -338,6 +352,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         // Generate the metadata
         bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         // First call will mint the 3 tiers requested + accumulate half of first floor in credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -355,8 +370,10 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
         uint256 _creditBefore = delegate.creditsOf(beneficiary);
+
         // Second call will mint another 3 tiers requested BUT not with the credit accumulated
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -374,17 +391,21 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Check: total supply has increased with the 3 token?
         assertEq(_totalSupplyBefore + 3, delegate.store().totalSupplyOf(address(delegate)));
+
         // Check: correct tiers have been minted
         // .. On first pay?
         assertEq(delegate.ownerOf(_generateTokenId(1, 1)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(1, 2)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(2, 1)), beneficiary);
+
         // ... On second pay, without extra from the credit?
         assertEq(delegate.ownerOf(_generateTokenId(1, 3)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(1, 4)), beneficiary);
         assertEq(delegate.ownerOf(_generateTokenId(2, 2)), beneficiary);
+
         // Check: credit is now having both left-overs?
         assertEq(delegate.creditsOf(beneficiary), _creditBefore * 2);
     }
@@ -394,36 +415,23 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     function testJBTieredNFTRewardDelegate_didPay_mintCorrectTierWithAnotherCurrency() public {
         address _jbPrice = address(bytes20(keccak256("MockJBPrice")));
         vm.etch(_jbPrice, new bytes(1));
-        vm.etch(delegate_i, address(delegate).code);
-        JBTiered721Delegate _delegate = JBTiered721Delegate(delegate_i);
-        _delegate.initialize(
-            projectId,
-            name,
-            symbol,
-            IJBFundingCycleStore(mockJBFundingCycleStore),
-            baseUri,
-            IJB721TokenUriResolver(mockTokenUriResolver),
-            contractUri,
-            JB721PricingParams({tiers: tiers, currency: 2, decimals: 9, prices: IJBPrices(_jbPrice)}),
-            new JBTiered721DelegateStore(),
-            JBTiered721Flags({
-                preventOverspending: false,
-                lockReservedTokenChanges: true,
-                lockVotingUnitChanges: true,
-                lockManualMintingChanges: true
-            })
-        );
-        _delegate.transferOwnership(owner);
+
+        // currency 2 with 9 decimals
+        JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10, false, 2, 9, _jbPrice);
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         // Mock the price oracle call
         uint256 _amountInEth = (tiers[0].price * 2 + tiers[1].price) * 2;
-        vm.mockCall(_jbPrice, abi.encodeCall(IJBPrices.priceFor, (1, 2, 18)), abi.encode(2 * 10 ** 9));
+        mockAndExpect(_jbPrice, abi.encodeCall(IJBPrices.priceFor, (1, 2, 18)), abi.encode(2 * 10 ** 9));
+
         uint256 _totalSupplyBeforePay = _delegate.store().totalSupplyOf(address(delegate));
+
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -457,8 +465,10 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Make sure a new NFT was minted
         assertEq(_totalSupplyBeforePay + 3, _delegate.store().totalSupplyOf(address(_delegate)));
+
         // Correct tier has been minted?
         assertEq(_delegate.ownerOf(_generateTokenId(1, 1)), msg.sender);
         assertEq(_delegate.ownerOf(_generateTokenId(1, 2)), msg.sender);
@@ -468,12 +478,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     // If the tier has been removed, revert
     function testJBTieredNFTRewardDelegate_didPay_revertIfTierRemoved() public {
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
+
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -490,11 +502,15 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         // Generate the metadata
         bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         uint256[] memory _toRemove = new uint256[](1);
         _toRemove[0] = 1;
+
         vm.prank(owner);
         delegate.adjustTiers(new JB721TierParams[](0), _toRemove);
+
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.TIER_REMOVED.selector));
+
         vm.prank(mockTerminalAddress);
         delegate.didPay(
             JBDidPayData3_1_1(
@@ -511,22 +527,26 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Make sure no new NFT was minted
         assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
 
-    function testJBTieredNFTRewardDelegate_didPay_revertIfNonExistingTier(uint16 _invalidTier) public {
-        vm.assume(_invalidTier > tiers.length);
+    function testJBTieredNFTRewardDelegate_didPay_revertIfNonExistingTier(uint256 _invalidTier) public {
+        _invalidTier = bound(_invalidTier, tiers.length + 1, type(uint16).max);
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
+
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](1);
-        _tierIdsToMint[0] = _invalidTier;
+        _tierIdsToMint[0] = uint16(_invalidTier);
 
         // Build the metadata with the tiers to mint and the overspending flag
         bytes[] memory _data = new bytes[](1);
@@ -538,11 +558,15 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         // Generate the metadata
         bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         uint256[] memory _toRemove = new uint256[](1);
         _toRemove[0] = 1;
+
         vm.prank(owner);
         delegate.adjustTiers(new JB721TierParams[](0), _toRemove);
+
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.INVALID_TIER.selector));
+
         vm.prank(mockTerminalAddress);
         delegate.didPay(
             JBDidPayData3_1_1(
@@ -559,6 +583,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Make sure no new NFT was minted
         assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
@@ -566,12 +591,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     // If the amount is not enought to cover all the tiers requested, revert
     function testJBTieredNFTRewardDelegate_didPay_revertIfAmountTooLow() public {
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
+
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -588,7 +615,9 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         // Generate the metadata
         bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.INSUFFICIENT_AMOUNT.selector));
+
         vm.prank(mockTerminalAddress);
         delegate.didPay(
             JBDidPayData3_1_1(
@@ -605,18 +634,21 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // Make sure no new NFT was minted
         assertEq(_totalSupplyBeforePay, delegate.store().totalSupplyOf(address(delegate)));
     }
 
     function testJBTieredNFTRewardDelegate_didPay_revertIfAllowanceRunsOutInParticularTier() public {
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         uint256 _supplyLeft = tiers[0].initialQuantity;
+
         while (true) {
             uint256 _totalSupplyBeforePay = delegate.store().totalSupplyOf(address(delegate));
 
@@ -671,15 +703,19 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
     function testJBTieredNFTRewardDelegate_didPay_revertIfCallerIsNotATerminalOfProjectId(address _terminal) public {
         vm.assume(_terminal != mockTerminalAddress);
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, _terminal),
             abi.encode(false)
         );
+
         // The caller is the _expectedCaller however the terminal in the calldata is not correct
         vm.prank(_terminal);
+
         vm.expectRevert(abi.encodeWithSelector(JB721Delegate.INVALID_PAYMENT_EVENT.selector));
+
         delegate.didPay(
             JBDidPayData3_1_1(
                 msg.sender,
@@ -699,12 +735,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
     function testJBTieredNFTRewardDelegate_didPay_doNotMintIfNotUsingCorrectToken(address token) public {
         vm.assume(token != JBTokens.ETH);
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         // The caller is the _expectedCaller however the terminal in the calldata is not correct
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -722,6 +760,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 new bytes(0)
             )
         );
+
         // Check: nothing has been minted
         assertEq(delegate.store().totalSupplyOf(address(delegate)), 0);
     }
@@ -730,12 +769,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     ) public {
         uint256 _leftover = tiers[0].price + 1; // + 1 to avoid rounding error
         uint256 _amount = tiers[0].price * 2 + tiers[1].price + _leftover / 2;
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -755,8 +796,10 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         uint256 _credits = delegate.creditsOf(beneficiary);
         _leftover = _leftover / 2 + _credits; //left over amount
+
         vm.expectEmit(true, true, true, true, address(delegate));
         emit AddCredits(_leftover - _credits, _leftover, beneficiary, mockTerminalAddress);
+
         // First call will mint the 3 tiers requested + accumulate half of first floor in credit
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -774,6 +817,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         uint256 _totalSupplyBefore = delegate.store().totalSupplyOf(address(delegate));
         {
             // We now attempt an additional tier 1 by using the credit we collected from last pay
@@ -785,12 +829,15 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
             // Generate the metadata
             _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
+
         // fetch existing credits
         _credits = delegate.creditsOf(beneficiary);
+
         // using existing credits to mint
         _leftover = tiers[0].price - 1 - _credits;
         vm.expectEmit(true, true, true, true, address(delegate));
         emit UseCredits(_credits - _leftover, _leftover, beneficiary, mockTerminalAddress);
+
         // minting with left over credits
         vm.prank(mockTerminalAddress);
         delegate.didPay(
@@ -808,6 +855,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         // total supply increases
         assertEq(_totalSupplyBefore + 1, delegate.store().totalSupplyOf(address(delegate)));
     }
@@ -815,8 +863,9 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftover() public {
         uint256 _leftover = tiers[1].price - 1;
         uint256 _amount = tiers[0].price + _leftover;
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
@@ -856,27 +905,34 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     function testJBTieredNFTRewardDelegate_didPay_revertIfUnexpectedLeftoverAndPrevented(bool _prevent) public {
         uint256 _leftover = tiers[1].price - 1;
         uint256 _amount = tiers[0].price + _leftover;
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         // Get the currently selected flags
         JBTiered721Flags memory flags = delegate.store().flagsOf(address(delegate));
+
         // Modify the prevent
         flags.preventOverspending = _prevent;
+
         // Mock the call to return the new flags
-        vm.mockCall(
+        mockAndExpect(
             address(delegate.store()),
             abi.encodeWithSelector(IJBTiered721DelegateStore.flagsOf.selector, address(delegate)),
             abi.encode(flags)
         );
+
         bool _allowOverspending = true;
         uint16[] memory _tierIdsToMint = new uint16[](0);
+
         bytes memory _metadata = abi.encode(
             bytes32(0), bytes32(0), type(IJBTiered721Delegate).interfaceId, _allowOverspending, _tierIdsToMint
         );
+
         // If prevent is enabled the call should revert, otherwise we should receive credits
         if (_prevent) {
             vm.expectRevert(abi.encodeWithSelector(JBTiered721Delegate.OVERSPENDING.selector));
@@ -908,49 +964,21 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
     // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting (if delegate flag pausable is true)
     function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle() public {
+
         JB721TierParams[] memory _tierParams = new JB721TierParams[](5);
-        // 5 tiers, floors from 10 to 50
-        for (uint256 i; i < 5; i++) {
-            _tierParams[i] = JB721TierParams({
-                price: uint104((i + 1) * 10),
-                initialQuantity: uint32(100),
-                votingUnits: uint16(0),
-                reservedTokenBeneficiary: reserveBeneficiary,
-                reservedRate: uint16(0),
-                encodedIPFSUri: tokenUris[0],
-                allowManualMint: false,
-                shouldUseReservedTokenBeneficiaryAsDefault: false,
-                category: uint24(100),
-                transfersPausable: true,
-                useVotingUnits: false
-            });
-        }
-        ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBFundingCycleStore(mockJBFundingCycleStore),
-        baseUri,
-        IJB721TokenUriResolver(mockTokenUriResolver),
-        contractUri,
-        _tierParams,
-        IJBTiered721DelegateStore(address(_ForTest_store)),
-        JBTiered721Flags({
-          preventOverspending: false,
-          lockReservedTokenChanges: false,
-          lockVotingUnitChanges: false,
-          lockManualMintingChanges: true
-        })
-      );
+
+        defaultTierParams.transfersPausable = true;
+        JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10);
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
-        vm.mockCall(
+
+
+        mockAndExpect(
             mockJBFundingCycleStore,
             abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
             abi.encode(
@@ -992,6 +1020,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 })
             )
         );
+
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](3);
         _tierIdsToMint[0] = 1;
@@ -1025,21 +1054,26 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         uint256 _tokenId = _generateTokenId(1, 1);
+
         vm.expectRevert(JBTiered721Delegate.TRANSFERS_PAUSED.selector);
+
         vm.prank(msg.sender);
         IERC721(_delegate).transferFrom(msg.sender, beneficiary, _tokenId);
     }
 
     // If FC has the pause transfer flag but the delegate flag 'pausable' is false, transfer are not paused
     function testJBTieredNFTRewardDelegate_beforeTransferHook_pauseFlagOverrideFundingCycleTransferPaused() public {
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
-        vm.mockCall(
+
+        mockAndExpect(
             mockJBFundingCycleStore,
             abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
             abi.encode(
@@ -1081,27 +1115,8 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 })
             )
         );
-        ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
 
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBFundingCycleStore(mockJBFundingCycleStore),
-        baseUri,
-        IJB721TokenUriResolver(mockTokenUriResolver),
-        contractUri,
-        tiers,
-        IJBTiered721DelegateStore(address(_ForTest_store)),
-        JBTiered721Flags({
-          preventOverspending: false,
-          lockReservedTokenChanges: false,
-          lockVotingUnitChanges: false,
-          lockManualMintingChanges: true
-        })
-      );
-
+       JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10);
 
         bool _allowOverspending;
         uint16[] memory _tierIdsToMint = new uint16[](3);
@@ -1147,7 +1162,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
     function testJBTieredNFTRewardDelegate_beforeTransferHook_redeemEvenIfTransferPausedInFundingCycle() public {
         address _holder = address(bytes20(keccak256("_holder")));
-        vm.mockCall(
+        mockAndExpect(
             mockJBFundingCycleStore,
             abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
             abi.encode(
@@ -1189,36 +1204,21 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 })
             )
         );
-        ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBFundingCycleStore(mockJBFundingCycleStore),
-        baseUri,
-        IJB721TokenUriResolver(mockTokenUriResolver),
-        contractUri,
-        tiers,
-        IJBTiered721DelegateStore(address(_ForTest_store)),
-        JBTiered721Flags({
-          preventOverspending: false,
-          lockReservedTokenChanges: false,
-          lockVotingUnitChanges: false,
-          lockManualMintingChanges: true
-        })
-      );
-        _delegate.transferOwnership(owner);
+
+        JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10);
+
         // Mock the directory call
-        vm.mockCall(
+        mockAndExpect(
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
         );
+
         // Metadata to mint
         bytes memory _delegateMetadata;
         bytes[] memory _data = new bytes[](1);
         bytes4[] memory _ids = new bytes4[](1);
+
         {
             // Craft the metadata: mint the specified tier
             uint16[] memory rawMetadata = new uint16[](1);
@@ -1233,6 +1233,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
             // Generate the metadata
             _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
         }
+
         // We mint the NFTs otherwise the voting balance does not get incremented
         // which leads to underflow on redeem
         vm.prank(mockTerminalAddress);
@@ -1251,6 +1252,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 _delegateMetadata
             )
         );
+
         uint256[] memory _tokenToRedeem = new uint256[](1);
         _tokenToRedeem[0] = _generateTokenId(1, 1);
 
@@ -1278,6 +1280,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
                 redeemerMetadata: _delegateMetadata
             })
         );
+        
         // Balance should be 0 again
         assertEq(_delegate.balanceOf(_holder), 0);
     }
