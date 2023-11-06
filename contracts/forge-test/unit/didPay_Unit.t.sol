@@ -964,9 +964,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
     // Mint are still possible, transfer to other addresses than 0 (ie burn) are reverting (if delegate flag pausable is true)
     function testJBTieredNFTRewardDelegate_beforeTransferHook_revertTransferIfTransferPausedInFundingCycle() public {
-
-        JB721TierParams[] memory _tierParams = new JB721TierParams[](5);
-
+        
         defaultTierParams.transfersPausable = true;
         JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10);
 
@@ -1064,6 +1062,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     }
 
     // If FC has the pause transfer flag but the delegate flag 'pausable' is false, transfer are not paused
+    // (this bypasses the call to the FC store)
     function testJBTieredNFTRewardDelegate_beforeTransferHook_pauseFlagOverrideFundingCycleTransferPaused() public {
 
         // Mock the directory call
@@ -1071,49 +1070,6 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
             address(mockJBDirectory),
             abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
             abi.encode(true)
-        );
-
-        mockAndExpect(
-            mockJBFundingCycleStore,
-            abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
-            abi.encode(
-                JBFundingCycle({
-                    number: 1,
-                    configuration: block.timestamp,
-                    basedOn: 0,
-                    start: block.timestamp,
-                    duration: 600,
-                    weight: 10e18,
-                    discountRate: 0,
-                    ballot: IJBFundingCycleBallot(address(0)),
-                    metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
-                        JBFundingCycleMetadata({
-                            global: JBGlobalFundingCycleMetadata({
-                                allowSetTerminals: false,
-                                allowSetController: false,
-                                pauseTransfers: false
-                            }),
-                            reservedRate: 5000, //50%
-                            redemptionRate: 5000, //50%
-                            ballotRedemptionRate: 5000,
-                            pausePay: false,
-                            pauseDistributions: false,
-                            pauseRedeem: false,
-                            pauseBurn: false,
-                            allowMinting: true,
-                            allowTerminalMigration: false,
-                            allowControllerMigration: false,
-                            holdFees: false,
-                            preferClaimedTokenOverride: false,
-                            useTotalOverflowForRedemptions: false,
-                            useDataSourceForPay: true,
-                            useDataSourceForRedeem: true,
-                            dataSource: address(0),
-                            metadata: 1 // 001_2
-                        })
-                        )
-                })
-            )
         );
 
        JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10);
@@ -1160,50 +1116,9 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
         assertEq(IERC721(_delegate).ownerOf(_tokenId), beneficiary);
     }
 
+    // This bypasses the call to FC store
     function testJBTieredNFTRewardDelegate_beforeTransferHook_redeemEvenIfTransferPausedInFundingCycle() public {
         address _holder = address(bytes20(keccak256("_holder")));
-        mockAndExpect(
-            mockJBFundingCycleStore,
-            abi.encodeCall(IJBFundingCycleStore.currentOf, projectId),
-            abi.encode(
-                JBFundingCycle({
-                    number: 1,
-                    configuration: block.timestamp,
-                    basedOn: 0,
-                    start: block.timestamp,
-                    duration: 600,
-                    weight: 10e18,
-                    discountRate: 0,
-                    ballot: IJBFundingCycleBallot(address(0)),
-                    metadata: JBFundingCycleMetadataResolver.packFundingCycleMetadata(
-                        JBFundingCycleMetadata({
-                            global: JBGlobalFundingCycleMetadata({
-                                allowSetTerminals: false,
-                                allowSetController: false,
-                                pauseTransfers: false
-                            }),
-                            reservedRate: 5000, //50%
-                            redemptionRate: 5000, //50%
-                            ballotRedemptionRate: 5000,
-                            pausePay: false,
-                            pauseDistributions: false,
-                            pauseRedeem: false,
-                            pauseBurn: false,
-                            allowMinting: true,
-                            allowTerminalMigration: false,
-                            allowControllerMigration: false,
-                            holdFees: false,
-                            preferClaimedTokenOverride: false,
-                            useTotalOverflowForRedemptions: false,
-                            useDataSourceForPay: true,
-                            useDataSourceForRedeem: true,
-                            dataSource: address(0),
-                            metadata: 1 // 001_2
-                        })
-                        )
-                })
-            )
-        );
 
         JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10);
 

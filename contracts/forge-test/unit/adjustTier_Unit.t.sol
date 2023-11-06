@@ -23,7 +23,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(initialNumberOfTiers);
         
         // Create new tiers to add
-        (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) = _createTiers(
+        (JB721TierParams[] memory _tiersParams,) = _createTiers(
             defaultTierParams,
             numberOfFloorTiersToAdd,
             initialNumberOfTiers,
@@ -69,7 +69,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         // Create new tiers to add
         uint256 _currentNumberOfTiers = initialNumberOfTiers;
 
-        (JB721TierParams[] memory _tiersParamsToAdd, JB721Tier[] memory _tiersToAdd) = _createTiers(
+        (JB721TierParams[] memory _tiersParamsToAdd,) = _createTiers(
             defaultTierParams,
             numberOfFloorTiersToAdd,
             initialNumberOfTiers,
@@ -112,7 +112,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(initialNumberOfTiers);
         
         // Create new tiers to add
-        (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) = _createTiers(
+        (JB721TierParams[] memory _tiersParams,) = _createTiers(
             defaultTierParams,
             numberOfFloorTiersToAdd,
             initialNumberOfTiers,
@@ -178,7 +178,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         assertEq(_storedTiers.length, _tiersLeft, "Length mismatch");
         
         // Check: Are all tiers in the new tiers (unsorted)?
-        // assertTrue(_isIn(_defaultStoredTiers, _storedTiers), "Original not included"); // Original tiers
+        assertTrue(_isIn(_defaultStoredTiers, _storedTiers), "Original not included"); // Original tiers
         assertTrue(_isIn(_tiersToAdd, _storedTiers), "New not included"); // New tiers
 
         // Check: Are all the tiers sorted?
@@ -253,10 +253,6 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         // Initialize first tiers to add, uing a given category
         defaultTierParams.category = 100;
         JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(initialNumberOfTiers);
-
-        JB721Tier[] memory _defaultStoredTiers = _delegate.store().tiersOf(
-            address(_delegate), new uint256[](0), false, 0, 100
-        );
         
         // Create new tiers to add, with another category
         defaultTierParams.category = 101;
@@ -321,10 +317,6 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         defaultTierParams.category = 100;
         JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(initialNumberOfTiers);
 
-        JB721Tier[] memory _intialTiers = _delegate.store().tiersOf(
-            address(_delegate), new uint256[](0), false, 0, 100
-        );
-        
         // Create new tiers to add
         defaultTierParams.category = 101;
         (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiersAdded) = _createTiers(
@@ -400,7 +392,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         
         // Create new tiers to add
         defaultTierParams.category = 5;
-        (JB721TierParams[] memory _tiersParamsToAdd, JB721Tier[] memory _tiersToAdd) = _createTiers(
+        (JB721TierParams[] memory _tiersParamsToAdd,) = _createTiers(
             defaultTierParams,
             numberOfFloorTiersToAdd,
             initialNumberOfTiers,
@@ -530,16 +522,15 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         uint256 seed,
         uint256 numberOfTiersToRemove
     ) public {
-        // Include adding X new tiers when 0 preexisting ones
-        initialNumberOfTiers = bound(initialNumberOfTiers, 1, 14);
-        numberOfTiersToRemove = bound(numberOfTiersToRemove, 1, initialNumberOfTiers);
+        initialNumberOfTiers = bound(initialNumberOfTiers, 0, 14);
+        numberOfTiersToRemove = bound(numberOfTiersToRemove, 0, initialNumberOfTiers);
 
         // Create random tiers to remove
         uint256[] memory tiersToRemove = new uint256[](numberOfTiersToRemove);
 
         // seed to generate new random tiers, i to iterate to fill the tiersToRemove array
         for (uint256 i; i < numberOfTiersToRemove;) {
-            uint256 _newTierCandidate = uint256(keccak256(abi.encode(seed))) % initialNumberOfTiers;
+            uint256 _newTierCandidate = uint256(keccak256(abi.encode(seed))) % initialNumberOfTiers + 1;
             bool _invalidTier;
             if (_newTierCandidate != 0) {
                 for (uint256 j; j < numberOfTiersToRemove; j++) {
@@ -1189,46 +1180,11 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
         uint256 initialNumberOfTiers,
         uint256 numberTiersToAdd
     ) public {
-        // Include adding X new tiers when 0 preexisting ones
         initialNumberOfTiers = bound(initialNumberOfTiers, 0, 15);
-        numberTiersToAdd = bound(numberTiersToAdd, 1, 15);
+        numberTiersToAdd = bound(numberTiersToAdd, 2, 15);
 
-        JB721TierParams[] memory _tierParams = new JB721TierParams[](initialNumberOfTiers);
-        for (uint256 i; i < initialNumberOfTiers; i++) {
-            _tierParams[i] = JB721TierParams({
-                price: uint104((i + 1) * 10),
-                initialQuantity: uint32(100),
-                votingUnits: uint16(0),
-                reservedRate: uint16(i),
-                reservedTokenBeneficiary: reserveBeneficiary,
-                encodedIPFSUri: tokenUris[0],
-                category: uint24(100),
-                allowManualMint: false,
-                shouldUseReservedTokenBeneficiaryAsDefault: false,
-                transfersPausable: false,
-                useVotingUnits: false
-            });
-        }
-        ForTest_JBTiered721DelegateStore _ForTest_store = new ForTest_JBTiered721DelegateStore();
-        ForTest_JBTiered721Delegate _delegate = new ForTest_JBTiered721Delegate(
-        projectId,
-        IJBDirectory(mockJBDirectory),
-        name,
-        symbol,
-        IJBFundingCycleStore(mockJBFundingCycleStore),
-        baseUri,
-        IJB721TokenUriResolver(mockTokenUriResolver),
-        contractUri,
-        _tierParams,
-        IJBTiered721DelegateStore(address(_ForTest_store)),
-        JBTiered721Flags({
-          preventOverspending: false,
-          lockReservedTokenChanges: false,
-          lockVotingUnitChanges: true,
-          lockManualMintingChanges: true
-        })
-      );
-        _delegate.transferOwnership(owner);
+        ForTest_JBTiered721Delegate _delegate = _initializeForTestDelegate(initialNumberOfTiers);
+
         JB721TierParams[] memory _tierParamsToAdd = new JB721TierParams[](numberTiersToAdd);
         for (uint256 i; i < numberTiersToAdd; i++) {
             _tierParamsToAdd[i] = JB721TierParams({
@@ -1246,6 +1202,7 @@ contract TestJuice721dDelegate_adjustTier_Unit is UnitTestSetup {
             });
         }
         _tierParamsToAdd[numberTiersToAdd - 1].category = uint8(99);
+
         vm.expectRevert(abi.encodeWithSelector(JBTiered721DelegateStore.INVALID_CATEGORY_SORT_ORDER.selector));
         vm.prank(owner);
         _delegate.adjustTiers(_tierParamsToAdd, new uint256[](0));

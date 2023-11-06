@@ -26,20 +26,6 @@ contract TestJBTiered721DelegateProjectDeployer_Unit is UnitTestSetup {
     function setUp() public override {
         super.setUp();
 
-        JBTiered721Delegate noGovernance = new JBTiered721Delegate(
-            IJBDirectory(mockJBDirectory), 
-            IJBOperatorStore(mockJBOperatorStore), 
-            PAY_DELEGATE_ID, 
-            REDEEM_DELEGATE_ID
-        );
-
-        JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
-            IJBDirectory(mockJBDirectory),
-            IJBOperatorStore(mockJBOperatorStore),
-            PAY_DELEGATE_ID,
-            REDEEM_DELEGATE_ID
-        );
-
         deployer = new JBTiered721DelegateProjectDeployer(
             IJBDirectory(mockJBDirectory),
             jbDelegateDeployer,

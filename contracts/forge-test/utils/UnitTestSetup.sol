@@ -133,18 +133,18 @@ contract UnitTestSetup is Test {
         vm.etch(mockJBController, new bytes(0x69));
 
         defaultTierParams = JB721TierParams({
-                                    price: 0, // use defaut prices
-                                    initialQuantity: 0, // use default Qt
-                                    votingUnits: 0, // default voting units
-                                    reservedRate: uint16(10), // default rr
-                                    reservedTokenBeneficiary: reserveBeneficiary, // default beneficiary
-                                    encodedIPFSUri: bytes32(0), // default hashes array
-                                    category: type(uint24).max,
-                                    allowManualMint: false,
-                                    shouldUseReservedTokenBeneficiaryAsDefault: false,
-                                    transfersPausable: false,
-                                    useVotingUnits: true
-                                });
+                price: 0, // use defaut prices
+                initialQuantity: 0, // use default Qt
+                votingUnits: 0, // default voting units
+                reservedRate: uint16(10), // default rr
+                reservedTokenBeneficiary: reserveBeneficiary, // default beneficiary
+                encodedIPFSUri: bytes32(0), // default hashes array
+                category: type(uint24).max,
+                allowManualMint: false,
+                shouldUseReservedTokenBeneficiaryAsDefault: false,
+                transfersPausable: false,
+                useVotingUnits: true
+            });
 
         // Create 10 tiers, each with 100 tokens available to mint
         for (uint256 i; i < 10; i++) {
@@ -464,19 +464,19 @@ contract UnitTestSetup is Test {
         return _out;
     }
 
-    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers) internal view returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
         return _createTiers(_tierParams, _numberOfTiers, 0, new uint16[](_numberOfTiers), 0);
     }
 
-    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _categoryIncrement) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _categoryIncrement) internal view returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
         return _createTiers(_tierParams, _numberOfTiers, 0, new uint16[](_numberOfTiers), _categoryIncrement);
     }
 
-    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _initialId, uint16[] memory _floors) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _initialId, uint16[] memory _floors) internal view returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
         return _createTiers(_tierParams, _numberOfTiers, _initialId, _floors, 0);
     }
 
-    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _initialId, uint16[] memory _floors, uint256 _categoryIncrement) internal returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
+    function _createTiers(JB721TierParams memory _tierParams, uint256 _numberOfTiers, uint256 _initialId, uint16[] memory _floors, uint256 _categoryIncrement) internal view returns(JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) {
             _tiersParams = new JB721TierParams[](_numberOfTiers);
             _tiers = new JB721Tier[](_numberOfTiers);
 
@@ -487,7 +487,7 @@ contract UnitTestSetup is Test {
                     votingUnits: _tierParams.votingUnits,
                     reservedRate: _tierParams.reservedRate,
                     reservedTokenBeneficiary: reserveBeneficiary,
-                    encodedIPFSUri: i < tokenUris.length -1 ? tokenUris[i] : tokenUris[0],
+                    encodedIPFSUri: i < tokenUris.length ? tokenUris[i] : tokenUris[0],
                     category: _categoryIncrement == 0
                         ? _tierParams.category == type(uint24).max
                             ? uint24(i*2+1)
@@ -511,7 +511,9 @@ contract UnitTestSetup is Test {
                     category: _tiersParams[i].category,
                     allowManualMint: _tiersParams[i].allowManualMint,
                     transfersPausable: _tiersParams[i].transfersPausable,
-                    resolvedUri: ""
+                    resolvedUri: defaultTierParams.encodedIPFSUri == bytes32(0)
+                        ? "" 
+                        : string(abi.encodePacked("resolverURI", _generateTokenId(_initialId + i + 1, 0)))
                 });
             }
     }
@@ -550,7 +552,7 @@ contract UnitTestSetup is Test {
 
     function _initializeDelegateDefaultTiers(uint256 _initialNumberOfTiers, bool _preventOverspending, uint48 _currency, uint48 _decimals, address _oracle) internal returns(JBTiered721Delegate _delegate){
         // Initialize first tiers to add
-        (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) = _createTiers(
+        (JB721TierParams[] memory _tiersParams,) = _createTiers(
             defaultTierParams,
             _initialNumberOfTiers);
 
@@ -595,7 +597,7 @@ contract UnitTestSetup is Test {
 
     function _initializeForTestDelegate(uint256 _initialNumberOfTiers) internal returns(ForTest_JBTiered721Delegate _delegate){
         // Initialize first tiers to add
-        (JB721TierParams[] memory _tiersParams, JB721Tier[] memory _tiers) = _createTiers(
+        (JB721TierParams[] memory _tiersParams,) = _createTiers(
             defaultTierParams,
             _initialNumberOfTiers);
 
@@ -615,10 +617,10 @@ contract UnitTestSetup is Test {
             _tiersParams,
             IJBTiered721DelegateStore(address(_store)),
             JBTiered721Flags({
-            preventOverspending: false,
-            lockReservedTokenChanges: false,
-            lockVotingUnitChanges: false,
-            lockManualMintingChanges: true
+                preventOverspending: false,
+                lockReservedTokenChanges: false,
+                lockVotingUnitChanges: false,
+                lockManualMintingChanges: true
             })
         );
 
