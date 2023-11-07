@@ -225,12 +225,10 @@ contract TestJuice721dDelegate_redemption_Unit is UnitTestSetup {
     }
 
     function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT(uint256 _numberOfNFT) public {
-        defaultTierParams.initialQuantity = 10;
-        defaultTierParams.price = 1 ether;
         ForTest_JBTiered721Delegate _delegate = _initializeForTestDelegate(5);
 
         // Has to all fit in tier 1
-        _numberOfNFT = bound(_numberOfNFT, 1, defaultTierParams.initialQuantity);
+        _numberOfNFT = bound(_numberOfNFT, 1, 15);
 
         // Mock the directory call
         mockAndExpect(
@@ -267,7 +265,7 @@ contract TestJuice721dDelegate_redemption_Unit is UnitTestSetup {
                 beneficiary,
                 projectId,
                 0,
-                JBTokenAmount(JBTokens.ETH, defaultTierParams.price, 18, JBCurrencies.ETH),
+                JBTokenAmount(JBTokens.ETH, 10, 18, JBCurrencies.ETH),
                 JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
                 0,
                 beneficiary,
