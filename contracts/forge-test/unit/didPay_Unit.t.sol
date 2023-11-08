@@ -5,6 +5,61 @@ import "../utils/UnitTestSetup.sol";
 contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     using stdStorage for StdStorage;
 
+
+    function testJBTieredNFTRewardDelegate_didPay_mintCorrectAmountsAndReserved(uint256 _initialQuantity, uint256 _tokenToMint, uint256 _reservedRate) public {
+        _initialQuantity = bound(_initialQuantity, 1, 200);
+        _reservedRate = bound(_reservedRate, 0, 100);
+        _tokenToMint = bound(_tokenToMint, 0, _reservedRate == 0 ? _initialQuantity :  _initialQuantity - (_initialQuantity / (_reservedRate + 1)));
+
+        defaultTierParams.initialQuantity = uint32(_initialQuantity);
+        defaultTierParams.reservedRate = uint16(_reservedRate);
+        ForTest_JBTiered721Delegate _delegate = _initializeForTestDelegate(1);
+
+        // Mock the directory call
+        mockAndExpect(
+            address(mockJBDirectory),
+            abi.encodeWithSelector(IJBDirectory.isTerminalOf.selector, projectId, mockTerminalAddress),
+            abi.encode(true)
+        );
+
+        uint16[] memory _tierIdsToMint = new uint16[](_tokenToMint);
+
+        for(uint256 i; i < _tokenToMint; i++) _tierIdsToMint[i] = 1;
+
+        // Build the metadata with the tiers to mint and the overspending flag
+        bytes[] memory _data = new bytes[](1);
+        _data[0] = abi.encode(false, _tierIdsToMint);
+
+        // Pass the delegate id
+        bytes4[] memory _ids = new bytes4[](1);
+        _ids[0] = PAY_DELEGATE_ID;
+
+        // Generate the metadata
+        bytes memory _delegateMetadata = metadataHelper.createMetadata(_ids, _data);
+
+        JBDidPayData3_1_1 memory _payData = JBDidPayData3_1_1(
+            beneficiary,
+            projectId,
+            0,
+            JBTokenAmount(JBTokens.ETH, 10 * _tokenToMint, 18, JBCurrencies.ETH),
+            JBTokenAmount(JBTokens.ETH, 0, 18, JBCurrencies.ETH), // 0 fwd to delegate
+            0,
+            beneficiary,
+            false,
+            "",
+            bytes(""),
+            _delegateMetadata
+        );
+
+        vm.prank(mockTerminalAddress);
+        _delegate.didPay(_payData);
+        
+        assertEq(_delegate.balanceOf(beneficiary), _tokenToMint);
+
+        // vm.prank(owner);
+        // _delegate.mintReservesFor(1, 1);
+    }
+
     // If the amount payed is below the price to receive an NFT the pay should not revert if no metadata passed
     function testJBTieredNFTRewardDelegate_didPay_doesRevertOnAmountBelowPriceIfNoMetadataIfPreventOverspending() public {
         JBTiered721Delegate _delegate = _initializeDelegateDefaultTiers(10, true);
