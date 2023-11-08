@@ -972,10 +972,13 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         }
 
         // Get a reference to the number of tokens already minted in the tier, not counting reserves or burned tokens.
+        // Take into account the reserved tokens into the remaining ones
         uint256 _numberOfNonReservesMinted;
         unchecked {
             _numberOfNonReservesMinted =
-                _storedTier.initialQuantity - _storedTier.remainingQuantity - _reserveTokensMinted;
+                _storedTier.initialQuantity
+                 - (_storedTier.remainingQuantity - (_storedTier.reservedRate * _storedTier.remainingQuantity / _storedTier.initialQuantity))
+                 - _reserveTokensMinted;
         }
 
         // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
