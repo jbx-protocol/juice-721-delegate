@@ -227,8 +227,8 @@ contract TestJuice721dDelegate_redemption_Unit is UnitTestSetup {
     function testJBTieredNFTRewardDelegate_didRedeem_burnRedeemedNFT(uint256 _numberOfNFT) public {
         ForTest_JBTiered721Delegate _delegate = _initializeForTestDelegate(5);
 
-        // Has to all fit in tier 1
-        _numberOfNFT = bound(_numberOfNFT, 1, 15);
+        // Has to all fit in tier 1 minus reserved
+        _numberOfNFT = bound(_numberOfNFT, 1, 90);
 
         // Mock the directory call
         mockAndExpect(
