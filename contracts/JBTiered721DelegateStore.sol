@@ -731,6 +731,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         }
     }
 
+event reserved(uint);
+event leftToMint(uint);
+
     /// @notice Record token mints in the provided tiers.
     /// @param _amount The amount to base the mints on. All mints' price floors must fit within this amount.
     /// @param _tierIds The tier IDs to mint from.
@@ -783,8 +786,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Make sure there are enough units available.
             if (
-                _storedTier.remainingQuantity - _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _storedTier)
-                    == 0
+                _storedTier.remainingQuantity <= _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _storedTier)
             ) revert OUT();
 
             // Mint the tokens.
@@ -802,6 +804,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
                 leftoverAmount = leftoverAmount - _storedTier.price;
                 ++_i;
             }
+
+            emit reserved(_numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _storedTier));
+            emit leftToMint(_storedTier.remainingQuantity);
         }
     }
 
