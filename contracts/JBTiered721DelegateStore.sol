@@ -147,6 +147,9 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Keep a reference to the last tier ID.
         uint256 _lastTierId = _lastSortedTierIdOf(_nft);
 
+        // Retuen an empty array if there are no tiers.
+        if (_lastTierId == 0) return _tiers;
+
         // Initialize an array with the appropriate length.
         _tiers = new JB721Tier[](_size);
 
