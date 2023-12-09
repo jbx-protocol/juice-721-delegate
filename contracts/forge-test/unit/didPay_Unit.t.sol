@@ -7,9 +7,9 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
 
     function testJBTieredNFTRewardDelegate_didPay_mintCorrectAmountsAndReserved(uint256 _initialQuantity, uint256 _tokenToMint, uint256 _reservedRate) public {
-        _initialQuantity = bound(_initialQuantity, 5, 200);
+        _initialQuantity = 1000;
         _reservedRate = bound(_reservedRate, 0, 100);
-        _tokenToMint = bound(_tokenToMint, 1, 5);
+        _tokenToMint = bound(_tokenToMint, 1, 100);
 
         defaultTierParams.initialQuantity = uint32(_initialQuantity);
         defaultTierParams.reservedRate = uint16(_reservedRate);
