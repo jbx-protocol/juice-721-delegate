@@ -54,10 +54,14 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
         vm.prank(mockTerminalAddress);
         _delegate.didPay(_payData);
         
-//        assertEq(_delegate.balanceOf(beneficiary), _tokenToMint);
+        assertEq(_delegate.balanceOf(beneficiary), _tokenToMint);
 
-        // vm.prank(owner);
-        // _delegate.mintReservesFor(1, 1);
+        if (_reservedRate > 0) {
+            vm.prank(owner);
+            _delegate.mintReservesFor(1, 1);
+
+            assertEq(_delegate.balanceOf(reserveBeneficiary), 1);
+        } else assertEq(_delegate.balanceOf(reserveBeneficiary), 0);
     }
 
     // If the amount payed is below the price to receive an NFT the pay should not revert if no metadata passed
