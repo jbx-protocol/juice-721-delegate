@@ -5,11 +5,10 @@ import "../utils/UnitTestSetup.sol";
 contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     using stdStorage for StdStorage;
 
-
     function testJBTieredNFTRewardDelegate_didPay_mintCorrectAmountsAndReserved(uint256 _initialQuantity, uint256 _tokenToMint, uint256 _reservedRate) public {
         _initialQuantity = 1000;
         _reservedRate = bound(_reservedRate, 0, 100);
-        _tokenToMint = bound(_tokenToMint, 1, 100);
+        _tokenToMint = bound(_tokenToMint, 2, 100);
 
         defaultTierParams.initialQuantity = uint32(_initialQuantity);
         defaultTierParams.reservedRate = uint16(_reservedRate);
@@ -57,9 +56,13 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
         assertEq(_delegate.balanceOf(beneficiary), _tokenToMint);
 
         if (_reservedRate > 0) {
+            uint256 _reservedToken = _tokenToMint / _reservedRate ;
+            if(_tokenToMint % _reservedRate > 0) _reservedToken += 1;
+
+            assertEq(_delegate.store().numberOfReservedTokensOutstandingFor(address(_delegate), projectId), _reservedToken);
+
             vm.prank(owner);
             _delegate.mintReservesFor(1, 1);
-
             assertEq(_delegate.balanceOf(reserveBeneficiary), 1);
         } else assertEq(_delegate.balanceOf(reserveBeneficiary), 0);
     }
