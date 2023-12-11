@@ -783,8 +783,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
             // Make sure there are enough units available.
             if (
-                _storedTier.remainingQuantity - _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _storedTier)
-                    == 0
+                _storedTier.remainingQuantity <= _numberOfReservedTokensOutstandingFor(msg.sender, _tierId, _storedTier)
             ) revert OUT();
 
             // Mint the tokens.
@@ -957,10 +956,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         view
         returns (uint256)
     {
-        // No reserves outstanding if no mints or no reserved rate.
+        // No reserves outstanding if no mints, no reserved rate, or no beneficiary.
         if (
             _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity
-                || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0)
+                || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0) 
         ) return 0;
 
         // The number of reserved tokens of the tier already minted.
@@ -972,6 +971,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         }
 
         // Get a reference to the number of tokens already minted in the tier, not counting reserves or burned tokens.
+        // Take into account the reserved tokens into the remaining ones
         uint256 _numberOfNonReservesMinted;
         unchecked {
             _numberOfNonReservesMinted =
@@ -983,6 +983,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
         // Round up.
         if (_numberOfNonReservesMinted % _storedTier.reservedRate > 0) ++_numberReservedTokensMintable;
+
+        // Fill out the remaining supply with reserved tokens if needed.
+        if ((_storedTier.initialQuantity % _storedTier.reservedRate) + _numberReservedTokensMintable > _storedTier.initialQuantity) {
+            _numberReservedTokensMintable = _storedTier.remainingQuantity; 
+        }
 
         // Make sure there are more mintable than have been minted. This is possible if some tokens have been burned.
         if (_reserveTokensMinted > _numberReservedTokensMintable) return 0;
