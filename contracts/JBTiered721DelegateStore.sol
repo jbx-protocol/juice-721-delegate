@@ -956,10 +956,10 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         view
         returns (uint256)
     {
-        // No reserves outstanding if no mints or no reserved rate.
+        // No reserves outstanding if no mints, no reserved rate, or no beneficiary.
         if (
             _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity
-                || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0) || _storedTier.remainingQuantity == 0
+                || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0) 
         ) return 0;
 
         // The number of reserved tokens of the tier already minted.
@@ -984,7 +984,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // Round up.
         if (_numberOfNonReservesMinted % _storedTier.reservedRate > 0) ++_numberReservedTokensMintable;
 
-        // Round out the remaining supply with reserved tokens if needed.
+        // Fill out the remaining supply with reserved tokens if needed.
         if ((_storedTier.initialQuantity % _storedTier.reservedRate) + _numberReservedTokensMintable > _storedTier.initialQuantity) {
             _numberReservedTokensMintable = _storedTier.remainingQuantity; 
         }
