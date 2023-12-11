@@ -5,13 +5,10 @@ import "../utils/UnitTestSetup.sol";
 
 contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
     using stdStorage for StdStorage;
-
-    function testJBTieredNFTRewardDelegate_didPay_mintCorrectAmountsAndReserved(uint256 _tokenToMint, uint256 _reservedRate) public {
-        uint256 _initialQuantity = 1000;
-        uint256 _tierId = 1;
-
-        _tokenToMint = 2; //bound(_tokenToMint, 1, 100);
-        _reservedRate = 100; //bound(_reservedRate, 0, 100);
+    function testJBTieredNFTRewardDelegate_didPay_mintCorrectAmountsAndReserved(uint256 _initialQuantity, uint256 _tokenToMint, uint256 _reservedRate) public {
+        _initialQuantity = 400; 
+        _reservedRate = bound(_reservedRate, 0, 200);
+        _tokenToMint = bound(_tokenToMint, 1, 200);
 
         defaultTierParams.initialQuantity = uint32(_initialQuantity);
         defaultTierParams.reservedRate = uint16(_reservedRate);
@@ -26,7 +23,7 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
 
         uint16[] memory _tierIdsToMint = new uint16[](_tokenToMint);
 
-        for(uint256 i; i < _tokenToMint; i++) _tierIdsToMint[i] = uint16(_tierId);
+        for(uint256 i; i < _tokenToMint; i++) _tierIdsToMint[i] = uint16(1);
 
         // Build the metadata with the tiers to mint and the overspending flag
         bytes[] memory _data = new bytes[](1);
@@ -58,29 +55,16 @@ contract TestJuice721dDelegate_didPay_Unit is UnitTestSetup {
         
         assertEq(_delegate.balanceOf(beneficiary), _tokenToMint);
 
-        uint256 _reservedToken;
-        if (_reservedRate > 0 ) {
+        if (_reservedRate > 0 && _initialQuantity - _tokenToMint > 0) {
+            uint256 _reservedToken = _tokenToMint / _reservedRate ;
+            if(_tokenToMint % _reservedRate > 0) _reservedToken += 1;
 
-            _reservedToken = (_tokenToMint / _reservedRate) + 1 ;
-            
-            uint256 _shiftedRoundingUp = (_tokenToMint - 1) % _reservedRate;
-
-            _reservedToken = _shiftedRoundingUp != 0 ? _reservedToken + 1 : _reservedToken;
-
-            if (_tokenToMint >= _reservedRate) _reservedToken--;
-
-            assertEq(_delegate.test_store().numberOfReservedTokensOutstandingFor(address(_delegate), _tierId), _reservedToken);
+            assertEq(_delegate.store().numberOfReservedTokensOutstandingFor(address(_delegate), 1), _reservedToken);
 
             vm.prank(owner);
-            // _delegate.mintReservesFor(1, _reservedToken);
-            // assertEq(_delegate.balanceOf(reserveBeneficiary), _reservedToken);
+            _delegate.mintReservesFor(1, _reservedToken);
+            assertEq(_delegate.balanceOf(reserveBeneficiary), _reservedToken);
         } else assertEq(_delegate.balanceOf(reserveBeneficiary), 0);
-
-        console.log("max Qt: ", _initialQuantity);
-        console.log("minted: ", _tokenToMint);
-        console.log("rr: ", _reservedRate);
-        console.log("outstanding: ", _delegate.store().numberOfReservedTokensOutstandingFor(address(_delegate), _tierId));
-        console.log("computed outstanding: ", _reservedToken);
     }
 
     // If the amount payed is below the price to receive an NFT the pay should not revert if no metadata passed

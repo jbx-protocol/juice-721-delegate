@@ -959,7 +959,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         // No reserves outstanding if no mints or no reserved rate.
         if (
             _storedTier.reservedRate == 0 || _storedTier.initialQuantity == _storedTier.remainingQuantity
-                || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0)
+                || reservedTokenBeneficiaryOf(_nft, _tierId) == address(0) || _storedTier.remainingQuantity == 0
         ) return 0;
 
         // The number of reserved tokens of the tier already minted.
@@ -975,9 +975,7 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
         uint256 _numberOfNonReservesMinted;
         unchecked {
             _numberOfNonReservesMinted =
-                _storedTier.initialQuantity
-                 - (_storedTier.remainingQuantity - (_storedTier.reservedRate * _storedTier.remainingQuantity / _storedTier.initialQuantity))
-                 - _reserveTokensMinted;
+                _storedTier.initialQuantity - _storedTier.remainingQuantity - _reserveTokensMinted;
         }
 
         // Get the number of reserved tokens mintable given the number of non reserved tokens minted. This will round down.
@@ -985,6 +983,11 @@ contract JBTiered721DelegateStore is IJBTiered721DelegateStore {
 
         // Round up.
         if (_numberOfNonReservesMinted % _storedTier.reservedRate > 0) ++_numberReservedTokensMintable;
+
+        // Round out the remaining supply with reserved tokens if needed.
+        if ((_storedTier.initialQuantity % _storedTier.reservedRate) + _numberReservedTokensMintable > _storedTier.initialQuantity) {
+            _numberReservedTokensMintable = _storedTier.remainingQuantity; 
+        }
 
         // Make sure there are more mintable than have been minted. This is possible if some tokens have been burned.
         if (_reserveTokensMinted > _numberReservedTokensMintable) return 0;
