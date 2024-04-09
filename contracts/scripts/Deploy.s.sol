@@ -114,3 +114,53 @@ contract DeployGoerli is Script {
         console.log("store ", address(store));
     }
 }
+
+contract DeploySepolia is Script {
+    IJBDirectory jbDirectory = IJBDirectory(0x3B3Bd16cc76cd53218e00b600bFCa27aA5057794);
+    IJBOperatorStore jbOperatorStore = IJBOperatorStore(0x8f63C744C0280Ef4b32AF1F821c65E0fd4150ab3);
+
+    bytes4 payMetadataDelegateId = bytes4("721P");
+    bytes4 redeemMetadataDelegateId = bytes4("721R");
+
+    JBTiered721DelegateDeployer delegateDeployer;
+    JBTiered721DelegateProjectDeployer projectDeployer;
+    JBTiered721DelegateStore store;
+
+    function run() external {
+        IJBDelegatesRegistry registry = IJBDelegatesRegistry(
+            stdJson.readAddress(
+                vm.readFile(
+                    "node_modules/@jbx-protocol/juice-delegates-registry/broadcast/Deploy.s.sol/11155111/run-latest.json"
+                ),
+                ".transactions[0].contractAddress"
+            )
+        );
+
+        // Make a static call for sanity check
+        assert(registry.deployerOf(address(0)) == address(0));
+
+        vm.startBroadcast();
+
+        JBTiered721Delegate noGovernance = new JBTiered721Delegate(jbDirectory, jbOperatorStore, payMetadataDelegateId, redeemMetadataDelegateId);
+        JBTiered721GovernanceDelegate onchainGovernance = new JBTiered721GovernanceDelegate(
+            jbDirectory,
+            jbOperatorStore,
+            payMetadataDelegateId, 
+            redeemMetadataDelegateId
+        );
+
+        delegateDeployer = new JBTiered721DelegateDeployer(onchainGovernance, noGovernance, registry);
+
+        store = new JBTiered721DelegateStore();
+
+        projectDeployer = new JBTiered721DelegateProjectDeployer(
+            jbDirectory,
+            delegateDeployer,
+            jbOperatorStore
+        );
+
+        console.log("registry ", address(registry));
+        console.log("project deployer", address(projectDeployer));
+        console.log("store ", address(store));
+    }
+}
